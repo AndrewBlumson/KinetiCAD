@@ -1,0 +1,238 @@
+Read CLAUDE.md from project root. Read all existing source files relevant to this phase: src/cad/operations/topology.ts, src/cad/operations/extrude.ts, src/cad/operations/revolve.ts, src/cad/operations/tessellate.ts, src/cad/cadWorker.ts, src/cad/cadClient.ts, src/cad/types.ts, src/state/store.ts, src/state/schemas.ts, src/three/TopologyPicker.ts, src/three/EdgeHighlightLayer.ts, src/three/FaceHighlightLayer.ts, src/three/PartMeshLayer.ts, src/features/featureRegen.ts, src/components/inspectors/, and src/views/Modeller.tsx. Confirm understanding before implementation.
+Phase 4 Split B: Fillet, Chamfer, and Hole Feature Operations
+Split A landed the topology picker. This split adds three modification features that consume the picker's selections: fillet (rounded edges), chamfer (angled edges), and hole (cylindrical cuts through faces).
+Files to create:
+src/
+  cad/
+    operations/
+      fillet.ts                 BRepFilletAPI_MakeFillet, takes shape + edge IDs + radius
+      chamfer.ts                BRepFilletAPI_MakeChamfer, takes shape + edge IDs + size
+      hole.ts                   Cylinder primitive at face point along face normal, BRepAlgoAPI_Cut
+  components/
+    inspectors/
+      FilletInspector.tsx       Edge picker + radius
+      ChamferInspector.tsx      Edge picker + size
+      HoleInspector.tsx         Face picker + position picker + diameter + depth
+Schema additions (already drafted in CLAUDE.md but make them concrete):
+tstype FilletFeature = {
+  id: string;
+  type: 'fillet';
+  targetEdges: string[];       // edge IDs from topology metadata
+  radiusMm: number;
+};
+
+type ChamferFeature = {
+  id: string;
+  type: 'chamfer';
+  targetEdges: string[];
+  sizeMm: number;
+};
+
+type HoleFeature = {
+  id: string;
+  type: 'hole';
+  targetFace: string;          // face ID
+  positionUV: [number, number]; // 2D point on face, in face-local UV
+  diameterMm: number;
+  depthMm: number;             // 0 = through-all
+};
+The persist version needs to bump from 2 to 3 with a migration. Existing parts have only extrude/revolve features, so the migration is a no-op cast: existing features pass through unchanged. Bump version to ensure the schema validator accepts the new feature types.
+Worker API additions:
+tsfillet(args: {
+  upstreamMesh: TessellatedMesh;   // Not the mesh, but enough info to rebuild the OCCT shape
+  upstreamFeatures: Feature[];     // Re-execute upstream chain to get the shape
+  upstreamSketches: Sketch[];      // Source sketches for the upstream chain
+  targetEdgeIds: string[];
+  radiusMm: number;
+}): Promise<TessellatedMesh | { ok: false; error: string; details: string }>;
+
+chamfer(args: { ...similar, sizeMm: number }): Promise<...>;
+
+hole(args: {
+  upstreamFeatures: Feature[];
+  upstreamSketches: Sketch[];
+  targetFaceId: string;
+  positionUV: [number, number];
+  diameterMm: number;
+  depthMm: number;             // 0 = through-all
+}): Promise<...>;
+The worker reconstructs the upstream shape from the feature chain (re-runs extrude or revolve), then applies fillet/chamfer/hole on top. Tessellate the result and return.
+Why re-execute upstream rather than caching the OCCT shape:
+OCCT shapes can't be transferred across the worker boundary (they're WASM heap pointers). The kernel keeps no persistent state between worker calls (each call is independent). Re-execution is the only safe path. The featureCache from Phase 3 still works because it caches the resulting TessellatedMesh, not the OCCT shape; cache hits avoid re-execution entirely.
+Edge ID resolution inside the worker:
+When the worker re-executes upstream and arrives at the modification step, it needs to find OCCT edges matching the stored edge IDs. The topology enumeration logic from Split A produces stable IDs from canonical geometry. Re-run the same enumeration on the freshly-built upstream shape, get a Map<edgeId, TopoDS_Edge>, look up each target edge by ID. If an ID can't be resolved, return { ok: false, error: 'edge-not-found', details: 'Edge ID xxx no longer exists after upstream change' }.
+Same approach for face IDs in hole operations.
+Fillet operation:
+tsfunction fillet(shape: TopoDS_Shape, edgeMap: Map<string, TopoDS_Edge>, edgeIds: string[], radiusMm: number): TopoDS_Shape {
+  const filletMaker = new oc.BRepFilletAPI_MakeFillet(shape);
+  for (const id of edgeIds) {
+    const edge = edgeMap.get(id);
+    if (!edge) throw new Error(`Edge not found: ${id}`);
+    filletMaker.Add_2(radiusMm, edge);  // single-radius signature
+  }
+  filletMaker.Build();
+  if (!filletMaker.IsDone()) throw new Error('Fillet failed');
+  const result = filletMaker.Shape();
+  filletMaker.delete();
+  return result;
+}
+Common failure modes:
+
+Radius too large for the edge geometry: surface as 'fillet-radius-too-large'.
+Adjacent fillets self-intersecting: surface as 'fillet-self-intersect'.
+
+Chamfer operation:
+tsfunction chamfer(shape: TopoDS_Shape, edgeMap: Map<string, TopoDS_Edge>, edgeIds: string[], sizeMm: number): TopoDS_Shape {
+  const chamferMaker = new oc.BRepFilletAPI_MakeChamfer(shape);
+  for (const id of edgeIds) {
+    const edge = edgeMap.get(id);
+    if (!edge) throw new Error(`Edge not found: ${id}`);
+    chamferMaker.Add_2(sizeMm, edge);   // equal-distance chamfer
+  }
+  chamferMaker.Build();
+  if (!chamferMaker.IsDone()) throw new Error('Chamfer failed');
+  const result = chamferMaker.Shape();
+  chamferMaker.delete();
+  return result;
+}
+Hole operation:
+tsfunction hole(
+  shape: TopoDS_Shape,
+  faceMap: Map<string, TopoDS_Face>,
+  targetFaceId: string,
+  positionUV: [number, number],
+  diameterMm: number,
+  depthMm: number
+): TopoDS_Shape {
+  const face = faceMap.get(targetFaceId);
+  if (!face) throw new Error(`Face not found: ${targetFaceId}`);
+
+  // 1. Get the face's surface and evaluate at UV to get 3D point
+  const surface = oc.BRep_Tool.Surface_2(face);
+  const point3d = new oc.gp_Pnt_1();
+  surface.get().D0(positionUV[0], positionUV[1], point3d);
+
+  // 2. Get face normal at that point (the cut direction is -normal, into the body)
+  const normal = computeFaceNormalAt(face, positionUV);
+
+  // 3. If depthMm === 0 (through-all), use a depth that's larger than the body's bounding box
+  const cutDepth = depthMm === 0 ? boundingBoxDiagonal(shape) * 2 : depthMm;
+
+  // 4. Build a cylinder primitive at point3d, oriented along -normal, radius diameter/2, height cutDepth
+  const axis = new oc.gp_Ax2_3(point3d, new oc.gp_Dir_2(-normal[0], -normal[1], -normal[2]));
+  const cylinder = new oc.BRepPrimAPI_MakeCylinder_3(axis, diameterMm / 2, cutDepth).Shape();
+
+  // 5. Boolean subtract the cylinder from the body
+  const cutMaker = new oc.BRepAlgoAPI_Cut_3(shape, cylinder);
+  cutMaker.Build();
+  if (!cutMaker.IsDone()) throw new Error('Hole boolean failed');
+  const result = cutMaker.Shape();
+
+  // 6. Cleanup intermediates
+  point3d.delete();
+  axis.delete();
+  cylinder.delete();
+  cutMaker.delete();
+
+  return result;
+}
+The computeFaceNormalAt helper uses BRepAdaptor_Surface and the face's UV derivatives. If the face is reversed (face.Orientation() === TopAbs_REVERSED), flip the normal.
+Through-all depth: when depthMm === 0, drill through the entire body. Implement by setting cylinder length to twice the body's bounding box diagonal, then booleaning.
+Boolean tolerance: OCCT's default boolean tolerance can fail on tight intersections. If BRepAlgoAPI_Cut.IsDone() returns false, retry with cutMaker.SetFuzzyValue(0.001) (1 micron). If that also fails, surface as 'boolean-failed'.
+FilletInspector layout:
+INSPECTOR
+─────────
+Fillet (Part 1)
+
+Target edges:
+  Edge abc123 (15mm line)         [×]
+  Edge def456 (10mm line)         [×]
+  + Click an edge to add
+
+Radius (mm)
+[ 1.0 ] [▲][▼]      ← NumericInput, step 0.1, min 0.1, max 50
+
+[x] Live preview
+
+[ Apply ]
+[ Cancel ]
+The "Target edges" list shows currently selected edges. Each row has an × to remove. "Click an edge to add" is a help line; clicking edges in the 3D view (picker is in 'edges' mode while this inspector is open) adds them to the list.
+ChamferInspector layout: identical structure, "Size (mm)" instead of "Radius (mm)", same range.
+HoleInspector layout:
+INSPECTOR
+─────────
+Hole (Part 1)
+
+Target face:
+  Face xyz789 (planar, 200mm²)    [Clear]
+  ← if no face: "Click a face to select"
+
+Position on face:
+  U: [ 5.0 ] mm
+  V: [ 5.0 ] mm
+  ← if no position: "Click a point on the face"
+
+Diameter (mm)
+[ 6.0 ] [▲][▼]
+
+Depth (mm)
+[ 10.0 ] [▲][▼]    ← 0 = through-all, label updates to "Through-all" when 0
+
+[x] Live preview
+
+[ Apply ]
+[ Cancel ]
+The Hole inspector drives the picker mode in two stages: 'faces' until a face is selected, then 'point-on-face' for the position. Once both are set, the picker returns to idle until the user clicks "Clear" on either.
+Picker mode coordination:
+When a Fillet/Chamfer/Hole inspector opens, set featureEditor.pickingMode accordingly:
+
+Fillet: 'edges' (multi-select).
+Chamfer: 'edges' (multi-select).
+Hole stage 1: 'faces'. Once face selected, transition to stage 2: 'point-on-face'. Once point selected, picker idle.
+
+When the inspector closes (Apply or Cancel), set pickingMode to 'idle'.
+Live preview:
+Same pattern as Phase 3: 200ms debounce after parameter change, call worker, render result at 0.85 opacity in PreviewMeshLayer. Original part hidden during preview.
+Hide the diagnostic Cmd+Shift+T panel:
+Split A added a diagnostic panel for testing the picker. Remove the keyboard shortcut and the panel component. Real inspectors now drive the picker.
+Error message mapping:
+'edge-not-found': "Selected edge no longer exists. Re-select edges and try again."
+'face-not-found': "Selected face no longer exists. Re-select the face and try again."
+'fillet-radius-too-large': "Fillet radius too large for this edge. Try a smaller radius."
+'fillet-self-intersect': "Fillets overlap. Reduce radius or fillet fewer edges."
+'chamfer-size-too-large': "Chamfer size too large for this edge. Try a smaller size."
+'boolean-failed': "Hole could not be cut. Check position and depth."
+'occt-internal': "Operation failed. Try simpler parameters."
+These render under the parameter inputs in #FF6B6B, with a small warning icon.
+Acceptance criteria:
+
+Create a 30mm × 30mm × 30mm cube via Sketch + Extrude.
+Click the cube part in the tree, click "+ Feature" or similar to access the Fillet option (you may need to add a feature menu to the SketchInspector or PartInspector for non-sketch features).
+Open Fillet inspector. Picker mode goes to edges. Click 4 vertical edges of the cube. Inspector shows 4 edges selected.
+Set radius to 5mm. Live preview shows the cube with 4 rounded vertical edges.
+Apply. Feature tree shows "Fillet 1" under the part. Mesh is permanent.
+Open Chamfer inspector on the same part. Click the top 4 edges. Set size 2mm. Preview shows top edges chamfered. Apply.
+Open Hole inspector. Click the top face (which is now chamfered). Click a point near the centre. Diameter 6mm, depth 10mm. Preview shows a blind hole. Apply.
+Edit Fillet 1 from 5mm to 8mm. Preview updates. Apply. Chamfer and Hole regenerate on top of the new fillet.
+Edit the original Extrude depth from 30mm to 50mm. The cube grows. Fillet's edge IDs should mostly survive (the four vertical edges are still vertical edges of the same cube, just longer). Chamfer's edges: top edges stayed in identifiable positions, should survive. Hole's face: top face survived. Result: deeper cube with all features still applied.
+Edit Extrude direction from Forward to Symmetric. Topology changes substantively. Some IDs may not resolve. Inspector shows error on the affected feature; user must re-pick.
+Reload page. All features intact, mesh regenerates.
+Memory: open and close inspectors 20 times with parameter and selection changes. No mesh accumulation.
+
+Performance:
+
+Single-edge fillet on a simple body: under 600ms first run, under 5ms cached.
+4-edge fillet on a simple body: under 1200ms first run.
+Hole through-all on a simple body: under 800ms first run.
+
+Note for Agent:
+The "+ Feature" menu for non-sketch features needs to live somewhere. Options:
+
+A menu on the PartInspector that lists "Add fillet", "Add chamfer", "Add hole".
+A toolbar group in the top toolbar, enabled when a part is selected.
+
+Choose one and document the choice. The toolbar group is more discoverable for new users; the inspector menu is more explicit about which part is the target. Either works for v1.
+Through-all hole depth (depthMm === 0) is the most likely place a unit conversion bug hides. The cylinder length needs to be in the same units as the body (mm). If you compute "twice the bounding box diagonal" in metres and use it as mm, the hole will be 1/1000 the depth needed. Sanity-check: a 10mm cube's through-all hole should use a cylinder of about 35mm length, not 0.035mm.
+BRepAlgoAPI_Cut's SetFuzzyValue is a useful escape hatch for tight tolerance failures, but don't apply it by default. Default tolerance produces cleaner topology; fuzzy tolerance can leave tiny faces. Use 0.001 (1 micron) as a fallback only.
+Test on the deployed .replit.app URL in external Chrome on an M-series Mac, not the Replit preview iframe.
+Commit on completion. Do not push. Do not run git push under any circumstance. Stop after commit and report status.
