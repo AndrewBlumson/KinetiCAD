@@ -31,7 +31,8 @@ import type {
 } from "../types";
 import type { FaceTriangleRange } from "./tessellate";
 
-// OCCT GeomAbs enums (the values are stable across OCCT versions).
+// OCCT GeomAbs enums (the underlying values are stable across OCCT versions
+// — see C++ enums GeomAbs_CurveType / GeomAbs_SurfaceType).
 const GEOM_ABS_LINE = 0;
 const GEOM_ABS_CIRCLE = 1;
 const GEOM_ABS_BEZIER_CURVE = 5;
@@ -41,6 +42,37 @@ const GEOM_ABS_CYLINDER = 1;
 const GEOM_ABS_CONE = 2;
 const GEOM_ABS_SPHERE = 3;
 const GEOM_ABS_TORUS = 4;
+
+/**
+ * Coerce an OCCT `GetType()` return into a plain integer.
+ *
+ * opencascade.js (and most embind-based OCCT bindings) expose enums as
+ * value-object instances: `BRepAdaptor_Curve.GetType()` returns something
+ * shaped like `{ value: 1 }` for `GeomAbs_Circle`, NOT the integer `1`. A
+ * naive `curveType === 1` strict-equality check is therefore always false
+ * for every edge, and every classification falls through to the `"other"`
+ * fallback branch — the exact symptom QA reproduced
+ * (`typeHistogram: { other: 12 }` on a two-cylinder scene where 8 of 12
+ * edges should be `circle` and 4 should be `line`).
+ *
+ * This helper accepts:
+ *   - a raw number (older bindings or hand-rolled wrappers)
+ *   - an embind enum value with `.value: number`
+ *   - an object whose `valueOf()` returns a number
+ * and returns `-1` for anything else, which trivially fails every dispatch
+ * branch and routes to `"other"` — same fail-safe behaviour as before, but
+ * now only when the type is genuinely unrecognised.
+ */
+function enumVal(x: unknown): number {
+  if (typeof x === "number") return x;
+  if (x && typeof x === "object") {
+    const v = (x as { value?: unknown }).value;
+    if (typeof v === "number") return v;
+    const vo = (x as { valueOf?: () => unknown }).valueOf?.();
+    if (typeof vo === "number" && vo !== (x as unknown)) return vo;
+  }
+  return -1;
+}
 
 const FULL_CIRCLE_TOL = 1e-3;
 
@@ -137,11 +169,13 @@ type CurveInfo = {
 
 function classifyAndExtractCurve(
   ocAny: any,
-  curveType: number,
+  curveTypeRaw: unknown,
   startParam: number,
   endParam: number,
   adaptor: any,
 ): CurveInfo {
+  // Coerce the embind enum return into an integer; see enumVal docstring.
+  const curveType = enumVal(curveTypeRaw);
   // Line: hash on sorted endpoints (so direction doesn't matter).
   if (curveType === GEOM_ABS_LINE) {
     return withWrapper(
@@ -237,7 +271,8 @@ function classifyAndExtractCurve(
   // BSpline / Bezier / other: emit a uniform parametric sample and hash by
   // sample points (canonical because the parameter space is fixed).
   const isSpline =
-    curveType === GEOM_ABS_BEZIER_CURVE || curveType === GEOM_ABS_BSPLINE_CURVE;
+    curveType === GEOM_ABS_BEZIER_CURVE ||
+    curveType === GEOM_ABS_BSPLINE_CURVE;
   const polyline = sampleCurveUniform(
     ocAny,
     adaptor,
@@ -408,7 +443,8 @@ type SurfaceInfo = {
 function classifyAndExtractSurface(ocAny: any, face: any): SurfaceInfo {
   const adaptor = new ocAny.BRepAdaptor_Surface_2(face, true);
   try {
-    const surfType = adaptor.GetType();
+    // Same embind-enum coercion as for curves; see enumVal docstring.
+    const surfType = enumVal(adaptor.GetType());
 
     if (surfType === GEOM_ABS_PLANE) {
       let origin: [number, number, number] = [0, 0, 0];

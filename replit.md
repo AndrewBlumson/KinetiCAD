@@ -554,3 +554,59 @@ job. The fix path then becomes: relax the filter to include `spline`
 when the spline is closed (cylinder approximations), or fix
 upstream classification, or document the expected sketch workflow
 (use Sketch → Circle → Extrude, not a polyline approximation).
+
+#### Follow-up #3: classifier was always returning "other" (root cause)
+
+QA's third deploy returned `{ totalEdges: 12, typeHistogram: { other:
+12 } }` on a two-cylinder scene. None of the three predicted paths —
+exact-circle classification was *broken*, full stop. The mate
+inspector's filter had been doing the right thing all along; the data
+it was filtering against was wrong.
+
+**Root cause** (in `cad/operations/topology.ts`):
+
+```ts
+const GEOM_ABS_LINE = 0;
+const GEOM_ABS_CIRCLE = 1;
+…
+const curveType = adaptor.GetType();   // ← embind enum object, not int
+if (curveType === GEOM_ABS_LINE) { … } // ← always false
+if (curveType === GEOM_ABS_CIRCLE) { … }
+return { type: "other", … };           // ← every edge takes this branch
+```
+
+opencascade.js exposes OCCT enums as embind value-object instances:
+`BRepAdaptor_Curve.GetType()` returns something like `{ value: 1 }`
+for `GeomAbs_Circle`, not the integer `1`. The `===` strict-equality
+check was always false → every dispatch fell through to the `"other"`
+fallback. The same bug affected `classifyAndExtractSurface` (faces
+were misclassified as `"other"` too — silently breaking the Planar
+and Prismatic mate filters in the same way, just not yet exercised).
+
+This is also why the original "click rejects what hover accepts"
+report fingered `"line"` edges: the *seam* edges happened to be
+genuine `Line`s, while what the user perceived as the "circular top"
+was being tagged `"other"` by the broken classifier and skipped by
+the filter.
+
+**Fix**: defensive `enumVal()` helper that handles raw integers,
+embind enum objects with `.value`, and `valueOf()`-coercible objects.
+Applied at every `GetType()` call site (curve classification + surface
+classification). Returns `-1` for unrecognised shapes, which routes
+to `"other"` exactly as before — same fail-safe behaviour, but now
+only when the type genuinely is unknown.
+
+**Behavioural ramification**: edge and face *hash IDs* incorporate the
+classified type prefix (`circle|…` vs `other|…`), so a fillet/hole
+feature in an existing persisted project that referenced an edge ID
+like `"other|<polyline-samples>"` will not match the newly-classified
+`"circle|<centre|radius|axis>"` after this fix. Feature regeneration
+will fail to locate the saved edge ID. Users with feature history
+predating this commit must rebuild affected features (or the persist
+version could be bumped to wipe trees — not done here, since the user
+is mid-bringup and can rebuild trivially).
+
+**Verification path**: after redeploy, the QA click should print
+`{ typeHistogram: { line: 4, circle: 8 } }` for a two-cylinder scene
+(each cylinder = 2 circle edges + 2 seam lines × 2 cylinders = 12)
+and the Revolute Stage A click should commit.
