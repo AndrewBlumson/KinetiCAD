@@ -415,14 +415,15 @@ export default function Scene() {
         const kernel = await getCadKernel();
         if (cancelled) return;
 
-        // Shadow catcher so part meshes have a grounded look. Same offset
-        // and material as the Phase 1 test cube to keep visuals consistent.
+        // Shadow catcher so part meshes have a grounded look. PlaneGeometry
+        // already lies in the XY plane (normal +Z), which IS the floor in
+        // our Z-up convention, so no rotation is required. Sit it just
+        // below Z=0 to avoid z-fighting with the grid.
         shadowCatcher = new THREE.Mesh(
           new THREE.PlaneGeometry(200, 200),
           new THREE.ShadowMaterial({ opacity: 0.35 }),
         );
-        shadowCatcher.rotation.x = -Math.PI / 2;
-        shadowCatcher.position.y = -5;
+        shadowCatcher.position.z = -5;
         shadowCatcher.receiveShadow = true;
         scene.add(shadowCatcher);
 

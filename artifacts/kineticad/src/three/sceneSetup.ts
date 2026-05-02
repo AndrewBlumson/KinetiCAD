@@ -38,7 +38,13 @@ export function createScene(): THREE.Scene {
 
 export function createCamera(aspect: number): THREE.PerspectiveCamera {
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 5000);
-  camera.position.set(80, 60, 80);
+  // Z-up convention (mechanical CAD: SolidWorks/Onshape). World X=right,
+  // Y=forward, Z=up. Floor is the XY plane at Z=0.
+  // IMPORTANT: set camera.up BEFORE OrbitControls is constructed — the
+  // controls cache an internal quaternion from object.up at construction
+  // time and use it for all spherical orbit math.
+  camera.up.set(0, 0, 1);
+  camera.position.set(80, -80, 60);
   camera.lookAt(0, 0, 0);
   return camera;
 }
@@ -49,7 +55,8 @@ export function createLights(scene: THREE.Scene) {
   scene.add(ambient);
 
   const key = new THREE.DirectionalLight(0xffffff, 0.6);
-  key.position.set(50, 80, 30);
+  // Z-up: "above and slightly to the side" → high Z, modest X/Y.
+  key.position.set(50, 30, 80);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.camera.near = 1;
@@ -65,8 +72,12 @@ export function createLights(scene: THREE.Scene) {
 }
 
 /**
- * 200mm x 200mm grid floor with 10mm cells. Lying on the XZ plane (Y up),
- * matching the OCCT convention used in this project.
+ * 200mm x 200mm grid floor with 10mm cells. Lying on the world XY plane
+ * (Z=0), matching the Z-up convention used by mechanical CAD packages.
+ *
+ * THREE.GridHelper is built in the XZ plane by default; we rotate it +90°
+ * around the X axis so its normal flips from +Y to +Z and the lines lie
+ * flat on the floor.
  */
 export function createGrid(): THREE.GridHelper {
   // 20 divisions across 200mm = 10mm cells.
@@ -74,8 +85,11 @@ export function createGrid(): THREE.GridHelper {
   const mat = grid.material as THREE.Material;
   mat.transparent = true;
   mat.opacity = 0.65;
-  // Prevent grid lines from z-fighting with parts that sit on the floor.
-  grid.position.y = -0.01;
+  // Re-orient from default XZ plane → XY plane (floor in Z-up).
+  grid.rotation.x = Math.PI / 2;
+  // Sit just below Z=0 so grid lines don't z-fight with parts whose
+  // bottom face is exactly on the floor.
+  grid.position.z = -0.01;
   return grid;
 }
 

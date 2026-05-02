@@ -23,6 +23,11 @@ export type PlaneView = {
 
 // Camera positions per the spec: 120mm offset along the plane normal, looking
 // straight at the origin so the chosen plane fills the viewport face-on.
+//
+// World convention is Z-up (mechanical CAD): X=right, Y=forward, Z=up.
+//   - XY = floor (Z=0), camera looks straight down with sketch-v = world Y.
+//   - XZ = front wall (Y=0), camera in front looking +Y, sketch-v = world Z up.
+//   - YZ = right wall (X=0), camera offset +X looking -X, sketch-v = world Z up.
 export const PLANE_VIEWS: Record<CardinalPlane, PlaneView> = {
   XY: {
     cameraPosition: [0, 0, 120],
@@ -31,23 +36,25 @@ export const PLANE_VIEWS: Record<CardinalPlane, PlaneView> = {
     label: "Top",
   },
   XZ: {
-    cameraPosition: [0, 120, 0],
+    cameraPosition: [0, -120, 0],
     cameraUp: [0, 0, 1],
     normal: [0, 1, 0],
     label: "Front",
   },
   YZ: {
     cameraPosition: [120, 0, 0],
-    cameraUp: [0, 1, 0],
+    cameraUp: [0, 0, 1],
     normal: [1, 0, 0],
     label: "Right",
   },
 };
 
+// Default 3D perspective in Z-up: positioned right + forward-of-origin
+// (negative Y in our forward convention) and slightly elevated.
 export const DEFAULT_CAMERA_POSITION: readonly [number, number, number] = [
-  80, 60, 80,
+  80, -80, 60,
 ];
-export const DEFAULT_CAMERA_UP: readonly [number, number, number] = [0, 1, 0];
+export const DEFAULT_CAMERA_UP: readonly [number, number, number] = [0, 0, 1];
 export const DEFAULT_CAMERA_TARGET: readonly [number, number, number] = [
   0, 0, 0,
 ];

@@ -71,6 +71,30 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
   `runSelfTest` in `ensureKernel` that builds a 20mm square,
   extrudes 10mm and logs tri count + bbox (or red `console.error`
   on failure) so kernel-pipeline regressions surface at boot.
+- **Z-up convention switch (post-Phase 5 fix)** — flipped world from
+  Three.js default Y-up to mechanical-CAD Z-up (SolidWorks/Onshape):
+  X=right, Y=forward, Z=up; floor = XY plane (Z=0). Fixes T11 (XY
+  sketches rendering on a vertical wall) and T12 (primitives scattered
+  along Y instead of coplanar); likely also T3 (extrude regression).
+  Touches three files only — no functional refactor:
+  (1) `three/sceneSetup.ts`: `camera.up.set(0,0,1)` BEFORE
+  OrbitControls construction (controls cache `_quat` from `object.up`);
+  default camera position (80,-80,60); GridHelper rotated +π/2 around X
+  to lie on XY (was XZ); grid offset now `position.z = -0.01`; key
+  light moved to (50,30,80). (2) `sketch/plane.ts`: `DEFAULT_CAMERA_UP`
+  → [0,0,1], `DEFAULT_CAMERA_POSITION` → [80,-80,60]; `PLANE_VIEWS` XZ
+  cameraPosition flipped to [0,-120,0] (in Z-up the XZ plane is the
+  front wall), YZ cameraUp → [0,0,1]; XY view kept ([0,0,120] up
+  [0,1,0]) since "screen-up = world +Y" for top-down. (3)
+  `three/Scene.tsx` shadowCatcher: dropped `rotation.x = -π/2`
+  (PlaneGeometry's default XY IS the floor in Z-up); offset switched
+  from `position.y = -5` → `position.z = -5`. NOT changed (verified
+  safe): sketchOverlay applyOrientation already produces coplanar
+  rect+grid for each cardinal plane in Z-up; `planeNormal` /
+  `planeToWorld` already match the spec; PartMeshLayer applies no
+  per-part transform; createAxes pivots already point red/green/blue
+  along world +X/+Y/+Z. Architect approved as a focused
+  axis-convention patch.
 - Phases 6–12 — pending.
 - **Deferred to Phase 12 polish** (per user, end of Phase 5):
   - 3D click-to-select on boolean result meshes (BooleanResultLayer is rendered but not wired into TopologyPicker; selection only works via the BOOLEANS sidebar today).
