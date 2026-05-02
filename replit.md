@@ -425,3 +425,39 @@ acceptance test (Ground/Crank/ConRod/Rocker, 60 RPM motor) was not
 exercised end-to-end in this session — that requires WebGPU which
 the in-IDE preview iframe does not provide; QA should run it on a
 deployed `.replit.app` URL in Chrome.
+
+## Phase 9.5 — bug fixes (Fixed mate physics + ground persistence)
+
+Two concrete defects fixed; the inspector commit-on-click pattern was
+already in place from prior work and needed no further code changes.
+
+**Fixed mate joint math (`physics/physicsWorker.ts`)**:
+- Bug: `JointData.fixed` was being constructed with identity anchors
+  on both sides (`(0,0,0)` + identity quat for A and B). Rapier's
+  fixed joint locks `bodyA·frame1 ≡ bodyB·frame2` in world space, so
+  passing identity for both anchors yanked B's origin onto A's origin
+  under solver forces — Part B drifted/snapped instead of staying
+  rigidly fixed in place.
+- Fix: at joint-creation time, sample `bodyA.translation()/rotation()`
+  and `bodyB.translation()/rotation()`, then compute frame2 in B's
+  local frame as `T_B^(-1) · T_A` (translation = q_B^(-1) ⊗ Δp ⊗ q_B,
+  orientation = q_B^(-1) ⊗ q_A). Frame1 stays identity in A. New
+  helpers `quatMul` + `quatRotateVec` live next to `eulerDegToQuat`.
+
+**`assembly.groundPartId` persistence (`state/store.ts`)**:
+- Bug: `groundPartId` defaulted to `""` and was never written when a
+  user added their first part. The UI / sim used `groundPartId ||
+  parts[0].id` as a display fallback, which silently rewired the
+  ground anchor whenever `parts[0]` changed (re-orders, deletions),
+  and the persisted state stayed empty across reloads.
+- Fix: in `createPart`, if `groundPartId === ""`, promote the new
+  part to ground inline. In the v6 migration, also promote
+  `parts[0].id` when an existing persisted state has parts but an
+  empty `groundPartId`. The `parts[0]` fallback in
+  `simulationRunner` / UI components is retained as belt-and-braces
+  but is now a no-op in practice.
+
+**Verification**: `pnpm --filter @workspace/kineticad run typecheck`
+clean. Behavioral verification (B stays welded to A under gravity;
+ground anchor survives reload) requires WebGPU — QA on a deployed
+`.replit.app` URL.

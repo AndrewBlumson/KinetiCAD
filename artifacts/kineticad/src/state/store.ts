@@ -1296,10 +1296,20 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           features: [],
           materialId: "default",
         };
+        // Phase 9.5 — auto-promote the first part to ground so the
+        // persisted `groundPartId` is always populated. Previously the
+        // UI relied on a `parts[0]` fallback for display, but that
+        // fallback was never written back to the store, so reloads (or
+        // re-orderings) silently moved the ground anchor.
+        const groundPartId =
+          state.assembly.groundPartId === ""
+            ? part.id
+            : state.assembly.groundPartId;
         set({
           assembly: {
             ...state.assembly,
             parts: [...state.assembly.parts, part],
+            groundPartId,
           },
           selection: { kind: "part", partId: part.id },
         });
@@ -2059,6 +2069,15 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           }
           if (typeof (state.assembly as Assembly).groundPartId !== "string") {
             state.assembly = { ...state.assembly, groundPartId: "" };
+          }
+          // Phase 9.5 — promote the first existing part to ground if the
+          // persisted state predates the auto-promote behavior in
+          // `createPart`. The UI / sim used to fall back to `parts[0]`
+          // when groundPartId was "", which silently rewired the anchor
+          // on re-orders / deletions.
+          const asm = state.assembly as Assembly;
+          if (asm.groundPartId === "" && asm.parts.length > 0) {
+            state.assembly = { ...asm, groundPartId: asm.parts[0].id };
           }
         }
         // v6 → v7: Phase 8 simulation. The `simulation` field already

@@ -138,6 +138,35 @@ function eulerDegToQuat(
   return { x, y, z, w };
 }
 
+/** Hamilton product q = a ⊗ b. */
+function quatMul(
+  a: { x: number; y: number; z: number; w: number },
+  b: { x: number; y: number; z: number; w: number },
+): { x: number; y: number; z: number; w: number } {
+  return {
+    x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+    y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+    z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+    w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+  };
+}
+
+/** Rotate vector v by unit quaternion q: v' = q ⊗ v ⊗ q^(-1). */
+function quatRotateVec(
+  q: { x: number; y: number; z: number; w: number },
+  v: { x: number; y: number; z: number },
+): { x: number; y: number; z: number } {
+  // Standard expansion: v' = v + 2 q.w (q.xyz × v) + 2 q.xyz × (q.xyz × v)
+  const tx = 2 * (q.y * v.z - q.z * v.y);
+  const ty = 2 * (q.z * v.x - q.x * v.z);
+  const tz = 2 * (q.x * v.y - q.y * v.x);
+  return {
+    x: v.x + q.w * tx + (q.y * tz - q.z * ty),
+    y: v.y + q.w * ty + (q.z * tx - q.x * tz),
+    z: v.z + q.w * tz + (q.x * ty - q.y * tx),
+  };
+}
+
 /**
  * Mesh volume by signed-tetrahedra (each triangle forms a tetrahedron
  * with the origin). Used to compare against the convex-hull volume so
@@ -366,16 +395,31 @@ function buildJoint(
 
     case "fixed": {
       // Fixed mate freezes B's pose relative to A as it stood at
-      // mate-creation time. Rapier needs the relative transform up
-      // front: anchor at A's origin (0,0,0) and B's origin (0,0,0)
-      // with identity orientation works because we compose the
-      // current world transforms into A and B before building the
-      // joint, and Rapier resolves the relative offset from there.
+      // play-time. Rapier's fixed joint locks bodyA·frame1 ≡ bodyB·frame2
+      // in world space, so passing identity for both anchors would yank
+      // B's origin onto A's origin. Instead we pick frame1 = identity
+      // (in A's local) and compute frame2 = T_B^(-1) · T_A in B's local
+      // — i.e. A's pose expressed in B's frame at the current instant.
+      const pa = bodyA.translation();
+      const qa = bodyA.rotation();
+      const pb = bodyB.translation();
+      const qb = bodyB.rotation();
+      // q_B^(-1) (unit quat → conjugate)
+      const qbi = { x: -qb.x, y: -qb.y, z: -qb.z, w: qb.w };
+      // Δp in world frame
+      const dpx = pa.x - pb.x;
+      const dpy = pa.y - pb.y;
+      const dpz = pa.z - pb.z;
+      // Rotate Δp by q_B^(-1) → Δp expressed in B's local frame.
+      // v' = q ⊗ v ⊗ q^(-1); using the standard expansion.
+      const t = quatRotateVec(qbi, { x: dpx, y: dpy, z: dpz });
+      // q_rel = q_B^(-1) ⊗ q_A   (A's orientation in B's local frame)
+      const qrel = quatMul(qbi, qa);
       const params = RAPIER.JointData.fixed(
         { x: 0, y: 0, z: 0 },
         { x: 0, y: 0, z: 0, w: 1 },
-        { x: 0, y: 0, z: 0 },
-        { x: 0, y: 0, z: 0, w: 1 },
+        t,
+        qrel,
       );
       rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
       return { ok: true, warning: null };
