@@ -199,10 +199,38 @@ export type Assembly = {
   booleanFeatures: BooleanFeature[];
 };
 
+/**
+ * Phase 8 — physics simulation state.
+ *
+ * Units: gravity is in mm/s² because the entire app is millimetre-scaled
+ * (a single 9.81 m/s² gravity in a metre-scaled world would be 1000× too
+ * weak when applied to mm distances). Default Z-up gravity is therefore
+ * `[0, 0, -9810]`.
+ *
+ * `paused` is distinct from `running=false`: when paused the world is
+ * built and bodies hold their last computed transforms; resuming
+ * advances from there. Stopping (`running=false`) tears down the world
+ * and the Modeller view shows the original assembly transforms.
+ *
+ * `speedMultiplier` scales physics-time relative to wall-clock during
+ * the RAF tick (0.25× / 0.5× / 1× / 2×). The fixed timestep stays at
+ * `timeStepMs`; the multiplier feeds the accumulator.
+ *
+ * `simulationTimeMs` accumulates physics-time across step() calls so
+ * the dashboard can show how long the mechanism has been running.
+ *
+ * Persistence rule (Phase 8): only `gravity`, `timeStepMs`, and
+ * `speedMultiplier` survive a reload — the runtime fields (`running`,
+ * `paused`, `simulationTimeMs`) are zeroed on every boot via
+ * `partialize` so nothing tries to resume a dead world.
+ */
 export type SimulationState = {
   running: boolean;
+  paused: boolean;
   timeStepMs: number;
   gravity: [number, number, number];
+  speedMultiplier: number;
+  simulationTimeMs: number;
 };
 
 export type AppMode = 'modeller' | 'simulator';

@@ -76,6 +76,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "0.12.0",
     "comlink": "4.4.1",
     "opencascade.js": "2.0.0-beta.94e2944",
     "three": "0.184.0",

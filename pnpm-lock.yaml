@@ -218,6 +218,9 @@ importers:
 
   artifacts/kineticad:
     dependencies:
+      '@dimforge/rapier3d-compat':
+        specifier: 0.12.0
+        version: 0.12.0
       comlink:
         specifier: 4.4.1
         version: 4.4.1

@@ -348,7 +348,24 @@ export type KinetiCADStore = {
   pickingMode: PickingMode;
 
   setMode: (mode: AppMode) => void;
+  /**
+   * Phase 8 — simulation lifecycle. Run/pause/reset are mutually
+   * exclusive transitions:
+   *  - setSimulationRunning(true): begin or resume; clears `paused`
+   *  - setSimulationRunning(false): stop; clears `paused` and zeroes
+   *    `simulationTimeMs`
+   *  - setSimulationPaused(true): freeze mid-step; `running` stays
+   *    true so the world is kept built; resume via paused=false
+   *  - resetSimulation(): same shape as stop — `running=false`,
+   *    `paused=false`, `simulationTimeMs=0`
+   */
   setSimulationRunning: (running: boolean) => void;
+  setSimulationPaused: (paused: boolean) => void;
+  /** 0.25 / 0.5 / 1 / 2. Clamped to those values via the inspector UI. */
+  setSimulationSpeed: (multiplier: number) => void;
+  setSimulationGravity: (gravity: [number, number, number]) => void;
+  /** Per-frame accumulator update from the simulation runner. */
+  tickSimulationTime: (deltaMs: number) => void;
   resetSimulation: () => void;
 
   beginSketch: (plane: CardinalPlane) => void;
@@ -501,8 +518,14 @@ const defaultAssembly: Assembly = {
 
 const defaultSimulation: SimulationState = {
   running: false,
+  paused: false,
   timeStepMs: 1000 / 60,
-  gravity: [0, -9.81, 0],
+  // Z-up world; gravity in mm/s² (= 9.81 m/s²) so that distances
+  // measured in millimetres fall at the right rate. A 1-second drop
+  // covers ~4905 mm.
+  gravity: [0, 0, -9810],
+  speedMultiplier: 1,
+  simulationTimeMs: 0,
 };
 
 /**
@@ -530,6 +553,45 @@ function findPart(assembly: Assembly, partId: string): Part | undefined {
   return assembly.parts.find((p) => p.id === partId);
 }
 
+/**
+ * Phase 8 — does the given value look like a fully-populated v7
+ * SimulationState? Used by the v6→v7 migration to detect both
+ * pre-v7 shapes (missing `paused` / `speedMultiplier` / `simulationTimeMs`)
+ * and partially-migrated v7 shapes left over from interrupted dev sessions.
+ */
+function isFullSimulation(s: unknown): s is SimulationState {
+  if (!s || typeof s !== "object") return false;
+  const o = s as Record<string, unknown>;
+  return (
+    typeof o.running === "boolean" &&
+    typeof o.paused === "boolean" &&
+    typeof o.timeStepMs === "number" &&
+    Array.isArray(o.gravity) &&
+    o.gravity.length === 3 &&
+    o.gravity.every((g) => typeof g === "number") &&
+    typeof o.speedMultiplier === "number" &&
+    typeof o.simulationTimeMs === "number"
+  );
+}
+
+/**
+ * Phase 8 — gravity sanity check during migration. The Phase 6 default
+ * was `[0, -9.81, 0]` (m/s², Y-up). The Phase 8 default is
+ * `[0, 0, -9810]` (mm/s², Z-up). If the persisted gravity has any axis
+ * larger than ~50 in magnitude we treat it as already mm-scaled and
+ * keep it; otherwise we throw it out so the new mm-units default takes
+ * over (any valid mm/s² gravity is at least ~50 mm/s² in magnitude on
+ * one axis).
+ */
+function isMmGravity(g: unknown): boolean {
+  if (!Array.isArray(g) || g.length !== 3) return false;
+  for (const v of g) {
+    if (typeof v !== "number" || !Number.isFinite(v)) return false;
+  }
+  const max = Math.max(Math.abs(g[0]), Math.abs(g[1]), Math.abs(g[2]));
+  return max >= 50;
+}
+
 export const useKinetiCADStore = create<KinetiCADStore>()(
   persist(
     (set, get) => ({
@@ -547,9 +609,40 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       setMode: (mode) => set({ mode }),
 
       setSimulationRunning: (running) =>
-        set((s) => ({ simulation: { ...s.simulation, running } })),
+        set((s) => ({
+          simulation: {
+            ...s.simulation,
+            running,
+            // Stopping always clears paused + elapsed; starting clears
+            // paused so a stale pause flag doesn't freeze the new run.
+            paused: false,
+            simulationTimeMs: running ? s.simulation.simulationTimeMs : 0,
+          },
+        })),
+      setSimulationPaused: (paused) =>
+        set((s) => ({ simulation: { ...s.simulation, paused } })),
+      setSimulationSpeed: (multiplier) =>
+        set((s) => ({
+          simulation: { ...s.simulation, speedMultiplier: multiplier },
+        })),
+      setSimulationGravity: (gravity) =>
+        set((s) => ({ simulation: { ...s.simulation, gravity } })),
+      tickSimulationTime: (deltaMs) =>
+        set((s) => ({
+          simulation: {
+            ...s.simulation,
+            simulationTimeMs: s.simulation.simulationTimeMs + deltaMs,
+          },
+        })),
       resetSimulation: () =>
-        set((s) => ({ simulation: { ...s.simulation, running: false } })),
+        set((s) => ({
+          simulation: {
+            ...s.simulation,
+            running: false,
+            paused: false,
+            simulationTimeMs: 0,
+          },
+        })),
 
       beginSketch: (plane) =>
         set({
@@ -1767,15 +1860,21 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     }),
     {
       name: "kineticad-state",
-      version: 6,
+      version: 7,
       // Don't persist the active sketch session, in-flight feature editor,
-      // selection, or live simulation flags.
+      // selection, or live simulation runtime fields.
       partialize: (state) => ({
         mode: state.mode,
         assembly: state.assembly,
         simulation: {
           ...state.simulation,
+          // Phase 8 — never resume a runtime physics state across reload.
+          // Configuration (gravity / timeStep / speedMultiplier) survives;
+          // running / paused / elapsed are zeroed so the user always lands
+          // in a stopped world ready to be played.
           running: false,
+          paused: false,
+          simulationTimeMs: 0,
         },
       }),
       // v1 → v2: legacy extrude features stored `symmetric: boolean`. Map
@@ -1949,6 +2048,37 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           if (typeof (state.assembly as Assembly).groundPartId !== "string") {
             state.assembly = { ...state.assembly, groundPartId: "" };
           }
+        }
+        // v6 → v7: Phase 8 simulation. The `simulation` field already
+        // existed in v6 (running/timeStepMs/gravity); v7 widens it with
+        // `paused`, `speedMultiplier`, `simulationTimeMs`, and switches
+        // the default gravity to mm/s² (Z-up `[0, 0, -9810]`). We
+        // overlay the existing fields onto the new defaults so any
+        // user-tweaked gravity / timestep survives, then patch the new
+        // fields if missing.
+        const stateSim = persisted as { simulation?: unknown };
+        if (version < 7 || !isFullSimulation(stateSim.simulation)) {
+          const prev = (stateSim.simulation ?? {}) as Partial<SimulationState>;
+          (state as { simulation?: SimulationState }).simulation = {
+            running: false,
+            paused: false,
+            timeStepMs:
+              typeof prev.timeStepMs === "number" && prev.timeStepMs > 0
+                ? prev.timeStepMs
+                : defaultSimulation.timeStepMs,
+            // If the legacy gravity is in m/s² (any axis with |g| < 50)
+            // it predates the mm-units convention — stomp it with the
+            // mm/s² default so physics behaves correctly.
+            gravity: isMmGravity(prev.gravity)
+              ? (prev.gravity as [number, number, number])
+              : defaultSimulation.gravity,
+            speedMultiplier:
+              typeof prev.speedMultiplier === "number" &&
+              prev.speedMultiplier > 0
+                ? prev.speedMultiplier
+                : defaultSimulation.speedMultiplier,
+            simulationTimeMs: 0,
+          };
         }
         return state;
       },

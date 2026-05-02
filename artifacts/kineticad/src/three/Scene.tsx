@@ -83,6 +83,9 @@ import {
   type MateVisualizer,
 } from "./MateVisualizer";
 import { setPartMeshLayer } from "./partMeshLayerRef";
+import { createSimulationLayer, type SimulationLayer } from "./SimulationLayer";
+import { setSimulationLayer } from "./simulationLayerRef";
+import { startSimulationRunner } from "@/physics/simulationRunner";
 import type { FaceMetadata } from "@/cad/types";
 
 type Status =
@@ -136,6 +139,8 @@ export default function Scene() {
     let unsubscribeAssembly: (() => void) | null = null;
     let unsubscribeFeatureEditor: (() => void) | null = null;
     let partMeshLayer: PartMeshLayer | null = null;
+    let simulationLayer: SimulationLayer | null = null;
+    let simulationRunnerHandle: { dispose: () => void } | null = null;
     let previewMeshLayer: PreviewMeshLayer | null = null;
     let booleanResultLayer: BooleanResultLayer | null = null;
     let edgeHighlightLayer: EdgeHighlightLayer | null = null;
@@ -454,6 +459,14 @@ export default function Scene() {
         scene.add(partMeshLayer.group);
         scene.add(previewMeshLayer.group);
         scene.add(booleanResultLayer.group);
+        // Phase 8 — SimulationLayer is a sibling of PartMeshLayer that
+        // mirrors part meshes during a physics run. Hidden by default
+        // and toggled by the simulation runner; shares geometry +
+        // material with PartMeshLayer so rebuilds are instant.
+        simulationLayer = createSimulationLayer();
+        scene.add(simulationLayer.group);
+        setSimulationLayer(simulationLayer);
+        simulationRunnerHandle = startSimulationRunner();
         scene.add(edgeHighlightLayer.group);
         scene.add(faceHighlightLayer.group);
         scene.add(mateVisualizer.group);
@@ -1331,6 +1344,16 @@ export default function Scene() {
       if (mateVisualizer) {
         mateVisualizer.dispose();
         mateVisualizer = null;
+      }
+      if (simulationRunnerHandle) {
+        simulationRunnerHandle.dispose();
+        simulationRunnerHandle = null;
+      }
+      if (simulationLayer) {
+        setSimulationLayer(null);
+        scene.remove(simulationLayer.group);
+        simulationLayer.dispose();
+        simulationLayer = null;
       }
       if (partMeshLayer) {
         // Clear the module-level ref before disposing so any late inspector

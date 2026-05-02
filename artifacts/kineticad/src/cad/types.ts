@@ -168,6 +168,47 @@ export type BooleanOpArgs = {
   operation: BooleanOperation;
 };
 
+/**
+ * Phase 8 — args for `getMassProperties`. The CAD worker re-executes the
+ * upstream feature chain just like a regen, then queries OCCT's
+ * `GProp_GProps` for volume / centre of mass / inertia tensor on the
+ * tip shape. `density` is in g/cm³ (default aluminium 2.70). The part's
+ * `Transform` is NOT applied — the result is in the part's *local* frame
+ * so Rapier can attach the mass to a rigid body whose pose is set by the
+ * transform separately.
+ */
+export type MassPropertiesArgs = {
+  features: Feature[];
+  sketches: Sketch[];
+  /** Material density in g/cm³. Default 2.70 (aluminium). */
+  density: number;
+};
+
+/**
+ * Phase 8 — mass properties returned by the CAD worker.
+ *
+ * Units:
+ * - `volumeMm3` is in mm³ (OCCT native).
+ * - `massKg` = `volumeMm3 × density × 1e-6` (mm³ × g/cm³ → kg).
+ * - `comLocal` is the centre-of-mass in mm in the part's local frame.
+ * - `principalInertiaKgMm2` are the three principal moments of inertia
+ *   in kg·mm². Rapier consumes these directly as the diagonal of the
+ *   inertia tensor; the off-diagonal terms are zero in the principal
+ *   axis frame, so we omit them.
+ *
+ * Edge case: if the upstream chain produces a non-solid (e.g. a sheet
+ * body) or an empty shape, `volumeMm3` will be 0 and `massKg` will be
+ * clamped to a small positive value (1e-6 kg) so Rapier doesn't blow
+ * up with NaN inertias. The caller should treat zero-volume parts as
+ * static decoration.
+ */
+export type MassPropertiesResult = {
+  volumeMm3: number;
+  massKg: number;
+  comLocal: [number, number, number];
+  principalInertiaKgMm2: [number, number, number];
+};
+
 export type CadKernelApi = {
   init: () => Promise<KernelInitResult>;
   createTestCube: (sizeMm: number) => Promise<TessellatedMesh>;
@@ -205,4 +246,14 @@ export type CadKernelApi = {
    * body shape first and the tool shape second.
    */
   booleanOp: (args: BooleanOpArgs) => Promise<TessellatedMesh>;
+  /**
+   * Phase 8 — re-execute the upstream feature chain and return the tip
+   * shape's volume / mass / centre-of-mass / principal inertia. Used by
+   * the physics layer to seed a Rapier rigid body with realistic mass
+   * properties. Empty / non-solid shapes return zero volume and a tiny
+   * fallback mass.
+   */
+  getMassProperties: (
+    args: MassPropertiesArgs,
+  ) => Promise<MassPropertiesResult>;
 };

@@ -20,6 +20,8 @@ import type {
   FilletArgs,
   HoleArgs,
   KernelInitResult,
+  MassPropertiesArgs,
+  MassPropertiesResult,
   RevolveArgs,
   TessellatedMesh,
 } from "./types";
@@ -40,6 +42,7 @@ import { applyFillet } from "./operations/fillet";
 import { applyChamfer } from "./operations/chamfer";
 import { applyHole, type HoleFaceRef } from "./operations/hole";
 import { applyBoolean } from "./operations/boolean";
+import { computeMassProperties } from "./operations/massProperties";
 
 type OC = OpenCascadeInstance;
 
@@ -749,6 +752,55 @@ const api: CadKernelApi = {
       }
       for (const s of baseShapes) {
         s?.delete?.();
+      }
+    }
+  },
+
+  async getMassProperties(
+    args: MassPropertiesArgs,
+  ): Promise<MassPropertiesResult> {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("OC kernel not initialised.");
+    const oc = ocInstance;
+
+    // Build the part's tip shape from the upstream chain. Identical
+    // pipeline to booleanOp's per-input regen, just without the
+    // Transform application — Rapier owns the body pose.
+    let tip: any = null;
+    try {
+      tip = executeUpstreamChain(oc, args.features, args.sketches);
+      if (!tip) {
+        // No features → empty part. Return a zero-volume fallback so
+        // the physics layer can choose to skip the body.
+        return {
+          volumeMm3: 0,
+          massKg: 1e-6,
+          comLocal: [0, 0, 0],
+          principalInertiaKgMm2: [1e-6, 1e-6, 1e-6],
+        };
+      }
+      const props = computeMassProperties(oc, tip, args.density);
+      if (!props) {
+        return {
+          volumeMm3: 0,
+          massKg: 1e-6,
+          comLocal: [0, 0, 0],
+          principalInertiaKgMm2: [1e-6, 1e-6, 1e-6],
+        };
+      }
+      return props;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] getMassProperties failed:", err);
+      if (err instanceof Error) throw err;
+      throw new Error(`mass-properties-failed: ${String(err)}`);
+    } finally {
+      if (tip) {
+        try {
+          tip.delete?.();
+        } catch {
+          // ignore
+        }
       }
     }
   },

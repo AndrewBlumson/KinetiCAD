@@ -1,82 +1,131 @@
+import { lazy, Suspense } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 
+// Phase 8 — same Scene component as the Modeller. The simulation
+// subsystem is wired into Scene at mount; the Simulator view just
+// hides the Modeller-only inspectors and surfaces the play controls.
+const Scene = lazy(() => import('@/three/Scene'));
+
+const SPEEDS: Array<{ label: string; value: number }> = [
+  { label: '0.25x', value: 0.25 },
+  { label: '0.5x', value: 0.5 },
+  { label: '1x', value: 1 },
+  { label: '2x', value: 2 },
+];
+
 export default function Simulator() {
-  const { simulation, setSimulationRunning, resetSimulation } = useKinetiCADStore();
+  const simulation = useKinetiCADStore((s) => s.simulation);
+  const setSimulationRunning = useKinetiCADStore((s) => s.setSimulationRunning);
+  const setSimulationPaused = useKinetiCADStore((s) => s.setSimulationPaused);
+  const setSimulationSpeed = useKinetiCADStore((s) => s.setSimulationSpeed);
+  const resetSimulation = useKinetiCADStore((s) => s.resetSimulation);
+  const parts = useKinetiCADStore((s) => s.assembly.parts);
+  const mates = useKinetiCADStore((s) => s.assembly.mates);
+
+  const canPlay = parts.length > 0;
+  const isRunning = simulation.running;
+  const isPaused = simulation.paused;
+
+  const onPlayPause = () => {
+    if (!canPlay) return;
+    if (!isRunning) {
+      setSimulationRunning(true);
+    } else {
+      setSimulationPaused(!isPaused);
+    }
+  };
+
+  const onReset = () => {
+    setSimulationRunning(false);
+    resetSimulation();
+  };
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
-      {/* Top Toolbar */}
       <header className="flex items-center gap-2 px-3 h-11 border-b border-border bg-card shrink-0 select-none">
         <span className="font-technical text-xs font-semibold tracking-widest uppercase text-[#FF6B1A]">
           KinetiCAD
         </span>
         <div className="w-px h-5 bg-border mx-1" />
-
         <span className="font-technical text-xs text-muted-foreground uppercase tracking-wider">
           Simulator
         </span>
-
         <div className="w-px h-5 bg-border mx-1" />
 
-        {/* Playback controls */}
         <div className="flex items-center gap-1">
           <PlaybackBtn
-            label="Play"
-            active={simulation.running}
-            onClick={() => setSimulationRunning(!simulation.running)}
+            label={isRunning ? (isPaused ? 'Resume' : 'Pause') : 'Play'}
+            active={isRunning && !isPaused}
+            disabled={!canPlay}
+            onClick={onPlayPause}
           >
-            {simulation.running ? '⏸' : '▶'}
+            {isRunning && !isPaused ? '⏸' : '▶'}
           </PlaybackBtn>
-          <PlaybackBtn label="Reset" onClick={resetSimulation}>
+          <PlaybackBtn label="Reset" onClick={onReset}>
             ⏹
           </PlaybackBtn>
         </div>
 
         <div className="w-px h-5 bg-border mx-1" />
 
-        <SpeedSelector />
+        <SpeedSelector
+          value={simulation.speedMultiplier}
+          onSelect={setSimulationSpeed}
+        />
 
         <div className="flex-1" />
 
-        <SimStatus running={simulation.running} />
+        <SimStatus running={isRunning} paused={isPaused} />
       </header>
 
-      {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar: Simulation objects */}
         <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden">
           <SidebarSection title="Rigid Bodies">
-            <EmptyState text="No parts in assembly" />
+            {parts.length === 0 ? (
+              <EmptyState text="No parts in assembly" />
+            ) : (
+              parts.map((p) => (
+                <SidebarRow key={p.id} primary={p.name} secondary={p.id.slice(0, 8)} />
+              ))
+            )}
           </SidebarSection>
           <SidebarSection title="Joints">
-            <EmptyState text="No joints defined" />
+            {mates.length === 0 ? (
+              <EmptyState text="No joints defined" />
+            ) : (
+              mates.map((m) => (
+                <SidebarRow
+                  key={m.id}
+                  primary={m.name ?? m.type}
+                  secondary={m.type}
+                />
+              ))
+            )}
           </SidebarSection>
         </aside>
 
-        {/* Central Physics Canvas */}
         <main className="flex-1 relative overflow-hidden" style={{ background: '#0A0E1A' }}>
-          <PhysicsCanvasPlaceholder running={simulation.running} />
+          <Suspense fallback={<div className="absolute inset-0 grid place-items-center font-technical text-xs text-muted-foreground">Loading scene…</div>}>
+            <Scene />
+          </Suspense>
+          <SimDashboard
+            simulationTimeMs={simulation.simulationTimeMs}
+            bodyCount={parts.length}
+            jointCount={mates.length}
+          />
         </main>
 
-        {/* Right Inspector */}
         <aside className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-hidden">
-          <SidebarSection title="Physics Properties">
-            <EmptyState text="Select a rigid body" />
-          </SidebarSection>
-          <SidebarSection title="Gravity">
+          <SidebarSection title="Gravity (mm/s²)">
             <div className="px-3 py-2 font-technical text-xs text-muted-foreground space-y-1">
-              <div className="flex justify-between">
-                <span>X</span>
-                <span>{simulation.gravity[0].toFixed(2)} m/s²</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Y</span>
-                <span>{simulation.gravity[1].toFixed(2)} m/s²</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Z</span>
-                <span>{simulation.gravity[2].toFixed(2)} m/s²</span>
-              </div>
+              <KvRow label="X" value={simulation.gravity[0].toFixed(0)} />
+              <KvRow label="Y" value={simulation.gravity[1].toFixed(0)} />
+              <KvRow label="Z" value={simulation.gravity[2].toFixed(0)} />
+            </div>
+          </SidebarSection>
+          <SidebarSection title="Time Step">
+            <div className="px-3 py-2 font-technical text-xs text-muted-foreground">
+              <KvRow label="dt" value={`${simulation.timeStepMs.toFixed(2)} ms`} />
             </div>
           </SidebarSection>
         </aside>
@@ -89,22 +138,27 @@ function PlaybackBtn({
   label,
   onClick,
   active = false,
+  disabled = false,
   children,
 }: {
   label: string;
   onClick: () => void;
   active?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <button
       title={label}
       onClick={onClick}
+      disabled={disabled}
       className={[
         'flex items-center justify-center w-7 h-7 rounded text-sm transition-colors',
-        active
-          ? 'bg-[#FF6B1A] text-white'
-          : 'text-foreground hover:bg-secondary active:bg-secondary/80',
+        disabled
+          ? 'opacity-30 cursor-not-allowed text-muted-foreground'
+          : active
+            ? 'bg-[#FF6B1A] text-white'
+            : 'text-foreground hover:bg-secondary active:bg-secondary/80',
       ].join(' ')}
     >
       {children}
@@ -112,84 +166,67 @@ function PlaybackBtn({
   );
 }
 
-function SpeedSelector() {
-  const speeds = ['0.25x', '0.5x', '1x', '2x'];
+function SpeedSelector({
+  value,
+  onSelect,
+}: {
+  value: number;
+  onSelect: (v: number) => void;
+}) {
   return (
     <div className="flex items-center gap-1">
       <span className="font-technical text-[10px] text-muted-foreground uppercase tracking-wider mr-1 hidden sm:inline">
         Speed
       </span>
-      {speeds.map((s) => (
+      {SPEEDS.map((s) => (
         <button
-          key={s}
+          key={s.label}
+          onClick={() => onSelect(s.value)}
           className={[
             'px-2 h-6 rounded font-technical text-[10px] transition-colors',
-            s === '1x'
+            Math.abs(s.value - value) < 1e-6
               ? 'bg-[#FF6B1A] text-white'
               : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
           ].join(' ')}
         >
-          {s}
+          {s.label}
         </button>
       ))}
     </div>
   );
 }
 
-function SimStatus({ running }: { running: boolean }) {
+function SimStatus({ running, paused }: { running: boolean; paused: boolean }) {
+  const text = !running ? 'Stopped' : paused ? 'Paused' : 'Simulating';
+  const color = !running
+    ? 'bg-muted-foreground'
+    : paused
+      ? 'bg-yellow-500'
+      : 'bg-[#FF6B1A] animate-pulse';
   return (
     <div className="flex items-center gap-1.5">
-      <span
-        className={[
-          'w-1.5 h-1.5 rounded-full',
-          running ? 'bg-[#FF6B1A] animate-pulse' : 'bg-muted-foreground',
-        ].join(' ')}
-      />
+      <span className={['w-1.5 h-1.5 rounded-full', color].join(' ')} />
       <span className="font-technical text-[10px] text-muted-foreground uppercase tracking-wider">
-        {running ? 'Simulating' : 'Paused'}
+        {text}
       </span>
     </div>
   );
 }
 
-function PhysicsCanvasPlaceholder({ running }: { running: boolean }) {
+function SimDashboard({
+  simulationTimeMs,
+  bodyCount,
+  jointCount,
+}: {
+  simulationTimeMs: number;
+  bodyCount: number;
+  jointCount: number;
+}) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-      {/* Grid */}
-      <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="pgSmall" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#141B2E" strokeWidth="0.5" />
-          </pattern>
-          <pattern id="pgLarge" width="100" height="100" patternUnits="userSpaceOnUse">
-            <rect width="100" height="100" fill="url(#pgSmall)" />
-            <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#141B2E" strokeWidth="1" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#pgLarge)" />
-      </svg>
-
-      <div className="relative flex flex-col items-center gap-3">
-        <div
-          className={[
-            'w-16 h-16 rounded border flex items-center justify-center transition-colors',
-            running ? 'border-[#FF6B1A]/60' : 'border-[#FF6B1A]/20',
-          ].join(' ')}
-        >
-          <span
-            className={[
-              'text-2xl transition-colors',
-              running ? 'text-[#FF6B1A]' : 'text-[#FF6B1A] opacity-30',
-            ].join(' ')}
-          >
-            ⚙
-          </span>
-        </div>
-        <p className="font-technical text-xs text-muted-foreground text-center leading-relaxed">
-          Physics canvas<br />
-          <span className="text-[10px] opacity-60">(Rapier3D engine — Phase 8)</span>
-        </p>
-      </div>
+    <div className="absolute top-3 right-3 px-3 py-2 rounded bg-card/80 border border-border backdrop-blur-sm font-technical text-[10px] text-muted-foreground space-y-0.5 pointer-events-none">
+      <KvRow label="t" value={`${(simulationTimeMs / 1000).toFixed(2)} s`} />
+      <KvRow label="bodies" value={String(bodyCount)} />
+      <KvRow label="joints" value={String(jointCount)} />
     </div>
   );
 }
@@ -205,10 +242,28 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
   );
 }
 
+function SidebarRow({ primary, secondary }: { primary: string; secondary: string }) {
+  return (
+    <div className="flex items-center justify-between px-3 py-1 font-technical text-xs">
+      <span className="truncate">{primary}</span>
+      <span className="text-[10px] text-muted-foreground uppercase">{secondary}</span>
+    </div>
+  );
+}
+
 function EmptyState({ text }: { text: string }) {
   return (
     <p className="px-3 py-2 text-xs font-technical text-muted-foreground italic">
       {text}
     </p>
+  );
+}
+
+function KvRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <span className="uppercase tracking-wider">{label}</span>
+      <span className="text-foreground/80 tabular-nums">{value}</span>
+    </div>
   );
 }

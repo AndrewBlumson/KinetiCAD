@@ -315,3 +315,32 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
 - `TopAbs_Orientation` enum values are singleton objects → compare with `===`.
 - `Poly_Triangulation` nodes/triangles are 1-indexed.
 - Always `.delete()` transient OCCT wrappers (face, location, triangulationHandle, gp_Vec3f, gp_Pnt corners, builders) to free WASM heap.
+
+### Phase 8 — Rapier3D Physics Integration ✅
+
+Real-time rigid-body simulation of mate-driven mechanisms.
+
+**Schema / store**:
+- `SimulationState` extended with `paused`, `speedMultiplier` (0.25/0.5/1/2), `simulationTimeMs`. Default gravity is now `[0, 0, -9810]` mm/s² (Z-up). Persist version bumped 6→7; `partialize` zeroes runtime fields (`running`, `paused`, `simulationTimeMs`) on every reload so a dead world never auto-resumes. v6→v7 migration uses `isFullSimulation` + `isMmGravity` helpers — old m/s² gravities (any axis |g| < 50) are stomped with the mm/s² default.
+- New actions: `setSimulationPaused`, `setSimulationSpeed`, `setSimulationGravity`, `tickSimulationTime`, `resetSimulation`. `setSimulationRunning(false)` also clears `paused` + zeroes elapsed.
+
+**OCCT mass properties**:
+- `cad/operations/massProperties.ts` wraps `BRepGProp.VolumeProperties_1` + `GProp_GProps.PrincipalProperties()`. Default density 2.70 g/cm³ (aluminium). Mass = volumeMm³ × density × 1e-6 (kg). Inertia kept in kg·mm².
+- New `cadKernelApi.getMassProperties(features, sketches, density)` re-runs the upstream chain like a regen and returns `{volumeMm3, massKg, comLocal, principalInertiaKgMm2}`. Empty / zero-volume parts return a tiny fallback so Rapier never sees NaN.
+
+**Physics worker** (`src/physics/`):
+- `physicsWorker.ts` hosts a singleton `RAPIER.World` exposed via Comlink. `init()` boots `@dimforge/rapier3d-compat@0.12.0` once. `buildWorld({parts, mates, gravity, timeStepMs})` rebuilds from scratch; `step()` advances and returns per-body world transforms; `destroy()` tears the world down without unloading WASM.
+- Body builder: `Fixed` if `isGround`, else `Dynamic`. Pose composed from `transform.positionMm` + Euler-XYZ rotation. Mass props injected via `setAdditionalMassProperties` AFTER attaching a zero-density collider so we override Rapier's auto-mass. Convex hull collider first; trimesh fallback if hull build fails.
+- Joint builder: revolute / prismatic / spherical / fixed. Planar logs a warning + skip (Phase 12 polish — Rapier 0.12 has no native planar joint and the 6-DOF generic API is awkward).
+- `physicsClient.ts` memoises a single worker instance per page (`getPhysicsKernel`).
+
+**Scene wiring**:
+- `three/SimulationLayer.ts` clones `PartMeshLayer` entries (shared geometry + material) into a sibling group. `setTransform(partId, posMm, quat)` mutates clones per-frame. `clear()` drops every clone but never disposes shared resources.
+- `three/simulationLayerRef.ts` mirrors `partMeshLayerRef`.
+- `Scene.tsx` creates the SimulationLayer at mount, publishes the ref, and starts `simulationRunner`. On teardown, the runner is disposed first, then the layer.
+- `physics/simulationRunner.ts` subscribes to `simulation.running`. On false→true: snapshots PartMeshLayer geometry, asks the CAD worker for mass props per visible part, calls `buildWorld`, hides PartMeshLayer + shows SimulationLayer, starts a RAF loop that calls `step()` and pushes transforms into the layer. On true→false: cancels RAF, hides SimulationLayer, restores PartMeshLayer (whose transforms were never mutated). Pause is a flag inside the RAF tick — world stays built. `speedMultiplier` scales the wall-clock delta accumulated into `simulationTimeMs`. `buildToken` guards against the user toggling Stop mid-build.
+
+**Simulator view** (`views/Simulator.tsx`):
+- Replaced the placeholder canvas with the real lazy-loaded `<Scene />`. Top toolbar: Play/Pause toggle (play→pause→resume), Reset, 0.25x/0.5x/1x/2x speed selector, status pill (Stopped/Paused/Simulating). Top-right dashboard overlay: simulation time, body count, joint count. Sidebars enumerate parts (rigid bodies) and mates (joints). Play disabled when assembly has no parts.
+
+**Density / unit convention**: every value in the physics layer is mm + s + kg. Rapier itself is unit-agnostic, but mass properties and gravity must agree. A 20×20×10 mm aluminium cube → 4000 mm³, 0.0108 kg.
