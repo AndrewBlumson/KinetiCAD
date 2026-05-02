@@ -95,6 +95,22 @@ export type FeatureEditor =
 
 const defaultFeatureEditor: FeatureEditor = { open: false };
 
+/**
+ * Live-preview status for the currently-open feature editor. Driven by
+ * `Scene.tsx` after each debounced regen attempt, read by the inspector to
+ * surface error messages in red. Not persisted.
+ */
+export type FeaturePreview = {
+  status: "idle" | "computing" | "ok" | "error";
+  /** Populated only when status === 'error'. */
+  error: string | null;
+};
+
+const defaultFeaturePreview: FeaturePreview = {
+  status: "idle",
+  error: null,
+};
+
 const DEFAULT_EXTRUDE_PARAMS: ExtrudeParams = {
   depthMm: 10,
   direction: "forward",
@@ -112,6 +128,7 @@ export type KinetiCADStore = {
   sketchSession: SketchSession;
   selection: Selection;
   featureEditor: FeatureEditor;
+  featurePreview: FeaturePreview;
 
   setMode: (mode: AppMode) => void;
   setSimulationRunning: (running: boolean) => void;
@@ -143,6 +160,9 @@ export type KinetiCADStore = {
   applyFeatureEditor: () => void;
   /** Discard the in-flight editor without touching part.features. */
   cancelFeatureEditor: () => void;
+
+  /** Scene.tsx pushes the regen status here after each preview attempt. */
+  setFeaturePreview: (next: FeaturePreview) => void;
 };
 
 const defaultAssembly: Assembly = {
@@ -193,6 +213,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       sketchSession: defaultSketchSession,
       selection: null,
       featureEditor: defaultFeatureEditor,
+      featurePreview: defaultFeaturePreview,
 
       setMode: (mode) => set({ mode }),
 
@@ -425,6 +446,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         set({
           assembly: { ...state.assembly, parts: updatedParts },
           featureEditor: defaultFeatureEditor,
+          featurePreview: defaultFeaturePreview,
           selection: {
             kind: "feature",
             partId: editor.partId,
@@ -434,7 +456,12 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       },
 
       cancelFeatureEditor: () =>
-        set({ featureEditor: defaultFeatureEditor }),
+        set({
+          featureEditor: defaultFeatureEditor,
+          featurePreview: defaultFeaturePreview,
+        }),
+
+      setFeaturePreview: (next) => set({ featurePreview: next }),
     }),
     {
       name: "kineticad-state",

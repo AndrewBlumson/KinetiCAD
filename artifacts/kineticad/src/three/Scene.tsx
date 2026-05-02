@@ -1,6 +1,7 @@
 // React-owned Three.js scene. Mounts a single canvas, builds the WebGPU
-// renderer, runs the orbit camera and render loop, and renders the test cube
-// supplied by the CAD worker.
+// renderer, runs the orbit camera and render loop, and renders both the
+// committed part meshes (PartMeshLayer, driven by the regen pipeline) and
+// the in-flight feature editor's preview (PreviewMeshLayer).
 //
 // Lifecycle is handled imperatively inside a single useEffect to avoid
 // React re-creating the renderer on every render.
@@ -38,12 +39,25 @@ import {
   type FinishedSketchesLayer,
 } from "@/sketch/finishedSketchesLayer";
 import type { SketchTool } from "@/state/store";
+import type { Feature } from "@/state/schemas";
+import {
+  createPartMeshLayer,
+  type PartMeshLayer,
+} from "./PartMeshLayer";
+import {
+  createPreviewMeshLayer,
+  type PreviewMeshLayer,
+} from "./PreviewMeshLayer";
+import {
+  computeFeatureHash,
+  previewFeature,
+} from "@/features/featureRegen";
+import { mapKernelError } from "@/features/kernelErrors";
 
 type Status =
   | { kind: "checking-webgpu" }
   | { kind: "no-webgpu" }
   | { kind: "loading-kernel" }
-  | { kind: "loading-geometry" }
   | { kind: "ready"; initTimeMs: number }
   | { kind: "error"; message: string };
 
@@ -61,6 +75,7 @@ type CameraTween = {
 };
 
 const TWEEN_MS = 600;
+const PREVIEW_DEBOUNCE_MS = 200;
 
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -78,7 +93,6 @@ export default function Scene() {
     let renderer: WebGPURenderer | null = null;
     let controls: OrbitControls | null = null;
     let resizeObserver: ResizeObserver | null = null;
-    let cubeMesh: THREE.Mesh | null = null;
     let shadowCatcher: THREE.Mesh | null = null;
     let disposeEnv: (() => void) | null = null;
     let fpsTimer: ReturnType<typeof setInterval> | null = null;
@@ -89,6 +103,12 @@ export default function Scene() {
     let sketchSessionHandle: SketchSessionHandle | null = null;
     let finishedLayer: FinishedSketchesLayer | null = null;
     let unsubscribeAssembly: (() => void) | null = null;
+    let unsubscribeFeatureEditor: (() => void) | null = null;
+    let partMeshLayer: PartMeshLayer | null = null;
+    let previewMeshLayer: PreviewMeshLayer | null = null;
+    let previewDebounce: ReturnType<typeof setTimeout> | null = null;
+    let previewToken = 0;
+    let lastPreviewHash: string | null = null;
     let canvasResW = 1;
     let canvasResH = 1;
 
@@ -108,8 +128,6 @@ export default function Scene() {
         // 1. WebGPU detection. Hard requirement, no fallback. Both the API
         // surface AND a real adapter must be available; the Replit preview
         // iframe exposes navigator.gpu but cannot return an adapter.
-        // Loose typing: WebGPU types aren't in the default lib. The runtime
-        // contract we care about is just `requestAdapter` resolving to truthy.
         const gpu = (navigator as unknown as {
           gpu?: {
             requestAdapter: (opts?: {
@@ -186,7 +204,6 @@ export default function Scene() {
         controls.update();
 
         // Sketch overlay: built once, hidden until the user enters sketch mode.
-        // Initial plane is XY but it's invisible at first so it doesn't matter.
         sketchOverlay = createSketchOverlay("XY");
         sketchOverlay.group.visible = false;
         scene.add(sketchOverlay.group);
@@ -206,11 +223,7 @@ export default function Scene() {
         });
 
         // Sketch session sync: reconcile the current sketch state with the
-        // camera, overlay, orbit controls, and the active SketchSession. We
-        // subscribe to the store AND run the reconciler once immediately so
-        // an already-active session (e.g. user clicked "New Sketch" before
-        // the scene finished booting) gets picked up — `subscribe` only fires
-        // on subsequent changes.
+        // camera, overlay, orbit controls, and the active SketchSession.
         let prevSketchActive = false;
         let prevSketchPlane: CardinalPlane | null = null;
         let prevSketchTool: SketchTool = "idle";
@@ -239,7 +252,6 @@ export default function Scene() {
               sketchOverlay.group.visible = true;
 
               if (!sketchSessionHandle) {
-                // Create the per-session orchestrator on entry.
                 sketchSessionHandle = createSketchSession({
                   scene,
                   camera,
@@ -261,17 +273,11 @@ export default function Scene() {
               prevSketchPlane = session.plane;
               prevSketchTool = session.tool;
             }
-            // Push tool changes through to the session even when we didn't
-            // enter / switch planes (e.g. user picked a different tool from
-            // the toolbar mid-session).
             if (sketchSessionHandle && session.tool !== prevSketchTool) {
               sketchSessionHandle.setTool(session.tool);
               prevSketchTool = session.tool;
             }
           } else if (prevSketchActive) {
-            // Exiting sketch — animate back to the default 3D view and tear
-            // down the per-session orchestrator. The finishedLayer subscriber
-            // will pick up any newly-finished sketch from the assembly.
             cameraTween = {
               fromPos: camera.position.clone(),
               toPos: new THREE.Vector3(...DEFAULT_CAMERA_POSITION),
@@ -295,15 +301,12 @@ export default function Scene() {
         };
 
         unsubscribeStore = useKinetiCADStore.subscribe(reconcileSketch);
-        // Catch up to any sketch state set before this subscription existed.
         reconcileSketch(useKinetiCADStore.getState());
 
         // Render loop. WebGPU requires setAnimationLoop, not rAF.
         const renderLoop = () => {
           if (!renderer) return;
 
-          // Camera tween, if any. We disable controls during the tween and
-          // either re-enable on completion (exit) or leave disabled (enter).
           if (cameraTween && controls) {
             const t = Math.min(
               1,
@@ -347,8 +350,7 @@ export default function Scene() {
           }, 1000);
         }
 
-        // Resize handling via ResizeObserver so we react to panel changes too,
-        // not just window resizes.
+        // Resize handling via ResizeObserver.
         resizeObserver = new ResizeObserver((entries) => {
           if (!renderer) return;
           const entry = entries[0];
@@ -359,48 +361,18 @@ export default function Scene() {
           camera.updateProjectionMatrix();
           canvasResW = width;
           canvasResH = height;
-          // Keep Line2 materials' `resolution` uniform in sync — without this
-          // their pixel widths warp on viewport changes.
           sketchSessionHandle?.setResolution(width, height);
           finishedLayer?.setResolution(width, height);
         });
         resizeObserver.observe(container);
 
-        // 2. Boot the CAD kernel and request the test cube.
+        // 2. Boot the CAD kernel.
         setStatus({ kind: "loading-kernel" });
         const kernel = await getCadKernel();
         if (cancelled) return;
 
-        setStatus({ kind: "loading-geometry" });
-        const meshData = await kernel.createTestCube(10);
-        if (cancelled) return;
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(meshData.positions, 3),
-        );
-        geometry.setAttribute(
-          "normal",
-          new THREE.BufferAttribute(meshData.normals, 3),
-        );
-        geometry.setIndex(new THREE.BufferAttribute(meshData.indices, 1));
-        geometry.computeBoundingBox();
-        geometry.computeBoundingSphere();
-
-        const material = new THREE.MeshStandardMaterial({
-          color: COLOURS.defaultPart,
-          metalness: 0.4,
-          roughness: 0.5,
-        });
-
-        cubeMesh = new THREE.Mesh(geometry, material);
-        cubeMesh.castShadow = true;
-        cubeMesh.receiveShadow = true;
-        cubeMesh.name = "TestCube";
-        scene.add(cubeMesh);
-
-        // Shadow catcher under the cube so the lighting reads as grounded.
+        // Shadow catcher so part meshes have a grounded look. Same offset
+        // and material as the Phase 1 test cube to keep visuals consistent.
         shadowCatcher = new THREE.Mesh(
           new THREE.PlaneGeometry(200, 200),
           new THREE.ShadowMaterial({ opacity: 0.35 }),
@@ -410,8 +382,152 @@ export default function Scene() {
         shadowCatcher.receiveShadow = true;
         scene.add(shadowCatcher);
 
-        // Surface kernel meta in the status so the loading panel can hide.
-        // eslint-disable-next-line no-console
+        // 3. Build the part / preview layers and wire them up to the store.
+        partMeshLayer = createPartMeshLayer();
+        previewMeshLayer = createPreviewMeshLayer();
+        scene.add(partMeshLayer.group);
+        scene.add(previewMeshLayer.group);
+
+        // Helper: which part should PartMeshLayer hide because the preview
+        // is currently overlaying it? Only when the editor is open AND the
+        // user has live preview enabled.
+        const computeHiddenPartId = (
+          state: ReturnType<typeof useKinetiCADStore.getState>,
+        ): string | null => {
+          if (!state.featureEditor.open) return null;
+          if (!state.featureEditor.livePreview) return null;
+          return state.featureEditor.partId;
+        };
+
+        // Initial sync: render any persisted parts.
+        partMeshLayer.sync(
+          useKinetiCADStore.getState().assembly,
+          computeHiddenPartId(useKinetiCADStore.getState()),
+          kernel,
+        );
+
+        // Live preview pipeline. Watches the editor's parameters; on every
+        // change we debounce 200ms then ask `previewFeature` for a fresh
+        // mesh. The token guards against out-of-order kernel returns.
+        const runPreview = (): void => {
+          const state = useKinetiCADStore.getState();
+          const editor = state.featureEditor;
+          if (!editor.open || !editor.livePreview) {
+            previewMeshLayer?.setMesh(null);
+            lastPreviewHash = null;
+            if (state.featurePreview.status !== "idle") {
+              state.setFeaturePreview({ status: "idle", error: null });
+            }
+            return;
+          }
+          const part = state.assembly.parts.find(
+            (p) => p.id === editor.partId,
+          );
+          const sketch = part?.sketches.find(
+            (s) => s.id === editor.sketchId,
+          );
+          if (!part || !sketch) {
+            previewMeshLayer?.setMesh(null);
+            lastPreviewHash = null;
+            return;
+          }
+
+          const feature: Feature =
+            editor.type === "extrude"
+              ? {
+                  id: "preview",
+                  type: "extrude",
+                  sketchId: editor.sketchId,
+                  depthMm: editor.params.depthMm,
+                  direction: editor.params.direction,
+                }
+              : {
+                  id: "preview",
+                  type: "revolve",
+                  sketchId: editor.sketchId,
+                  axis: editor.params.axis,
+                  angleDeg: editor.params.angleDeg,
+                };
+
+          const hash = computeFeatureHash(feature, [sketch], []);
+          if (hash === lastPreviewHash) return;
+          lastPreviewHash = hash;
+
+          state.setFeaturePreview({ status: "computing", error: null });
+          const myToken = ++previewToken;
+          previewFeature(feature, [sketch], kernel)
+            .then((mesh) => {
+              if (myToken !== previewToken) return;
+              previewMeshLayer?.setMesh(mesh);
+              useKinetiCADStore
+                .getState()
+                .setFeaturePreview({ status: "ok", error: null });
+            })
+            .catch((err: unknown) => {
+              if (myToken !== previewToken) return;
+              previewMeshLayer?.setMesh(null);
+              const message =
+                err instanceof Error ? err.message : String(err);
+              const mapped = mapKernelError(message);
+              useKinetiCADStore
+                .getState()
+                .setFeaturePreview({
+                  status: "error",
+                  error: mapped.message,
+                });
+            });
+        };
+
+        const schedulePreview = (): void => {
+          if (previewDebounce) clearTimeout(previewDebounce);
+          previewDebounce = setTimeout(runPreview, PREVIEW_DEBOUNCE_MS);
+        };
+
+        // Subscribe to assembly + featureEditor changes. We compare object
+        // identity to skip re-runs caused by unrelated state updates (e.g.
+        // sketchSession changes during drawing).
+        let prevAssembly = useKinetiCADStore.getState().assembly;
+        let prevEditor = useKinetiCADStore.getState().featureEditor;
+        let prevHidden = computeHiddenPartId(useKinetiCADStore.getState());
+
+        unsubscribeFeatureEditor = useKinetiCADStore.subscribe((state) => {
+          const hidden = computeHiddenPartId(state);
+          const editorChanged = state.featureEditor !== prevEditor;
+          const assemblyChanged = state.assembly !== prevAssembly;
+          const hiddenChanged = hidden !== prevHidden;
+
+          if (assemblyChanged || hiddenChanged) {
+            partMeshLayer?.sync(state.assembly, hidden, kernel);
+          }
+
+          if (editorChanged) {
+            // Apply / cancel resets editor.open=false; if we just closed it,
+            // also clear the preview mesh and reset the cached hash so the
+            // next open re-computes from scratch.
+            if (!state.featureEditor.open) {
+              previewMeshLayer?.setMesh(null);
+              lastPreviewHash = null;
+              previewToken += 1; // invalidate any in-flight callback
+              if (previewDebounce) {
+                clearTimeout(previewDebounce);
+                previewDebounce = null;
+              }
+            } else {
+              schedulePreview();
+            }
+          }
+
+          prevAssembly = state.assembly;
+          prevEditor = state.featureEditor;
+          prevHidden = hidden;
+        });
+
+        // Catch up if the editor was somehow already open at mount.
+        if (useKinetiCADStore.getState().featureEditor.open) {
+          schedulePreview();
+        }
+
+        // Surface kernel meta in the status so the loading panel hides.
         const meta = (await import("@/cad/cadClient")).getKernelMeta();
         setStatus({
           kind: "ready",
@@ -433,8 +549,10 @@ export default function Scene() {
 
     return () => {
       cancelled = true;
+      if (previewDebounce) clearTimeout(previewDebounce);
       unsubscribeStore?.();
       unsubscribeAssembly?.();
+      unsubscribeFeatureEditor?.();
       sketchSessionHandle?.dispose();
       sketchSessionHandle = null;
       if (finishedLayer) {
@@ -442,15 +560,18 @@ export default function Scene() {
         finishedLayer.dispose();
         finishedLayer = null;
       }
+      if (partMeshLayer) {
+        partMeshLayer.dispose();
+        partMeshLayer = null;
+      }
+      if (previewMeshLayer) {
+        previewMeshLayer.dispose();
+        previewMeshLayer = null;
+      }
       if (fpsTimer) clearInterval(fpsTimer);
       resizeObserver?.disconnect();
       controls?.dispose();
       disposeEnv?.();
-      if (cubeMesh) {
-        scene.remove(cubeMesh);
-        cubeMesh.geometry.dispose();
-        (cubeMesh.material as THREE.Material).dispose();
-      }
       if (shadowCatcher) {
         scene.remove(shadowCatcher);
         shadowCatcher.geometry.dispose();
@@ -523,11 +644,7 @@ function SceneOverlay({ status }: { status: Status }) {
   }
 
   const label =
-    status.kind === "checking-webgpu"
-      ? "Checking WebGPU"
-      : status.kind === "loading-kernel"
-        ? "Loading CAD kernel"
-        : "Tessellating geometry";
+    status.kind === "checking-webgpu" ? "Checking WebGPU" : "Loading CAD kernel";
 
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

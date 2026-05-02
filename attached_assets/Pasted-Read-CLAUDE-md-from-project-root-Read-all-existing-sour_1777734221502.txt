@@ -1,0 +1,158 @@
+Read CLAUDE.md from project root. Read all existing source files relevant to this phase: src/state/store.ts, src/state/schemas.ts, src/cad/cadClient.ts, src/cad/types.ts, src/features/featureRegen.ts, src/features/featureCache.ts, src/three/Scene.tsx, src/views/Modeller.tsx, src/sketch/plane.ts, the right inspector and feature tree components, and SketchToolbar.tsx. Confirm understanding before implementation.
+Phase 3 Split B: UI and Scene Integration
+Split A landed the schema, store slices, kernel operations, worker API, and regen pipeline. This split wires those into the user-facing interface: selection from the feature tree, the inspector parameter editors, live preview rendering, and replacing the Phase 1 test cube with proper part meshes driven by the regen pipeline.
+Files to create:
+src/
+  components/
+    inspectors/
+      FeatureInspector.tsx       Switcher: routes to ExtrudeInspector or RevolveInspector based on featureEditor.kind
+      ExtrudeInspector.tsx       Depth, direction, live preview toggle, Apply, Cancel
+      RevolveInspector.tsx       Axis, angle, live preview toggle, Apply, Cancel
+      SketchInspector.tsx         Shown when a finished sketch is selected: "Extrude" and "Revolve" buttons that call beginCreateFeature
+    NumericInput.tsx             Reusable mm/degree input: number input + step buttons, min/max clamping, debounced onChange
+    SegmentedControl.tsx         Three-button toggle for direction / axis pickers, JetBrains Mono labels
+  three/
+    PartMeshLayer.ts             Imperative manager: takes the assembly state + regen pipeline output, maintains one Mesh per part in scene, disposes on unmount or part removal
+    PreviewMeshLayer.ts          Separate layer that renders the in-flight feature editor's preview mesh, swapped to PartMeshLayer on Apply
+Selection wiring (feature tree):
+The existing feature tree component (under src/views/Modeller.tsx or similar) currently shows sketches and features as a static list. Wire each item to:
+
+Click a sketch: dispatch selectSketch(partId, sketchId). Sketch row highlights orange. Inspector switches to SketchInspector.
+Click a feature: dispatch selectFeature(partId, featureId). Feature row highlights orange. Inspector switches to FeatureInspector with that feature loaded for editing (beginEditFeature).
+Click empty space below the tree: dispatch clearSelection. Inspector returns to "Select a part or feature".
+
+Selection visual: 2px left border in Replit Orange #FF6B1A, background tinted rgba(255, 107, 26, 0.08).
+SketchInspector layout:
+When a sketch is selected, the right panel shows:
+INSPECTOR
+─────────
+Sketch 1 (XY)
+3 primitives
+
+Create feature from this sketch:
+
+[ Extrude ]  ← orange primary button, full width
+[ Revolve ]  ← orange primary button, full width
+Clicking either calls beginCreateFeature(partId, sketchId, 'extrude' | 'revolve') which populates featureEditor with defaults and switches the inspector view.
+ExtrudeInspector layout:
+INSPECTOR
+─────────
+Extrude (Sketch 1)
+
+Depth (mm)
+[  10.0  ] [▲][▼]      ← NumericInput, step 0.1, min 0.1, max 1000
+
+Direction
+[ Forward | Backward | Symmetric ]   ← SegmentedControl
+
+[x] Live preview                      ← checkbox
+
+[ Apply ]   ← orange primary button, full width
+[ Cancel ]  ← ghost button, full width
+If editing an existing feature, the heading is "Edit Extrude 1 (Sketch 1)" and Apply replaces the existing feature in place.
+RevolveInspector layout:
+INSPECTOR
+─────────
+Revolve (Sketch 1)
+
+Axis
+[ X | Y | Z ]   ← SegmentedControl, default Y
+
+Angle (degrees)
+[ 360 ] [▲][▼]    ← NumericInput, step 1, min 1, max 360
+
+[x] Live preview
+
+[ Apply ]
+[ Cancel ]
+NumericInput component:
+
+Number input with up/down step arrows on the right.
+Step button: hold to repeat at 100ms interval, accelerate to 50ms after 1s.
+Min/max clamping: typing 5000 in a max-1000 field clamps to 1000 on blur.
+Debounce: external onChange fires 200ms after the user stops typing or stepping.
+Keyboard: arrow up/down steps by step, arrow up/down with shift steps by step * 10.
+Display formatting: 1 decimal place for mm fields (10.0), zero decimals for angle/integer fields (360).
+
+SegmentedControl component:
+
+Three buttons in a row, equal width, JetBrains Mono uppercase labels.
+Active button: solid Replit Orange background, dark navy text.
+Inactive buttons: transparent background, off-white text, 1px border #1F2942.
+Hover on inactive: background rgba(255, 107, 26, 0.12).
+
+Live preview rendering pipeline:
+When featureEditor is active and livePreview is on:
+
+Watch featureEditor state for parameter changes via Zustand subscription.
+On change, debounce 200ms.
+Call previewFeature(featureEditor, sourceSketch, kernel) from featureRegen.ts. This returns a TessellatedMesh (or error).
+Pass the mesh to PreviewMeshLayer which renders it as a single Mesh with the standard PBR material at 0.85 opacity (slight transparency to indicate it's a preview).
+If the operation errors (wire not closed, self-intersection, etc), the preview mesh is hidden and the error message renders in the inspector under the parameters in red #FF6B6B.
+
+Apply flow:
+
+Inspector's Apply button calls applyFeatureEditor() from the store.
+Store action either inserts a new feature into part.features or replaces an existing one.
+PartMeshLayer subscribes to assembly.parts[].features changes, calls regeneratePart(part, kernel) for the affected part, replaces the mesh.
+PreviewMeshLayer clears its preview mesh.
+Inspector closes (featureEditor reset to null), feature tree highlights the newly applied feature.
+
+Cancel flow:
+
+Inspector's Cancel button calls cancelFeatureEditor().
+PreviewMeshLayer clears its preview mesh.
+Inspector closes.
+The original part mesh (if editing an existing feature) remains unchanged.
+
+PartMeshLayer:
+Imperative manager hung off Scene.tsx. Maintains a Map<string, Mesh> keyed by partId. On every assembly change:
+
+For each part in assembly.parts:
+
+If the part has features: call regeneratePart(part, kernel), get TessellatedMesh, build BufferGeometry, update or create Mesh.
+If the part has no features: hide its mesh.
+
+
+For each Mesh in the map not in current assembly: dispose geometry, dispose material if not shared, remove from scene.
+
+Use the same MeshStandardMaterial settings as Phase 1 test cube: colour #A0A8B5, metalness 0.4, roughness 0.5. Phase 10 will replace this with the material library.
+Test cube removal:
+The Phase 1 test cube creation in Scene.tsx (the call to kernel.createTestCube(10)) should be removed. The scene starts empty until parts are created via the modelling flow.
+The kernel's createTestCube worker method can stay for diagnostic purposes (the runSelfTest from Split A uses a similar code path); just don't call it from Scene.tsx on mount.
+Error handling:
+Errors from the worker (returned as { ok: false, error: 'wire-not-closed' | ... }) need user-facing messages:
+
+wire-not-closed: "Sketch must be closed. Connect all endpoints before extruding."
+wire-empty: "Sketch is empty. Add primitives before extruding."
+wire-multiple-closed: "Sketch contains multiple closed loops. Only one loop is supported in v1."
+wire-mixed: "Sketch mixes open and closed primitives. All primitives must form a single closed loop."
+self-intersection: "Revolve failed: sketch crosses the revolution axis."
+occt-internal: "Operation failed. Try a simpler sketch or different parameters."
+
+These render in the inspector under the parameter controls in #FF6B6B, with a small warning icon.
+Acceptance criteria:
+
+Existing sketches from before Phase 3 Split A still appear in the feature tree on reload.
+Click a sketch in the feature tree, sketch row highlights, inspector shows "Sketch N (plane), N primitives" and Extrude/Revolve buttons.
+Click Extrude. Inspector switches to ExtrudeInspector with default 10mm forward.
+Live preview shows the extruded mesh in the canvas at 0.85 opacity.
+Change depth to 25mm, mesh updates after 200ms debounce.
+Change direction to Symmetric, mesh re-extrudes around the sketch plane.
+Click Apply, mesh becomes solid (1.0 opacity), feature appears in tree as "Extrude 1", inspector closes.
+Click "Extrude 1" in tree, inspector reopens with depth=25 loaded, direction=symmetric loaded.
+Change depth to 40mm, click Apply, mesh updates.
+Draw a half-circle sketch on YZ plane, finish.
+Select sketch, click Revolve, axis Y, angle 360. Sphere appears.
+Change angle to 180. Half-sphere.
+Apply, feature tree shows "Revolve 1" under the part.
+Open sketch, delete its closing line so it's not closed. Try to extrude. Inspector shows "Sketch must be closed" in red, no preview mesh.
+Reload page. Parts and features persist. Meshes regenerate on reload.
+Memory: open and close inspectors 20 times with parameter changes. No mesh accumulation in scene (count scene.children after, should match starting count).
+
+Note for Agent:
+The 200ms debounce on live preview is critical. Without it, fast slider drags will queue up dozens of worker calls and the UI will feel laggy or freeze. Use a single timer that resets on each parameter change.
+If two parts both have the same single-feature hash (e.g. two parts with identical 10mm cubes), they should share the cached mesh. Don't create separate MeshStandardMaterial instances per part either; one shared default material is enough until Phase 10.
+BufferGeometry requires setAttribute('position', ...), setAttribute('normal', ...), and setIndex(...) with the right typed arrays from the TessellatedMesh. Don't forget geometry.computeBoundingSphere() or orbit controls may behave oddly with off-origin geometry.
+Test on the deployed .replit.app URL in external Chrome on an M-series Mac, not the Replit preview iframe.
+Commit on completion. Do not push. Do not run git push under any circumstance. Stop after commit and report status.
