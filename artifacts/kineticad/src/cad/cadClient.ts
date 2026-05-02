@@ -6,13 +6,27 @@ import * as Comlink from "comlink";
 import CadWorker from "./cadWorker?worker";
 import type { CadKernelApi, KernelInitResult } from "./types";
 
-let kernelPromise: Promise<Comlink.Remote<CadKernelApi>> | null = null;
-let kernelMeta: KernelInitResult | null = null;
+// HMR-safe singleton. Vite replaces module instances on hot reload, which
+// would null out a plain `let kernelPromise` and re-spawn the OCCT worker
+// every time any file in the CAD chain edits — QA observed `[KERNEL] Ready`
+// firing 5× per session. Stash the live promise on `globalThis` so it
+// survives module replacement during dev. Production builds have no HMR,
+// so the global is set exactly once.
+const KERNEL_KEY = "__kineticadKernel__";
+type KernelGlobal = typeof globalThis & {
+  [KERNEL_KEY]?: {
+    promise: Promise<Comlink.Remote<CadKernelApi>> | null;
+    meta: KernelInitResult | null;
+  };
+};
+const g = globalThis as KernelGlobal;
+if (!g[KERNEL_KEY]) g[KERNEL_KEY] = { promise: null, meta: null };
+const slot = g[KERNEL_KEY]!;
 
 export function getCadKernel(): Promise<Comlink.Remote<CadKernelApi>> {
-  if (kernelPromise) return kernelPromise;
+  if (slot.promise) return slot.promise;
 
-  kernelPromise = (async () => {
+  slot.promise = (async () => {
     const worker = new CadWorker();
 
     // Bridge worker-side `[SELF-TEST]` results to the main-thread console.
@@ -34,7 +48,7 @@ export function getCadKernel(): Promise<Comlink.Remote<CadKernelApi>> {
 
     const api = Comlink.wrap<CadKernelApi>(worker);
     const meta = await api.init();
-    kernelMeta = meta;
+    slot.meta = meta;
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.info(
@@ -44,9 +58,9 @@ export function getCadKernel(): Promise<Comlink.Remote<CadKernelApi>> {
     return api;
   })();
 
-  return kernelPromise;
+  return slot.promise;
 }
 
 export function getKernelMeta(): KernelInitResult | null {
-  return kernelMeta;
+  return slot.meta;
 }

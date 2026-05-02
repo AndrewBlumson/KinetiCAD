@@ -344,3 +344,46 @@ Real-time rigid-body simulation of mate-driven mechanisms.
 - Replaced the placeholder canvas with the real lazy-loaded `<Scene />`. Top toolbar: Play/Pause toggle (play→pause→resume), Reset, 0.25x/0.5x/1x/2x speed selector, status pill (Stopped/Paused/Simulating). Top-right dashboard overlay: simulation time, body count, joint count. Sidebars enumerate parts (rigid bodies) and mates (joints). Play disabled when assembly has no parts.
 
 **Density / unit convention**: every value in the physics layer is mm + s + kg. Rapier itself is unit-agnostic, but mass properties and gravity must agree. A 20×20×10 mm aluminium cube → 4000 mm³, 0.0108 kg.
+
+### Phase 7/8 regression fixes ✅
+
+Three bugs reported by QA pass 7b that blocked end-to-end mate creation
+(and therefore Phase 8 physics verification).
+
+**Bug 1 — Infinite render loop in mate inspectors** (CRITICAL, page-crashing):
+- Symptom: clicking a part for a Fixed mate triggered "Maximum update
+  depth exceeded" and whited out the page; on Revolute the validation
+  banner appeared and never cleared.
+- Root cause: `setMateEditorError` (and siblings) produced a fresh
+  `mateEditor` reference even when the new value equalled the existing
+  one. Each inspector's validation `useEffect` listed the entire
+  `editor` object in its deps, so the fresh ref re-triggered the same
+  effect, which re-fired `setError(...)` with the same string, ad
+  infinitum. `FixedMateInspector` aggravated this by NOT calling
+  `clearSelection()` on the same-part error path, keeping the trigger
+  selection alive across re-renders.
+- Fix: equality guards in `setMateEditorParams`, `setMateEditorStage`,
+  `setMateEditorError` (return `{}` if value unchanged), and
+  `clearSelection()` added to every error/transition path in
+  `FixedMateInspector`.
+
+**Bug 2 — `Material "<X>" is not compatible` warnings under WebGPU**:
+- Source: `three/MateVisualizer.ts` was the only Phase 7-introduced
+  layer still using the classic `THREE.MeshBasicMaterial` /
+  `THREE.LineBasicMaterial`. Every other layer
+  (EdgeHighlightLayer, FaceHighlightLayer, sketchPrimitiveRenderer)
+  was already migrated to NodeMaterial variants.
+- Fix: import `MeshBasicNodeMaterial` and `LineBasicNodeMaterial` from
+  `three/webgpu`; force `NormalBlending` (NodeMaterials default to
+  `NoBlending`) so the transparent overlay still composites.
+
+**Bug 3 — `[KERNEL] Ready` firing 5× per session via HMR cascade**:
+- Root cause: `cadClient.ts` and `physicsClient.ts` held their
+  `kernelPromise` / `kernelMeta` in module-level `let` bindings. Vite
+  HMR replaces module instances on every file edit, so any save in
+  the cad / physics dependency chain reset the singleton and re-spawned
+  the OCCT (or Rapier) worker.
+- Fix: hoist the singleton state to a typed slot on `globalThis`
+  (`__kineticadKernel__`, `__kineticadPhysics__`). The slot survives
+  module replacement during dev and is set exactly once in production
+  builds (where there is no HMR).

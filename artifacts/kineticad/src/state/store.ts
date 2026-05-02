@@ -1664,18 +1664,30 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       setMateEditorParams: (params) =>
         set((s) => {
           if (!s.mateEditor.open) return {};
+          if (s.mateEditor.params === params) return {};
           return { mateEditor: { ...s.mateEditor, params } };
         }),
 
       setMateEditorStage: (stage) =>
         set((s) => {
           if (!s.mateEditor.open) return {};
+          // Equality guard: re-setting the same stage in a render-driven
+          // effect was producing a fresh `mateEditor` reference and looping
+          // the inspector validation effects (Phase 7 regression).
+          if (s.mateEditor.stage === stage) return {};
           return { mateEditor: { ...s.mateEditor, stage } };
         }),
 
       setMateEditorError: (err) =>
         set((s) => {
           if (!s.mateEditor.open) return {};
+          // Equality guard: see setMateEditorStage. Without this guard,
+          // `setError("Pick a different part.")` called from a useEffect
+          // that depends on `editor` would loop infinitely on every
+          // re-render because the new `mateEditor` reference re-triggered
+          // the same effect (Phase 7 regression — "Maximum update depth
+          // exceeded" crash on Fixed mate, persistent banner on Revolute).
+          if (s.mateEditor.error === err) return {};
           return { mateEditor: { ...s.mateEditor, error: err } };
         }),
 

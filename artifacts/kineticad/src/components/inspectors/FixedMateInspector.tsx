@@ -13,6 +13,7 @@ export default function FixedMateInspector() {
   const setStage = useKinetiCADStore((s) => s.setMateEditorStage);
   const setError = useKinetiCADStore((s) => s.setMateEditorError);
   const setPickingMode = useKinetiCADStore((s) => s.setPickingMode);
+  const clearSelection = useKinetiCADStore((s) => s.clearSelection);
   const assembly = useKinetiCADStore((s) => s.assembly);
 
   useEffect(() => {
@@ -28,18 +29,24 @@ export default function FixedMateInspector() {
       setParams({ ...editor.params, partA: selection.partId });
       setStage("pick-b");
       setError(null);
+      clearSelection();
       return;
     }
     if (editor.stage === "pick-b" || editor.stage === "ready") {
       if (selection.partId === editor.params.partA) {
         setError("Pick a different part.");
+        // Must clear selection here — leaving it set kept the validation
+        // effect re-firing on every render and (without the store-side
+        // equality guard) crashed the page with "Maximum update depth".
+        clearSelection();
         return;
       }
       setParams({ ...editor.params, partB: selection.partId });
       setStage("ready");
       setError(null);
+      clearSelection();
     }
-  }, [selection, editor, setParams, setStage, setError]);
+  }, [selection, editor, setParams, setStage, setError, clearSelection]);
 
   if (!editor.open || editor.params.type !== "fixed") return null;
 

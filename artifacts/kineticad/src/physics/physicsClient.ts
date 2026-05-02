@@ -8,17 +8,26 @@ import * as Comlink from "comlink";
 import PhysicsWorker from "./physicsWorker?worker";
 import type { PhysicsApi, PhysicsInitResult } from "./types";
 
-let kernelPromise: Promise<Comlink.Remote<PhysicsApi>> | null = null;
-let kernelMeta: PhysicsInitResult | null = null;
+// HMR-safe singleton — see cadClient.ts for rationale.
+const PHYSICS_KEY = "__kineticadPhysics__";
+type PhysicsGlobal = typeof globalThis & {
+  [PHYSICS_KEY]?: {
+    promise: Promise<Comlink.Remote<PhysicsApi>> | null;
+    meta: PhysicsInitResult | null;
+  };
+};
+const g = globalThis as PhysicsGlobal;
+if (!g[PHYSICS_KEY]) g[PHYSICS_KEY] = { promise: null, meta: null };
+const slot = g[PHYSICS_KEY]!;
 
 export function getPhysicsKernel(): Promise<Comlink.Remote<PhysicsApi>> {
-  if (kernelPromise) return kernelPromise;
+  if (slot.promise) return slot.promise;
 
-  kernelPromise = (async () => {
+  slot.promise = (async () => {
     const worker = new PhysicsWorker();
     const api = Comlink.wrap<PhysicsApi>(worker);
     const meta = await api.init();
-    kernelMeta = meta;
+    slot.meta = meta;
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.info(
@@ -28,9 +37,9 @@ export function getPhysicsKernel(): Promise<Comlink.Remote<PhysicsApi>> {
     return api;
   })();
 
-  return kernelPromise;
+  return slot.promise;
 }
 
 export function getPhysicsMeta(): PhysicsInitResult | null {
-  return kernelMeta;
+  return slot.meta;
 }

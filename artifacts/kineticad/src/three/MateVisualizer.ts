@@ -19,6 +19,16 @@
 // the icon stays attached when the part moves.
 
 import * as THREE from "three";
+// Use the WebGPU-native NodeMaterial variants. The classic
+// `THREE.MeshBasicMaterial` / `THREE.LineBasicMaterial` log
+// `THREE.NodeBuilder: Material "<X>" is not compatible.` once per frame
+// per material under WebGPURenderer (Phase 7 regression — was previously
+// fixed in EdgeHighlightLayer / FaceHighlightLayer / sketchPrimitiveRenderer
+// and reintroduced by the new MateVisualizer).
+import {
+  MeshBasicNodeMaterial,
+  LineBasicNodeMaterial,
+} from "three/webgpu";
 import type { Assembly, Mate, Part } from "@/state/schemas";
 import type { PartMeshLayer } from "./PartMeshLayer";
 import {
@@ -187,24 +197,30 @@ function resolvePivotWorld(
 
 /* ---- Glyph builders ------------------------------------------------------ */
 
-function makeMaterial(): THREE.MeshBasicMaterial {
-  return new THREE.MeshBasicMaterial({
+function makeMaterial(): MeshBasicNodeMaterial {
+  const m = new MeshBasicNodeMaterial({
     color: ICON_COLOR,
     transparent: true,
     opacity: UNSELECTED_OPACITY,
     depthTest: false,
     depthWrite: false,
   });
+  // NodeMaterials default to NoBlending; force NormalBlending so the
+  // transparent overlay actually composites against the scene.
+  m.blending = THREE.NormalBlending;
+  return m;
 }
 
-function makeLineMaterial(): THREE.LineBasicMaterial {
-  return new THREE.LineBasicMaterial({
+function makeLineMaterial(): LineBasicNodeMaterial {
+  const m = new LineBasicNodeMaterial({
     color: ICON_COLOR,
     transparent: true,
     opacity: UNSELECTED_OPACITY,
     depthTest: false,
     depthWrite: false,
   });
+  m.blending = THREE.NormalBlending;
+  return m;
 }
 
 function setRenderOrder(obj: THREE.Object3D) {
@@ -342,7 +358,7 @@ function buildParallelBars(
 function applySelectionStyle(entry: IconEntry, selected: boolean) {
   const opacity = selected ? SELECTED_OPACITY : UNSELECTED_OPACITY;
   for (const m of entry.materials) {
-    (m as THREE.MeshBasicMaterial | THREE.LineBasicMaterial).opacity = opacity;
+    (m as MeshBasicNodeMaterial | LineBasicNodeMaterial).opacity = opacity;
   }
   const scale = selected ? SELECTED_SCALE : 1;
   entry.object.scale.set(scale, scale, scale);
