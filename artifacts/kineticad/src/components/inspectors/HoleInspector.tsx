@@ -79,6 +79,8 @@ export default function HoleInspector() {
 
   const error =
     featurePreview.status === "error" ? featurePreview.error : null;
+  const errorDetails =
+    featurePreview.status === "error" ? featurePreview.details : null;
 
   const clearFace = () =>
     setParams({ ...editor.params, targetFace: null, positionUV: null });
@@ -193,12 +195,27 @@ export default function HoleInspector() {
         <div
           role="alert"
           data-testid="hole-error"
-          className="flex items-start gap-1.5 px-2 py-1.5 rounded border border-[#FF6B6B]/40 bg-[#FF6B6B]/10"
+          className="flex flex-col gap-1.5 px-2 py-1.5 rounded border border-[#FF6B6B]/40 bg-[#FF6B6B]/10"
         >
-          <span className="text-[#FF6B6B] text-xs leading-none mt-0.5">⚠</span>
-          <span className="font-technical text-[11px] text-[#FF6B6B] leading-snug">
-            {error}
-          </span>
+          <div className="flex items-start gap-1.5">
+            <span className="text-[#FF6B6B] text-xs leading-none mt-0.5">⚠</span>
+            <span className="font-technical text-[11px] text-[#FF6B6B] leading-snug">
+              {error}
+            </span>
+          </div>
+          {errorDetails ? (
+            <details
+              data-testid="hole-error-details"
+              className="font-technical text-[10px] text-[#FF6B6B]/80"
+            >
+              <summary className="cursor-pointer select-none">
+                Technical details
+              </summary>
+              <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-words text-[10px] leading-tight bg-[#0F1424] border border-[#FF6B6B]/20 rounded p-1.5 text-[#FF6B6B]/90">
+                {errorDetails}
+              </pre>
+            </details>
+          ) : null}
         </div>
       ) : null}
 

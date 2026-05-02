@@ -214,13 +214,21 @@ const DEFAULT_BOOLEAN_PARAMS: BooleanEditorParams = {
  */
 export type FeaturePreview = {
   status: "idle" | "computing" | "ok" | "error";
-  /** Populated only when status === 'error'. */
+  /** Populated only when status === 'error'. User-facing friendly copy. */
   error: string | null;
+  /**
+   * Raw OCCT / kernel exception text + stack (when available). Surfaced
+   * in the inspector under a "Technical details" disclosure so QA can see
+   * exactly what the kernel reported when the friendly copy is too vague.
+   * Populated only when status === 'error'.
+   */
+  details: string | null;
 };
 
 const defaultFeaturePreview: FeaturePreview = {
   status: "idle",
   error: null,
+  details: null,
 };
 
 const DEFAULT_EXTRUDE_PARAMS: ExtrudeParams = {

@@ -99,6 +99,37 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
 - **Deferred to Phase 12 polish** (per user, end of Phase 5):
   - 3D click-to-select on boolean result meshes (BooleanResultLayer is rendered but not wired into TopologyPicker; selection only works via the BOOLEANS sidebar today).
   - Inline thumbnails in BooleanInspector for input parts, the Subtract tool slot, and the live result.
+- **Diagnostic surfacing pass (post Z-up)** ✅ — Single-purpose patch
+  to make the previously-invisible OCCT failures visible. (a)
+  `FeaturePreview` widened with `details: string | null` carrying
+  raw kernel `message + '\n\n' + stack`; every `setFeaturePreview`
+  callsite in `Scene.tsx` updated. All six inspectors
+  (Extrude/Revolve/Fillet/Chamfer/Hole/Boolean) render the raw text
+  under a collapsed `<details><summary>Technical details</summary>`
+  disclosure when populated. (b) `Scene.tsx` per-feature and boolean
+  preview catches now also `console.error('[CAD] <op> preview failed:',
+  message, stack)` on the **main thread** — Chrome's default DevTools
+  filter ("Errors" only) hides worker-side `console.error`, which is
+  why QA had been blind to the real OCCT message. (c) Worker
+  `runSelfTest` switched its success log from `console.info` →
+  `console.error` (so it survives the same filter) and now
+  `self.postMessage({ type: 'self-test', ok, message })`; `cadClient.ts`
+  registers a worker `message` listener BEFORE Comlink wraps the worker
+  to re-emit `[SELF-TEST] ...` on the page console. The listener is
+  Comlink-safe because Comlink ignores messages without an `id` field.
+  (d) `BooleanRegenResult` extended with `stack: string | null`
+  threaded through all 7 return sites of `assemblyRegen.regenerateBoolean`.
+  (e) **T5 regression fix**: "Edit Extrude N" was failing to pre-load
+  the saved depth when the inspector stayed mounted across feature
+  switches — `NumericInput`'s local `draft`/`lastReportedRef` state
+  outlived the prop change. Added `key={\`depth-${editor.featureId
+  ?? 'create'}\`}` on `ExtrudeInspector`'s NumericInput so React
+  forcibly remounts the input per-feature, guaranteeing
+  `useState(() => format(value, decimals))` re-runs with the saved
+  depth. **Outcome verified in browser logs**: the previously-hidden
+  exception is now plainly visible — `[SELF-TEST] FAILED:
+  wire.Closed is not a function` (a separate OCCT API binding bug to
+  fix in the next pass; this diagnostic patch only surfaces it).
 
 **Sketch overlay & camera**: `Scene.tsx` subscribes to the Zustand store **and** runs the same reconciler once immediately after subscribe so a session that started before the WebGPU/OrbitControls were ready still triggers the camera tween, overlay reveal, and `controls.enabled = false`. Tweens are advanced inside the WebGPU `setAnimationLoop` callback (not `requestAnimationFrame`).
 

@@ -80,6 +80,12 @@ export type BooleanRegenResult = {
   hash: string;
   /** Raw error message from the worker (un-mapped). Null on success. */
   error: string | null;
+  /**
+   * Stack trace of the worker-side exception, when available. Surfaced in
+   * the inspector's "Technical details" disclosure for diagnosability.
+   * Null on success or when the error wasn't an `Error` instance.
+   */
+  stack: string | null;
 };
 
 /**
@@ -101,7 +107,7 @@ export async function regenerateBoolean(
   const cacheKey = BOOLEAN_CACHE_PREFIX + hash;
 
   const cached = getCachedMesh(cacheKey);
-  if (cached) return { mesh: cached, hash, error: null };
+  if (cached) return { mesh: cached, hash, error: null, stack: null };
 
   const partsById = new Map(parts.map((p) => [p.id, p]));
 
@@ -113,6 +119,7 @@ export async function regenerateBoolean(
         mesh: null,
         hash,
         error: `boolean-failed: input part ${id} no longer exists.`,
+        stack: null,
       };
     }
     if (p.features.length === 0) {
@@ -120,6 +127,7 @@ export async function regenerateBoolean(
         mesh: null,
         hash,
         error: `boolean-failed: input part "${p.name}" has no features.`,
+        stack: null,
       };
     }
   }
@@ -134,6 +142,7 @@ export async function regenerateBoolean(
         mesh: null,
         hash,
         error: `subtract-needs-tool: tool part ${tool} is not in the input list.`,
+        stack: null,
       };
     }
     if (feature.inputPartIds.length !== 2) {
@@ -141,6 +150,7 @@ export async function regenerateBoolean(
         mesh: null,
         hash,
         error: `subtract-needs-tool: expected exactly 2 inputs, got ${feature.inputPartIds.length}.`,
+        stack: null,
       };
     }
     const body = feature.inputPartIds.find((id) => id !== tool);
@@ -149,6 +159,7 @@ export async function regenerateBoolean(
         mesh: null,
         hash,
         error: `subtract-needs-tool: cannot identify body part.`,
+        stack: null,
       };
     }
     orderedIds = [body, tool];
@@ -169,9 +180,10 @@ export async function regenerateBoolean(
       operation: feature.operation,
     });
     setCachedMesh(cacheKey, mesh);
-    return { mesh, hash, error: null };
+    return { mesh, hash, error: null, stack: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { mesh: null, hash, error: message };
+    const stack = err instanceof Error && err.stack ? err.stack : null;
+    return { mesh: null, hash, error: message, stack };
   }
 }

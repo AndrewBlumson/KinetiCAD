@@ -50,6 +50,16 @@ export default function ExtrudeInspector() {
 
   const error =
     featurePreview.status === "error" ? featurePreview.error : null;
+  const errorDetails =
+    featurePreview.status === "error" ? featurePreview.details : null;
+
+  // Forcibly remount per-feature so NumericInput's local `draft` state
+  // (initialised lazily from `value`) reflects the saved depth on every
+  // open of "Edit Extrude N". Without this key, switching from one
+  // extrude row to another while the inspector stays mounted leaves the
+  // input showing the previously-edited draft string instead of the
+  // newly-loaded feature's depth (T5 regression).
+  const inputKey = editor.featureId ?? "create";
 
   return (
     <div className="flex flex-col gap-3 px-3 py-3">
@@ -57,6 +67,7 @@ export default function ExtrudeInspector() {
 
       <Field label="Depth (mm)">
         <NumericInput
+          key={`depth-${inputKey}`}
           value={editor.params.depthMm}
           onChange={(v) =>
             setExtrudeParams({ ...editor.params, depthMm: v })
@@ -100,14 +111,29 @@ export default function ExtrudeInspector() {
         <div
           role="alert"
           data-testid="extrude-error"
-          className="flex items-start gap-1.5 px-2 py-1.5 rounded border border-[#FF6B6B]/40 bg-[#FF6B6B]/10"
+          className="flex flex-col gap-1.5 px-2 py-1.5 rounded border border-[#FF6B6B]/40 bg-[#FF6B6B]/10"
         >
-          <span className="text-[#FF6B6B] text-xs leading-none mt-0.5">
-            ⚠
-          </span>
-          <span className="font-technical text-[11px] text-[#FF6B6B] leading-snug">
-            {error}
-          </span>
+          <div className="flex items-start gap-1.5">
+            <span className="text-[#FF6B6B] text-xs leading-none mt-0.5">
+              ⚠
+            </span>
+            <span className="font-technical text-[11px] text-[#FF6B6B] leading-snug">
+              {error}
+            </span>
+          </div>
+          {errorDetails ? (
+            <details
+              data-testid="extrude-error-details"
+              className="font-technical text-[10px] text-[#FF6B6B]/80"
+            >
+              <summary className="cursor-pointer select-none">
+                Technical details
+              </summary>
+              <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-words text-[10px] leading-tight bg-[#0F1424] border border-[#FF6B6B]/20 rounded p-1.5 text-[#FF6B6B]/90">
+                {errorDetails}
+              </pre>
+            </details>
+          ) : null}
         </div>
       ) : null}
 

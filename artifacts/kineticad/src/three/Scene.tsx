@@ -647,7 +647,11 @@ export default function Scene() {
             previewMeshLayer?.setMesh(null);
             lastPreviewHash = null;
             if (state.featurePreview.status !== "idle") {
-              state.setFeaturePreview({ status: "idle", error: null });
+              state.setFeaturePreview({
+                status: "idle",
+                error: null,
+                details: null,
+              });
             }
             return;
           }
@@ -702,7 +706,11 @@ export default function Scene() {
               previewMeshLayer?.setMesh(null);
               lastPreviewHash = null;
               if (state.featurePreview.status !== "idle") {
-                state.setFeaturePreview({ status: "idle", error: null });
+                state.setFeaturePreview({
+                  status: "idle",
+                  error: null,
+                  details: null,
+                });
               }
               return;
             }
@@ -717,7 +725,11 @@ export default function Scene() {
               previewMeshLayer?.setMesh(null);
               lastPreviewHash = null;
               if (state.featurePreview.status !== "idle") {
-                state.setFeaturePreview({ status: "idle", error: null });
+                state.setFeaturePreview({
+                  status: "idle",
+                  error: null,
+                  details: null,
+                });
               }
               return;
             }
@@ -735,7 +747,11 @@ export default function Scene() {
               previewMeshLayer?.setMesh(null);
               lastPreviewHash = null;
               if (state.featurePreview.status !== "idle") {
-                state.setFeaturePreview({ status: "idle", error: null });
+                state.setFeaturePreview({
+                  status: "idle",
+                  error: null,
+                  details: null,
+                });
               }
               return;
             }
@@ -763,27 +779,52 @@ export default function Scene() {
           if (hash === lastPreviewHash) return;
           lastPreviewHash = hash;
 
-          state.setFeaturePreview({ status: "computing", error: null });
+          state.setFeaturePreview({
+            status: "computing",
+            error: null,
+            details: null,
+          });
           const myToken = ++previewToken;
+          const opLabel = feature.type;
           previewFeature(feature, part.sketches, upstreamFeatures, kernel)
             .then((mesh) => {
               if (myToken !== previewToken) return;
               previewMeshLayer?.setMesh(mesh);
               useKinetiCADStore
                 .getState()
-                .setFeaturePreview({ status: "ok", error: null });
+                .setFeaturePreview({
+                  status: "ok",
+                  error: null,
+                  details: null,
+                });
             })
             .catch((err: unknown) => {
               if (myToken !== previewToken) return;
               previewMeshLayer?.setMesh(null);
               const message =
                 err instanceof Error ? err.message : String(err);
+              const stack =
+                err instanceof Error && err.stack ? err.stack : null;
+              // Always log on the MAIN thread console — Chrome's default
+              // console filter hides worker-side console.error from the
+              // page's DevTools view, which is why the previous fix didn't
+              // surface anything to QA. Logging here guarantees the
+              // exception is visible regardless of dev-tools settings.
+              // eslint-disable-next-line no-console
+              console.error(
+                `[CAD] ${opLabel} preview failed: ${message}`,
+                stack ?? "(no stack)",
+              );
               const mapped = mapKernelError(message);
+              const details = stack
+                ? `${message}\n\n${stack}`
+                : message;
               useKinetiCADStore
                 .getState()
                 .setFeaturePreview({
                   status: "error",
                   error: mapped.message,
+                  details,
                 });
             });
         };
@@ -806,7 +847,11 @@ export default function Scene() {
           booleanPreviewToken += 1;
           const s = useKinetiCADStore.getState();
           if (s.featurePreview.status !== "idle") {
-            s.setFeaturePreview({ status: "idle", error: null });
+            s.setFeaturePreview({
+              status: "idle",
+              error: null,
+              details: null,
+            });
           }
         };
         const runBooleanPreview = (): void => {
@@ -854,34 +899,65 @@ export default function Scene() {
           if (hash === lastBooleanPreviewHash) return;
           lastBooleanPreviewHash = hash;
 
-          state.setFeaturePreview({ status: "computing", error: null });
+          state.setFeaturePreview({
+            status: "computing",
+            error: null,
+            details: null,
+          });
           const myToken = ++booleanPreviewToken;
           regenerateBoolean(transient, state.assembly.parts, kernel)
             .then((result) => {
               if (myToken !== booleanPreviewToken) return;
               if (result.error || !result.mesh) {
                 previewMeshLayer?.setMesh(null);
-                const mapped = mapKernelError(result.error ?? "");
+                const rawMsg = result.error ?? "";
+                const mapped = mapKernelError(rawMsg);
+                // Surface the raw kernel message on the main-thread console
+                // — see comment in the per-feature catch above for why this
+                // can't rely on worker console.error reaching DevTools.
+                // eslint-disable-next-line no-console
+                console.error(
+                  `[CAD] boolean preview failed: ${rawMsg}`,
+                  result.stack ?? "(no stack)",
+                );
+                const details = result.stack
+                  ? `${rawMsg}\n\n${result.stack}`
+                  : rawMsg;
                 useKinetiCADStore.getState().setFeaturePreview({
                   status: "error",
                   error: mapped.message,
+                  details: details || null,
                 });
                 return;
               }
               previewMeshLayer?.setMesh(result.mesh);
               useKinetiCADStore
                 .getState()
-                .setFeaturePreview({ status: "ok", error: null });
+                .setFeaturePreview({
+                  status: "ok",
+                  error: null,
+                  details: null,
+                });
             })
             .catch((err: unknown) => {
               if (myToken !== booleanPreviewToken) return;
               previewMeshLayer?.setMesh(null);
               const message =
                 err instanceof Error ? err.message : String(err);
+              const stack =
+                err instanceof Error && err.stack ? err.stack : null;
+              // eslint-disable-next-line no-console
+              console.error(
+                `[CAD] boolean preview failed: ${message}`,
+                stack ?? "(no stack)",
+              );
               const mapped = mapKernelError(message);
-              useKinetiCADStore
-                .getState()
-                .setFeaturePreview({ status: "error", error: mapped.message });
+              const details = stack ? `${message}\n\n${stack}` : message;
+              useKinetiCADStore.getState().setFeaturePreview({
+                status: "error",
+                error: mapped.message,
+                details,
+              });
             });
         };
 

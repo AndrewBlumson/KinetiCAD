@@ -139,23 +139,58 @@ async function runSelfTest(oc: OC): Promise<void> {
     }
 
     if (triCount === 0 || pos.length === 0) {
+      const msg =
+        `[SELF-TEST] FAILED: empty mesh (tris=${triCount}, positions=${pos.length}). ` +
+        `Sketch→wire→prism→tessellate produced no geometry — extrude is broken.`;
       // eslint-disable-next-line no-console
-      console.error(
-        `[CAD SELF-TEST] FAILED: empty mesh (tris=${triCount}, positions=${pos.length}). ` +
-          `Sketch→wire→prism→tessellate produced no geometry — extrude is broken.`,
-      );
+      console.error(msg);
+      // Bridge to the main thread so it's visible in the page DevTools
+      // regardless of worker-console filter settings.
+      try {
+        (self as unknown as Worker).postMessage({
+          type: "self-test",
+          ok: false,
+          message: msg,
+        });
+      } catch {
+        // postMessage may not be available outside DedicatedWorkerScope.
+      }
       return;
     }
 
+    const okMsg =
+      `[SELF-TEST] OK: tris=${triCount} ` +
+      `bbox=[${minX.toFixed(2)}, ${minY.toFixed(2)}, ${minZ.toFixed(2)}] → ` +
+      `[${maxX.toFixed(2)}, ${maxY.toFixed(2)}, ${maxZ.toFixed(2)}]`;
+    // Use console.error (not console.info) so Chrome's default filter
+    // ("Errors" only) still surfaces it without the user expanding the
+    // "Info" level. Semantically not an error — the [SELF-TEST] prefix
+    // makes the intent obvious and greppable.
     // eslint-disable-next-line no-console
-    console.info(
-      `[CAD SELF-TEST] OK: tris=${triCount} ` +
-        `bbox=[${minX.toFixed(2)}, ${minY.toFixed(2)}, ${minZ.toFixed(2)}] → ` +
-        `[${maxX.toFixed(2)}, ${maxY.toFixed(2)}, ${maxZ.toFixed(2)}]`,
-    );
+    console.error(okMsg);
+    try {
+      (self as unknown as Worker).postMessage({
+        type: "self-test",
+        ok: true,
+        message: okMsg,
+      });
+    } catch {
+      // ignore
+    }
   } catch (err) {
+    const failMsg =
+      err instanceof Error ? err.message : String(err);
     // eslint-disable-next-line no-console
-    console.error("[CAD SELF-TEST] FAILED:", err);
+    console.error("[SELF-TEST] FAILED:", err);
+    try {
+      (self as unknown as Worker).postMessage({
+        type: "self-test",
+        ok: false,
+        message: `[SELF-TEST] FAILED: ${failMsg}`,
+      });
+    } catch {
+      // ignore
+    }
   } finally {
     if (solid) {
       try {
