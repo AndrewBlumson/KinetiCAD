@@ -796,34 +796,45 @@ export default function Scene() {
         // schedulePreview / runPreview but routes through `regenerateBoolean`
         // and writes into the same previewMeshLayer (the two pipelines are
         // mutually exclusive — only one editor can be open at a time).
+        const clearBooleanPreview = (): void => {
+          previewMeshLayer?.setMesh(null);
+          lastBooleanPreviewHash = null;
+          // Bump the token so any in-flight regenerateBoolean call's
+          // resolution is discarded — otherwise a late mesh could land
+          // after the inspector cancelled into an invalid state.
+          booleanPreviewToken += 1;
+          const s = useKinetiCADStore.getState();
+          if (s.featurePreview.status !== "idle") {
+            s.setFeaturePreview({ status: "idle", error: null });
+          }
+        };
         const runBooleanPreview = (): void => {
           const state = useKinetiCADStore.getState();
           const editor = state.booleanEditor;
           if (!editor.open || !editor.livePreview) {
-            previewMeshLayer?.setMesh(null);
-            lastBooleanPreviewHash = null;
-            if (state.featurePreview.status !== "idle") {
-              state.setFeaturePreview({ status: "idle", error: null });
-            }
+            clearBooleanPreview();
             return;
           }
           const { params } = editor;
           // Same validation gates the inspector enforces — skip preview
-          // until the user has a chance of producing valid output.
+          // until the user has a chance of producing valid output. Every
+          // invalid-state branch must clear stale preview/error so the
+          // viewport doesn't show a leftover mesh from an earlier valid
+          // configuration the user just edited away from.
           if (params.inputPartIds.length < 2) {
-            previewMeshLayer?.setMesh(null);
-            lastBooleanPreviewHash = null;
-            if (state.featurePreview.status !== "idle") {
-              state.setFeaturePreview({ status: "idle", error: null });
-            }
+            clearBooleanPreview();
             return;
           }
           if (params.operation.type === "subtract") {
-            if (params.inputPartIds.length !== 2) return;
+            if (params.inputPartIds.length !== 2) {
+              clearBooleanPreview();
+              return;
+            }
             if (
               !params.operation.toolPartId ||
               !params.inputPartIds.includes(params.operation.toolPartId)
             ) {
+              clearBooleanPreview();
               return;
             }
           }
