@@ -7,6 +7,8 @@ import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
 import PartInspector from '@/components/inspectors/PartInspector';
 import BooleanInspector from '@/components/inspectors/BooleanInspector';
+import PartsPanelItem from '@/components/PartsPanelItem';
+import NewPartButton from '@/components/NewPartButton';
 import type { CardinalPlane } from '@/sketch/plane';
 import type {
   BooleanFeature,
@@ -137,17 +139,19 @@ export default function Modeller() {
         {/* Left Sidebar: Parts / Booleans / Mates tree */}
         <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden panel-transition">
           <SidebarSection title="Parts">
+            <NewPartButton />
             {assembly.parts.length === 0 ? (
               <EmptyState text="No parts yet" />
             ) : (
               assembly.parts.map((p) => (
-                <PartTree
+                <PartsPanelItem
                   key={p.id}
                   part={p}
                   selection={selection}
                   onPartClick={onPartClick}
                   onSketchClick={onSketchClick}
                   onFeatureClick={onFeatureClick}
+                  onRequestDelete={(id) => setCascadePartId(id)}
                 />
               ))
             )}
@@ -602,13 +606,25 @@ function ActiveSketchInspector({
   primitiveCount: number;
 }) {
   const assembly = useKinetiCADStore((s) => s.assembly);
-  // Live preview of how the sketch will be named and counted once finished.
-  const targetPart = assembly.parts[0];
+  const selection = useKinetiCADStore((s) => s.selection);
+  // Phase 6: resolve the target part the same way `finishSketch` does so
+  // the inspector preview matches reality.
+  const targetPart = (() => {
+    if (selection?.kind === 'part') {
+      const sel = assembly.parts.find((p) => p.id === selection.partId);
+      if (sel) return sel;
+    }
+    return assembly.parts[0];
+  })();
   const nextIndex = (targetPart?.sketches.length ?? 0) + 1;
+  const targetName = targetPart?.name ?? 'Part 1';
   return (
     <div className="px-3 py-2 flex flex-col gap-1">
       <div className="font-technical text-xs text-foreground">
         Sketch {nextIndex} ({plane})
+      </div>
+      <div className="font-technical text-[11px] text-muted-foreground">
+        On <span className="text-foreground">{targetName}</span>
       </div>
       <div
         className="font-technical text-[11px] text-muted-foreground"

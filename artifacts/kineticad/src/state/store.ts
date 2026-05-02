@@ -14,6 +14,7 @@ import type {
   AppMode,
   Sketch,
   SketchPrimitive,
+  Transform,
 } from "./schemas";
 import type { CardinalPlane } from "@/sketch/plane";
 
@@ -329,6 +330,32 @@ export type KinetiCADStore = {
   /** Scene.tsx pushes the regen status here after each preview attempt. */
   setFeaturePreview: (next: FeaturePreview) => void;
 
+  // ---- Phase 6: part-level CRUD + transform + visibility ----
+  /** Create an empty part with a unique default name and select it. Returns the new part id. */
+  createPart: () => string;
+  /** Rename a part. No-op if the trimmed name is empty or the part doesn't exist. */
+  renamePart: (partId: string, name: string) => void;
+  /**
+   * Deep-copy a part (sketches + features get fresh ids; transform copied with
+   * a +30mm X-offset so the duplicate doesn't z-fight with its source).
+   * Returns the new part id, or null if the source part doesn't exist.
+   */
+  duplicatePart: (partId: string) => string | null;
+  /** Toggle a part's visibility flag. */
+  setPartVisible: (partId: string, visible: boolean) => void;
+  /** Replace a part's transform outright. */
+  setPartTransform: (partId: string, transform: Transform) => void;
+  /**
+   * Patch a part's transform with optional position / rotation overrides.
+   * Used by the gizmo (rAF-throttled) and the PartInspector NumericInputs.
+   */
+  setPartTransformPartial: (
+    partId: string,
+    patch: { positionMm?: [number, number, number]; rotationDeg?: [number, number, number] },
+  ) => void;
+  /** Reset a part's transform back to identity (zero position + zero rotation). */
+  resetPartTransform: (partId: string) => void;
+
   // ---- Phase 5: boolean selection / editor / cascade delete ----
   /** Select a boolean feature (drives the right inspector). */
   selectBoolean: (booleanId: string) => void;
@@ -446,26 +473,38 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
 
       finishSketch: () => {
         const state = get();
-        const { sketchSession, assembly } = state;
+        const { sketchSession, assembly, selection } = state;
         if (!sketchSession.active || !sketchSession.plane) return;
 
-        // Ensure there is at least one part to attach the sketch to. We auto-
-        // create "Part 1" the first time a user finishes a sketch.
+        // Phase 6: pick the part the new sketch should land on.
+        //   1. If the user selected a part, use that one.
+        //   2. Otherwise fall back to the first existing part.
+        //   3. If there are no parts at all, auto-create "Part 1".
         let parts: Part[] = assembly.parts;
-        if (parts.length === 0) {
-          parts = [
-            {
-              id: newId("part"),
-              name: "Part 1",
-              sketches: [],
-              features: [],
-              materialId: "default",
-            },
-          ];
+        let targetPartId: string | null = null;
+        if (
+          selection?.kind === "part" &&
+          parts.some((p) => p.id === selection.partId)
+        ) {
+          targetPartId = selection.partId;
+        } else if (parts.length > 0) {
+          targetPartId = parts[0].id;
+        } else {
+          const auto: Part = {
+            id: newId("part"),
+            name: "Part 1",
+            visible: true,
+            transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
+            sketches: [],
+            features: [],
+            materialId: "default",
+          };
+          parts = [auto];
+          targetPartId = auto.id;
         }
 
-        // Append the new sketch to the first part.
-        const targetPart = parts[0];
+        const targetIndex = parts.findIndex((p) => p.id === targetPartId);
+        const targetPart = parts[targetIndex];
         const sketchIndex = targetPart.sketches.length + 1;
         const sketch: Sketch = {
           id: newId("sketch"),
@@ -477,11 +516,16 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           ...targetPart,
           sketches: [...targetPart.sketches, sketch],
         };
-        const updatedParts = [updatedPart, ...parts.slice(1)];
+        const updatedParts = parts.map((p, i) =>
+          i === targetIndex ? updatedPart : p,
+        );
 
         set({
           assembly: { ...assembly, parts: updatedParts },
           sketchSession: defaultSketchSession,
+          // Promote the selection to the target part so subsequent
+          // "+ Add Feature" actions and the next sketch land on the same one.
+          selection: { kind: "part", partId: updatedPart.id },
         });
       },
 
@@ -1033,6 +1077,222 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           };
         }),
 
+      // ---- Phase 6: part-level CRUD + transform + visibility ----
+
+      createPart: () => {
+        const state = get();
+        const existing = new Set(state.assembly.parts.map((p) => p.name));
+        let n = state.assembly.parts.length + 1;
+        let name = `Part ${n}`;
+        while (existing.has(name)) {
+          n++;
+          name = `Part ${n}`;
+        }
+        const part: Part = {
+          id: newId("part"),
+          name,
+          visible: true,
+          transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
+          sketches: [],
+          features: [],
+          materialId: "default",
+        };
+        set({
+          assembly: {
+            ...state.assembly,
+            parts: [...state.assembly.parts, part],
+          },
+          selection: { kind: "part", partId: part.id },
+        });
+        return part.id;
+      },
+
+      renamePart: (partId, name) => {
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId ? { ...p, name: trimmed } : p,
+              ),
+            },
+          };
+        });
+      },
+
+      duplicatePart: (partId) => {
+        const state = get();
+        const src = state.assembly.parts.find((p) => p.id === partId);
+        if (!src) return null;
+
+        // Remap sketch ids consistently across features so an extrude/revolve
+        // duplicated alongside its source sketch still references the copy,
+        // not the original.
+        const sketchIdMap = new Map<string, string>();
+        const newSketches: Sketch[] = src.sketches.map((s) => {
+          const id = newId("sketch");
+          sketchIdMap.set(s.id, id);
+          return {
+            ...s,
+            id,
+            primitives: s.primitives.map((p) => ({ ...p })),
+          };
+        });
+
+        const newFeatures: Feature[] = src.features.map((f) => {
+          const fid = newId("feature");
+          if (f.type === "extrude") {
+            return {
+              ...f,
+              id: fid,
+              sketchId: sketchIdMap.get(f.sketchId) ?? f.sketchId,
+            };
+          }
+          if (f.type === "revolve") {
+            return {
+              ...f,
+              id: fid,
+              sketchId: sketchIdMap.get(f.sketchId) ?? f.sketchId,
+            };
+          }
+          if (f.type === "fillet") {
+            return { ...f, id: fid, targetEdges: [...f.targetEdges] };
+          }
+          if (f.type === "chamfer") {
+            return { ...f, id: fid, targetEdges: [...f.targetEdges] };
+          }
+          // hole — copy positionUV tuple to avoid alias.
+          return {
+            ...f,
+            id: fid,
+            positionUV: [...f.positionUV] as [number, number],
+          };
+        });
+
+        // Pick a unique "X (copy)" / "X (copy 2)" name.
+        const existing = new Set(state.assembly.parts.map((p) => p.name));
+        let candidate = `${src.name} (copy)`;
+        let n = 2;
+        while (existing.has(candidate)) {
+          candidate = `${src.name} (copy ${n})`;
+          n++;
+        }
+
+        const dup: Part = {
+          id: newId("part"),
+          name: candidate,
+          visible: true,
+          transform: {
+            positionMm: [
+              src.transform.positionMm[0] + 30,
+              src.transform.positionMm[1],
+              src.transform.positionMm[2],
+            ],
+            rotationDeg: [...src.transform.rotationDeg] as [number, number, number],
+          },
+          sketches: newSketches,
+          features: newFeatures,
+          materialId: src.materialId,
+        };
+
+        set({
+          assembly: {
+            ...state.assembly,
+            parts: [...state.assembly.parts, dup],
+          },
+          selection: { kind: "part", partId: dup.id },
+        });
+        return dup.id;
+      },
+
+      setPartVisible: (partId, visible) =>
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId ? { ...p, visible } : p,
+              ),
+            },
+          };
+        }),
+
+      setPartTransform: (partId, transform) =>
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId
+                  ? {
+                      ...p,
+                      transform: {
+                        positionMm: [...transform.positionMm] as [
+                          number,
+                          number,
+                          number,
+                        ],
+                        rotationDeg: [...transform.rotationDeg] as [
+                          number,
+                          number,
+                          number,
+                        ],
+                      },
+                    }
+                  : p,
+              ),
+            },
+          };
+        }),
+
+      setPartTransformPartial: (partId, patch) =>
+        set((s) => {
+          const part = s.assembly.parts.find((p) => p.id === partId);
+          if (!part) return {};
+          const nextTransform: Transform = {
+            positionMm: patch.positionMm
+              ? ([...patch.positionMm] as [number, number, number])
+              : part.transform.positionMm,
+            rotationDeg: patch.rotationDeg
+              ? ([...patch.rotationDeg] as [number, number, number])
+              : part.transform.rotationDeg,
+          };
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId ? { ...p, transform: nextTransform } : p,
+              ),
+            },
+          };
+        }),
+
+      resetPartTransform: (partId) =>
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId
+                  ? {
+                      ...p,
+                      transform: {
+                        positionMm: [0, 0, 0],
+                        rotationDeg: [0, 0, 0],
+                      },
+                    }
+                  : p,
+              ),
+            },
+          };
+        }),
+
       deletePartCascade: (partId) =>
         set((s) => {
           const remainingParts = s.assembly.parts.filter(
@@ -1091,7 +1351,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     }),
     {
       name: "kineticad-state",
-      version: 4,
+      version: 5,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation flags.
       partialize: (state) => ({
@@ -1186,6 +1446,76 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             ...state.assembly,
             booleanFeatures: [],
           };
+        }
+        // v4 → v5: Phase 6 adds `visible` (default true) and `transform`
+        // (default identity) to every Part. Legacy parts get the defaults so
+        // the scene renders unchanged.
+        if (version < 5 && state.assembly) {
+          const migratedParts = state.assembly.parts.map((part) => {
+            const p = part as Part & {
+              visible?: boolean;
+              transform?: Transform;
+            };
+            return {
+              ...part,
+              visible: typeof p.visible === "boolean" ? p.visible : true,
+              transform:
+                p.transform &&
+                Array.isArray(p.transform.positionMm) &&
+                Array.isArray(p.transform.rotationDeg)
+                  ? p.transform
+                  : {
+                      positionMm: [0, 0, 0] as [number, number, number],
+                      rotationDeg: [0, 0, 0] as [number, number, number],
+                    },
+            };
+          });
+          state.assembly = { ...state.assembly, parts: migratedParts };
+        }
+        // Defensive: same idea as the booleanFeatures guard above. Catches
+        // partial v5 states (e.g. dev session bumped the version before the
+        // fields were defaulted).
+        if (state.assembly) {
+          let needsPatch = false;
+          for (const part of state.assembly.parts) {
+            const p = part as Part & {
+              visible?: boolean;
+              transform?: Transform;
+            };
+            if (
+              typeof p.visible !== "boolean" ||
+              !p.transform ||
+              !Array.isArray(p.transform.positionMm) ||
+              !Array.isArray(p.transform.rotationDeg)
+            ) {
+              needsPatch = true;
+              break;
+            }
+          }
+          if (needsPatch) {
+            state.assembly = {
+              ...state.assembly,
+              parts: state.assembly.parts.map((part) => {
+                const p = part as Part & {
+                  visible?: boolean;
+                  transform?: Transform;
+                };
+                return {
+                  ...part,
+                  visible: typeof p.visible === "boolean" ? p.visible : true,
+                  transform:
+                    p.transform &&
+                    Array.isArray(p.transform.positionMm) &&
+                    Array.isArray(p.transform.rotationDeg)
+                      ? p.transform
+                      : {
+                          positionMm: [0, 0, 0] as [number, number, number],
+                          rotationDeg: [0, 0, 0] as [number, number, number],
+                        },
+                };
+              }),
+            };
+          }
         }
         return state;
       },

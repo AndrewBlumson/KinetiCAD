@@ -26,6 +26,18 @@ export default function SketchToolbar() {
   const setSketchTool = useKinetiCADStore((s) => s.setSketchTool);
   const finishSketch = useKinetiCADStore((s) => s.finishSketch);
   const cancelSketch = useKinetiCADStore((s) => s.cancelSketch);
+  // Phase 6: surface which part the new sketch will land on. Same
+  // resolution rules as `finishSketch`: selected part wins, then first
+  // existing part, otherwise "Part 1" (the auto-create name).
+  const targetPartName = useKinetiCADStore((s) => {
+    const sel = s.selection;
+    if (sel?.kind === "part") {
+      const p = s.assembly.parts.find((pp) => pp.id === sel.partId);
+      if (p) return p.name;
+    }
+    if (s.assembly.parts.length > 0) return s.assembly.parts[0].name;
+    return "Part 1";
+  });
 
   // Enter/Escape keyboard shortcuts per the spec.
   useEffect(() => {
@@ -54,6 +66,16 @@ export default function SketchToolbar() {
 
   return (
     <>
+      <span
+        className="font-technical text-[10px] text-muted-foreground uppercase tracking-wider mr-1 hidden md:inline"
+        data-testid="sketch-target-part"
+      >
+        Sketching on:{" "}
+        <span className="text-foreground normal-case tracking-normal">
+          {targetPartName}
+        </span>
+      </span>
+      <div className="w-px h-5 bg-border mx-1 hidden md:block" />
       <span className="font-technical text-[10px] text-muted-foreground uppercase tracking-wider mr-1 hidden sm:inline">
         Sketch
       </span>

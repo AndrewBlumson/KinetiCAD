@@ -7,6 +7,7 @@ import type {
   Feature,
   Sketch,
   SketchPrimitive,
+  Transform,
 } from "@/state/schemas";
 import type { CardinalPlane } from "@/sketch/plane";
 
@@ -154,6 +155,12 @@ export type BooleanInputDescriptor = {
   partId: string;
   features: Feature[];
   sketches: Sketch[];
+  /**
+   * Phase 6: rigid-body world transform applied to this input shape via
+   * `BRepBuilderAPI_Transform_2` BEFORE the boolean operation runs. Identity
+   * transforms short-circuit the OCCT call.
+   */
+  transform: Transform;
 };
 
 export type BooleanOpArgs = {

@@ -95,7 +95,73 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
   per-part transform; createAxes pivots already point red/green/blue
   along world +X/+Y/+Z. Architect approved as a focused
   axis-convention patch.
-- Phases 6–12 — pending.
+- Phase 6 ✅ — Multi-Part Scene Management. Schema bumped persist v4→v5
+  with `Transform { positionMm: [x,y,z]; rotationDeg: [x,y,z] }` and two new
+  required `Part` fields: `visible: boolean` and `transform: Transform`
+  (defaults: `true` + identity); migration maps every legacy part to
+  defaults, plus a defensive guard for partially-migrated v5 rows that
+  somehow lack the fields. Store gained `createPart` (unique default
+  name + select), `renamePart`, `duplicatePart` (deep-copy of sketches +
+  features with fresh ids via a `sketchIdMap` so duplicated extrudes/
+  revolves point at the duplicated sketch; "X (copy)" name uniquified;
+  +30mm X-offset to avoid z-fighting), `setPartVisible`,
+  `setPartTransform`, `setPartTransformPartial`, `resetPartTransform`.
+  `finishSketch` now lands the new sketch on the actively-selected part
+  (else first existing, else auto-creates "Part 1") and promotes the
+  selection so chained sketches stay on the same part.
+  `three/PartMeshLayer.ts` applies `mesh.position` + `mesh.rotation`
+  (Euler XYZ) on every sync (cheap, runs even on hash-cached regens so
+  gizmo drags update visually without an OCCT call); hidden parts have
+  `mesh.visible=false` AND a token bump so any in-flight regen can't
+  resurrect them.
+  New `three/TransformGizmo.ts` wraps `three/examples/jsm/controls/
+  TransformControls.js` (v0.184: extends `Controls` not `Object3D`, so
+  the visual is added via `getHelper()`). `objectChange` events are
+  rAF-throttled into a single `onChange(position, rotation)` per frame
+  with a final flush on drag end. `dragging-changed` toggles
+  `controls.enabled` so OrbitControls don't fight the gizmo for pointer
+  events. Modes: `translate | rotate | hidden`.
+  `Scene.tsx` instantiates one gizmo, reconciles on every selection /
+  assembly / sketchSession / featureEditor / booleanEditor change AND
+  per-frame on topologyVersion bumps (the part mesh handle is recreated
+  on regen completion). Attachment rules: only when one part is
+  selected, visible, no editor open, no sketch active, and the part
+  mesh exists; mid-drag detach is suppressed. R/T global keydown
+  handler (skipped while typing in inputs) toggles between translate
+  and rotate.
+  Transform-aware booleans: `BooleanInputDescriptor.transform` is now
+  required; `assemblyRegen.computeBooleanHash` folds each input's
+  positionMm + rotationDeg (4-decimal fixed precision) into the cache
+  key so a gizmo drag invalidates downstream booleans;
+  `cadWorker.booleanOp` per-input composes `M = T·Rx·Ry·Rz` via
+  `gp_Trsf.Multiply` (Z innermost → Y → X → translate, matching
+  three.js Euler XYZ), runs `BRepBuilderAPI_Transform_2(base, trsf, true)`
+  to bake the transform before the boolean, and `.delete()`s every
+  `gp_Pnt/Dir/Ax1/Vec/Trsf` + transformer. Identity short-circuits the
+  whole block. Cleanup tracks `baseShapes` + `transformedShapes`
+  separately so finally drops both without double-freeing the
+  identity-shared base.
+  UI rewrite: new `components/PartsPanelItem.tsx` (eye icon toggle,
+  click-to-select, double-click inline rename, hidden parts rendered
+  in muted `#7A8599`, ⋮ context menu via `PartContextMenu.tsx` /
+  Radix `dropdown-menu` with Rename / Hide-Show / Duplicate / Delete);
+  new `components/NewPartButton.tsx` ("+ New Part" dashed button at
+  the top of the Parts section); new `components/PartContextMenu.tsx`.
+  `Modeller.tsx` swaps the legacy `PartTree` for the new component +
+  passes `setCascadePartId` for the cascade-aware delete dialog
+  (already existed). `ActiveSketchInspector` shows "On <part name>"
+  using the same active-part resolution.
+  `PartInspector.tsx` rewritten with inline rename input, Eye/EyeOff
+  visibility toggle, Position X/Y/Z grid (1mm step, Shift×10) and
+  Rotation X/Y/Z grid (5deg step, Shift×10) — inline `NumericField`
+  with text input + ▲/▼ buttons + ArrowUp/Down keyboard support
+  (focused field doesn't sync from external state so a gizmo drag
+  doesn't clobber typing); Reset Transform button; Add Feature
+  buttons (Fillet/Chamfer/Hole disabled until a base feature exists);
+  Delete button.
+  `SketchToolbar.tsx` shows "Sketching on: <part name>" left of the
+  tool icons (md+ breakpoints).
+- Phases 7–12 — pending.
 - **Deferred to Phase 12 polish** (per user, end of Phase 5):
   - 3D click-to-select on boolean result meshes (BooleanResultLayer is rendered but not wired into TopologyPicker; selection only works via the BOOLEANS sidebar today).
   - Inline thumbnails in BooleanInspector for input parts, the Subtract tool slot, and the live result.

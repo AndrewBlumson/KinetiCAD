@@ -62,9 +62,32 @@ export type BooleanFeature = {
   hideInputs: boolean;
 };
 
+/**
+ * Phase 6 — rigid-body transform applied to a part's mesh and (in the
+ * boolean kernel) to its OCCT shape before any boolean operation runs.
+ *
+ * - `positionMm` is a translation in millimetres in world coordinates
+ *   (Z-up convention to match the rest of the modeller).
+ * - `rotationDeg` is XYZ Euler angles in degrees, applied in XYZ order.
+ *   Three.js consumes these with `mesh.rotation.set(x,y,z,'XYZ')`; OCCT
+ *   composes three `gp_Trsf` rotations in the same XYZ order before
+ *   translating.
+ *
+ * The default identity transform is `{ positionMm: [0,0,0], rotationDeg:
+ * [0,0,0] }` and is what existing v4 parts get on migration to v5.
+ */
+export type Transform = {
+  positionMm: [number, number, number];
+  rotationDeg: [number, number, number];
+};
+
 export type Part = {
   id: string;
   name: string;
+  /** Phase 6 — when false the part mesh is hidden in the scene. */
+  visible: boolean;
+  /** Phase 6 — rigid-body world transform applied to the part. */
+  transform: Transform;
   sketches: Sketch[];
   features: Feature[];
   materialId: string;

@@ -73,6 +73,11 @@ import {
   createTopologyPicker,
   type TopologyPicker,
 } from "./TopologyPicker";
+import {
+  createTransformGizmo,
+  type GizmoMode,
+  type TransformGizmo,
+} from "./TransformGizmo";
 import type { FaceMetadata } from "@/cad/types";
 
 type Status =
@@ -131,9 +136,15 @@ export default function Scene() {
     let edgeHighlightLayer: EdgeHighlightLayer | null = null;
     let faceHighlightLayer: FaceHighlightLayer | null = null;
     let topologyPicker: TopologyPicker | null = null;
+    let transformGizmo: TransformGizmo | null = null;
     let unsubscribeSelection: (() => void) | null = null;
+    let unsubscribeGizmo: (() => void) | null = null;
+    let onGizmoKeydown: ((e: KeyboardEvent) => void) | null = null;
     let lastResolvedSelectionRef: unknown = undefined;
     let lastResolvedTopologyVersion = -1;
+    let lastReconciledGizmoMesh: THREE.Mesh | null = null;
+    let gizmoMode: GizmoMode = "translate";
+    let gizmoDragging = false;
     /**
      * Per-frame hook invoked from inside the existing renderLoop. Set by the
      * topology-picker bringup once the kernel + part layer are ready; null
@@ -454,6 +465,130 @@ export default function Scene() {
         });
         topologyPicker.setResolution(canvasResW, canvasResH);
 
+        // Phase 6 — TransformControls gizmo. Attached when a single part is
+        // selected (and visible, no editor open, no sketch active). Drives
+        // the part's transform via setPartTransformPartial; OrbitControls
+        // are paused while the user drags a handle so the camera doesn't
+        // fight for pointer events.
+        transformGizmo = createTransformGizmo({
+          camera,
+          domElement: renderer.domElement,
+          scene,
+          onChange: (position, rotation) => {
+            const mesh = lastReconciledGizmoMesh;
+            if (!mesh) return;
+            // Map mesh.name → partId. PartMeshLayer formats names as
+            // `Part:${id}`; bail out if the format ever changes so we
+            // don't silently corrupt unrelated meshes.
+            const prefix = "Part:";
+            if (!mesh.name.startsWith(prefix)) return;
+            const partId = mesh.name.slice(prefix.length);
+            // Three.js euler is in radians and uses 'XYZ' order; convert
+            // back to degrees for the store / OCCT.
+            const RAD = 180 / Math.PI;
+            useKinetiCADStore.getState().setPartTransformPartial(partId, {
+              positionMm: [position.x, position.y, position.z],
+              rotationDeg: [
+                rotation.x * RAD,
+                rotation.y * RAD,
+                rotation.z * RAD,
+              ],
+            });
+          },
+          onDraggingChanged: (dragging) => {
+            gizmoDragging = dragging;
+            if (controls) controls.enabled = !dragging;
+          },
+        });
+
+        // Decide whether the gizmo should be attached, and if so to which
+        // mesh. Suppression cases: no part selection, part hidden, sketch
+        // session active, feature/boolean editor open, or the part mesh
+        // simply isn't realised yet (regen pending). We detach instead of
+        // hiding so a stray drag can't mutate a stale partId.
+        const reconcileGizmo = (): void => {
+          if (!transformGizmo || !partMeshLayer) return;
+          const state = useKinetiCADStore.getState();
+          const sel = state.selection;
+          const blocked =
+            state.sketchSession.active ||
+            state.featureEditor.open ||
+            state.booleanEditor.open ||
+            // Don't yank the gizmo away mid-drag — the user is actively
+            // manipulating the previously-attached mesh.
+            gizmoDragging;
+          if (sel?.kind !== "part" || blocked) {
+            if (transformGizmo.isAttached()) {
+              transformGizmo.detach();
+              lastReconciledGizmoMesh = null;
+            }
+            return;
+          }
+          const part = state.assembly.parts.find((p) => p.id === sel.partId);
+          if (!part || !part.visible) {
+            if (transformGizmo.isAttached()) {
+              transformGizmo.detach();
+              lastReconciledGizmoMesh = null;
+            }
+            return;
+          }
+          const mesh = partMeshLayer.getPartMesh(sel.partId);
+          if (!mesh) {
+            // Part exists but its mesh isn't ready (no base feature yet,
+            // or regen still pending). Detach until it shows up.
+            if (transformGizmo.isAttached()) {
+              transformGizmo.detach();
+              lastReconciledGizmoMesh = null;
+            }
+            return;
+          }
+          if (lastReconciledGizmoMesh !== mesh) {
+            transformGizmo.attach(mesh);
+            lastReconciledGizmoMesh = mesh;
+          }
+          if (transformGizmo.getMode() !== gizmoMode) {
+            transformGizmo.setMode(gizmoMode);
+          }
+        };
+
+        // R/T keyboard shortcuts. Only act when the gizmo is currently
+        // attached and the user isn't typing in an input.
+        onGizmoKeydown = (e: KeyboardEvent) => {
+          const target = e.target as HTMLElement | null;
+          if (
+            target &&
+            (target.tagName === "INPUT" ||
+              target.tagName === "TEXTAREA" ||
+              target.isContentEditable)
+          ) {
+            return;
+          }
+          if (!transformGizmo || !transformGizmo.isAttached()) return;
+          if (e.key === "r" || e.key === "R") {
+            e.preventDefault();
+            gizmoMode = "rotate";
+            transformGizmo.setMode("rotate");
+          } else if (e.key === "t" || e.key === "T") {
+            e.preventDefault();
+            gizmoMode = "translate";
+            transformGizmo.setMode("translate");
+          }
+        };
+        window.addEventListener("keydown", onGizmoKeydown);
+
+        // Subscribe to store changes that affect gizmo attachment.
+        unsubscribeGizmo = useKinetiCADStore.subscribe((state, prev) => {
+          if (
+            state.selection !== prev.selection ||
+            state.assembly !== prev.assembly ||
+            state.sketchSession.active !== prev.sketchSession.active ||
+            state.featureEditor.open !== prev.featureEditor.open ||
+            state.booleanEditor.open !== prev.booleanEditor.open
+          ) {
+            reconcileGizmo();
+          }
+        });
+
         // Resolve the selection-driven 'selected' highlights on the edge and
         // face layers. Re-runs on:
         //   - selection identity change (any reducer that touches selection)
@@ -562,7 +697,8 @@ export default function Scene() {
         // Cheap per-frame check: if the part topology changed (a regen
         // completed) re-resolve highlights so a stale selection clears. This
         // is a Map identity check + a number compare, ~free unless we need
-        // to actually rebuild buffers.
+        // to actually rebuild buffers. Also re-check the gizmo attachment
+        // because the part mesh handle is recreated on regen completion.
         perFrameTopologyCheck = (): void => {
           if (!partMeshLayer) return;
           const v = partMeshLayer.topologyVersion();
@@ -574,8 +710,12 @@ export default function Scene() {
             lastResolvedTopologyVersion = v;
             lastResolvedSelectionRef = sel;
             resolveSelectionHighlights();
+            reconcileGizmo();
           }
         };
+
+        // Initial reconcile in case a part selection survived a remount.
+        reconcileGizmo();
 
         // Helpers: per-part and per-boolean visibility for the two layers.
         //
@@ -1128,6 +1268,16 @@ export default function Scene() {
       unsubscribeAssembly?.();
       unsubscribeFeatureEditor?.();
       unsubscribeSelection?.();
+      unsubscribeGizmo?.();
+      if (onGizmoKeydown) {
+        window.removeEventListener("keydown", onGizmoKeydown);
+        onGizmoKeydown = null;
+      }
+      if (transformGizmo) {
+        transformGizmo.dispose();
+        transformGizmo = null;
+        lastReconciledGizmoMesh = null;
+      }
       sketchSessionHandle?.dispose();
       sketchSessionHandle = null;
       if (finishedLayer) {

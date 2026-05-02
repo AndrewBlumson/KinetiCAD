@@ -63,6 +63,18 @@ export function computeBooleanHash(
     const p = partsById.get(id);
     return p ? computePartChainHash(p) : `missing:${id}`;
   });
+  // Phase 6: each input's transform participates in the cache key so a
+  // gizmo drag (or PartInspector edit) on any input invalidates this
+  // boolean's cached mesh. Using fixed precision keeps the key stable
+  // across rounding noise.
+  const inputTransforms = feature.inputPartIds.map((id) => {
+    const p = partsById.get(id);
+    if (!p) return "missing";
+    const t = p.transform;
+    return `${t.positionMm.map((v) => v.toFixed(4)).join("/")}|${t.rotationDeg
+      .map((v) => v.toFixed(4))
+      .join("/")}`;
+  });
   const opTag =
     feature.operation.type === "subtract"
       ? `subtract:${feature.operation.toolPartId}`
@@ -70,7 +82,9 @@ export function computeBooleanHash(
   // Hash via a small concat + the existing FNV path through computeFeatureHash
   // would over-couple us; just a plain string is fine here since the inputs
   // are already hex hashes.
-  return `${opTag}|${feature.inputPartIds.join(",")}|${inputHashes.join(",")}`;
+  return `${opTag}|${feature.inputPartIds.join(",")}|${inputHashes.join(
+    ",",
+  )}|tx:${inputTransforms.join(";")}`;
 }
 
 export type BooleanRegenResult = {
@@ -171,6 +185,10 @@ export async function regenerateBoolean(
       partId: p.id,
       features: [...p.features],
       sketches: [...p.sketches],
+      transform: {
+        positionMm: [...p.transform.positionMm] as [number, number, number],
+        rotationDeg: [...p.transform.rotationDeg] as [number, number, number],
+      },
     };
   });
 

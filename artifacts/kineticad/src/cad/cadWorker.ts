@@ -633,10 +633,12 @@ const api: CadKernelApi = {
       );
     }
 
-    // Build every input shape from its upstream chain. We hold them all in
-    // an array so we can free them in finally regardless of which step
-    // throws.
-    const shapes: any[] = [];
+    // Build every input shape from its upstream chain, then apply each
+    // input's rigid-body transform via BRepBuilderAPI_Transform_2 BEFORE
+    // running the boolean. We track base + transformed shapes separately
+    // so the finally cleanup frees both regardless of which step throws.
+    const baseShapes: any[] = [];
+    const transformedShapes: any[] = [];
     let result: any = null;
     try {
       for (const input of args.inputs) {
@@ -645,13 +647,90 @@ const api: CadKernelApi = {
             `boolean-failed: input part ${input.partId} has no features.`,
           );
         }
-        const shape = executeUpstreamChain(oc, input.features, input.sketches);
-        shapes.push(shape);
+        const base = executeUpstreamChain(oc, input.features, input.sketches);
+        baseShapes.push(base);
+
+        // Phase 6: apply the part's transform. Identity short-circuits
+        // (saves an OCCT call per part on the common case).
+        const tx = input.transform;
+        const isIdentity =
+          tx &&
+          tx.positionMm[0] === 0 &&
+          tx.positionMm[1] === 0 &&
+          tx.positionMm[2] === 0 &&
+          tx.rotationDeg[0] === 0 &&
+          tx.rotationDeg[1] === 0 &&
+          tx.rotationDeg[2] === 0;
+
+        if (!tx || isIdentity) {
+          transformedShapes.push(base);
+          continue;
+        }
+
+        // Compose M = T · Rx · Ry · Rz so that, applied to a point p, the
+        // result is T(Rx(Ry(Rz(p)))) — i.e. rotation first (Z then Y then
+        // X) and translation last. This matches three.js's
+        // mesh.matrixWorld with rotation order "XYZ" so the live mesh
+        // position and the OCCT-baked geometry stay in lockstep.
+        const trsf = new oc.gp_Trsf_1();
+        const origin = new oc.gp_Pnt_3(0, 0, 0);
+        const axisX = new oc.gp_Dir_4(1, 0, 0);
+        const axisY = new oc.gp_Dir_4(0, 1, 0);
+        const axisZ = new oc.gp_Dir_4(0, 0, 1);
+        const ax1X = new oc.gp_Ax1_2(origin, axisX);
+        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
+        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
+
+        const trsfRotZ = new oc.gp_Trsf_1();
+        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
+        const trsfRotY = new oc.gp_Trsf_1();
+        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
+        const trsfRotX = new oc.gp_Trsf_1();
+        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
+        const trsfTrans = new oc.gp_Trsf_1();
+        const transVec = new oc.gp_Vec_4(
+          tx.positionMm[0],
+          tx.positionMm[1],
+          tx.positionMm[2],
+        );
+        trsfTrans.SetTranslation_1(transVec);
+
+        // Multiply pre-multiplies: trsf becomes (other · trsf). Start with
+        // Z (innermost), then Y, X, T to end up with M = T·Rx·Ry·Rz.
+        trsf.Multiply(trsfRotZ);
+        trsf.Multiply(trsfRotY);
+        trsf.Multiply(trsfRotX);
+        trsf.Multiply(trsfTrans);
+
+        const transformer = new oc.BRepBuilderAPI_Transform_2(
+          base as never,
+          trsf,
+          true,
+        );
+        const transformed = transformer.Shape();
+        transformedShapes.push(transformed);
+
+        // Free every gp_* and the transformer wrapper. The transformed
+        // TopoDS_Shape is now independent.
+        transformer.delete();
+        transVec.delete();
+        trsfTrans.delete();
+        trsfRotX.delete();
+        trsfRotY.delete();
+        trsfRotZ.delete();
+        ax1Z.delete();
+        ax1Y.delete();
+        ax1X.delete();
+        axisZ.delete();
+        axisY.delete();
+        axisX.delete();
+        origin.delete();
+        trsf.delete();
       }
 
       // Worker trusts the orchestrator's ordering: for subtract the body
       // shape is at index 0 and the tool shape at index 1.
-      result = applyBoolean(oc, shapes, args.operation);
+      result = applyBoolean(oc, transformedShapes, args.operation);
       const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
@@ -661,7 +740,14 @@ const api: CadKernelApi = {
       throw new Error(`boolean-failed: ${String(err)}`);
     } finally {
       if (result) result.delete?.();
-      for (const s of shapes) {
+      for (let i = 0; i < transformedShapes.length; i++) {
+        // Skip if transformed === base (identity short-circuit) — the
+        // base loop below will handle it.
+        if (transformedShapes[i] !== baseShapes[i]) {
+          transformedShapes[i]?.delete?.();
+        }
+      }
+      for (const s of baseShapes) {
         s?.delete?.();
       }
     }

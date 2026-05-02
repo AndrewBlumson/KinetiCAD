@@ -326,6 +326,31 @@ export function createPartMeshLayer(): PartMeshLayer {
         entry.mesh.material = desiredMaterial;
       }
 
+      // Phase 6: apply the part's rigid-body transform to the mesh on
+      // every sync. Cheap (assignment + dirty flag) and runs even on
+      // hash-cached regens so a gizmo drag updates the visual position
+      // without waiting for OCCT. Three.js consumes XYZ Euler with
+      // 'XYZ' order; this matches the OCCT composition in cadWorker
+      // (rotZ -> rotY -> rotX -> translate, i.e. M = T·Rx·Ry·Rz).
+      const tx = part.transform;
+      entry.mesh.position.set(tx.positionMm[0], tx.positionMm[1], tx.positionMm[2]);
+      entry.mesh.rotation.set(
+        (tx.rotationDeg[0] * Math.PI) / 180,
+        (tx.rotationDeg[1] * Math.PI) / 180,
+        (tx.rotationDeg[2] * Math.PI) / 180,
+        "XYZ",
+      );
+
+      // Phase 6: visibility flag wins. Hidden parts are still synced
+      // (geometry stays warm) but the mesh isn't rendered.
+      if (!part.visible) {
+        // Bump the token so any pending regen for this part is dropped
+        // before it can flip visibility back on.
+        entry.inFlightToken = ++nextToken;
+        entry.mesh.visible = false;
+        continue;
+      }
+
       // Kick off (or replace) an in-flight regen for this part.
       const token = ++nextToken;
       entry.inFlightToken = token;
