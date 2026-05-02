@@ -1,10 +1,11 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
 import SketchToolbar from '@/components/SketchToolbar';
 import SketchCursor from '@/components/SketchCursor';
 import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
+import TopologyPickerTestInspector from '@/components/inspectors/TopologyPickerTestInspector';
 import type { CardinalPlane } from '@/sketch/plane';
 import type { Feature, Part, SketchPlane } from '@/state/schemas';
 
@@ -20,8 +21,41 @@ export default function Modeller() {
   const selectFeature = useKinetiCADStore((s) => s.selectFeature);
   const beginEditFeature = useKinetiCADStore((s) => s.beginEditFeature);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
+  const showPickerTestPanel = useKinetiCADStore((s) => s.showPickerTestPanel);
+  const togglePickerTestPanel = useKinetiCADStore(
+    (s) => s.togglePickerTestPanel,
+  );
 
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
+
+  // Phase 4 Split A diagnostic: Cmd/Ctrl+Shift+T toggles the picker test
+  // panel. Removed once Split B's per-feature inspectors take over.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!e.shiftKey) return;
+      if (!(e.metaKey || e.ctrlKey)) return;
+      // Match by KeyboardEvent.code so non-QWERTY layouts still work.
+      if (e.code !== 'KeyT') return;
+      // Don't fire when the user is typing in an input — most CAD inspectors
+      // include numeric inputs we don't want to swallow.
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const tag = target.tagName;
+        if (
+          tag === 'INPUT' ||
+          tag === 'TEXTAREA' ||
+          tag === 'SELECT' ||
+          target.isContentEditable
+        ) {
+          return;
+        }
+      }
+      e.preventDefault();
+      togglePickerTestPanel();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [togglePickerTestPanel]);
 
   const handlePlanePicked = (plane: CardinalPlane) => {
     setPlanePickerOpen(false);
@@ -126,6 +160,14 @@ export default function Modeller() {
             onPick={handlePlanePicked}
             onCancel={() => setPlanePickerOpen(false)}
           />
+          {showPickerTestPanel && (
+            <div
+              className="absolute top-3 right-3 z-30 w-64 pointer-events-auto"
+              data-testid="picker-test-panel-container"
+            >
+              <TopologyPickerTestInspector />
+            </div>
+          )}
         </main>
         <SketchCursor />
 

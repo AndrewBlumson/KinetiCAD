@@ -23,6 +23,10 @@ import { tessellateShape } from "./operations/tessellate";
 import { sketchToWire } from "./operations/sketchToWire";
 import { extrude as extrudeWire } from "./operations/extrude";
 import { revolve as revolveWire } from "./operations/revolve";
+import {
+  collectTransferables,
+  enumerateTopology,
+} from "./operations/topology";
 
 type OC = OpenCascadeInstance;
 
@@ -62,15 +66,36 @@ async function ensureKernel(): Promise<KernelInitResult> {
 }
 
 /**
+ * Tessellate + enumerate topology for a TopoDS_Shape in one shot, returning a
+ * fully-populated TessellatedMesh.
+ *
+ * Every per-face / per-edge typed array buffer is transferable; the caller
+ * wraps the result in `Comlink.transfer` with `collectTransferables(mesh)`.
+ */
+function buildMesh(oc: OC, solid: unknown): TessellatedMesh {
+  const tess = tessellateShape(oc, solid);
+  const { edges, faces } = enumerateTopology(
+    oc,
+    solid,
+    tess.positions,
+    tess.indices,
+    tess.faceRanges,
+  );
+  return {
+    positions: tess.positions,
+    normals: tess.normals,
+    indices: tess.indices,
+    edges,
+    faces,
+  };
+}
+
+/**
  * Wrap a tessellated mesh in a Comlink transfer envelope so the typed arrays
  * are moved (not copied) across the worker boundary.
  */
 function transferMesh(mesh: TessellatedMesh): TessellatedMesh {
-  return Comlink.transfer(mesh, [
-    mesh.positions.buffer,
-    mesh.normals.buffer,
-    mesh.indices.buffer,
-  ]);
+  return Comlink.transfer(mesh, collectTransferables(mesh));
 }
 
 const api: CadKernelApi = {
@@ -91,7 +116,7 @@ const api: CadKernelApi = {
     const boxBuilder = new oc.BRepPrimAPI_MakeBox_4(corner1, corner2);
     const shape = boxBuilder.Shape();
 
-    const mesh = tessellateShape(oc, shape, 0.1);
+    const mesh = buildMesh(ocInstance, shape);
 
     // Release every transient OCCT wrapper we built. The shape is owned by the
     // builder, so deleting the builder reclaims its TShape; we still null out
@@ -115,7 +140,7 @@ const api: CadKernelApi = {
     try {
       wire = sketchToWire(oc, args.plane, args.sketchPrimitives);
       solid = extrudeWire(oc, wire, args.plane, args.depthMm, args.direction);
-      const mesh = tessellateShape(oc, solid);
+      const mesh = buildMesh(oc, solid);
       return transferMesh(mesh);
     } catch (err) {
       // Re-throw with a clean message so the inspector can show it. Keep the
@@ -138,7 +163,7 @@ const api: CadKernelApi = {
     try {
       wire = sketchToWire(oc, args.plane, args.sketchPrimitives);
       solid = revolveWire(oc, wire, args.axis, args.angleDeg);
-      const mesh = tessellateShape(oc, solid);
+      const mesh = buildMesh(oc, solid);
       return transferMesh(mesh);
     } catch (err) {
       if (err instanceof Error) throw err;

@@ -44,11 +44,26 @@ const defaultSketchSession: SketchSession = {
  * What the user currently has selected in the feature tree / scene.
  * Drives the right inspector content. Not persisted — the user starts a
  * fresh session with nothing selected.
+ *
+ * The 'edges' / 'face' / 'point-on-face' kinds are produced by the topology
+ * picker (Phase 4 Split A). Each carries the part it lives on plus the
+ * stable canonical-geometry id of the picked element.
  */
 export type Selection =
   | { kind: "sketch"; partId: string; sketchId: string }
   | { kind: "feature"; partId: string; featureId: string }
+  | { kind: "edges"; partId: string; edgeIds: string[] }
+  | { kind: "face"; partId: string; faceId: string }
+  | { kind: "point-on-face"; partId: string; faceId: string; uv: [number, number] }
   | null;
+
+/**
+ * Picker modes driven by the active inspector. 'idle' (the default) disables
+ * the picker entirely. Phase 4 Split A populates the diagnostic test
+ * inspector (Cmd/Ctrl+Shift+T); Split B will populate this from the
+ * Fillet/Chamfer/Hole inspectors.
+ */
+export type PickingMode = "idle" | "edges" | "faces" | "point-on-face";
 
 export type ExtrudeParams = {
   depthMm: number;
@@ -129,6 +144,10 @@ export type KinetiCADStore = {
   selection: Selection;
   featureEditor: FeatureEditor;
   featurePreview: FeaturePreview;
+  /** Active picker mode (Phase 4 Split A). Not persisted. */
+  pickingMode: PickingMode;
+  /** Cmd/Ctrl+Shift+T diagnostic panel toggle. Not persisted. */
+  showPickerTestPanel: boolean;
 
   setMode: (mode: AppMode) => void;
   setSimulationRunning: (running: boolean) => void;
@@ -142,6 +161,21 @@ export type KinetiCADStore = {
 
   selectSketch: (partId: string, sketchId: string) => void;
   selectFeature: (partId: string, featureId: string) => void;
+  /**
+   * Select one or more edges on a part. With `additive=true`, edges are
+   * merged into an existing 'edges' selection on the same part (toggle
+   * semantics: an already-selected edge id is removed). Otherwise the
+   * selection is replaced.
+   */
+  selectEdges: (partId: string, edgeIds: string[], additive?: boolean) => void;
+  selectFace: (partId: string, faceId: string) => void;
+  selectPointOnFace: (
+    partId: string,
+    faceId: string,
+    uv: [number, number],
+  ) => void;
+  setPickingMode: (mode: PickingMode) => void;
+  togglePickerTestPanel: () => void;
   clearSelection: () => void;
 
   /** Open the inspector to create a new extrude/revolve from the given sketch. */
@@ -214,6 +248,8 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       selection: null,
       featureEditor: defaultFeatureEditor,
       featurePreview: defaultFeaturePreview,
+      pickingMode: "idle",
+      showPickerTestPanel: false,
 
       setMode: (mode) => set({ mode }),
 
@@ -296,6 +332,43 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
 
       selectFeature: (partId, featureId) =>
         set({ selection: { kind: "feature", partId, featureId } }),
+
+      selectEdges: (partId, edgeIds, additive = false) =>
+        set((s) => {
+          if (
+            additive &&
+            s.selection?.kind === "edges" &&
+            s.selection.partId === partId
+          ) {
+            // Toggle: remove if present, add if not.
+            const current = new Set(s.selection.edgeIds);
+            for (const id of edgeIds) {
+              if (current.has(id)) current.delete(id);
+              else current.add(id);
+            }
+            const merged = Array.from(current);
+            if (merged.length === 0) return { selection: null };
+            return {
+              selection: { kind: "edges", partId, edgeIds: merged },
+            };
+          }
+          return {
+            selection: { kind: "edges", partId, edgeIds: [...edgeIds] },
+          };
+        }),
+
+      selectFace: (partId, faceId) =>
+        set({ selection: { kind: "face", partId, faceId } }),
+
+      selectPointOnFace: (partId, faceId, uv) =>
+        set({
+          selection: { kind: "point-on-face", partId, faceId, uv },
+        }),
+
+      setPickingMode: (mode) => set({ pickingMode: mode }),
+
+      togglePickerTestPanel: () =>
+        set((s) => ({ showPickerTestPanel: !s.showPickerTestPanel })),
 
       clearSelection: () => set({ selection: null }),
 

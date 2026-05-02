@@ -13,6 +13,9 @@ export const COLOURS = {
   axisZ: 0x4488ff,
   defaultPart: 0xa0a8b5,
   orange: 0xff6b1a,
+  // Topology picker highlights — yellow on hover, KinetiCAD orange on selection.
+  highlightHover: 0xffd24a,
+  highlightSelected: 0xff6b1a,
 } as const;
 
 export function createScene(): THREE.Scene {

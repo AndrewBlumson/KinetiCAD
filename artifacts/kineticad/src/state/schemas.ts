@@ -73,3 +73,26 @@ export type SimulationState = {
 };
 
 export type AppMode = 'modeller' | 'simulator';
+
+/**
+ * A reference to a specific edge on a part's tip mesh. `edgeId` is the stable
+ * canonical-geometry hash returned by the topology enumerator; it survives
+ * parameter edits whenever the underlying edge geometry is preserved.
+ *
+ * Used by the edges Selection, and by Fillet/Chamfer feature targets in
+ * Split B.
+ */
+export type EdgeRef = {
+  partId: string;
+  edgeId: string;
+};
+
+/**
+ * A reference to a specific face on a part's tip mesh. Same stable-hash
+ * semantics as EdgeRef. Used by the face / point-on-face Selections, and by
+ * the Hole feature target in Split B.
+ */
+export type FaceRef = {
+  partId: string;
+  faceId: string;
+};

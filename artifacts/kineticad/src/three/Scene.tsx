@@ -53,6 +53,19 @@ import {
   previewFeature,
 } from "@/features/featureRegen";
 import { mapKernelError } from "@/features/kernelErrors";
+import {
+  createEdgeHighlightLayer,
+  type EdgeHighlightLayer,
+} from "./EdgeHighlightLayer";
+import {
+  createFaceHighlightLayer,
+  type FaceHighlightLayer,
+} from "./FaceHighlightLayer";
+import {
+  createTopologyPicker,
+  type TopologyPicker,
+} from "./TopologyPicker";
+import type { FaceMetadata } from "@/cad/types";
 
 type Status =
   | { kind: "checking-webgpu" }
@@ -106,6 +119,19 @@ export default function Scene() {
     let unsubscribeFeatureEditor: (() => void) | null = null;
     let partMeshLayer: PartMeshLayer | null = null;
     let previewMeshLayer: PreviewMeshLayer | null = null;
+    let edgeHighlightLayer: EdgeHighlightLayer | null = null;
+    let faceHighlightLayer: FaceHighlightLayer | null = null;
+    let topologyPicker: TopologyPicker | null = null;
+    let unsubscribeSelection: (() => void) | null = null;
+    let lastResolvedSelectionRef: unknown = undefined;
+    let lastResolvedTopologyVersion = -1;
+    /**
+     * Per-frame hook invoked from inside the existing renderLoop. Set by the
+     * topology-picker bringup once the kernel + part layer are ready; null
+     * otherwise. Kept on the closure so we don't have to swap the animation
+     * loop function out from under the renderer.
+     */
+    let perFrameTopologyCheck: (() => void) | null = null;
     let previewDebounce: ReturnType<typeof setTimeout> | null = null;
     let previewToken = 0;
     let lastPreviewHash: string | null = null;
@@ -306,6 +332,9 @@ export default function Scene() {
         // Render loop. WebGPU requires setAnimationLoop, not rAF.
         const renderLoop = () => {
           if (!renderer) return;
+          // Topology-picker bookkeeping: clears stale highlight geometry
+          // after part regen completions. No-op until set in step 3.
+          perFrameTopologyCheck?.();
 
           if (cameraTween && controls) {
             const t = Math.min(
@@ -363,6 +392,9 @@ export default function Scene() {
           canvasResH = height;
           sketchSessionHandle?.setResolution(width, height);
           finishedLayer?.setResolution(width, height);
+          edgeHighlightLayer?.setResolution(width, height);
+          faceHighlightLayer?.setResolution(width, height);
+          topologyPicker?.setResolution(width, height);
         });
         resizeObserver.observe(container);
 
@@ -385,8 +417,150 @@ export default function Scene() {
         // 3. Build the part / preview layers and wire them up to the store.
         partMeshLayer = createPartMeshLayer();
         previewMeshLayer = createPreviewMeshLayer();
+        edgeHighlightLayer = createEdgeHighlightLayer();
+        faceHighlightLayer = createFaceHighlightLayer();
         scene.add(partMeshLayer.group);
         scene.add(previewMeshLayer.group);
+        scene.add(edgeHighlightLayer.group);
+        scene.add(faceHighlightLayer.group);
+        edgeHighlightLayer.setResolution(canvasResW, canvasResH);
+        faceHighlightLayer.setResolution(canvasResW, canvasResH);
+
+        // Topology picker. Reads pickingMode + selection from the store and
+        // dispatches `selectEdges` / `selectFace` / `selectPointOnFace` from
+        // canvas mouse events. Always-on; gated internally by pickingMode.
+        topologyPicker = createTopologyPicker({
+          domElement: renderer.domElement,
+          camera,
+          partMeshLayer,
+          edgeLayer: edgeHighlightLayer,
+          faceLayer: faceHighlightLayer,
+          store: useKinetiCADStore,
+        });
+        topologyPicker.setResolution(canvasResW, canvasResH);
+
+        // Resolve the selection-driven 'selected' highlights on the edge and
+        // face layers. Re-runs on:
+        //   - selection identity change (any reducer that touches selection)
+        //   - topology version bump (a part regen completed and the cached
+        //     edges/faces may now refer to different stable ids)
+        // Uses the current store snapshot so the call site can be triggered
+        // from anywhere (subscription or polling).
+        const resolveSelectionHighlights = (): void => {
+          const state = useKinetiCADStore.getState();
+          const sel = state.selection;
+          if (!partMeshLayer || !edgeHighlightLayer || !faceHighlightLayer) {
+            return;
+          }
+          // Edges selection
+          if (sel?.kind === "edges") {
+            const topology = partMeshLayer.getPartTopology(sel.partId);
+            if (!topology) {
+              // Topology not loaded yet (regen in flight, or part hidden by
+              // live preview). Clear visuals but keep the selection — it
+              // may resolve once the regen finishes.
+              edgeHighlightLayer.setSelected([]);
+              faceHighlightLayer.setSelected(null, []);
+              return;
+            }
+            const lookup = new Map(topology.edges.map((e) => [e.id, e]));
+            const polylines: Float32Array[] = [];
+            let anyResolved = false;
+            for (const id of sel.edgeIds) {
+              const e = lookup.get(id);
+              if (e) {
+                polylines.push(e.polyline);
+                anyResolved = true;
+              }
+            }
+            // Stale-id invalidation: topology is present but none of the
+            // referenced edges exist any more (e.g. the user re-extruded
+            // and the new geometry has different topology). Drop the
+            // selection so future hovers/clicks aren't ghosting an old
+            // highlight that will never come back.
+            if (!anyResolved) {
+              edgeHighlightLayer.setSelected([]);
+              faceHighlightLayer.setSelected(null, []);
+              useKinetiCADStore.getState().clearSelection();
+              return;
+            }
+            edgeHighlightLayer.setSelected(polylines);
+            faceHighlightLayer.setSelected(null, []);
+            return;
+          }
+          // Face / point-on-face selection
+          if (sel?.kind === "face" || sel?.kind === "point-on-face") {
+            const topology = partMeshLayer.getPartTopology(sel.partId);
+            const mesh = partMeshLayer.getPartMesh(sel.partId);
+            if (!topology || !mesh) {
+              edgeHighlightLayer.setSelected([]);
+              faceHighlightLayer.setSelected(null, []);
+              return;
+            }
+            const face = topology.faces.find((f) => f.id === sel.faceId);
+            const positions = (
+              mesh.geometry.getAttribute("position") as
+                | THREE.BufferAttribute
+                | null
+            )?.array as Float32Array | undefined;
+            const indices = (
+              mesh.geometry.getIndex() as THREE.BufferAttribute | null
+            )?.array as Uint32Array | undefined;
+            if (!positions || !indices) {
+              edgeHighlightLayer.setSelected([]);
+              faceHighlightLayer.setSelected(null, []);
+              return;
+            }
+            if (!face) {
+              // Stale face id: topology+mesh both present but the id
+              // doesn't resolve. Same reasoning as edges above.
+              edgeHighlightLayer.setSelected([]);
+              faceHighlightLayer.setSelected(null, []);
+              useKinetiCADStore.getState().clearSelection();
+              return;
+            }
+            const boundary = extractBoundaryPolylines(face, positions, indices);
+            faceHighlightLayer.setSelected(
+              { triangles: face.triangles, positions, indices },
+              boundary,
+            );
+            edgeHighlightLayer.setSelected([]);
+            return;
+          }
+          // Other / null selection: clear both.
+          edgeHighlightLayer.setSelected([]);
+          faceHighlightLayer.setSelected(null, []);
+        };
+
+        // Initial resolve in case selection survived a fast remount (it
+        // shouldn't, since selection isn't persisted, but be defensive).
+        resolveSelectionHighlights();
+
+        // Selection-change subscription.
+        unsubscribeSelection = useKinetiCADStore.subscribe((state, prev) => {
+          if (state.selection !== prev.selection) {
+            lastResolvedSelectionRef = state.selection;
+            resolveSelectionHighlights();
+          }
+        });
+
+        // Cheap per-frame check: if the part topology changed (a regen
+        // completed) re-resolve highlights so a stale selection clears. This
+        // is a Map identity check + a number compare, ~free unless we need
+        // to actually rebuild buffers.
+        perFrameTopologyCheck = (): void => {
+          if (!partMeshLayer) return;
+          const v = partMeshLayer.topologyVersion();
+          const sel = useKinetiCADStore.getState().selection;
+          if (
+            v !== lastResolvedTopologyVersion ||
+            sel !== lastResolvedSelectionRef
+          ) {
+            lastResolvedTopologyVersion = v;
+            lastResolvedSelectionRef = sel;
+            resolveSelectionHighlights();
+          }
+        };
 
         // Helper: which part should PartMeshLayer hide because the preview
         // is currently overlaying it? Only when the editor is open AND the
@@ -550,15 +724,29 @@ export default function Scene() {
     return () => {
       cancelled = true;
       if (previewDebounce) clearTimeout(previewDebounce);
+      perFrameTopologyCheck = null;
       unsubscribeStore?.();
       unsubscribeAssembly?.();
       unsubscribeFeatureEditor?.();
+      unsubscribeSelection?.();
       sketchSessionHandle?.dispose();
       sketchSessionHandle = null;
       if (finishedLayer) {
         scene.remove(finishedLayer.group);
         finishedLayer.dispose();
         finishedLayer = null;
+      }
+      if (topologyPicker) {
+        topologyPicker.dispose();
+        topologyPicker = null;
+      }
+      if (edgeHighlightLayer) {
+        edgeHighlightLayer.dispose();
+        edgeHighlightLayer = null;
+      }
+      if (faceHighlightLayer) {
+        faceHighlightLayer.dispose();
+        faceHighlightLayer = null;
       }
       if (partMeshLayer) {
         partMeshLayer.dispose();
@@ -605,6 +793,55 @@ export default function Scene() {
       <SceneOverlay status={status} />
     </div>
   );
+}
+
+/**
+ * Extract the boundary of a face's tessellated sub-mesh as discrete 2-point
+ * polylines. The boundary edges are those that appear in exactly one
+ * triangle of the face (edges shared by two triangles are interior).
+ *
+ * Drawn via Line2 by FaceHighlightLayer to give the selected face a crisp
+ * outline. We don't bother stitching segments into loops because Line2
+ * handles each polyline independently and the count is small (a few dozen
+ * for any reasonable face).
+ */
+function extractBoundaryPolylines(
+  face: FaceMetadata,
+  positions: Float32Array,
+  indices: Uint32Array,
+): Float32Array[] {
+  const counts = new Map<string, number>();
+  const tris = face.triangles;
+  for (let i = 0; i < tris.length; i++) {
+    const t = tris[i];
+    const v0 = indices[3 * t];
+    const v1 = indices[3 * t + 1];
+    const v2 = indices[3 * t + 2];
+    const ab = v0 < v1 ? `${v0}-${v1}` : `${v1}-${v0}`;
+    const bc = v1 < v2 ? `${v1}-${v2}` : `${v2}-${v1}`;
+    const ca = v2 < v0 ? `${v2}-${v0}` : `${v0}-${v2}`;
+    counts.set(ab, (counts.get(ab) ?? 0) + 1);
+    counts.set(bc, (counts.get(bc) ?? 0) + 1);
+    counts.set(ca, (counts.get(ca) ?? 0) + 1);
+  }
+  const out: Float32Array[] = [];
+  for (const [key, count] of counts) {
+    if (count !== 1) continue;
+    const dash = key.indexOf("-");
+    const a = Number(key.slice(0, dash));
+    const b = Number(key.slice(dash + 1));
+    out.push(
+      new Float32Array([
+        positions[3 * a],
+        positions[3 * a + 1],
+        positions[3 * a + 2],
+        positions[3 * b],
+        positions[3 * b + 1],
+        positions[3 * b + 2],
+      ]),
+    );
+  }
+  return out;
 }
 
 function SceneOverlay({ status }: { status: Status }) {

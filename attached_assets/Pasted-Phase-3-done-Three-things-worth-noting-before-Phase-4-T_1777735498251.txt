@@ -1,0 +1,155 @@
+Phase 3 done. Three things worth noting before Phase 4:
+The PartMeshLayer race the architect caught is the kind of bug that would have shown up at Phase 8 as "ghost parts appearing in physics simulation" and taken hours to diagnose. The regen token plus per-entry alive guard is the standard pattern for stale-async-result protection, and getting it right now means the same pattern carries through to Phase 4 (where fillet ops can be slower and more likely to race).
+The original mesh hidden while preview overlay is visible is the right UX call. Showing both at once would have meant the user saw two ghosted bodies and couldn't tell which was which.
+We're at the end of Phase 3. That puts us roughly a third of the way through phases by count, but the modeller foundation is now in place, so phases 4 and 5 should move faster, then 6 to 9 are the assembly and physics meat, then 10 to 12 are polish.
+Worth checking your build clock before we kick off Phase 4. You started around 13:00 BST. Drop a rough time check so we can pace the remaining phases against the 24-hour window.
+Here's the Phase 4 prompt to paste into Agent when you're ready:
+
+Read CLAUDE.md from project root. Read all existing source files relevant to this phase: src/state/store.ts, src/state/schemas.ts, src/cad/cadWorker.ts, src/cad/cadClient.ts, src/cad/operations/extrude.ts, src/cad/operations/revolve.ts, src/cad/operations/tessellate.ts, src/features/featureRegen.ts, src/features/featureCache.ts, src/three/Scene.tsx, src/three/PartMeshLayer.ts, src/views/Modeller.tsx, src/components/inspectors/, src/components/NumericInput.tsx, src/components/SegmentedControl.tsx. Confirm understanding before implementation.
+Phase 4: Modification Features (Fillet, Chamfer, Hole)
+This phase adds three modification features that operate on existing solid bodies: fillet (rounded edges), chamfer (angled edges), and hole (cylindrical cuts through faces). Unlike extrude and revolve, these operations need targets within the existing geometry: specific edges or faces. That means we need topology picking in the 3D view.
+Recommend splitting this phase as Phase 3 was. Topology picking is its own substantial piece of work, and the three operations can ride on top of it cleanly.
+Recommended split:
+Split A: Topology picking infrastructure. Edge and face highlighting in 3D view. Selection state and visual treatment. No operations yet, but the kernel exposes face and edge ID enumeration so the picker can label them.
+Split B: Fillet, chamfer, and hole operations layered on top of Split A's picker.
+Stop after Split A and report. I will sign off before you begin Split B.
+Files to create (Split A only):
+src/
+  cad/
+    operations/
+      topology.ts              Enumerate faces and edges of a TopoDS_Shape, assign stable IDs, return per-element metadata (face area, edge length, edge type)
+    types.ts                   Add EdgeId, FaceId, EdgeMetadata, FaceMetadata
+  three/
+    TopologyPicker.ts           Imperative manager: subscribes to selection state, raycasts on hover/click, highlights edges/faces, dispatches selection
+    EdgeHighlightLayer.ts       Renders edge highlights using Line2 (orange when selected, lighter orange on hover)
+    FaceHighlightLayer.ts       Renders face highlights using a translucent overlay mesh
+  state/
+    schemas.ts                 Add EdgeRef = { partId, featureId (mesh-source feature), edgeId } and FaceRef = { partId, featureId, faceId }; add to Selection union
+Topology enumeration approach:
+OpenCascade.js exposes faces and edges via TopExp_Explorer. The kernel needs to:
+
+After tessellating a shape, walk its edges with TopExp_Explorer(shape, TopAbs_EDGE) and assign a stable ID per edge.
+Walk faces with TopExp_Explorer(shape, TopAbs_FACE) and assign a stable ID per face.
+Stable IDs are derived from a canonical hash of the edge/face's underlying geometry (curve type, endpoint coordinates rounded to 0.001mm, surface type, centroid coordinates rounded to 0.001mm). This means edges and faces survive parameter edits in upstream features as long as their geometric identity is preserved.
+For each edge, capture: type ('line' | 'circle' | 'arc' | 'spline' | 'other'), length in mm, midpoint in 3D, and the indices into the tessellated mesh that approximate this edge (a polyline of vertex indices).
+For each face, capture: type ('plane' | 'cylinder' | 'cone' | 'sphere' | 'torus' | 'other'), area in mm², centroid in 3D, normal at centroid, and the triangle indices that belong to this face.
+Return this metadata as part of the TessellatedMesh result, not as a separate worker call. Adding it to the existing return path avoids round-trips.
+
+Extended TessellatedMesh shape:
+tstype TessellatedMesh = {
+  positions: Float32Array;
+  normals: Float32Array;
+  indices: Uint32Array;
+
+  // New for Phase 4 Split A:
+  edges: Array<{
+    id: string;                    // stable hash
+    type: EdgeType;
+    lengthMm: number;
+    midpoint: [number, number, number];
+    polyline: Uint32Array;         // indices into positions, in edge order
+  }>;
+  faces: Array<{
+    id: string;                    // stable hash
+    type: FaceType;
+    areaMm2: number;
+    centroid: [number, number, number];
+    normalAtCentroid: [number, number, number];
+    triangles: Uint32Array;        // indices into indices array (groups of 3)
+  }>;
+};
+Picker selection states:
+The 3D view supports four picking modes, controlled by the active inspector:
+
+'idle' — no picking. This is the default outside Fillet/Chamfer/Hole inspectors.
+'edges' — hover highlights edges, click selects. Multi-select with shift. Used by Fillet and Chamfer.
+'faces' — hover highlights faces, click selects single face. Used by Hole (face on which to drill).
+'point-on-face' — first click selects a face, second click places a 2D point on that face's plane. Used by Hole (placement).
+
+Picking mode is stored in Zustand under featureEditor.pickingMode (Split B will populate this when Fillet, Chamfer, or Hole inspectors are active).
+Hover and selection visuals:
+Edges:
+
+Hover: Replit Orange #FF6B1A at 0.6 opacity, line width 3. Underlying mesh edge is darker.
+Selected: Replit Orange #FF6B1A at 1.0 opacity, line width 4.
+Multi-selected edges: same as selected; counter shown in inspector ("3 edges selected").
+
+Faces:
+
+Hover: Replit Orange overlay at 0.15 opacity.
+Selected: Replit Orange overlay at 0.30 opacity, with a thin Replit Orange outline around the face boundary.
+
+Implementation notes:
+
+Edge highlights: per-edge Line2 from EdgeHighlightLayer. Rebuild on selection change. The polyline indices from the metadata go straight into a LineGeometry.
+Face highlights: build a small overlay mesh from the face's triangle indices. Material is MeshBasicMaterial with transparent: true, opacity: 0.15 | 0.30, depthWrite: false, side: DoubleSide, polygonOffset: true, polygonOffsetFactor: -1. The polygon offset prevents z-fighting with the underlying part mesh.
+Outline around selected face: extract the face's boundary edges (its loops), render as a Line2 group at line width 2, full opacity orange.
+
+Raycasting:
+Standard Three.js Raycaster against the part mesh. On hit:
+
+For face mode: identify which face the hit triangle belongs to using a triangle-to-face lookup table built from faces[].triangles. The triangle index of the hit comes from the raycaster intersection.
+For edge mode: edges are 1D, no triangles. Use a screen-space proximity test: project all edge polylines to screen space, find the edge whose nearest segment is closest to the cursor and within 8px. This is more reliable than raycasting against thin lines.
+
+Build the triangle-to-face lookup once per mesh regen and cache it. Key by partId.
+Selection state additions:
+ts// Add to existing Selection union
+type Selection =
+  | { kind: 'sketch'; partId: string; sketchId: string }
+  | { kind: 'feature'; partId: string; featureId: string }
+  | { kind: 'edges'; partId: string; edgeIds: string[] }
+  | { kind: 'face'; partId: string; faceId: string }
+  | { kind: 'point-on-face'; partId: string; faceId: string; uv: [number, number] }
+  | null;
+Picker integration with PartMeshLayer:
+The picker needs access to per-part edge/face metadata. PartMeshLayer already calls regeneratePart and gets a TessellatedMesh; extend the layer to also store the edges/faces metadata per part and expose it via getPartTopology(partId). TopologyPicker reads this on raycast.
+When a part is removed or regenerated, the picker's selection for that part should be cleared (the edge/face IDs may not survive a major upstream change, even with stable hashing).
+Edge proximity raycasting (the trickiest piece):
+tsfunction nearestEdgeAtCursor(
+  cursorScreen: [number, number],
+  camera: Camera,
+  rendererSize: [number, number],
+  partMeshes: Array<{ partId: string; positions: Float32Array; edges: EdgeMetadata[] }>,
+  thresholdPx: number = 8
+): { partId: string; edgeId: string; distancePx: number } | null {
+  // For each edge polyline:
+  //   For each consecutive pair of vertex indices:
+  //     Project both vertices to screen space using camera + rendererSize
+  //     Compute distance from cursorScreen to the projected segment
+  //   Track the minimum distance per edge
+  // Return the edge with smallest min-distance, if under threshold
+}
+Project to screen space via standard NDC: vec.project(camera) gives NDC [-1, 1], then map to pixel coords. Cache projected positions per frame.
+Inspector during picking modes (Split A scope):
+For Split A, the picker has no inspector to drive it (Fillet/Chamfer/Hole are Split B). Add a temporary diagnostic inspector "Topology Picker (Test)" accessible from a hidden keyboard shortcut: Cmd+Shift+T toggles a test mode where:
+
+A radio group selects picking mode (edges, faces, point-on-face).
+A list shows current selection (edge IDs, face IDs, or face + UV).
+A "Clear" button resets selection.
+
+This is for validating Split A before Split B uses it. Remove the keyboard shortcut and diagnostic inspector at the end of Split B.
+Acceptance criteria (Split A):
+
+Create a part: extrude a 20mm × 20mm × 10mm rectangle. Mesh appears.
+Open the test mode (Cmd+Shift+T), select edges mode.
+Hover over an edge of the box. Edge highlights in light orange.
+Click. Edge selected, full orange. Inspector shows the edge ID.
+Shift-click another edge. Both highlighted, inspector shows "2 edges selected".
+Switch to faces mode. Click a face. Face overlays in orange with outline. Inspector shows the face ID.
+Switch to point-on-face mode. Click a face, then click a point on it. Selection shows face + UV coordinates.
+Edit the extrude depth from 10mm to 20mm. The box rebuilds. The previously selected edges/faces remain selected if their geometry survived (top and bottom faces should survive; side faces should survive; the four vertical edges change length but remain identifiable).
+Edit the extrude in a way that fundamentally changes geometry (switch to revolve). Selection clears for that part.
+Reload the page. Selection state is not persisted (consistent with featureEditor); test mode resets clean.
+
+Performance:
+
+Edge proximity raycast on a 20-edge mesh under 16ms (single frame).
+Face raycast under 8ms.
+Part regen with topology metadata under 350ms for a simple extrude (vs 250ms in Phase 3 without topology).
+
+Note for Agent:
+The stable hashing of edges and faces is what makes Fillet and Chamfer work across parameter edits. If you hash by vertex index in the tessellation, IDs change every regen and selection breaks. Hash by canonical geometry: line edges by their two endpoints rounded to 0.001mm, circular edges by centre + radius + axis + start/end angles rounded, faces by their underlying surface type + a canonical signature of the surface parameters.
+The triangle-to-face lookup is critical for face raycasting. Build it as a Uint32Array parallel to the indices array, where each triangle index gets the face's ID-as-integer (or a face index into faces[]). Then the raycaster's triangle index lookup is constant time.
+Polygon offset on the face overlay material is non-negotiable. Without it, you'll see flicker between the face overlay and the underlying part mesh on every camera move, even with depthWrite: false.
+Test on the deployed .replit.app URL in external Chrome on an M-series Mac, not the Replit preview iframe.
+Commit on completion of Split A. Do not push. Do not run git push under any circumstance. Stop after commit and report status. Do not begin Split B without explicit go-ahead.
