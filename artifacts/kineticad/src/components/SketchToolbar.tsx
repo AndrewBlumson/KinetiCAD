@@ -1,7 +1,7 @@
 // Sub-toolbar shown in place of the normal modelling toolbar while a sketch
-// session is active. Tool buttons (Line / Rectangle / Circle / Arc) are
-// stubbed out in Split A; Split B will wire them to the sketch tool state
-// machine. Finish and Cancel buttons are fully wired here.
+// session is active. Tool buttons (Line / Rectangle / Circle / Arc) drive the
+// sketchSession.tool field which `SketchSession` (Three.js side) reacts to.
+// Finish and Cancel are wired to the corresponding store actions.
 
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
@@ -19,14 +19,17 @@ const TOOLS: ReadonlyArray<{
 ];
 
 export default function SketchToolbar() {
-  const session = useKinetiCADStore((s) => s.sketchSession);
+  // Narrow selectors so 60Hz mouse activity (which doesn't touch any of
+  // these fields) can't re-render the toolbar.
+  const active = useKinetiCADStore((s) => s.sketchSession.active);
+  const tool = useKinetiCADStore((s) => s.sketchSession.tool);
   const setSketchTool = useKinetiCADStore((s) => s.setSketchTool);
   const finishSketch = useKinetiCADStore((s) => s.finishSketch);
   const cancelSketch = useKinetiCADStore((s) => s.cancelSketch);
 
   // Enter/Escape keyboard shortcuts per the spec.
   useEffect(() => {
-    if (!session.active) return;
+    if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       // Ignore when the user is typing in an input.
       const target = e.target as HTMLElement | null;
@@ -45,9 +48,9 @@ export default function SketchToolbar() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [session.active, finishSketch]);
+  }, [active, finishSketch]);
 
-  if (!session.active) return null;
+  if (!active) return null;
 
   return (
     <>
@@ -55,22 +58,21 @@ export default function SketchToolbar() {
         Sketch
       </span>
       {TOOLS.map((t) => {
-        const active = session.tool === t.tool;
-        // Tools are wired in Split B. Keep them disabled visually but allow
-        // clicks so the active-tool state becomes selectable for testing.
+        const isActive = tool === t.tool;
+        // Re-clicking the active tool toggles back to idle (cancels in-flight).
+        const onClick = () => setSketchTool(isActive ? "idle" : t.tool);
         return (
           <button
             key={t.tool}
             title={t.label}
             type="button"
-            disabled
-            onClick={() => setSketchTool(t.tool)}
+            onClick={onClick}
             data-testid={`sketch-tool-${t.tool}`}
             className={[
               "flex items-center justify-center w-7 h-7 rounded text-sm transition-colors",
-              active
+              isActive
                 ? "bg-[#FF6B1A] text-white"
-                : "text-muted-foreground opacity-40 cursor-not-allowed",
+                : "text-foreground hover:bg-secondary active:bg-secondary/80",
             ].join(" ")}
           >
             {t.icon}

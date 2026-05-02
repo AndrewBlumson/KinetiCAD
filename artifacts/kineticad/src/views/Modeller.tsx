@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
 import SketchToolbar from '@/components/SketchToolbar';
+import SketchCursor from '@/components/SketchCursor';
 import type { CardinalPlane } from '@/sketch/plane';
 
 const Scene = lazy(() => import('@/three/Scene'));
@@ -98,6 +99,9 @@ export default function Modeller() {
         <main
           className="flex-1 relative overflow-hidden"
           style={{ background: '#0A0E1A' }}
+          // The SketchCursor's CSS hides the system cursor inside this host
+          // while sketch mode is active, scoped to this attribute selector.
+          data-kineticad-canvas-host="true"
         >
           <Suspense fallback={null}>
             <Scene />
@@ -108,6 +112,7 @@ export default function Modeller() {
             onCancel={() => setPlanePickerOpen(false)}
           />
         </main>
+        <SketchCursor />
 
         {/* Right Inspector */}
         <aside className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-hidden panel-transition">

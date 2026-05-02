@@ -17,13 +17,13 @@ export type SketchSession = {
   plane: CardinalPlane | null;
   tool: SketchTool;
   /**
-   * Primitive currently being drawn (e.g. line awaiting its second click).
-   * Wired in Split B.
-   */
-  inFlightPrimitive: SketchPrimitive | null;
-  /**
-   * Primitives finalised by the user during this session, before they have
-   * been pushed into the assembly. Wired in Split B.
+   * Primitives committed by the user during this session, before they have
+   * been pushed into the assembly. Updated by `commitPrimitive`.
+   *
+   * Note: the in-flight primitive is intentionally NOT in the store. It
+   * changes 60×/s on mousemove and would re-render every store subscriber.
+   * The `SketchSession` class (in `src/sketch/SketchSession.ts`) owns it
+   * locally and renders it directly via Three.js without a React round-trip.
    */
   committedPrimitives: SketchPrimitive[];
 };
@@ -32,7 +32,6 @@ const defaultSketchSession: SketchSession = {
   active: false,
   plane: null,
   tool: "idle",
-  inFlightPrimitive: null,
   committedPrimitives: [],
 };
 
@@ -48,7 +47,7 @@ export type KinetiCADStore = {
 
   beginSketch: (plane: CardinalPlane) => void;
   setSketchTool: (tool: SketchTool) => void;
-  commitInFlightPrimitive: () => void;
+  commitPrimitive: (primitive: SketchPrimitive) => void;
   finishSketch: () => void;
   cancelSketch: () => void;
 };
@@ -100,28 +99,25 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             active: true,
             plane,
             tool: "idle",
-            inFlightPrimitive: null,
             committedPrimitives: [],
           },
         }),
 
       setSketchTool: (tool) =>
         set((s) => ({
-          sketchSession: { ...s.sketchSession, tool, inFlightPrimitive: null },
+          sketchSession: { ...s.sketchSession, tool },
         })),
 
-      commitInFlightPrimitive: () =>
-        set((s) => {
-          const { inFlightPrimitive, committedPrimitives } = s.sketchSession;
-          if (!inFlightPrimitive) return s;
-          return {
-            sketchSession: {
-              ...s.sketchSession,
-              inFlightPrimitive: null,
-              committedPrimitives: [...committedPrimitives, inFlightPrimitive],
-            },
-          };
-        }),
+      commitPrimitive: (primitive) =>
+        set((s) => ({
+          sketchSession: {
+            ...s.sketchSession,
+            committedPrimitives: [
+              ...s.sketchSession.committedPrimitives,
+              primitive,
+            ],
+          },
+        })),
 
       finishSketch: () => {
         const state = get();

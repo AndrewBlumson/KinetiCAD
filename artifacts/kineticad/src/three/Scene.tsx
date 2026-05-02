@@ -29,6 +29,15 @@ import {
   type CardinalPlane,
 } from "@/sketch/plane";
 import { createSketchOverlay, type SketchOverlay } from "@/sketch/sketchOverlay";
+import {
+  createSketchSession,
+  type SketchSessionHandle,
+} from "@/sketch/SketchSession";
+import {
+  createFinishedSketchesLayer,
+  type FinishedSketchesLayer,
+} from "@/sketch/finishedSketchesLayer";
+import type { SketchTool } from "@/state/store";
 
 type Status =
   | { kind: "checking-webgpu" }
@@ -77,6 +86,11 @@ export default function Scene() {
     let cameraTween: CameraTween | null = null;
     let sketchOverlay: SketchOverlay | null = null;
     let unsubscribeStore: (() => void) | null = null;
+    let sketchSessionHandle: SketchSessionHandle | null = null;
+    let finishedLayer: FinishedSketchesLayer | null = null;
+    let unsubscribeAssembly: (() => void) | null = null;
+    let canvasResW = 1;
+    let canvasResH = 1;
 
     const scene = createScene();
     const lights = createLights(scene);
@@ -177,16 +191,32 @@ export default function Scene() {
         sketchOverlay.group.visible = false;
         scene.add(sketchOverlay.group);
 
+        // Persistent overlay layer: thin orange wireframes for sketches the
+        // user has already finished, visible from any camera angle.
+        canvasResW = initialWidth;
+        canvasResH = initialHeight;
+        finishedLayer = createFinishedSketchesLayer({
+          widthPx: canvasResW,
+          heightPx: canvasResH,
+        });
+        scene.add(finishedLayer.group);
+        finishedLayer.sync(useKinetiCADStore.getState().assembly);
+        unsubscribeAssembly = useKinetiCADStore.subscribe((state) => {
+          finishedLayer?.sync(state.assembly);
+        });
+
         // Sketch session sync: reconcile the current sketch state with the
-        // camera, overlay, and orbit controls. We subscribe to the store AND
-        // run the reconciler once immediately so an already-active session
-        // (e.g. user clicked "New Sketch" before the scene finished booting)
-        // gets picked up — `subscribe` only fires on subsequent changes.
+        // camera, overlay, orbit controls, and the active SketchSession. We
+        // subscribe to the store AND run the reconciler once immediately so
+        // an already-active session (e.g. user clicked "New Sketch" before
+        // the scene finished booting) gets picked up — `subscribe` only fires
+        // on subsequent changes.
         let prevSketchActive = false;
         let prevSketchPlane: CardinalPlane | null = null;
+        let prevSketchTool: SketchTool = "idle";
 
         const reconcileSketch = (state: ReturnType<typeof useKinetiCADStore.getState>) => {
-          if (!controls || !sketchOverlay) return;
+          if (!controls || !sketchOverlay || !renderer) return;
           const session = state.sketchSession;
 
           if (session.active && session.plane) {
@@ -207,11 +237,41 @@ export default function Scene() {
               controls.enabled = false;
               sketchOverlay.setPlane(session.plane);
               sketchOverlay.group.visible = true;
+
+              if (!sketchSessionHandle) {
+                // Create the per-session orchestrator on entry.
+                sketchSessionHandle = createSketchSession({
+                  scene,
+                  camera,
+                  canvas: renderer.domElement as HTMLCanvasElement,
+                  initialPlane: session.plane,
+                  initialTool: session.tool,
+                  initialResolution: { widthPx: canvasResW, heightPx: canvasResH },
+                  onPrimitiveCommitted: (primitive) => {
+                    useKinetiCADStore.getState().commitPrimitive(primitive);
+                  },
+                  getCommittedPrimitives: () =>
+                    useKinetiCADStore.getState().sketchSession.committedPrimitives,
+                });
+              } else {
+                sketchSessionHandle.setPlane(session.plane);
+              }
+
               prevSketchActive = true;
               prevSketchPlane = session.plane;
+              prevSketchTool = session.tool;
+            }
+            // Push tool changes through to the session even when we didn't
+            // enter / switch planes (e.g. user picked a different tool from
+            // the toolbar mid-session).
+            if (sketchSessionHandle && session.tool !== prevSketchTool) {
+              sketchSessionHandle.setTool(session.tool);
+              prevSketchTool = session.tool;
             }
           } else if (prevSketchActive) {
-            // Exiting sketch — animate back to the default 3D view.
+            // Exiting sketch — animate back to the default 3D view and tear
+            // down the per-session orchestrator. The finishedLayer subscriber
+            // will pick up any newly-finished sketch from the assembly.
             cameraTween = {
               fromPos: camera.position.clone(),
               toPos: new THREE.Vector3(...DEFAULT_CAMERA_POSITION),
@@ -224,8 +284,13 @@ export default function Scene() {
               onComplete: "enable-controls",
             };
             sketchOverlay.group.visible = false;
+            if (sketchSessionHandle) {
+              sketchSessionHandle.dispose();
+              sketchSessionHandle = null;
+            }
             prevSketchActive = false;
             prevSketchPlane = null;
+            prevSketchTool = "idle";
           }
         };
 
@@ -292,6 +357,12 @@ export default function Scene() {
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
           camera.updateProjectionMatrix();
+          canvasResW = width;
+          canvasResH = height;
+          // Keep Line2 materials' `resolution` uniform in sync — without this
+          // their pixel widths warp on viewport changes.
+          sketchSessionHandle?.setResolution(width, height);
+          finishedLayer?.setResolution(width, height);
         });
         resizeObserver.observe(container);
 
@@ -363,6 +434,14 @@ export default function Scene() {
     return () => {
       cancelled = true;
       unsubscribeStore?.();
+      unsubscribeAssembly?.();
+      sketchSessionHandle?.dispose();
+      sketchSessionHandle = null;
+      if (finishedLayer) {
+        scene.remove(finishedLayer.group);
+        finishedLayer.dispose();
+        finishedLayer = null;
+      }
       if (fpsTimer) clearInterval(fpsTimer);
       resizeObserver?.disconnect();
       controls?.dispose();
