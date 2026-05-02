@@ -24,16 +24,21 @@ export default function RevoluteMateInspector() {
   const setStage = useKinetiCADStore((s) => s.setMateEditorStage);
   const setError = useKinetiCADStore((s) => s.setMateEditorError);
   const setPickingMode = useKinetiCADStore((s) => s.setPickingMode);
+  const setPickFilter = useKinetiCADStore((s) => s.setPickFilter);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
   const assembly = useKinetiCADStore((s) => s.assembly);
 
-  // Drive the picker mode while this inspector is mounted.
+  // Drive the picker mode + filter while this inspector is mounted. The
+  // filter restricts both hover and click to circle/arc edges so the user
+  // can't accidentally pick a nearby line edge (e.g. cylinder seam).
   useEffect(() => {
     setPickingMode("edges");
+    setPickFilter({ edgeTypes: ["circle", "arc"] });
     return () => {
       setPickingMode("idle");
+      setPickFilter(null);
     };
-  }, [setPickingMode]);
+  }, [setPickingMode, setPickFilter]);
 
   // Fold incoming edge picks into the editor stage by stage.
   useEffect(() => {

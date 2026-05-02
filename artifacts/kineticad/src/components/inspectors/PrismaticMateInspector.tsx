@@ -21,15 +21,18 @@ export default function PrismaticMateInspector() {
   const setStage = useKinetiCADStore((s) => s.setMateEditorStage);
   const setError = useKinetiCADStore((s) => s.setMateEditorError);
   const setPickingMode = useKinetiCADStore((s) => s.setPickingMode);
+  const setPickFilter = useKinetiCADStore((s) => s.setPickFilter);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
   const assembly = useKinetiCADStore((s) => s.assembly);
 
   useEffect(() => {
     setPickingMode("faces");
+    setPickFilter({ faceTypes: ["plane"] });
     return () => {
       setPickingMode("idle");
+      setPickFilter(null);
     };
-  }, [setPickingMode]);
+  }, [setPickingMode, setPickFilter]);
 
   useEffect(() => {
     if (!editor.open || editor.params.type !== "prismatic") return;

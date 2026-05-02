@@ -461,3 +461,41 @@ already in place from prior work and needed no further code changes.
 clean. Behavioral verification (B stays welded to A under gravity;
 ground anchor survives reload) requires WebGPU — QA on a deployed
 `.replit.app` URL.
+
+### Revolute click-rejection fix (pick filter)
+
+Bug: while creating a Revolute mate, hovering a circular edge would
+highlight it correctly, but clicking would intermittently surface
+"Revolute requires circular geometry on both sides" and leave PART A
+unset. QA hypothesised separate hover/click code paths; that was wrong
+— `TopologyPicker.findEdgeHit` is the single entry point for both, and
+mouseup-jitter (within `CLICK_PIXEL_TOL = 4 px`) could land marginally
+closer to a side seam (`type: "line"`) than to the circular top edge.
+The picker has no notion of inspector intent, so it returned the seam,
+and the inspector's `isCircularEdge` rejected it.
+
+Fix: introduce a per-mode geometry filter that lives in the store and
+is honoured by both hover and click:
+
+- `state/store.ts`: new `PickFilter = { edgeTypes?, faceTypes? }` slice
+  with `setPickFilter`. Equality-guarded against array churn.
+- `three/TopologyPicker.ts`: `findEdgeHit` / `findFaceHit` skip
+  entities whose `type` is not in the active allowlist. Click handlers
+  also emit `[mate-click]` console diagnostics with the picked
+  entity's id+type and the active filter — trivially copy-pasteable
+  evidence if QA reports the bug recurring.
+- Mate inspectors set the filter on mount and clear on unmount:
+  - `RevoluteMateInspector`: `edgeTypes: ["circle", "arc"]`
+  - `PrismaticMateInspector`: `faceTypes: ["plane"]`
+  - `PlanarMateInspector`: `faceTypes: ["plane"]`
+  - Spherical (point-on-face, any face) and Fixed (no picking) need
+    no filter.
+
+Net effect: the user can no longer hover or click an edge/face the
+inspector would later reject — non-matching geometry is invisible to
+the picker for the duration of the inspector session.
+
+**Verification**: `pnpm --filter @workspace/kineticad run typecheck`
+clean; HMR re-applied across all three updated inspectors. Behavioural
+QA (click on a circular edge near a side seam reliably advances Stage
+A → Stage B) on the deployed `.replit.app` URL.

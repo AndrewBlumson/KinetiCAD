@@ -25,6 +25,7 @@ import type {
   Transform,
 } from "./schemas";
 import type { CardinalPlane } from "@/sketch/plane";
+import type { EdgeType, FaceType } from "@/cad/types";
 
 export type SketchTool = "idle" | "line" | "rectangle" | "circle" | "arc";
 
@@ -43,6 +44,14 @@ export type SketchSession = {
    */
   committedPrimitives: SketchPrimitive[];
 };
+
+function arrEq<T>(a: readonly T[] | undefined, b: readonly T[] | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
 
 const defaultSketchSession: SketchSession = {
   active: false,
@@ -81,6 +90,21 @@ export type Selection =
  * subsequent UV-pick stages internally).
  */
 export type PickingMode = "idle" | "edges" | "faces" | "point-on-face";
+
+/**
+ * Phase 9.5 — picker geometry filter. When set, the topology picker only
+ * hovers / clicks geometry whose `type` is in the corresponding allowlist.
+ * Driven by the active mate inspector (e.g. Revolute → circular edges).
+ *
+ * Without this, mouseup-jitter on a cylinder could pick a side seam
+ * (line edge) right next to the circular top edge that hover highlighted,
+ * and the inspector would reject the click as "non-circular" — visible to
+ * the user as "click does nothing, banner appears".
+ */
+export type PickFilter = {
+  edgeTypes?: EdgeType[];
+  faceTypes?: FaceType[];
+};
 
 export type ExtrudeParams = {
   depthMm: number;
@@ -346,6 +370,8 @@ export type KinetiCADStore = {
   featurePreview: FeaturePreview;
   /** Active picker mode. Not persisted. */
   pickingMode: PickingMode;
+  /** Phase 9.5 picker filter. `null` = no filter (default). */
+  pickFilter: PickFilter | null;
 
   setMode: (mode: AppMode) => void;
   /**
@@ -391,6 +417,7 @@ export type KinetiCADStore = {
     uv: [number, number],
   ) => void;
   setPickingMode: (mode: PickingMode) => void;
+  setPickFilter: (filter: PickFilter | null) => void;
   clearSelection: () => void;
 
   /** Open the inspector to create a new extrude/revolve from the given sketch. */
@@ -605,6 +632,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       mateEditor: defaultMateEditor,
       featurePreview: defaultFeaturePreview,
       pickingMode: "idle",
+      pickFilter: null,
 
       setMode: (mode) => set({ mode }),
 
@@ -772,6 +800,23 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         }),
 
       setPickingMode: (mode) => set({ pickingMode: mode }),
+
+      setPickFilter: (filter) =>
+        set((s) => {
+          // Equality guard so an effect that re-emits the same filter object
+          // doesn't churn subscribers.
+          const cur = s.pickFilter;
+          if (cur === filter) return {};
+          if (
+            cur &&
+            filter &&
+            arrEq(cur.edgeTypes, filter.edgeTypes) &&
+            arrEq(cur.faceTypes, filter.faceTypes)
+          ) {
+            return {};
+          }
+          return { pickFilter: filter };
+        }),
 
       clearSelection: () => set({ selection: null }),
 

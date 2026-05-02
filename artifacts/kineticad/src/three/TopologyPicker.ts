@@ -23,6 +23,7 @@ import * as THREE from "three";
 import type { EdgeMetadata, FaceMetadata } from "@/cad/types";
 import type {
   KinetiCADStore,
+  PickFilter,
   PickingMode,
   Selection,
 } from "@/state/store";
@@ -67,6 +68,7 @@ export function createTopologyPicker(opts: {
   let heightPx = domElement.clientHeight || window.innerHeight;
 
   let pickingMode: PickingMode = store.getState().pickingMode;
+  let pickFilter: PickFilter | null = store.getState().pickFilter;
   const unsubscribe = store.subscribe((state, prev) => {
     if (state.pickingMode !== prev.pickingMode) {
       pickingMode = state.pickingMode;
@@ -76,7 +78,22 @@ export function createTopologyPicker(opts: {
         faceLayer.setHover(null);
       }
     }
+    if (state.pickFilter !== prev.pickFilter) {
+      pickFilter = state.pickFilter;
+    }
   });
+
+  // Phase 9.5 — predicates derived from the active pick filter. Both hover
+  // and click feed through these so the user can never visually highlight
+  // an entity that the click handler would later reject.
+  const edgeAllowed = (e: EdgeMetadata): boolean => {
+    const allow = pickFilter?.edgeTypes;
+    return !allow || allow.includes(e.type);
+  };
+  const faceAllowed = (f: FaceMetadata): boolean => {
+    const allow = pickFilter?.faceTypes;
+    return !allow || allow.includes(f.type);
+  };
 
   // Click-vs-drag tracking.
   let mouseDownAt: { x: number; y: number; shift: boolean } | null = null;
@@ -166,6 +183,7 @@ export function createTopologyPicker(opts: {
     };
     partMeshLayer.forEachVisible((partId, _mesh, topology: PartTopology) => {
       for (const edge of topology.edges) {
+        if (!edgeAllowed(edge)) continue;
         const d = polylineDistancePx(edge.polyline, cursor);
         if (d < EDGE_PROXIMITY_PX && (!slot.value || d < slot.value.dist)) {
           slot.value = { dist: d, hit: { partId, edge } };
@@ -203,6 +221,7 @@ export function createTopologyPicker(opts: {
     if (faceIdx === 0xffffffff) return null;
     const face = topology.faces[faceIdx];
     if (!face) return null;
+    if (!faceAllowed(face)) return null;
     return { partId, face, point: first.point.clone() };
   };
 
@@ -270,6 +289,13 @@ export function createTopologyPicker(opts: {
 
     if (pickingMode === "edges") {
       const hit = findEdgeHit(css);
+      // eslint-disable-next-line no-console
+      console.log("[mate-click] edge pick", {
+        hit: hit
+          ? { partId: hit.partId, edgeId: hit.edge.id, edgeType: hit.edge.type }
+          : null,
+        filter: pickFilter,
+      });
       if (!hit) {
         if (!shift) state.clearSelection();
         return;
@@ -280,6 +306,14 @@ export function createTopologyPicker(opts: {
 
     // 'faces' or 'point-on-face' modes
     const hit = findFaceHit(css);
+    // eslint-disable-next-line no-console
+    console.log("[mate-click] face pick", {
+      hit: hit
+        ? { partId: hit.partId, faceId: hit.face.id, faceType: hit.face.type }
+        : null,
+      filter: pickFilter,
+      mode: pickingMode,
+    });
     if (!hit) {
       if (!shift) state.clearSelection();
       return;
