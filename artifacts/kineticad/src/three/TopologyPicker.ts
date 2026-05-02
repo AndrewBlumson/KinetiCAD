@@ -98,7 +98,15 @@ export function createTopologyPicker(opts: {
     considered: number;
     bestDistAll: number;
     proximity: number;
-  } = { considered: 0, bestDistAll: Infinity, proximity: EDGE_PROXIMITY_PX };
+    totalEdges: number;
+    typeHistogram: Record<string, number>;
+  } = {
+    considered: 0,
+    bestDistAll: Infinity,
+    proximity: EDGE_PROXIMITY_PX,
+    totalEdges: 0,
+    typeHistogram: {},
+  };
 
   // Phase 9.5 — predicates derived from the active pick filter. Both hover
   // and click feed through these so the user can never visually highlight
@@ -199,13 +207,31 @@ export function createTopologyPicker(opts: {
       value: { dist: number; hit: EdgeHit } | null;
       considered: number;
       bestDistAll: number;
-    } = { value: null, considered: 0, bestDistAll: Infinity };
+      totalEdges: number;
+      typeHistogram: Record<string, number>;
+    } = {
+      value: null,
+      considered: 0,
+      bestDistAll: Infinity,
+      totalEdges: 0,
+      typeHistogram: {},
+    };
     const proximity =
       pickFilter?.edgeTypes && pickFilter.edgeTypes.length > 0
         ? FILTERED_EDGE_PROXIMITY_PX
         : EDGE_PROXIMITY_PX;
     partMeshLayer.forEachVisible((partId, _mesh, topology: PartTopology) => {
       for (const edge of topology.edges) {
+        // Tally pre-filter so the diagnostic shows what actually exists
+        // in the scene, not just what the filter accepts. If 'circle'/'arc'
+        // are missing despite the user clicking what looks like a round
+        // edge, the part's geometry is classified as 'spline'/'other'
+        // (e.g. revolved profile, imported step body, non-exact curve)
+        // and the hover that "worked" pre-filter was a line seam, not a
+        // true circular edge.
+        slot.totalEdges++;
+        slot.typeHistogram[edge.type] =
+          (slot.typeHistogram[edge.type] ?? 0) + 1;
         if (!edgeAllowed(edge)) continue;
         slot.considered++;
         const d = polylineDistancePx(edge.polyline, cursor);
@@ -219,6 +245,8 @@ export function createTopologyPicker(opts: {
       considered: slot.considered,
       bestDistAll: slot.bestDistAll,
       proximity,
+      totalEdges: slot.totalEdges,
+      typeHistogram: slot.typeHistogram,
     };
     return slot.value ? slot.value.hit : null;
   };

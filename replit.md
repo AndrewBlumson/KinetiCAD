@@ -525,3 +525,32 @@ and `proximity` (active threshold) into a closure-scoped `edgePickDiag`
 that the click logger emits. Future regressions distinguish "no
 candidates exist" from "candidates exist but cursor is too far" at a
 glance.
+
+#### Follow-up #2: full edge-type histogram in diagnostics
+
+Second deploy: QA reported `diag: { considered: 0, bestDistAll:
+Infinity, proximity: 24 }`. Their reading was "no edges match the
+filter, therefore the filter strings must be wrong" — but `EdgeType`
+is a TS string-literal union (`"line" | "circle" | "arc" | "spline" |
+"other"`) and `setPickFilter({ edgeTypes: ["circle", "arc"] })` is
+statically checked against it; a mismatch wouldn't compile, and
+`topology.ts` literally writes `type: "circle"` / `type: "arc"`.
+
+The likelier interpretation: the part the user is testing on has no
+edges OCCT classifies as `circle`/`arc`. Its visually-round top edge
+is a `spline` or `other` (revolved profile, imported step body,
+non-exact curve approximation). The hover that "worked" pre-filter
+was probably the line seam — exactly the bug class the filter was
+meant to defeat. Without ground-truth on what types the part actually
+contains, every "fix" is a guess.
+
+To get ground truth in one round, `findEdgeHit` now also tallies
+edges **before** the filter and emits a `typeHistogram` and
+`totalEdges`. One click on the deployed app reveals exactly what
+types exist in the user's scene — e.g.
+`{ totalEdges: 9, typeHistogram: { line: 6, spline: 3 } }` would
+prove the part has no circular edges and the filter is doing its
+job. The fix path then becomes: relax the filter to include `spline`
+when the spline is closed (cylinder approximations), or fix
+upstream classification, or document the expected sketch workflow
+(use Sketch → Circle → Extrude, not a polyline approximation).
