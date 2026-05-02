@@ -7,10 +7,18 @@ import type {
   ExtrudeDirection,
   ExtrudeFeature,
   Feature,
+  FixedMate,
+  Mate,
+  MatePivot,
   Part,
+  PlanarMate,
+  PlanarPivot,
+  PrismaticMate,
+  RevoluteMate,
   RevolveAxis,
   RevolveFeature,
   SimulationState,
+  SphericalMate,
   AppMode,
   Sketch,
   SketchPrimitive,
@@ -62,6 +70,8 @@ export type Selection =
   | { kind: "point-on-face"; partId: string; faceId: string; uv: [number, number] }
   /** Phase 5: a boolean feature on the assembly. */
   | { kind: "boolean"; booleanId: string }
+  /** Phase 7: a mate joint on the assembly. */
+  | { kind: "mate"; mateId: string }
   | null;
 
 /**
@@ -209,6 +219,69 @@ const DEFAULT_BOOLEAN_PARAMS: BooleanEditorParams = {
 };
 
 /**
+ * Phase 7 — in-flight mate editor. Lives outside `assembly` so the user can
+ * pick pivots step-by-step (stage 'pick-a' → 'pick-b' → 'ready') and either
+ * Apply (push into `assembly.mates`) or Cancel (discard).
+ *
+ * `params` carries every field every mate type might need — the per-type
+ * inspectors only read the fields that apply. The validator+geometry
+ * helpers in `three/MatePickerCoordinator.ts` derive `axisLocal` from the
+ * picked geometry before Apply.
+ *
+ * Not persisted: a half-edited mate should not survive a reload.
+ */
+export type MateType = Mate["type"];
+
+export type MateEditorStage = "pick-a" | "pick-b" | "ready";
+
+export type MateEditorParams = {
+  type: MateType;
+  partA: string | null;
+  partB: string | null;
+  pivotA: MatePivot | PlanarPivot | null;
+  pivotB: MatePivot | PlanarPivot | null;
+  /** Unit vector in partA's local frame; populated once both pivots picked. */
+  axisLocal: [number, number, number] | null;
+  /** Optional display name; falls back to "<Type> N" on Apply. */
+  name: string;
+  // Motor params (revolute/prismatic only — stored only, Phase 9 wires Rapier).
+  motorSpeedRpm: number | null;
+  motorTorqueNm: number | null;
+  motorForceN: number | null;
+  motorVelocityMmPerSec: number | null;
+};
+
+export type MateEditor =
+  | { open: false }
+  | {
+      open: true;
+      mode: "create" | "edit";
+      /** Present only when mode === 'edit'. */
+      mateId?: string;
+      stage: MateEditorStage;
+      params: MateEditorParams;
+      error: string | null;
+    };
+
+const defaultMateEditor: MateEditor = { open: false };
+
+function defaultMateEditorParams(type: MateType): MateEditorParams {
+  return {
+    type,
+    partA: null,
+    partB: null,
+    pivotA: null,
+    pivotB: null,
+    axisLocal: null,
+    name: "",
+    motorSpeedRpm: null,
+    motorTorqueNm: null,
+    motorForceN: null,
+    motorVelocityMmPerSec: null,
+  };
+}
+
+/**
  * Live-preview status for the currently-open feature editor. Driven by
  * `Scene.tsx` after each debounced regen attempt, read by the inspector to
  * surface error messages in red. Not persisted.
@@ -268,6 +341,8 @@ export type KinetiCADStore = {
   featureEditor: FeatureEditor;
   /** Phase 5 boolean editor (separate slice from featureEditor). */
   booleanEditor: BooleanEditor;
+  /** Phase 7 mate editor (separate slice from feature/boolean editors). */
+  mateEditor: MateEditor;
   featurePreview: FeaturePreview;
   /** Active picker mode. Not persisted. */
   pickingMode: PickingMode;
@@ -383,6 +458,36 @@ export type KinetiCADStore = {
   deletePartCascade: (partId: string) => void;
   /** Returns the booleans that include the given part as an input. */
   getBooleansUsingPart: (partId: string) => BooleanFeature[];
+
+  // ---- Phase 7: mates + ground anchor ----
+  /** Select a mate joint (drives the right inspector). */
+  selectMate: (mateId: string) => void;
+  /** Open the inspector to create a new mate of the given type. */
+  beginCreateMate: (type: MateType) => void;
+  /** Open the inspector to edit an existing mate, populating from current values. */
+  beginEditMate: (mateId: string) => void;
+  /** Replace the editor's params (caller supplies the full new params object). */
+  setMateEditorParams: (params: MateEditorParams) => void;
+  /** Advance the editor stage (pick-a → pick-b → ready). */
+  setMateEditorStage: (stage: MateEditorStage) => void;
+  /** Surface a validation error inline. Pass null to clear. */
+  setMateEditorError: (err: string | null) => void;
+  /** Commit the current editor state to `assembly.mates` (insert or replace). */
+  applyMateEditor: () => void;
+  /** Discard the in-flight mate editor without touching `assembly.mates`. */
+  cancelMateEditor: () => void;
+  /** Append a fully-formed mate (used by Apply; exposed for tests). */
+  addMate: (mate: Mate) => void;
+  /** Delete a mate outright. */
+  removeMate: (mateId: string) => void;
+  /** Rename a mate. No-op if the trimmed name is empty or the mate doesn't exist. */
+  renameMate: (mateId: string, name: string) => void;
+  /** Replace a mate with a patched copy (caller supplies the same `type`). */
+  updateMate: (mateId: string, patch: Partial<Mate>) => void;
+  /** Designate the ground anchor part. Pass `""` to fall back to first part. */
+  setGroundPart: (partId: string) => void;
+  /** Returns the mates that reference the given part on either side. */
+  getMatesUsingPart: (partId: string) => Mate[];
 };
 
 const defaultAssembly: Assembly = {
@@ -435,6 +540,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       selection: null,
       featureEditor: defaultFeatureEditor,
       booleanEditor: defaultBooleanEditor,
+      mateEditor: defaultMateEditor,
       featurePreview: defaultFeaturePreview,
       pickingMode: "idle",
 
@@ -1307,16 +1413,34 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
               .filter((b) => b.inputPartIds.includes(partId))
               .map((b) => b.id),
           );
+          // Phase 7: cascade-delete every mate that references the deleted
+          // part on either side.
+          const remainingMates = s.assembly.mates.filter(
+            (m) => m.partA !== partId && m.partB !== partId,
+          );
+          const removedMateIds = new Set(
+            s.assembly.mates
+              .filter((m) => m.partA === partId || m.partB === partId)
+              .map((m) => m.id),
+          );
           // Reset ground if it pointed to the deleted part.
           const groundPartId =
             s.assembly.groundPartId === partId ? "" : s.assembly.groundPartId;
           // Drop any selection / editor that targeted the deleted part or a
-          // cascade-deleted boolean.
+          // cascade-deleted boolean / mate.
           const sel = s.selection;
           let selection: Selection = sel;
           if (sel) {
             if ("partId" in sel && sel.partId === partId) selection = null;
-            else if (sel.kind === "boolean" && removedBooleanIds.has(sel.booleanId)) {
+            else if (
+              sel.kind === "boolean" &&
+              removedBooleanIds.has(sel.booleanId)
+            ) {
+              selection = null;
+            } else if (
+              sel.kind === "mate" &&
+              removedMateIds.has(sel.mateId)
+            ) {
               selection = null;
             }
           }
@@ -1330,16 +1454,26 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             removedBooleanIds.has(s.booleanEditor.featureId)
               ? defaultBooleanEditor
               : s.booleanEditor;
+          const mateEditor =
+            s.mateEditor.open &&
+            ((s.mateEditor.mateId &&
+              removedMateIds.has(s.mateEditor.mateId)) ||
+              s.mateEditor.params.partA === partId ||
+              s.mateEditor.params.partB === partId)
+              ? defaultMateEditor
+              : s.mateEditor;
           return {
             assembly: {
               ...s.assembly,
               parts: remainingParts,
               booleanFeatures: remainingBooleans,
+              mates: remainingMates,
               groundPartId,
             },
             selection,
             featureEditor,
             booleanEditor,
+            mateEditor,
             featurePreview: defaultFeaturePreview,
           };
         }),
@@ -1348,10 +1482,292 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         get().assembly.booleanFeatures.filter((b) =>
           b.inputPartIds.includes(partId),
         ),
+
+      // ---- Phase 7: mates + ground anchor ----
+
+      selectMate: (mateId) =>
+        set({ selection: { kind: "mate", mateId } }),
+
+      beginCreateMate: (type) => {
+        const state = get();
+        // Pick a unique default name like "Revolute 1".
+        const base =
+          type === "revolute"
+            ? "Revolute"
+            : type === "prismatic"
+            ? "Prismatic"
+            : type === "spherical"
+            ? "Spherical"
+            : type === "fixed"
+            ? "Fixed"
+            : "Planar";
+        const existing = new Set(
+          state.assembly.mates.map((m) => m.name).filter(Boolean) as string[],
+        );
+        let i = 1;
+        while (existing.has(`${base} ${i}`)) i++;
+        const name = `${base} ${i}`;
+        set({
+          mateEditor: {
+            open: true,
+            mode: "create",
+            stage: "pick-a",
+            params: { ...defaultMateEditorParams(type), name },
+            error: null,
+          },
+          // Mate flow uses topology picker for revolute/prismatic/planar
+          // (faces) and point-on-face for spherical. Inspectors set the
+          // exact mode in their own useEffect; default is idle.
+          pickingMode: "idle",
+          selection: null,
+          // Mutually exclusive with the other editors.
+          featureEditor: defaultFeatureEditor,
+          booleanEditor: defaultBooleanEditor,
+        });
+      },
+
+      beginEditMate: (mateId) => {
+        const state = get();
+        const mate = state.assembly.mates.find((m) => m.id === mateId);
+        if (!mate) return;
+        const params: MateEditorParams = {
+          type: mate.type,
+          partA: mate.partA,
+          partB: mate.partB,
+          pivotA: "pivotA" in mate ? mate.pivotA : null,
+          pivotB: "pivotB" in mate ? mate.pivotB : null,
+          axisLocal:
+            mate.type === "revolute" || mate.type === "prismatic"
+              ? mate.axisLocal
+              : null,
+          name: mate.name ?? "",
+          motorSpeedRpm:
+            mate.type === "revolute" ? mate.motorSpeedRpm ?? null : null,
+          motorTorqueNm:
+            mate.type === "revolute" ? mate.motorTorqueNm ?? null : null,
+          motorForceN:
+            mate.type === "prismatic" ? mate.motorForceN ?? null : null,
+          motorVelocityMmPerSec:
+            mate.type === "prismatic"
+              ? mate.motorVelocityMmPerSec ?? null
+              : null,
+        };
+        set({
+          mateEditor: {
+            open: true,
+            mode: "edit",
+            mateId,
+            stage: "ready",
+            params,
+            error: null,
+          },
+          selection: { kind: "mate", mateId },
+          pickingMode: "idle",
+          featureEditor: defaultFeatureEditor,
+          booleanEditor: defaultBooleanEditor,
+        });
+      },
+
+      setMateEditorParams: (params) =>
+        set((s) => {
+          if (!s.mateEditor.open) return {};
+          return { mateEditor: { ...s.mateEditor, params } };
+        }),
+
+      setMateEditorStage: (stage) =>
+        set((s) => {
+          if (!s.mateEditor.open) return {};
+          return { mateEditor: { ...s.mateEditor, stage } };
+        }),
+
+      setMateEditorError: (err) =>
+        set((s) => {
+          if (!s.mateEditor.open) return {};
+          return { mateEditor: { ...s.mateEditor, error: err } };
+        }),
+
+      applyMateEditor: () => {
+        const state = get();
+        const editor = state.mateEditor;
+        if (!editor.open) return;
+        const { params } = editor;
+        if (!params.partA || !params.partB) return;
+        if (params.partA === params.partB) return;
+
+        const id = editor.mateId ?? newId("mate");
+        const trimmedName = params.name.trim();
+        let mate: Mate;
+        switch (params.type) {
+          case "revolute": {
+            if (!params.pivotA || !params.pivotB || !params.axisLocal) return;
+            // Planar mate uses a different pivot shape — guard against it.
+            if (params.pivotA.kind !== "face" && params.pivotA.kind !== "edge")
+              return;
+            if (params.pivotB.kind !== "face" && params.pivotB.kind !== "edge")
+              return;
+            const m: RevoluteMate = {
+              id,
+              type: "revolute",
+              partA: params.partA,
+              partB: params.partB,
+              pivotA: params.pivotA as MatePivot,
+              pivotB: params.pivotB as MatePivot,
+              axisLocal: params.axisLocal,
+            };
+            if (trimmedName) m.name = trimmedName;
+            if (params.motorSpeedRpm != null)
+              m.motorSpeedRpm = params.motorSpeedRpm;
+            if (params.motorTorqueNm != null)
+              m.motorTorqueNm = params.motorTorqueNm;
+            mate = m;
+            break;
+          }
+          case "prismatic": {
+            if (!params.pivotA || !params.pivotB || !params.axisLocal) return;
+            if (params.pivotA.kind !== "face" && params.pivotA.kind !== "edge")
+              return;
+            if (params.pivotB.kind !== "face" && params.pivotB.kind !== "edge")
+              return;
+            const m: PrismaticMate = {
+              id,
+              type: "prismatic",
+              partA: params.partA,
+              partB: params.partB,
+              pivotA: params.pivotA as MatePivot,
+              pivotB: params.pivotB as MatePivot,
+              axisLocal: params.axisLocal,
+            };
+            if (trimmedName) m.name = trimmedName;
+            if (params.motorForceN != null) m.motorForceN = params.motorForceN;
+            if (params.motorVelocityMmPerSec != null)
+              m.motorVelocityMmPerSec = params.motorVelocityMmPerSec;
+            mate = m;
+            break;
+          }
+          case "spherical": {
+            if (!params.pivotA || !params.pivotB) return;
+            if (params.pivotA.kind !== "face" && params.pivotA.kind !== "edge")
+              return;
+            if (params.pivotB.kind !== "face" && params.pivotB.kind !== "edge")
+              return;
+            const m: SphericalMate = {
+              id,
+              type: "spherical",
+              partA: params.partA,
+              partB: params.partB,
+              pivotA: params.pivotA as MatePivot,
+              pivotB: params.pivotB as MatePivot,
+            };
+            if (trimmedName) m.name = trimmedName;
+            mate = m;
+            break;
+          }
+          case "fixed": {
+            const m: FixedMate = {
+              id,
+              type: "fixed",
+              partA: params.partA,
+              partB: params.partB,
+            };
+            if (trimmedName) m.name = trimmedName;
+            mate = m;
+            break;
+          }
+          case "planar": {
+            if (!params.pivotA || !params.pivotB) return;
+            // Planar mates use bare {kind:'face',faceId} — both pivots must
+            // be face refs (the inspector enforces this).
+            if (params.pivotA.kind !== "face" || params.pivotB.kind !== "face")
+              return;
+            const m: PlanarMate = {
+              id,
+              type: "planar",
+              partA: params.partA,
+              partB: params.partB,
+              pivotA: { kind: "face", faceId: params.pivotA.faceId },
+              pivotB: { kind: "face", faceId: params.pivotB.faceId },
+            };
+            if (trimmedName) m.name = trimmedName;
+            mate = m;
+            break;
+          }
+        }
+
+        const isEdit = editor.mode === "edit" && editor.mateId;
+        const updatedMates: Mate[] = isEdit
+          ? state.assembly.mates.map((m) => (m.id === editor.mateId ? mate : m))
+          : [...state.assembly.mates, mate];
+
+        set({
+          assembly: { ...state.assembly, mates: updatedMates },
+          mateEditor: defaultMateEditor,
+          pickingMode: "idle",
+          selection: { kind: "mate", mateId: mate.id },
+        });
+      },
+
+      cancelMateEditor: () =>
+        set({
+          mateEditor: defaultMateEditor,
+          pickingMode: "idle",
+        }),
+
+      addMate: (mate) =>
+        set((s) => ({
+          assembly: { ...s.assembly, mates: [...s.assembly.mates, mate] },
+        })),
+
+      removeMate: (mateId) =>
+        set((s) => {
+          const next = s.assembly.mates.filter((m) => m.id !== mateId);
+          if (next.length === s.assembly.mates.length) return {};
+          return {
+            assembly: { ...s.assembly, mates: next },
+            mateEditor:
+              s.mateEditor.open && s.mateEditor.mateId === mateId
+                ? defaultMateEditor
+                : s.mateEditor,
+            selection:
+              s.selection?.kind === "mate" && s.selection.mateId === mateId
+                ? null
+                : s.selection,
+          };
+        }),
+
+      renameMate: (mateId, name) =>
+        set((s) => {
+          const trimmed = name.trim();
+          if (!trimmed) return {};
+          const next = s.assembly.mates.map((m) =>
+            m.id === mateId ? ({ ...m, name: trimmed } as Mate) : m,
+          );
+          return { assembly: { ...s.assembly, mates: next } };
+        }),
+
+      updateMate: (mateId, patch) =>
+        set((s) => {
+          const next = s.assembly.mates.map((m) => {
+            if (m.id !== mateId) return m;
+            // The caller supplies a same-`type` patch — cast through unknown
+            // so TS doesn't reject the partial overlay across the union.
+            return { ...m, ...(patch as object) } as Mate;
+          });
+          return { assembly: { ...s.assembly, mates: next } };
+        }),
+
+      setGroundPart: (partId) =>
+        set((s) => ({
+          assembly: { ...s.assembly, groundPartId: partId },
+        })),
+
+      getMatesUsingPart: (partId) =>
+        get().assembly.mates.filter(
+          (m) => m.partA === partId || m.partB === partId,
+        ),
     }),
     {
       name: "kineticad-state",
-      version: 5,
+      version: 6,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation flags.
       partialize: (state) => ({
@@ -1515,6 +1931,23 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                 };
               }),
             };
+          }
+        }
+        // v5 → v6: Phase 7 mates. No UI in earlier phases ever created mates,
+        // so existing v5 states already have `mates: []` from the defaultAssembly.
+        // Defensively coerce `mates` to `[]` if its shape is suspect, and
+        // ensure `groundPartId` is a string (default `""` = "default to first
+        // part" semantics handled by the UI layer).
+        if (state.assembly) {
+          const a = state.assembly as Assembly & {
+            mates?: unknown;
+            groundPartId?: unknown;
+          };
+          if (!Array.isArray(a.mates)) {
+            state.assembly = { ...a, mates: [] as Mate[] };
+          }
+          if (typeof (state.assembly as Assembly).groundPartId !== "string") {
+            state.assembly = { ...state.assembly, groundPartId: "" };
           }
         }
         return state;

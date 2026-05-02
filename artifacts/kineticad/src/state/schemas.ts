@@ -96,12 +96,94 @@ export type Part = {
   massKg?: number;
 };
 
+/**
+ * Phase 7 — pivot reference for mates. Captures *which* face / edge on the
+ * part the user picked plus the pick point in the part's *local* frame
+ * (i.e. before `part.transform` is applied). Storing the local point keeps
+ * the mate tied to the geometry even if the part's transform changes.
+ *
+ * - `face`: any face. `localPoint` is the face centroid (or the user's
+ *   click for `point-on-face` picks like spherical mate).
+ * - `edge`: any edge. `localPoint` is the edge midpoint (or computed
+ *   centerline reference for circular edges).
+ */
+export type MatePivot =
+  | { kind: 'face'; faceId: string; localPoint: [number, number, number] }
+  | { kind: 'edge'; edgeId: string; localPoint: [number, number, number] };
+
+/**
+ * Planar mate uses bare face references — no localPoint, since the mate
+ * constraint operates over the whole face plane.
+ */
+export type PlanarPivot = { kind: 'face'; faceId: string };
+
+export type RevoluteMate = {
+  id: string;
+  type: 'revolute';
+  /** Optional display name; falls back to "Revolute N" in the UI. */
+  name?: string;
+  partA: string;
+  partB: string;
+  pivotA: MatePivot;
+  pivotB: MatePivot;
+  /** Unit vector in partA's local frame; defines the rotation axis. */
+  axisLocal: [number, number, number];
+  motorSpeedRpm?: number;
+  motorTorqueNm?: number;
+};
+
+export type PrismaticMate = {
+  id: string;
+  type: 'prismatic';
+  name?: string;
+  partA: string;
+  partB: string;
+  pivotA: MatePivot;
+  pivotB: MatePivot;
+  /** Unit vector in partA's local frame; direction of allowed sliding. */
+  axisLocal: [number, number, number];
+  motorForceN?: number;
+  motorVelocityMmPerSec?: number;
+};
+
+export type SphericalMate = {
+  id: string;
+  type: 'spherical';
+  name?: string;
+  partA: string;
+  partB: string;
+  pivotA: MatePivot;
+  pivotB: MatePivot;
+};
+
+/**
+ * Fixed mates have no pivot — partB is rigidly bonded to partA at their
+ * current relative transform.
+ */
+export type FixedMate = {
+  id: string;
+  type: 'fixed';
+  name?: string;
+  partA: string;
+  partB: string;
+};
+
+export type PlanarMate = {
+  id: string;
+  type: 'planar';
+  name?: string;
+  partA: string;
+  partB: string;
+  pivotA: PlanarPivot;
+  pivotB: PlanarPivot;
+};
+
 export type Mate =
-  | { id: string; type: 'fixed'; partA: string; partB: string }
-  | { id: string; type: 'revolute'; partA: string; partB: string; axisLocal: [number, number, number]; pivotLocal: [number, number, number]; motorSpeedRpm?: number }
-  | { id: string; type: 'prismatic'; partA: string; partB: string; axisLocal: [number, number, number]; motorForceN?: number }
-  | { id: string; type: 'spherical'; partA: string; partB: string; pivotLocal: [number, number, number] }
-  | { id: string; type: 'planar'; partA: string; partB: string; planeLocal: [number, number, number, number] };
+  | RevoluteMate
+  | PrismaticMate
+  | SphericalMate
+  | FixedMate
+  | PlanarMate;
 
 export type Assembly = {
   id: string;

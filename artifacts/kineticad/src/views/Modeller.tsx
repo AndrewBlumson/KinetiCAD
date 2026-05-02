@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
+import type { MateType } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
 import SketchToolbar from '@/components/SketchToolbar';
 import SketchCursor from '@/components/SketchCursor';
@@ -7,13 +8,16 @@ import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
 import PartInspector from '@/components/inspectors/PartInspector';
 import BooleanInspector from '@/components/inspectors/BooleanInspector';
+import MateInspector from '@/components/inspectors/MateInspector';
 import PartsPanelItem from '@/components/PartsPanelItem';
+import MatesPanelItem from '@/components/MatesPanelItem';
 import NewPartButton from '@/components/NewPartButton';
 import type { CardinalPlane } from '@/sketch/plane';
 import type {
   BooleanFeature,
   BooleanOperation,
   Feature,
+  Mate,
   Part,
   SketchPlane,
 } from '@/state/schemas';
@@ -27,13 +31,17 @@ export default function Modeller() {
   const selection = useKinetiCADStore((s) => s.selection);
   const featureEditor = useKinetiCADStore((s) => s.featureEditor);
   const booleanEditor = useKinetiCADStore((s) => s.booleanEditor);
+  const mateEditor = useKinetiCADStore((s) => s.mateEditor);
   const selectPart = useKinetiCADStore((s) => s.selectPart);
   const selectSketch = useKinetiCADStore((s) => s.selectSketch);
   const selectFeature = useKinetiCADStore((s) => s.selectFeature);
   const selectBoolean = useKinetiCADStore((s) => s.selectBoolean);
+  const selectMate = useKinetiCADStore((s) => s.selectMate);
   const beginEditFeature = useKinetiCADStore((s) => s.beginEditFeature);
   const beginCreateBoolean = useKinetiCADStore((s) => s.beginCreateBoolean);
   const beginEditBoolean = useKinetiCADStore((s) => s.beginEditBoolean);
+  const beginCreateMate = useKinetiCADStore((s) => s.beginCreateMate);
+  const beginEditMate = useKinetiCADStore((s) => s.beginEditMate);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
 
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
@@ -62,9 +70,21 @@ export default function Modeller() {
     selectBoolean(booleanId);
     beginEditBoolean(booleanId);
   };
+  const onMateClick = (mateId: string) => {
+    selectMate(mateId);
+    beginEditMate(mateId);
+  };
 
   const canCreateBoolean =
     assembly.parts.length >= 2 && !sketchSession.active && !featureEditor.open;
+  // Mate creation needs ≥2 parts AND no other modal editor open. Picking a
+  // boolean while a mate-editor is open would be confusing — guard that too.
+  const canCreateMate =
+    assembly.parts.length >= 2 &&
+    !sketchSession.active &&
+    !featureEditor.open &&
+    !booleanEditor.open &&
+    !mateEditor.open;
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
@@ -124,6 +144,29 @@ export default function Modeller() {
                 testId="boolean-intersect"
               />
             </ToolbarGroup>
+
+            <div className="w-px h-5 bg-border mx-1" />
+
+            <ToolbarGroup label="Mate">
+              {(
+                [
+                  ['revolute', '⊙', 'Revolute'],
+                  ['prismatic', '↔', 'Prismatic'],
+                  ['spherical', '●', 'Spherical'],
+                  ['fixed', '⊞', 'Fixed'],
+                  ['planar', '║', 'Planar'],
+                ] as Array<[MateType, string, string]>
+              ).map(([type, icon, label]) => (
+                <ToolbarBtn
+                  key={type}
+                  icon={icon}
+                  label={label}
+                  disabled={!canCreateMate}
+                  onClick={() => beginCreateMate(type)}
+                  testId={`mate-${type}`}
+                />
+              ))}
+            </ToolbarGroup>
           </>
         )}
 
@@ -178,9 +221,27 @@ export default function Modeller() {
             {assembly.mates.length === 0 ? (
               <EmptyState text="No mates defined" />
             ) : (
-              assembly.mates.map((m) => (
-                <SidebarItem key={m.id} label={m.type} />
-              ))
+              assembly.mates.map((m, idx) => {
+                // Per-type index so the default label "Revolute 1" is stable.
+                const sameKind = assembly.mates.filter(
+                  (other) => other.type === m.type,
+                );
+                const indexAmongType = sameKind.findIndex(
+                  (other) => other.id === m.id,
+                );
+                return (
+                  <MatesPanelItem
+                    key={m.id}
+                    mate={m}
+                    parts={assembly.parts}
+                    selected={
+                      selection?.kind === 'mate' && selection.mateId === m.id
+                    }
+                    indexAmongType={indexAmongType < 0 ? idx : indexAmongType}
+                    onClick={() => onMateClick(m.id)}
+                  />
+                );
+              })
             )}
           </SidebarSection>
         </aside>
@@ -227,8 +288,10 @@ export default function Modeller() {
               sketchPrimitiveCount={sketchSession.committedPrimitives.length}
               editorOpen={featureEditor.open}
               booleanEditorOpen={booleanEditor.open}
+              mateEditorOpen={mateEditor.open}
               selection={selection}
               parts={assembly.parts}
+              mates={assembly.mates}
               onRequestDeletePart={(partId) => setCascadePartId(partId)}
             />
           </SidebarSection>
@@ -337,6 +400,15 @@ function booleanOpGlyph(op: BooleanOperation): string {
   return '∩';
 }
 
+function mateLabel(mate: Mate, parts: Part[]): string {
+  const a = parts.find((p) => p.id === mate.partA)?.name ?? '?';
+  const b = parts.find((p) => p.id === mate.partB)?.name ?? '?';
+  const typeLabel =
+    mate.type.charAt(0).toUpperCase() + mate.type.slice(1);
+  const name = mate.name && mate.name.trim() ? mate.name : typeLabel;
+  return `${name} (${a} ↔ ${b})`;
+}
+
 /** Human label for a feature row, e.g. "Extrude 1" or "Revolve 2". */
 function featureName(feature: Feature, part: Part, _idx: number): string {
   if (feature.type === 'extrude') {
@@ -431,8 +503,10 @@ function RightInspectorBody({
   sketchPrimitiveCount,
   editorOpen,
   booleanEditorOpen,
+  mateEditorOpen,
   selection,
   parts,
+  mates,
   onRequestDeletePart,
 }: {
   sketchActive: boolean;
@@ -440,8 +514,10 @@ function RightInspectorBody({
   sketchPrimitiveCount: number;
   editorOpen: boolean;
   booleanEditorOpen: boolean;
+  mateEditorOpen: boolean;
   selection: ReturnType<typeof useKinetiCADStore.getState>['selection'];
   parts: Part[];
+  mates: Mate[];
   onRequestDeletePart: (partId: string) => void;
 }) {
   if (sketchActive && sketchPlane) {
@@ -452,11 +528,22 @@ function RightInspectorBody({
       />
     );
   }
+  if (mateEditorOpen) {
+    return <MateInspector />;
+  }
   if (booleanEditorOpen) {
     return <BooleanInspector />;
   }
   if (editorOpen) {
     return <FeatureInspector />;
+  }
+  if (selection?.kind === 'mate') {
+    // Mate selection lives at the assembly level. Clicking a mate row also
+    // calls `beginEditMate` so this branch is mostly defensive — but if the
+    // editor was somehow torn down (e.g. selection survived a cascade
+    // delete), fall back to the empty state by checking the live mates list.
+    const mate = mates.find((m) => m.id === selection.mateId);
+    if (mate) return <MateInspector />;
   }
   if (selection?.kind === 'boolean') {
     // Selecting a committed boolean opens the editor in `edit` mode via the
@@ -516,10 +603,14 @@ function CascadeDeleteDialog({
   const getBooleansUsingPart = useKinetiCADStore(
     (s) => s.getBooleansUsingPart,
   );
+  const getMatesUsingPart = useKinetiCADStore((s) => s.getMatesUsingPart);
   const deletePartCascade = useKinetiCADStore((s) => s.deletePartCascade);
 
   const part = assembly.parts.find((p) => p.id === partId);
   const dependents = getBooleansUsingPart(partId);
+  const dependentMates = getMatesUsingPart(partId);
+  const willResetGround =
+    (assembly.groundPartId || assembly.parts[0]?.id) === partId;
 
   if (!part) {
     // Part vanished out from under us (e.g. another action deleted it) —
@@ -552,15 +643,15 @@ function CascadeDeleteDialog({
           </div>
         </div>
         <div className="px-4 py-3 flex flex-col gap-2">
-          {dependents.length === 0 ? (
+          {dependents.length === 0 && dependentMates.length === 0 ? (
             <div className="font-technical text-[11px] text-muted-foreground leading-snug">
-              This part is not used by any booleans. Are you sure you want to
-              delete it?
+              This part is not used by any booleans or mates. Are you sure you
+              want to delete it?
             </div>
           ) : (
             <>
               <div className="font-technical text-[11px] text-foreground leading-snug">
-                The following booleans use this part and will also be deleted:
+                The following items reference this part and will also be deleted:
               </div>
               <ul className="flex flex-col gap-0.5 max-h-32 overflow-y-auto">
                 {dependents.map((b) => (
@@ -571,9 +662,23 @@ function CascadeDeleteDialog({
                     • {b.resultPartName}
                   </li>
                 ))}
+                {dependentMates.map((m) => (
+                  <li
+                    key={m.id}
+                    className="font-technical text-[11px] text-[#FF6B6B] truncate"
+                  >
+                    • {mateLabel(m, assembly.parts)}
+                  </li>
+                ))}
               </ul>
             </>
           )}
+          {willResetGround ? (
+            <div className="font-technical text-[11px] text-muted-foreground italic leading-snug">
+              This part is the ground anchor; the next part will become the
+              default ground.
+            </div>
+          ) : null}
         </div>
         <div className="px-4 py-3 border-t border-border flex gap-2 justify-end">
           <button

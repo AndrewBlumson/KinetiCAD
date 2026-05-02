@@ -8,7 +8,7 @@
 //   - Arrow keys / ▲▼ buttons drive the step; raw typing commits on blur.
 
 import { useEffect, useRef, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useKinetiCADStore } from "@/state/store";
 
 export type PartInspectorProps = {
@@ -32,6 +32,7 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
     (s) => s.setPartTransformPartial,
   );
   const resetPartTransform = useKinetiCADStore((s) => s.resetPartTransform);
+  const setGroundPart = useKinetiCADStore((s) => s.setGroundPart);
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState("");
@@ -44,6 +45,9 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
     (f) => f.type === "extrude" || f.type === "revolve",
   );
   const tx = part.transform;
+  const effectiveGroundId =
+    assembly.groundPartId || assembly.parts[0]?.id || "";
+  const isGround = effectiveGroundId === part.id;
 
   const startRename = () => {
     setDraftName(part.name);
@@ -156,6 +160,23 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
           shape.
         </div>
       ) : null}
+      <button
+        type="button"
+        onClick={() => {
+          if (!isGround) setGroundPart(part.id);
+        }}
+        disabled={isGround}
+        data-testid="part-set-ground"
+        className={[
+          "h-8 w-full rounded font-technical text-[11px] uppercase tracking-widest transition mt-2 flex items-center justify-center gap-1.5",
+          isGround
+            ? "text-[#FF6B1A] bg-[#FF6B1A]/[0.12] cursor-default"
+            : "text-foreground bg-secondary hover:bg-secondary/80",
+        ].join(" ")}
+      >
+        <Anchor size={12} />
+        {isGround ? "Ground" : "Set as Ground"}
+      </button>
       {onRequestDelete ? (
         <button
           type="button"

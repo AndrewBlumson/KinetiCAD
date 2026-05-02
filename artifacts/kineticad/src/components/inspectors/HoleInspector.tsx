@@ -35,8 +35,8 @@ export default function HoleInspector() {
   useEffect(() => {
     if (!editor.open || editor.type !== "hole") return;
     if (!selection) return;
-    // Boolean selections live on the assembly and have no partId; ignore.
-    if (selection.kind === "boolean") return;
+    // Assembly-level selections (boolean / mate) have no partId; ignore.
+    if (selection.kind === "boolean" || selection.kind === "mate") return;
     if (selection.partId !== editor.partId) return;
 
     if (selection.kind === "face") {

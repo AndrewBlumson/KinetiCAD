@@ -4,7 +4,7 @@
 // so it inherits the project's keyboard nav, focus management, and
 // outside-click handling for free.
 
-import { Eye, EyeOff, MoreVertical } from "lucide-react";
+import { Anchor, Eye, EyeOff, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +17,12 @@ export type PartContextMenuProps = {
   partId: string;
   partName: string;
   visible: boolean;
+  /** True when this part is the current ground anchor. Disables the item. */
+  isGround: boolean;
   onRename: () => void;
   onToggleVisible: () => void;
   onDuplicate: () => void;
+  onSetGround: () => void;
   /** Caller is expected to surface the cascade-aware confirm dialog. */
   onDelete: () => void;
 };
@@ -28,9 +31,11 @@ export default function PartContextMenu({
   partId,
   partName,
   visible,
+  isGround,
   onRename,
   onToggleVisible,
   onDuplicate,
+  onSetGround,
   onDelete,
 }: PartContextMenuProps) {
   return (
@@ -78,6 +83,18 @@ export default function PartContextMenu({
           className="font-technical text-[11px] uppercase tracking-wider"
         >
           Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          data-testid={`part-menu-set-ground-${partId}`}
+          onSelect={() => {
+            if (!isGround) onSetGround();
+          }}
+          disabled={isGround}
+          className="font-technical text-[11px] uppercase tracking-wider gap-2"
+        >
+          <Anchor size={12} />
+          {isGround ? "Ground" : "Set as Ground"}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

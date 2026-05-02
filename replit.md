@@ -161,7 +161,76 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
   Delete button.
   `SketchToolbar.tsx` shows "Sketching on: <part name>" left of the
   tool icons (md+ breakpoints).
-- Phases 7–12 — pending.
+- Phase 7 ✅ — Mate Joints (Revolute / Prismatic / Spherical / Fixed /
+  Planar). Schema bumped persist v5→v6 with `Assembly.mates: Mate[]`
+  and `groundPartId: string | null`; migration adds both fields with
+  defaults `[]` / `null` (defensive guard for partial-migrated v6 rows).
+  `Mate` is a discriminated union on `type`: every variant carries
+  `id, name, type, partAId, partBId, pivotA, pivotB`; revolute/prismatic
+  add a `motor: { rpm | speedMmPerS }` (params-only — Phase 7 stores
+  but does not actuate). `MatePivot` is `{kind:'face', faceId,
+  localPoint:[x,y,z]} | {kind:'edge', edgeId, localPoint:[x,y,z]}`;
+  `applyMateEditor` strips planar pivots to the bare `{kind:'face',
+  faceId}` shape required by the planar variant on commit.
+  Store gained the full mate slice: `mateEditor` (separate from
+  `featureEditor`/`booleanEditor`), `Selection {kind:'mate', mateId}`,
+  actions `selectMate / beginCreateMate(type) / beginEditMate(mateId)
+  / setMateEditorParams / setMateEditorStage / setMateEditorError /
+  applyMateEditor / cancelMateEditor / addMate / removeMate /
+  renameMate / setGroundPart / getMatesUsingPart`. `deletePartCascade`
+  was extended to also drop every mate referencing the deleted part
+  and to null out `groundPartId` if it was the deleted part. Auto-name
+  picks "Revolute 1" / "Prismatic 1" / "Spherical 1" / "Fixed 1" /
+  "Planar 1" (uniquified) on `beginCreateMate`.
+  New `three/MatePickerCoordinator.ts` — pure helpers shared by every
+  mate inspector: `axisOfEdge` (line/circle/arc canonical axis),
+  `centroidOfFace` / `centroidOfEdge`, `parallelEnough(a, b, tolDeg=5°)`,
+  plus per-type validators that return `string | null` so the inspector
+  shell can render the inline `#FF6B6B` validation hint.
+  New `three/MateVisualizer.ts` (added to `Scene.tsx` alongside
+  `partMeshLayer` / `previewMeshLayer` / `booleanResultLayer`) renders
+  one icon per committed mate at the mid-point of `pivotA`/`pivotB` in
+  world space (each pivot `localPoint` transformed by its part's
+  `Transform`). Icon mesh uses `depthTest: false` + `renderOrder` high
+  so it stays visible through bodies; selected mate scales 1.5× and
+  swaps to `highlightSelected` (#ff6b1a). One sync per assembly /
+  selection change reuses geometry — cheap to rebuild every tick.
+  Inspector readers couple to the live scene via a tiny module-level
+  ref `three/partMeshLayerRef.ts` (`setPartMeshLayer / getPartMeshLayer`).
+  Scene publishes the layer on create and clears it before dispose, so
+  React inspectors can call `getPartTopology(partId)` without dragging
+  WebGPU context through props.
+  Five sub-inspectors share `MateInspectorShell` (NameField, Apply /
+  Cancel / Delete, inline error chip): `RevoluteMateInspector` picks
+  one edge per part (axis must be parallel within 5°, motor RPM
+  inline), `PrismaticMateInspector` picks one face per part (face
+  normals must be parallel within 5°, motor mm/s inline),
+  `SphericalMateInspector` picks point-on-face on each part (uv +
+  `face.planeBasis` → localPoint), `FixedMateInspector` picks parts in
+  the parts tree (no topology), `PlanarMateInspector` picks one face
+  per part. Router `MateInspector.tsx` switches on `mateEditor.params.
+  type` and threads the same `partMeshLayerRef` singleton.
+  UI: new `MatesPanelItem.tsx` (per-mate row in the Mates section, ⋮
+  menu with Rename / Edit / Delete + inline motor RPM/N input for
+  revolute/prismatic when present; per-type indexAmongType drives the
+  default label suffix). `Modeller.tsx` adds the Mate toolbar group
+  (5 buttons Revolute/Prismatic/Spherical/Fixed/Planar, gated on
+  `parts.length >= 2 && !sketchSession.active && !featureEditor.open
+  && !booleanEditor.open`), the "MATES" sidebar section (rendered
+  only when `mates.length > 0`), and routes `mateEditor.open ||
+  selection.kind === 'mate'` to `MateInspector` in `RightInspectorBody`
+  (editor takes precedence).
+  Ground anchor: `PartContextMenu` adds "Set as Ground" (icon ⚓);
+  `PartsPanelItem` renders the anchor glyph on the ground part and
+  threads `onSetGround`; `PartInspector` shows a "Set as Ground"
+  button (or "Ground" badge if already ground). `setGroundPart` is
+  idempotent and exclusive (only one ground at a time).
+  `CascadeDeleteDialog` extended: lists `dependentMates` by name in
+  `#FF6B6B` alongside booleans, plus a "Will reset ground" note when
+  the deleted part was the ground; `mateLabel(mate)` helper renders
+  "{type} ({partA} ↔ {partB})". On confirm, `deletePartCascade` runs
+  the unified cascade and the dialog closes.
+- Phases 8–12 — pending.
 - **Deferred to Phase 12 polish** (per user, end of Phase 5):
   - 3D click-to-select on boolean result meshes (BooleanResultLayer is rendered but not wired into TopologyPicker; selection only works via the BOOLEANS sidebar today).
   - Inline thumbnails in BooleanInspector for input parts, the Subtract tool slot, and the live result.

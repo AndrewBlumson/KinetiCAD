@@ -10,7 +10,7 @@
 // component just calls `onRequestDelete(partId)` to surface it.
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useKinetiCADStore } from "@/state/store";
 import type { Feature, Part, SketchPlane } from "@/state/schemas";
 import PartContextMenu from "./PartContextMenu";
@@ -37,6 +37,11 @@ export default function PartsPanelItem({
   const renamePart = useKinetiCADStore((s) => s.renamePart);
   const setPartVisible = useKinetiCADStore((s) => s.setPartVisible);
   const duplicatePart = useKinetiCADStore((s) => s.duplicatePart);
+  const setGroundPart = useKinetiCADStore((s) => s.setGroundPart);
+  const assembly = useKinetiCADStore((s) => s.assembly);
+  const effectiveGroundId =
+    assembly.groundPartId || assembly.parts[0]?.id || "";
+  const isGround = effectiveGroundId === part.id;
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(part.name);
@@ -114,13 +119,24 @@ export default function PartsPanelItem({
             {part.name}
           </span>
         )}
+        {isGround ? (
+          <span
+            title="Ground anchor"
+            data-testid={`part-ground-icon-${part.id}`}
+            className="w-4 h-4 flex items-center justify-center text-[#FF6B1A] shrink-0"
+          >
+            <Anchor size={12} />
+          </span>
+        ) : null}
         <PartContextMenu
           partId={part.id}
           partName={part.name}
           visible={part.visible}
+          isGround={isGround}
           onRename={startRename}
           onToggleVisible={() => setPartVisible(part.id, !part.visible)}
           onDuplicate={() => duplicatePart(part.id)}
+          onSetGround={() => setGroundPart(part.id)}
           onDelete={() => onRequestDelete(part.id)}
         />
       </div>

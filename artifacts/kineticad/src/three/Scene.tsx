@@ -78,6 +78,11 @@ import {
   type GizmoMode,
   type TransformGizmo,
 } from "./TransformGizmo";
+import {
+  createMateVisualizer,
+  type MateVisualizer,
+} from "./MateVisualizer";
+import { setPartMeshLayer } from "./partMeshLayerRef";
 import type { FaceMetadata } from "@/cad/types";
 
 type Status =
@@ -135,6 +140,7 @@ export default function Scene() {
     let booleanResultLayer: BooleanResultLayer | null = null;
     let edgeHighlightLayer: EdgeHighlightLayer | null = null;
     let faceHighlightLayer: FaceHighlightLayer | null = null;
+    let mateVisualizer: MateVisualizer | null = null;
     let topologyPicker: TopologyPicker | null = null;
     let transformGizmo: TransformGizmo | null = null;
     let unsubscribeSelection: (() => void) | null = null;
@@ -444,11 +450,17 @@ export default function Scene() {
         booleanResultLayer = createBooleanResultLayer();
         edgeHighlightLayer = createEdgeHighlightLayer();
         faceHighlightLayer = createFaceHighlightLayer();
+        mateVisualizer = createMateVisualizer();
         scene.add(partMeshLayer.group);
         scene.add(previewMeshLayer.group);
         scene.add(booleanResultLayer.group);
         scene.add(edgeHighlightLayer.group);
         scene.add(faceHighlightLayer.group);
+        scene.add(mateVisualizer.group);
+        // Phase 7 — publish the live PartMeshLayer to a module-level ref so
+        // React inspectors (mate inspectors, etc.) can read per-part topology
+        // without coupling to the WebGPU scene context.
+        setPartMeshLayer(partMeshLayer);
         edgeHighlightLayer.setResolution(canvasResW, canvasResH);
         faceHighlightLayer.setResolution(canvasResW, canvasResH);
 
@@ -811,6 +823,17 @@ export default function Scene() {
             initialBooleanVis.dimmed,
             kernel,
           );
+          // Phase 7 — render any persisted mate icons. Selection drives the
+          // 1.5× highlight; on first paint nothing is selected.
+          {
+            const sel = initialState.selection;
+            const selectedMateId = sel?.kind === "mate" ? sel.mateId : null;
+            mateVisualizer.sync(
+              initialState.assembly,
+              selectedMateId,
+              partMeshLayer,
+            );
+          }
         }
 
         // Live preview pipeline. Watches the editor's parameters; on every
@@ -1192,6 +1215,14 @@ export default function Scene() {
               kernel,
             );
           }
+          // Phase 7 — re-sync mate icons whenever the assembly or selection
+          // changes (selection toggles the selected-vs-unselected styling and
+          // 1.5× scale). Cheap to rebuild every tick — 1 mesh per mate.
+          if (mateVisualizer && partMeshLayer) {
+            const sel = state.selection;
+            const selectedMateId = sel?.kind === "mate" ? sel.mateId : null;
+            mateVisualizer.sync(state.assembly, selectedMateId, partMeshLayer);
+          }
 
           if (editorChanged) {
             // Apply / cancel resets editor.open=false; if we just closed it,
@@ -1297,7 +1328,14 @@ export default function Scene() {
         faceHighlightLayer.dispose();
         faceHighlightLayer = null;
       }
+      if (mateVisualizer) {
+        mateVisualizer.dispose();
+        mateVisualizer = null;
+      }
       if (partMeshLayer) {
+        // Clear the module-level ref before disposing so any late inspector
+        // re-renders during teardown can't poke at a half-disposed layer.
+        setPartMeshLayer(null);
         partMeshLayer.dispose();
         partMeshLayer = null;
       }
