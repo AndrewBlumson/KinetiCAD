@@ -12,16 +12,20 @@ const PLANE_RECT_SIZE_MM = 400;
 const PLANE_RECT_COLOUR = 0x141b2e;
 const PLANE_RECT_OPACITY = 0.15;
 
-const SKETCH_GRID_COLOUR = 0x1f2942;
+// Distinct minor (1mm + 5mm) vs major (10mm) colours so the eye groups the
+// sketch grid into 10mm cells at a glance.
+const SKETCH_GRID_COLOUR_MINOR = 0x252d42;
+const SKETCH_GRID_COLOUR_MAJOR = 0x3a4560;
 const SKETCH_GRID_LEVELS: ReadonlyArray<{
   spacingMm: number;
   opacity: number;
+  colour: number;
   // RenderOrder so finer/dimmer lines draw under coarser/brighter ones.
   renderOrder: number;
 }> = [
-  { spacingMm: 1, opacity: 0.2, renderOrder: 1 },
-  { spacingMm: 5, opacity: 0.5, renderOrder: 2 },
-  { spacingMm: 10, opacity: 0.9, renderOrder: 3 },
+  { spacingMm: 1, opacity: 0.2, colour: SKETCH_GRID_COLOUR_MINOR, renderOrder: 1 },
+  { spacingMm: 5, opacity: 0.5, colour: SKETCH_GRID_COLOUR_MINOR, renderOrder: 2 },
+  { spacingMm: 10, opacity: 0.9, colour: SKETCH_GRID_COLOUR_MAJOR, renderOrder: 3 },
 ];
 
 export type SketchOverlay = {
@@ -70,8 +74,8 @@ export function createSketchOverlay(initialPlane: CardinalPlane): SketchOverlay 
     const helper = new THREE.GridHelper(
       PLANE_RECT_SIZE_MM,
       divisions,
-      SKETCH_GRID_COLOUR,
-      SKETCH_GRID_COLOUR,
+      level.colour,
+      level.colour,
     );
     helper.name = `SketchGrid_${level.spacingMm}mm`;
     helper.renderOrder = level.renderOrder;

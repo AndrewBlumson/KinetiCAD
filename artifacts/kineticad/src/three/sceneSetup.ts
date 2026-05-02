@@ -3,11 +3,17 @@
 // on lifecycle. All units are millimetres.
 
 import * as THREE from "three";
+import { PMREMGenerator as WebGPUPMREMGenerator, type WebGPURenderer } from "three/webgpu";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 export const COLOURS = {
   background: 0x0a0e1a,
-  grid: 0x141b2e,
+  // World grid (10mm major spacing) — brighter so it reads against the
+  // near-black background without competing with sketch primitives or parts.
+  grid: 0x3a4560,
+  // Sketch-overlay finer tiers (1mm + 5mm). Distinctly dimmer than the
+  // major grid lines.
+  gridMinor: 0x252d42,
   axisX: 0xff4444,
   axisY: 0x44ff44,
   axisZ: 0x4488ff,
@@ -141,19 +147,44 @@ export function disposeObject3D(root: THREE.Object3D): void {
 /**
  * Build a PBR environment map from the bundled RoomEnvironment scene and
  * assign it to scene.environment. Returns a disposer for cleanup.
+ *
+ * IMPORTANT: must be called *after* `await renderer.init()` has resolved.
+ * The WebGPU renderer's backend isn't populated until init completes, and
+ * PMREMGenerator reads renderer-internal buffers immediately.
+ *
+ * Uses the WebGPU-specific PMREMGenerator from `three/webgpu`. The legacy
+ * `THREE.PMREMGenerator` from `'three'` is the WebGL one and crashes with
+ * "Cannot read properties of undefined (reading 'buffers')" when handed a
+ * WebGPURenderer.
  */
 export function applyEnvironment(
   scene: THREE.Scene,
-  renderer: THREE.WebGLRenderer,
+  renderer: WebGPURenderer,
 ): () => void {
-  // PMREMGenerator's typed surface is WebGLRenderer; the WebGPURenderer in
-  // r184 exposes a compatible shape, so the call site casts before we get here.
-  const pmrem = new THREE.PMREMGenerator(renderer);
   const room = new RoomEnvironment();
-  const envTexture = pmrem.fromScene(room, 0.04).texture;
-  scene.environment = envTexture;
-  return () => {
-    envTexture.dispose();
-    pmrem.dispose();
-  };
+  try {
+    const pmrem = new WebGPUPMREMGenerator(
+      renderer as unknown as THREE.WebGLRenderer,
+    );
+    const envTexture = pmrem.fromScene(room, 0.04).texture;
+    scene.environment = envTexture;
+    return () => {
+      envTexture.dispose();
+      pmrem.dispose();
+    };
+  } catch (err) {
+    // Fallback: if PMREM filtering fails for any r184/WebGPU reason, assign
+    // the room scene directly as the environment. The visual difference is
+    // an unfiltered/sharper reflection, which is acceptable for a CAD tool.
+    // eslint-disable-next-line no-console
+    console.warn(
+      "[SCENE] PMREM filtering failed; falling back to direct RoomEnvironment:",
+      err,
+    );
+    scene.environment = room as unknown as THREE.Texture;
+    return () => {
+      // RoomEnvironment is a Scene; recursively dispose its meshes.
+      disposeObject3D(room);
+    };
+  }
 }

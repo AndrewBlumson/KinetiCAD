@@ -4,18 +4,26 @@
 //   - "hover": a single edge under the cursor (semi-transparent).
 //   - "selected": one or more edges currently in the Selection.
 //
-// Implementation: three/examples Line2 + LineGeometry + LineMaterial, which
-// gives proper screen-space line widths (regular `Line` is locked to 1px on
-// most platforms and useless for highlighting).
+// Implementation: three/examples webgpu Line2 + LineGeometry +
+// Line2NodeMaterial (WebGPU-native; the legacy LineMaterial from
+// three/examples/jsm/lines/LineMaterial.js logs
+// `THREE.NodeBuilder: Material "LineMaterial" is not compatible.` per frame
+// under the WebGPU renderer in r184).
+//
+// Line2NodeMaterial defaults to NoBlending and ignores opacity until we
+// override blending — we explicitly set NormalBlending so the hover line's
+// 0.6 opacity actually shows through. Resolution is auto-bound to the
+// viewport node, so the legacy `material.resolution.set(w,h)` call is no
+// longer required (kept guarded for forward compatibility).
 //
 // Lifecycle: shared materials live on the layer, geometries are recreated
 // per-frame when the highlighted polyline changes. `dispose()` releases all
 // of them.
 
 import * as THREE from "three";
-import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { Line2 } from "three/examples/jsm/lines/webgpu/Line2.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { Line2NodeMaterial } from "three/webgpu";
 import { COLOURS } from "./sceneSetup";
 
 const HOVER_COLOR = new THREE.Color(COLOURS.highlightHover ?? 0xffaa00);
@@ -37,7 +45,7 @@ export type EdgeHighlightLayer = {
 
 function buildLine(
   polyline: Float32Array,
-  material: LineMaterial,
+  material: Line2NodeMaterial,
 ): Line2 {
   const geom = new LineGeometry();
   // setPositions accepts a flat array of xyz triplets (typed or plain).
