@@ -742,3 +742,153 @@ export function collectTransferables(mesh: TessellatedMesh): Transferable[] {
   for (const f of mesh.faces) buffers.push(f.triangles.buffer);
   return buffers;
 }
+
+// ─── Refs enumeration (Phase 4 Split B) ─────────────────────────────────────
+//
+// `enumerateEdgeRefs` / `enumerateFaceRefs` walk the same TopExp_Explorer
+// traversal in the same order as the metadata enumerators above, computing
+// the same canonical-geometry hashes + occurrence-index disambiguation. But
+// instead of producing display metadata, they return a Map<id, TopoDS_*>
+// holding the live OCCT wrappers — used by fillet/chamfer/hole to resolve a
+// stable picker ID back to an OCCT entity.
+//
+// CONTRACT: the caller MUST `disposeRefMap()` the returned map (even on
+// throw) so the WASM heap doesn't leak.
+
+/**
+ * Enumerate edges, returning a map from canonical edge id → live TopoDS_Edge
+ * wrapper. Caller owns the wrappers and must dispose them via
+ * `disposeRefMap`.
+ */
+export function enumerateEdgeRefs(
+  oc: unknown,
+  shape: unknown,
+): Map<string, unknown> {
+  const ocAny = oc as any;
+  const out = new Map<string, unknown>();
+  const occurrenceCounts = new Map<string, number>();
+
+  const explorer = new ocAny.TopExp_Explorer_2(
+    shape as any,
+    ocAny.TopAbs_ShapeEnum.TopAbs_EDGE,
+    ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE,
+  );
+
+  try {
+    while (explorer.More()) {
+      const edgeShape = explorer.Current();
+      let edge: any = null;
+      let adaptor: any = null;
+      let keepEdge = false;
+      try {
+        edge = ocAny.TopoDS.Edge_1(edgeShape);
+        adaptor = new ocAny.BRepAdaptor_Curve_2(edge);
+        const curveType = adaptor.GetType();
+        const t0 = adaptor.FirstParameter();
+        const t1 = adaptor.LastParameter();
+        const curveInfo = classifyAndExtractCurve(
+          ocAny,
+          curveType,
+          t0,
+          t1,
+          adaptor,
+        );
+        const baseHash = fnv1a(curveInfo.hashSig);
+        const id = disambiguateId(baseHash, occurrenceCounts);
+        // Only one wrapper per id — duplicates from pathological topology
+        // are dropped (the first wins).
+        if (!out.has(id)) {
+          out.set(id, edge);
+          keepEdge = true;
+        }
+      } catch {
+        // Skip pathological edges.
+      } finally {
+        if (adaptor) adaptor.delete?.();
+        if (edge && !keepEdge) edge.delete?.();
+        explorer.Next();
+      }
+    }
+  } finally {
+    explorer.delete();
+  }
+
+  return out;
+}
+
+/**
+ * Enumerate faces, returning a map from canonical face id → live TopoDS_Face
+ * wrapper. The id computation matches `enumerateFaces` exactly (including
+ * the area-weighted centroid in the hash) so picker IDs round-trip back to
+ * the right wrapper. Caller owns the wrappers and must dispose them via
+ * `disposeRefMap`.
+ */
+export function enumerateFaceRefs(
+  oc: unknown,
+  shape: unknown,
+  positions: Float32Array,
+  indices: Uint32Array,
+  faceRanges: FaceTriangleRange[],
+): Map<string, unknown> {
+  const ocAny = oc as any;
+  const out = new Map<string, unknown>();
+  const occurrenceCounts = new Map<string, number>();
+
+  const explorer = new ocAny.TopExp_Explorer_2(
+    shape as any,
+    ocAny.TopAbs_ShapeEnum.TopAbs_FACE,
+    ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE,
+  );
+
+  let idx = 0;
+  try {
+    while (explorer.More()) {
+      const faceShape = explorer.Current();
+      let face: any = null;
+      let keepFace = false;
+      try {
+        face = ocAny.TopoDS.Face_1(faceShape);
+        const surf = classifyAndExtractSurface(ocAny, face);
+        const range = faceRanges[idx];
+        if (!range || range.triangleCount === 0) {
+          continue;
+        }
+        const { centroid } = centroidAndNormalFromTriangles(
+          positions,
+          indices,
+          range,
+        );
+        const baseHash = fnv1a(
+          `${surf.type}|${surf.hashSig}|${rTriple(centroid)}`,
+        );
+        const id = disambiguateId(baseHash, occurrenceCounts);
+        if (!out.has(id)) {
+          out.set(id, face);
+          keepFace = true;
+        }
+      } catch {
+        // Skip faces that fail classification.
+      } finally {
+        if (face && !keepFace) face.delete?.();
+        explorer.Next();
+        idx++;
+      }
+    }
+  } finally {
+    explorer.delete();
+  }
+
+  return out;
+}
+
+/** Dispose every TopoDS wrapper held in a refs map. Safe to call multiple times. */
+export function disposeRefMap(m: Map<string, unknown>): void {
+  for (const w of m.values()) {
+    try {
+      (w as { delete?: () => void }).delete?.();
+    } catch {
+      /* tolerate double-delete */
+    }
+  }
+  m.clear();
+}

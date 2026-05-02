@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
 import SketchToolbar from '@/components/SketchToolbar';
 import SketchCursor from '@/components/SketchCursor';
 import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
-import TopologyPickerTestInspector from '@/components/inspectors/TopologyPickerTestInspector';
+import PartInspector from '@/components/inspectors/PartInspector';
 import type { CardinalPlane } from '@/sketch/plane';
 import type { Feature, Part, SketchPlane } from '@/state/schemas';
 
@@ -17,51 +17,22 @@ export default function Modeller() {
   const beginSketch = useKinetiCADStore((s) => s.beginSketch);
   const selection = useKinetiCADStore((s) => s.selection);
   const featureEditor = useKinetiCADStore((s) => s.featureEditor);
+  const selectPart = useKinetiCADStore((s) => s.selectPart);
   const selectSketch = useKinetiCADStore((s) => s.selectSketch);
   const selectFeature = useKinetiCADStore((s) => s.selectFeature);
   const beginEditFeature = useKinetiCADStore((s) => s.beginEditFeature);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
-  const showPickerTestPanel = useKinetiCADStore((s) => s.showPickerTestPanel);
-  const togglePickerTestPanel = useKinetiCADStore(
-    (s) => s.togglePickerTestPanel,
-  );
 
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
-
-  // Phase 4 Split A diagnostic: Cmd/Ctrl+Shift+T toggles the picker test
-  // panel. Removed once Split B's per-feature inspectors take over.
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (!e.shiftKey) return;
-      if (!(e.metaKey || e.ctrlKey)) return;
-      // Match by KeyboardEvent.code so non-QWERTY layouts still work.
-      if (e.code !== 'KeyT') return;
-      // Don't fire when the user is typing in an input — most CAD inspectors
-      // include numeric inputs we don't want to swallow.
-      const target = e.target as HTMLElement | null;
-      if (target) {
-        const tag = target.tagName;
-        if (
-          tag === 'INPUT' ||
-          tag === 'TEXTAREA' ||
-          tag === 'SELECT' ||
-          target.isContentEditable
-        ) {
-          return;
-        }
-      }
-      e.preventDefault();
-      togglePickerTestPanel();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [togglePickerTestPanel]);
 
   const handlePlanePicked = (plane: CardinalPlane) => {
     setPlanePickerOpen(false);
     beginSketch(plane);
   };
 
+  const onPartClick = (partId: string) => {
+    selectPart(partId);
+  };
   const onSketchClick = (partId: string, sketchId: string) => {
     selectSketch(partId, sketchId);
   };
@@ -126,6 +97,7 @@ export default function Modeller() {
                   key={p.id}
                   part={p}
                   selection={selection}
+                  onPartClick={onPartClick}
                   onSketchClick={onSketchClick}
                   onFeatureClick={onFeatureClick}
                 />
@@ -160,14 +132,6 @@ export default function Modeller() {
             onPick={handlePlanePicked}
             onCancel={() => setPlanePickerOpen(false)}
           />
-          {showPickerTestPanel && (
-            <div
-              className="absolute top-3 right-3 z-30 w-64 pointer-events-auto"
-              data-testid="picker-test-panel-container"
-            >
-              <TopologyPickerTestInspector />
-            </div>
-          )}
         </main>
         <SketchCursor />
 
@@ -213,17 +177,26 @@ export default function Modeller() {
 function PartTree({
   part,
   selection,
+  onPartClick,
   onSketchClick,
   onFeatureClick,
 }: {
   part: Part;
   selection: ReturnType<typeof useKinetiCADStore.getState>['selection'];
+  onPartClick: (partId: string) => void;
   onSketchClick: (partId: string, sketchId: string) => void;
   onFeatureClick: (partId: string, featureId: string) => void;
 }) {
+  const isPartSelected =
+    selection?.kind === 'part' && selection.partId === part.id;
   return (
     <div className="flex flex-col">
-      <SidebarItem label={part.name} />
+      <SidebarItem
+        label={part.name}
+        selected={isPartSelected}
+        onClick={() => onPartClick(part.id)}
+        testId={`tree-part-${part.id}`}
+      />
       {part.sketches.map((s) => {
         const isSelected =
           selection?.kind === 'sketch' && selection.sketchId === s.id;
@@ -366,6 +339,9 @@ function RightInspectorBody({
   }
   if (editorOpen) {
     return <FeatureInspector />;
+  }
+  if (selection?.kind === 'part') {
+    return <PartInspector />;
   }
   if (selection?.kind === 'sketch') {
     const part = parts.find((p) => p.id === selection.partId);

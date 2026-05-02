@@ -46,10 +46,12 @@ const defaultSketchSession: SketchSession = {
  * fresh session with nothing selected.
  *
  * The 'edges' / 'face' / 'point-on-face' kinds are produced by the topology
- * picker (Phase 4 Split A). Each carries the part it lives on plus the
- * stable canonical-geometry id of the picked element.
+ * picker (Phase 4 Split A). The 'part' kind is produced by clicking the
+ * part name in the tree (Phase 4 Split B) and surfaces the PartInspector
+ * which exposes "+ Add Fillet/Chamfer/Hole" buttons.
  */
 export type Selection =
+  | { kind: "part"; partId: string }
   | { kind: "sketch"; partId: string; sketchId: string }
   | { kind: "feature"; partId: string; featureId: string }
   | { kind: "edges"; partId: string; edgeIds: string[] }
@@ -59,9 +61,9 @@ export type Selection =
 
 /**
  * Picker modes driven by the active inspector. 'idle' (the default) disables
- * the picker entirely. Phase 4 Split A populates the diagnostic test
- * inspector (Cmd/Ctrl+Shift+T); Split B will populate this from the
- * Fillet/Chamfer/Hole inspectors.
+ * the picker entirely. The Fillet/Chamfer inspectors set 'edges'; the Hole
+ * inspector sets 'point-on-face' (the picker handles both face-pick and
+ * subsequent UV-pick stages internally).
  */
 export type PickingMode = "idle" | "edges" | "faces" | "point-on-face";
 
@@ -73,6 +75,27 @@ export type ExtrudeParams = {
 export type RevolveParams = {
   axis: RevolveAxis;
   angleDeg: number;
+};
+
+export type FilletParams = {
+  /** Stable canonical-geometry edge ids on the upstream shape. */
+  targetEdges: string[];
+  radiusMm: number;
+};
+
+export type ChamferParams = {
+  targetEdges: string[];
+  sizeMm: number;
+};
+
+export type HoleParams = {
+  /** Stable canonical-geometry face id on the upstream shape (planar only). */
+  targetFace: string | null;
+  /** UV coordinates in mm in the face's plane basis. Null until the user picks. */
+  positionUV: [number, number] | null;
+  diameterMm: number;
+  /** 0 = through-all. */
+  depthMm: number;
 };
 
 /**
@@ -106,6 +129,37 @@ export type FeatureEditor =
       type: "revolve";
       params: RevolveParams;
       livePreview: boolean;
+    }
+  | {
+      open: true;
+      partId: string;
+      /** Modifier features have no source sketch; field is empty for shape parity. */
+      sketchId: "";
+      mode: "create" | "edit";
+      featureId?: string;
+      type: "fillet";
+      params: FilletParams;
+      livePreview: boolean;
+    }
+  | {
+      open: true;
+      partId: string;
+      sketchId: "";
+      mode: "create" | "edit";
+      featureId?: string;
+      type: "chamfer";
+      params: ChamferParams;
+      livePreview: boolean;
+    }
+  | {
+      open: true;
+      partId: string;
+      sketchId: "";
+      mode: "create" | "edit";
+      featureId?: string;
+      type: "hole";
+      params: HoleParams;
+      livePreview: boolean;
     };
 
 const defaultFeatureEditor: FeatureEditor = { open: false };
@@ -136,6 +190,23 @@ const DEFAULT_REVOLVE_PARAMS: RevolveParams = {
   angleDeg: 360,
 };
 
+const DEFAULT_FILLET_PARAMS: FilletParams = {
+  targetEdges: [],
+  radiusMm: 1,
+};
+
+const DEFAULT_CHAMFER_PARAMS: ChamferParams = {
+  targetEdges: [],
+  sizeMm: 1,
+};
+
+const DEFAULT_HOLE_PARAMS: HoleParams = {
+  targetFace: null,
+  positionUV: null,
+  diameterMm: 5,
+  depthMm: 0, // 0 = through-all
+};
+
 export type KinetiCADStore = {
   mode: AppMode;
   assembly: Assembly;
@@ -144,10 +215,8 @@ export type KinetiCADStore = {
   selection: Selection;
   featureEditor: FeatureEditor;
   featurePreview: FeaturePreview;
-  /** Active picker mode (Phase 4 Split A). Not persisted. */
+  /** Active picker mode. Not persisted. */
   pickingMode: PickingMode;
-  /** Cmd/Ctrl+Shift+T diagnostic panel toggle. Not persisted. */
-  showPickerTestPanel: boolean;
 
   setMode: (mode: AppMode) => void;
   setSimulationRunning: (running: boolean) => void;
@@ -159,6 +228,7 @@ export type KinetiCADStore = {
   finishSketch: () => void;
   cancelSketch: () => void;
 
+  selectPart: (partId: string) => void;
   selectSketch: (partId: string, sketchId: string) => void;
   selectFeature: (partId: string, featureId: string) => void;
   /**
@@ -175,7 +245,6 @@ export type KinetiCADStore = {
     uv: [number, number],
   ) => void;
   setPickingMode: (mode: PickingMode) => void;
-  togglePickerTestPanel: () => void;
   clearSelection: () => void;
 
   /** Open the inspector to create a new extrude/revolve from the given sketch. */
@@ -184,11 +253,20 @@ export type KinetiCADStore = {
     sketchId: string,
     type: "extrude" | "revolve",
   ) => void;
+  /** Open the inspector to create a new fillet on the given part. */
+  beginCreateFilletFeature: (partId: string) => void;
+  /** Open the inspector to create a new chamfer on the given part. */
+  beginCreateChamferFeature: (partId: string) => void;
+  /** Open the inspector to create a new hole on the given part. */
+  beginCreateHoleFeature: (partId: string) => void;
   /** Open the inspector to edit an existing feature, populating from its current params. */
   beginEditFeature: (partId: string, featureId: string) => void;
   /** Replace the editor's params (caller supplies the full new params object). */
   setFeatureEditorExtrudeParams: (params: ExtrudeParams) => void;
   setFeatureEditorRevolveParams: (params: RevolveParams) => void;
+  setFeatureEditorFilletParams: (params: FilletParams) => void;
+  setFeatureEditorChamferParams: (params: ChamferParams) => void;
+  setFeatureEditorHoleParams: (params: HoleParams) => void;
   setFeatureEditorLivePreview: (on: boolean) => void;
   /** Commit the current editor state to part.features (insert or replace). */
   applyFeatureEditor: () => void;
@@ -249,7 +327,6 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       featureEditor: defaultFeatureEditor,
       featurePreview: defaultFeaturePreview,
       pickingMode: "idle",
-      showPickerTestPanel: false,
 
       setMode: (mode) => set({ mode }),
 
@@ -327,6 +404,9 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
 
       cancelSketch: () => set({ sketchSession: defaultSketchSession }),
 
+      selectPart: (partId) =>
+        set({ selection: { kind: "part", partId } }),
+
       selectSketch: (partId, sketchId) =>
         set({ selection: { kind: "sketch", partId, sketchId } }),
 
@@ -367,9 +447,6 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
 
       setPickingMode: (mode) => set({ pickingMode: mode }),
 
-      togglePickerTestPanel: () =>
-        set((s) => ({ showPickerTestPanel: !s.showPickerTestPanel })),
-
       clearSelection: () => set({ selection: null }),
 
       beginCreateFeature: (partId, sketchId, type) => {
@@ -399,6 +476,54 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           });
         }
       },
+
+      beginCreateFilletFeature: (partId) =>
+        set({
+          featureEditor: {
+            open: true,
+            partId,
+            sketchId: "",
+            mode: "create",
+            type: "fillet",
+            params: { ...DEFAULT_FILLET_PARAMS, targetEdges: [] },
+            livePreview: true,
+          },
+          // Picker switches to edge-pick mode while the inspector is open.
+          pickingMode: "edges",
+          selection: null,
+        }),
+
+      beginCreateChamferFeature: (partId) =>
+        set({
+          featureEditor: {
+            open: true,
+            partId,
+            sketchId: "",
+            mode: "create",
+            type: "chamfer",
+            params: { ...DEFAULT_CHAMFER_PARAMS, targetEdges: [] },
+            livePreview: true,
+          },
+          pickingMode: "edges",
+          selection: null,
+        }),
+
+      beginCreateHoleFeature: (partId) =>
+        set({
+          featureEditor: {
+            open: true,
+            partId,
+            sketchId: "",
+            mode: "create",
+            type: "hole",
+            params: { ...DEFAULT_HOLE_PARAMS },
+            livePreview: true,
+          },
+          // The hole inspector handles both stages of pick (face → UV)
+          // through the 'point-on-face' picker mode.
+          pickingMode: "point-on-face",
+          selection: null,
+        }),
 
       beginEditFeature: (partId, featureId) => {
         const part = findPart(get().assembly, partId);
@@ -437,9 +562,65 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             },
             selection: { kind: "feature", partId, featureId },
           });
+        } else if (feature.type === "fillet") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId: "",
+              mode: "edit",
+              featureId: feature.id,
+              type: "fillet",
+              params: {
+                targetEdges: [...feature.targetEdges],
+                radiusMm: feature.radiusMm,
+              },
+              livePreview: true,
+            },
+            pickingMode: "edges",
+            selection: { kind: "feature", partId, featureId },
+          });
+        } else if (feature.type === "chamfer") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId: "",
+              mode: "edit",
+              featureId: feature.id,
+              type: "chamfer",
+              params: {
+                targetEdges: [...feature.targetEdges],
+                sizeMm: feature.sizeMm,
+              },
+              livePreview: true,
+            },
+            pickingMode: "edges",
+            selection: { kind: "feature", partId, featureId },
+          });
+        } else if (feature.type === "hole") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId: "",
+              mode: "edit",
+              featureId: feature.id,
+              type: "hole",
+              params: {
+                targetFace: feature.targetFace,
+                positionUV: [...feature.positionUV] as [number, number],
+                diameterMm: feature.diameterMm,
+                depthMm: feature.depthMm,
+              },
+              livePreview: true,
+            },
+            pickingMode: "point-on-face",
+            selection: { kind: "feature", partId, featureId },
+          });
         }
-        // Other feature types (fillet/chamfer/hole/boolean) are deferred to
-        // later phases; the editor doesn't open for them yet.
+        // 'boolean' isn't editable yet; the selectFeature path above shows a
+        // placeholder inspector for it.
       },
 
       setFeatureEditorExtrudeParams: (params) =>
@@ -462,6 +643,36 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           };
         }),
 
+      setFeatureEditorFilletParams: (params) =>
+        set((s) => {
+          if (!s.featureEditor.open || s.featureEditor.type !== "fillet") {
+            return {};
+          }
+          return {
+            featureEditor: { ...s.featureEditor, params },
+          };
+        }),
+
+      setFeatureEditorChamferParams: (params) =>
+        set((s) => {
+          if (!s.featureEditor.open || s.featureEditor.type !== "chamfer") {
+            return {};
+          }
+          return {
+            featureEditor: { ...s.featureEditor, params },
+          };
+        }),
+
+      setFeatureEditorHoleParams: (params) =>
+        set((s) => {
+          if (!s.featureEditor.open || s.featureEditor.type !== "hole") {
+            return {};
+          }
+          return {
+            featureEditor: { ...s.featureEditor, params },
+          };
+        }),
+
       setFeatureEditorLivePreview: (on) =>
         set((s) => {
           if (!s.featureEditor.open) return {};
@@ -477,11 +688,15 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
 
         const part = findPart(state.assembly, editor.partId);
         if (!part) {
-          set({ featureEditor: defaultFeatureEditor });
+          set({
+            featureEditor: defaultFeatureEditor,
+            featurePreview: defaultFeaturePreview,
+            pickingMode: "idle",
+          });
           return;
         }
 
-        let newFeature: Feature;
+        let newFeature: Feature | null = null;
         if (editor.type === "extrude") {
           const base: ExtrudeFeature = {
             id: editor.featureId ?? newId("feature"),
@@ -491,7 +706,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             direction: editor.params.direction,
           };
           newFeature = base;
-        } else {
+        } else if (editor.type === "revolve") {
           const base: RevolveFeature = {
             id: editor.featureId ?? newId("feature"),
             type: "revolve",
@@ -500,12 +715,39 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             angleDeg: editor.params.angleDeg,
           };
           newFeature = base;
+        } else if (editor.type === "fillet") {
+          if (editor.params.targetEdges.length === 0) return;
+          newFeature = {
+            id: editor.featureId ?? newId("feature"),
+            type: "fillet",
+            targetEdges: [...editor.params.targetEdges],
+            radiusMm: editor.params.radiusMm,
+          };
+        } else if (editor.type === "chamfer") {
+          if (editor.params.targetEdges.length === 0) return;
+          newFeature = {
+            id: editor.featureId ?? newId("feature"),
+            type: "chamfer",
+            targetEdges: [...editor.params.targetEdges],
+            sizeMm: editor.params.sizeMm,
+          };
+        } else if (editor.type === "hole") {
+          if (!editor.params.targetFace || !editor.params.positionUV) return;
+          newFeature = {
+            id: editor.featureId ?? newId("feature"),
+            type: "hole",
+            targetFace: editor.params.targetFace,
+            positionUV: [...editor.params.positionUV] as [number, number],
+            diameterMm: editor.params.diameterMm,
+            depthMm: editor.params.depthMm,
+          };
         }
+        if (!newFeature) return;
 
         let updatedFeatures: Feature[];
         if (editor.mode === "edit" && editor.featureId) {
           updatedFeatures = part.features.map((f) =>
-            f.id === editor.featureId ? newFeature : f,
+            f.id === editor.featureId ? (newFeature as Feature) : f,
           );
         } else {
           updatedFeatures = [...part.features, newFeature];
@@ -520,6 +762,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           assembly: { ...state.assembly, parts: updatedParts },
           featureEditor: defaultFeatureEditor,
           featurePreview: defaultFeaturePreview,
+          pickingMode: "idle",
           selection: {
             kind: "feature",
             partId: editor.partId,
@@ -532,13 +775,14 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         set({
           featureEditor: defaultFeatureEditor,
           featurePreview: defaultFeaturePreview,
+          pickingMode: "idle",
         }),
 
       setFeaturePreview: (next) => set({ featurePreview: next }),
     }),
     {
       name: "kineticad-state",
-      version: 2,
+      version: 3,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation flags.
       partialize: (state) => ({
@@ -551,6 +795,9 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       }),
       // v1 → v2: legacy extrude features stored `symmetric: boolean`. Map
       // to the new `direction` field so old persisted state still loads.
+      // v2 → v3: HoleFeature renamed `positionXY` → `positionUV`. Phase 4
+      // Split A never created hole features, but we still re-key safely if
+      // any stray data exists.
       migrate: (persisted, version) => {
         if (!persisted || typeof persisted !== "object") return persisted;
         const state = persisted as { assembly?: Assembly };
@@ -571,6 +818,23 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                 depthMm: legacy.depthMm,
                 direction,
               };
+            }),
+          }));
+          state.assembly = { ...state.assembly, parts: migratedParts };
+        }
+        if (version < 3 && state.assembly) {
+          const migratedParts = state.assembly.parts.map((part) => ({
+            ...part,
+            features: part.features.map((f) => {
+              if (f.type !== "hole") return f;
+              const legacy = f as Feature & { positionXY?: [number, number] };
+              if ((legacy as { positionUV?: [number, number] }).positionUV)
+                return f;
+              if (!legacy.positionXY) return f;
+              return {
+                ...(f as object),
+                positionUV: legacy.positionXY,
+              } as Feature;
             }),
           }));
           state.assembly = { ...state.assembly, parts: migratedParts };

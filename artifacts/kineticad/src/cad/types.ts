@@ -2,7 +2,7 @@
 //
 // All units are millimetres unless stated otherwise.
 
-import type { SketchPrimitive } from "@/state/schemas";
+import type { Feature, Sketch, SketchPrimitive } from "@/state/schemas";
 import type { CardinalPlane } from "@/sketch/plane";
 
 /**
@@ -102,6 +102,40 @@ export type RevolveArgs = {
   angleDeg: number;
 };
 
+/**
+ * Modifier-feature args (fillet/chamfer/hole). The worker re-executes the
+ * `upstreamFeatures` chain against `upstreamSketches` to rebuild the OCCT
+ * shape, resolves the target edge/face IDs to live TopoDS wrappers, applies
+ * the modification, and returns the tessellated result.
+ *
+ * Caching by feature hash on the main thread guarantees we don't pay this
+ * cost on cache hits; on cache miss the worker pays a single re-execution.
+ */
+export type FilletArgs = {
+  upstreamFeatures: Feature[];
+  upstreamSketches: Sketch[];
+  targetEdgeIds: string[];
+  radiusMm: number;
+};
+
+export type ChamferArgs = {
+  upstreamFeatures: Feature[];
+  upstreamSketches: Sketch[];
+  targetEdgeIds: string[];
+  sizeMm: number;
+};
+
+export type HoleArgs = {
+  upstreamFeatures: Feature[];
+  upstreamSketches: Sketch[];
+  targetFaceId: string;
+  /** UV in mm along the face's planar basis (planar faces only in v1). */
+  positionUV: [number, number];
+  diameterMm: number;
+  /** 0 = through-all (cylinder length = 2 × upstream bbox diagonal). */
+  depthMm: number;
+};
+
 export type CadKernelApi = {
   init: () => Promise<KernelInitResult>;
   createTestCube: (sizeMm: number) => Promise<TessellatedMesh>;
@@ -116,4 +150,20 @@ export type CadKernelApi = {
    * axis through the origin, and return the tessellated solid mesh.
    */
   revolve: (args: RevolveArgs) => Promise<TessellatedMesh>;
+  /**
+   * Re-execute the upstream feature chain, apply a fillet to the named edges
+   * with the given radius, tessellate, return mesh.
+   */
+  fillet: (args: FilletArgs) => Promise<TessellatedMesh>;
+  /**
+   * Re-execute the upstream feature chain, apply a chamfer to the named
+   * edges with the given size, tessellate, return mesh.
+   */
+  chamfer: (args: ChamferArgs) => Promise<TessellatedMesh>;
+  /**
+   * Re-execute the upstream feature chain, drill a cylindrical hole at
+   * (positionUV) on the target planar face, tessellate, return mesh.
+   * `depthMm = 0` means through-all.
+   */
+  hole: (args: HoleArgs) => Promise<TessellatedMesh>;
 };

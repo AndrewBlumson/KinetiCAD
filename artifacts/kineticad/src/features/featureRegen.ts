@@ -5,8 +5,11 @@
 // hash), and either reuses a cached mesh or dispatches the operation to the
 // CAD worker.
 //
-// Phase 3 supports extrude and revolve only; other feature types are skipped
-// (they'll throw NotImplementedError until later phases wire them up).
+// Phase 4 Split B adds fillet / chamfer / hole. Modifier features carry the
+// upstream feature chain + source sketches across the worker boundary so the
+// worker can re-execute the upstream chain into a TopoDS_Shape, resolve the
+// picker IDs to TopoDS_Edge / TopoDS_Face wrappers, and apply the
+// modification — all without any shape needing to round-trip back to JS.
 
 import type { CadKernelApi, TessellatedMesh } from "@/cad/types";
 import type {
@@ -80,27 +83,23 @@ export function computeFeatureHash(
 /**
  * Run a single feature against the kernel and return its mesh. Errors from
  * the worker propagate (caller is expected to surface them to the inspector).
+ *
+ * Modifier features (fillet/chamfer/hole) need the full upstream feature
+ * chain plus the part's sketches to rebuild the OCCT shape inside the worker.
  */
 async function runFeature(
   feature: Feature,
   sketches: ReadonlyArray<Sketch>,
+  upstreamFeatures: ReadonlyArray<Feature>,
   kernel: Remote<CadKernelApi>,
 ): Promise<TessellatedMesh> {
-  if (feature.type !== "extrude" && feature.type !== "revolve") {
-    throw new Error(
-      `Feature type "${feature.type}" is not supported until a later phase.`,
-    );
-  }
-  const sketch = sketches.find((s) => s.id === feature.sketchId);
-  if (!sketch) {
-    throw new Error(`Sketch ${feature.sketchId} not found.`);
-  }
-  const plane: SketchPlane = sketch.plane;
-  if (!isCardinalPlane(plane)) {
-    throw new Error("Only cardinal planes (XY/XZ/YZ) are supported in Phase 3.");
-  }
-
   if (feature.type === "extrude") {
+    const sketch = sketches.find((s) => s.id === feature.sketchId);
+    if (!sketch) throw new Error(`Sketch ${feature.sketchId} not found.`);
+    const plane: SketchPlane = sketch.plane;
+    if (!isCardinalPlane(plane)) {
+      throw new Error("Only cardinal planes (XY/XZ/YZ) are supported in v1.");
+    }
     return kernel.extrude({
       sketchPrimitives: sketch.primitives,
       plane,
@@ -108,12 +107,54 @@ async function runFeature(
       direction: feature.direction,
     });
   }
-  return kernel.revolve({
-    sketchPrimitives: sketch.primitives,
-    plane,
-    axis: feature.axis,
-    angleDeg: feature.angleDeg,
-  });
+
+  if (feature.type === "revolve") {
+    const sketch = sketches.find((s) => s.id === feature.sketchId);
+    if (!sketch) throw new Error(`Sketch ${feature.sketchId} not found.`);
+    const plane: SketchPlane = sketch.plane;
+    if (!isCardinalPlane(plane)) {
+      throw new Error("Only cardinal planes (XY/XZ/YZ) are supported in v1.");
+    }
+    return kernel.revolve({
+      sketchPrimitives: sketch.primitives,
+      plane,
+      axis: feature.axis,
+      angleDeg: feature.angleDeg,
+    });
+  }
+
+  if (feature.type === "fillet") {
+    return kernel.fillet({
+      upstreamFeatures: [...upstreamFeatures],
+      upstreamSketches: [...sketches],
+      targetEdgeIds: [...feature.targetEdges],
+      radiusMm: feature.radiusMm,
+    });
+  }
+
+  if (feature.type === "chamfer") {
+    return kernel.chamfer({
+      upstreamFeatures: [...upstreamFeatures],
+      upstreamSketches: [...sketches],
+      targetEdgeIds: [...feature.targetEdges],
+      sizeMm: feature.sizeMm,
+    });
+  }
+
+  if (feature.type === "hole") {
+    return kernel.hole({
+      upstreamFeatures: [...upstreamFeatures],
+      upstreamSketches: [...sketches],
+      targetFaceId: feature.targetFace,
+      positionUV: [...feature.positionUV] as [number, number],
+      diameterMm: feature.diameterMm,
+      depthMm: feature.depthMm,
+    });
+  }
+
+  throw new Error(
+    `Feature type "${feature.type}" is not supported until a later phase.`,
+  );
 }
 
 export type RegenResult = {
@@ -121,10 +162,8 @@ export type RegenResult = {
   mesh: TessellatedMesh | null;
   /**
    * Per-feature evaluation results in order. Successful entries carry their
-   * mesh; failures carry an error message. The pipeline continues past
-   * failures so the inspector can surface a useful message without losing
-   * subsequent unrelated features (Phase 3 has at most one feature per part,
-   * so in practice the list has 0 or 1 entries).
+   * mesh; failures carry an error message. The pipeline stops at the first
+   * failure (downstream features depend on upstream geometry).
    */
   perFeature: Array<
     | { id: string; ok: true; hash: string; mesh: TessellatedMesh }
@@ -142,6 +181,7 @@ export async function regeneratePart(
   kernel: Remote<CadKernelApi>,
 ): Promise<RegenResult> {
   const upstreamHashes: string[] = [];
+  const upstreamFeatures: Feature[] = [];
   const perFeature: RegenResult["perFeature"] = [];
   let lastMesh: TessellatedMesh | null = null;
 
@@ -152,14 +192,21 @@ export async function regeneratePart(
       perFeature.push({ id: feature.id, ok: true, hash, mesh: cached });
       lastMesh = cached;
       upstreamHashes.push(hash);
+      upstreamFeatures.push(feature);
       continue;
     }
     try {
-      const mesh = await runFeature(feature, part.sketches, kernel);
+      const mesh = await runFeature(
+        feature,
+        part.sketches,
+        upstreamFeatures,
+        kernel,
+      );
       setCachedMesh(hash, mesh);
       perFeature.push({ id: feature.id, ok: true, hash, mesh });
       lastMesh = mesh;
       upstreamHashes.push(hash);
+      upstreamFeatures.push(feature);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       perFeature.push({ id: feature.id, ok: false, hash, error: message });
@@ -175,18 +222,28 @@ export async function regeneratePart(
 
 /**
  * Convenience wrapper: regenerate a single feature in isolation, used by the
- * inspector's live preview path. Bypasses upstream-hash folding because the
- * preview is for *this* feature only, in the context of its current sketch.
+ * inspector's live preview path.
+ *
+ * For extrude/revolve, `upstreamFeatures` is conventionally `[]` because the
+ * preview operates only on the source sketch. For fillet/chamfer/hole, the
+ * caller passes the existing chain (excluding the feature being previewed)
+ * so the worker can re-execute it.
  */
 export async function previewFeature(
   feature: Feature,
   sketches: ReadonlyArray<Sketch>,
+  upstreamFeatures: ReadonlyArray<Feature>,
   kernel: Remote<CadKernelApi>,
 ): Promise<TessellatedMesh> {
-  const hash = computeFeatureHash(feature, sketches, []);
+  // Fold upstream feature hashes into the cache key so editing an upstream
+  // feature (e.g. extrude depth) invalidates the modifier preview.
+  const upstreamHashes = upstreamFeatures.map((f) =>
+    computeFeatureHash(f, sketches, []),
+  );
+  const hash = computeFeatureHash(feature, sketches, upstreamHashes);
   const cached = getCachedMesh(hash);
   if (cached) return cached;
-  const mesh = await runFeature(feature, sketches, kernel);
+  const mesh = await runFeature(feature, sketches, upstreamFeatures, kernel);
   setCachedMesh(hash, mesh);
   return mesh;
 }

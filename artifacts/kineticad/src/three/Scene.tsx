@@ -606,30 +606,109 @@ export default function Scene() {
             return;
           }
 
-          const feature: Feature =
-            editor.type === "extrude"
-              ? {
-                  id: "preview",
-                  type: "extrude",
-                  sketchId: editor.sketchId,
-                  depthMm: editor.params.depthMm,
-                  direction: editor.params.direction,
-                }
-              : {
-                  id: "preview",
-                  type: "revolve",
-                  sketchId: editor.sketchId,
-                  axis: editor.params.axis,
-                  angleDeg: editor.params.angleDeg,
-                };
+          // Modifier features (fillet/chamfer/hole) need the upstream
+          // feature chain to rebuild the OCCT shape. For 'edit' mode we
+          // exclude the feature being edited so the preview replaces it
+          // rather than stacking on top of itself.
+          const isModifier =
+            editor.type === "fillet" ||
+            editor.type === "chamfer" ||
+            editor.type === "hole";
 
-          const hash = computeFeatureHash(feature, [sketch], []);
+          const upstreamFeatures: Feature[] = isModifier
+            ? part.features.filter(
+                (f) =>
+                  editor.mode === "create" || f.id !== editor.featureId,
+              )
+            : [];
+
+          let feature: Feature | null = null;
+          if (editor.type === "extrude") {
+            feature = {
+              id: "preview",
+              type: "extrude",
+              sketchId: editor.sketchId,
+              depthMm: editor.params.depthMm,
+              direction: editor.params.direction,
+            };
+          } else if (editor.type === "revolve") {
+            feature = {
+              id: "preview",
+              type: "revolve",
+              sketchId: editor.sketchId,
+              axis: editor.params.axis,
+              angleDeg: editor.params.angleDeg,
+            };
+          } else if (editor.type === "fillet") {
+            // Skip preview if the user hasn't picked any edges yet.
+            if (editor.params.targetEdges.length === 0) {
+              previewMeshLayer?.setMesh(null);
+              lastPreviewHash = null;
+              if (state.featurePreview.status !== "idle") {
+                state.setFeaturePreview({ status: "idle", error: null });
+              }
+              return;
+            }
+            feature = {
+              id: "preview",
+              type: "fillet",
+              targetEdges: [...editor.params.targetEdges],
+              radiusMm: editor.params.radiusMm,
+            };
+          } else if (editor.type === "chamfer") {
+            if (editor.params.targetEdges.length === 0) {
+              previewMeshLayer?.setMesh(null);
+              lastPreviewHash = null;
+              if (state.featurePreview.status !== "idle") {
+                state.setFeaturePreview({ status: "idle", error: null });
+              }
+              return;
+            }
+            feature = {
+              id: "preview",
+              type: "chamfer",
+              targetEdges: [...editor.params.targetEdges],
+              sizeMm: editor.params.sizeMm,
+            };
+          } else if (editor.type === "hole") {
+            if (
+              !editor.params.targetFace ||
+              !editor.params.positionUV
+            ) {
+              previewMeshLayer?.setMesh(null);
+              lastPreviewHash = null;
+              if (state.featurePreview.status !== "idle") {
+                state.setFeaturePreview({ status: "idle", error: null });
+              }
+              return;
+            }
+            feature = {
+              id: "preview",
+              type: "hole",
+              targetFace: editor.params.targetFace,
+              positionUV: [
+                editor.params.positionUV[0],
+                editor.params.positionUV[1],
+              ],
+              diameterMm: editor.params.diameterMm,
+              depthMm: editor.params.depthMm,
+            };
+          }
+          if (!feature) return;
+
+          const hash = computeFeatureHash(
+            feature,
+            part.sketches,
+            upstreamFeatures.map((f) =>
+              computeFeatureHash(f, part.sketches, []),
+            ),
+          );
           if (hash === lastPreviewHash) return;
           lastPreviewHash = hash;
 
           state.setFeaturePreview({ status: "computing", error: null });
           const myToken = ++previewToken;
-          previewFeature(feature, [sketch], kernel)
+          previewFeature(feature, part.sketches, upstreamFeatures, kernel)
             .then((mesh) => {
               if (myToken !== previewToken) return;
               previewMeshLayer?.setMesh(mesh);

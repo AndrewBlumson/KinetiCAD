@@ -37,7 +37,7 @@ export type Feature =
   | RevolveFeature
   | { id: string; type: 'fillet'; targetEdges: string[]; radiusMm: number }
   | { id: string; type: 'chamfer'; targetEdges: string[]; sizeMm: number }
-  | { id: string; type: 'hole'; targetFace: string; positionXY: [number, number]; diameterMm: number; depthMm: number }
+  | { id: string; type: 'hole'; targetFace: string; positionUV: [number, number]; diameterMm: number; depthMm: number }
   | { id: string; type: 'boolean'; operation: 'union' | 'subtract' | 'intersect'; targetIds: string[] };
 
 export type Part = {
