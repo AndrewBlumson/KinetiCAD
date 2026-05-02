@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0A0E1A;
+  --color-navy-2: #11162A;
+  --color-orange: #FF6B1A;
+  --color-orange-glow: rgba(255, 107, 26, 0.55);
+  --color-ink: #F5F5F5;
+  --color-ink-dim: rgba(245, 245, 245, 0.65);
+  --color-ink-mute: rgba(245, 245, 245, 0.35);
+
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", "Space Grotesk", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0A0E1A;
+  color: #F5F5F5;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Subtle vignette for cinematic feel */
+.vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* KaTeX equation tweaks so the brand colour shows through */
+.katex {
+  color: #F5F5F5;
+  font-size: 1em !important;
+}
+
+.katex .accent,
+.katex .mord {
+  color: inherit;
+}
+
+/* Underline-draw pseudo for typed lines */
+.scribe-underline {
+  position: relative;
+  display: inline-block;
+}
+.scribe-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 107, 26, 0) 0%,
+    #FF6B1A 30%,
+    #FF6B1A 70%,
+    rgba(255, 107, 26, 0) 100%
+  );
+}
