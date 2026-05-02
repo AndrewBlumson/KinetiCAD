@@ -13,9 +13,28 @@ export type Sketch = {
   primitives: SketchPrimitive[];
 };
 
+export type ExtrudeDirection = 'forward' | 'backward' | 'symmetric';
+export type RevolveAxis = 'X' | 'Y' | 'Z';
+
+export type ExtrudeFeature = {
+  id: string;
+  type: 'extrude';
+  sketchId: string;
+  depthMm: number;
+  direction: ExtrudeDirection;
+};
+
+export type RevolveFeature = {
+  id: string;
+  type: 'revolve';
+  sketchId: string;
+  axis: RevolveAxis;
+  angleDeg: number;
+};
+
 export type Feature =
-  | { id: string; type: 'extrude'; sketchId: string; depthMm: number; symmetric: boolean }
-  | { id: string; type: 'revolve'; sketchId: string; axis: 'X' | 'Y' | 'Z'; angleDeg: number }
+  | ExtrudeFeature
+  | RevolveFeature
   | { id: string; type: 'fillet'; targetEdges: string[]; radiusMm: number }
   | { id: string; type: 'chamfer'; targetEdges: string[]; sizeMm: number }
   | { id: string; type: 'hole'; targetFace: string; positionXY: [number, number]; diameterMm: number; depthMm: number }

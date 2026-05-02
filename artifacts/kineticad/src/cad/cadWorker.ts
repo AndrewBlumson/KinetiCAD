@@ -12,7 +12,17 @@ import * as Comlink from "comlink";
 import ocFactoryRaw from "opencascade.js/dist/opencascade.full.js";
 import ocWasmUrl from "opencascade.js/dist/opencascade.full.wasm?url";
 import type { OpenCascadeInstance } from "opencascade.js";
-import type { TessellatedMesh, KernelInitResult, CadKernelApi } from "./types";
+import type {
+  CadKernelApi,
+  ExtrudeArgs,
+  KernelInitResult,
+  RevolveArgs,
+  TessellatedMesh,
+} from "./types";
+import { tessellateShape } from "./operations/tessellate";
+import { sketchToWire } from "./operations/sketchToWire";
+import { extrude as extrudeWire } from "./operations/extrude";
+import { revolve as revolveWire } from "./operations/revolve";
 
 type OC = OpenCascadeInstance;
 
@@ -52,130 +62,15 @@ async function ensureKernel(): Promise<KernelInitResult> {
 }
 
 /**
- * Tessellate the given TopoDS_Shape into flat Float32 / Uint32 arrays suitable
- * for direct upload to a Three.js BufferGeometry.
- *
- * Iterates each face, calls BRepMesh_IncrementalMesh, then walks each face's
- * Poly_Triangulation and copies nodes / triangles / normals into one merged
- * buffer.
+ * Wrap a tessellated mesh in a Comlink transfer envelope so the typed arrays
+ * are moved (not copied) across the worker boundary.
  */
-function tessellateShape(oc: OC, shape: any, linDeflection: number): TessellatedMesh {
-  // Cast to any: opencascade.js's TS surface is large and uses opaque enum
-  // types that aren't easy to satisfy without giving up. The runtime API is
-  // stable.
-  const ocAny = oc as any;
-
-  // Run the meshing algorithm on the whole shape first.
-  new ocAny.BRepMesh_IncrementalMesh_2(shape, linDeflection, false, 0.5, false);
-
-  const positions: number[] = [];
-  const normals: number[] = [];
-  const indices: number[] = [];
-
-  const explorer = new ocAny.TopExp_Explorer_2(
-    shape,
-    ocAny.TopAbs_ShapeEnum.TopAbs_FACE,
-    ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE,
-  );
-
-  let nodeOffset = 0;
-
-  while (explorer.More()) {
-    const faceShape = explorer.Current();
-    const face = ocAny.TopoDS.Face_1(faceShape);
-    const location = new ocAny.TopLoc_Location_1();
-    const triangulationHandle = ocAny.BRep_Tool.Triangulation(
-      face,
-      location,
-      0, // Poly_MeshPurpose_NONE
-    );
-
-    if (triangulationHandle.IsNull()) {
-      triangulationHandle.delete();
-      face.delete();
-      location.delete();
-      explorer.Next();
-      continue;
-    }
-
-    const triangulation = triangulationHandle.get();
-    const transformation = location.Transformation();
-    // Embind exposes enum values as singleton objects. Reference equality
-    // works because oc.TopAbs_Orientation.TopAbs_REVERSED is the same object
-    // returned by the shape.
-    const orientationReversed =
-      faceShape.Orientation_1() === ocAny.TopAbs_Orientation.TopAbs_REVERSED;
-
-    // Ensure normals are present so we don't have to recompute later.
-    if (!triangulation.HasNormals()) {
-      triangulation.ComputeNormals();
-    }
-
-    const nbNodes = triangulation.NbNodes();
-    const nbTriangles = triangulation.NbTriangles();
-
-    // Copy nodes (1-indexed in OCCT).
-    for (let i = 1; i <= nbNodes; i++) {
-      const pnt = triangulation.Node(i);
-      const transformed = pnt.Transformed(transformation);
-      positions.push(transformed.X(), transformed.Y(), transformed.Z());
-
-      const normalVec = new ocAny.gp_Vec3f_1();
-      try {
-        triangulation.Normal_2(i, normalVec);
-        // gp_Vec3f getter methods are suffixed _1 in this build's bindings.
-        let nx: number = normalVec.x_1();
-        let ny: number = normalVec.y_1();
-        let nz: number = normalVec.z_1();
-        if (orientationReversed) {
-          nx = -nx;
-          ny = -ny;
-          nz = -nz;
-        }
-        normals.push(nx, ny, nz);
-      } finally {
-        normalVec.delete();
-      }
-    }
-
-    // Copy triangles.
-    for (let i = 1; i <= nbTriangles; i++) {
-      const tri = triangulation.Triangle(i);
-      const n1 = tri.Value(1);
-      const n2 = tri.Value(2);
-      const n3 = tri.Value(3);
-      // OCCT uses 1-based indices, Three.js wants 0-based.
-      if (orientationReversed) {
-        indices.push(
-          nodeOffset + n1 - 1,
-          nodeOffset + n3 - 1,
-          nodeOffset + n2 - 1,
-        );
-      } else {
-        indices.push(
-          nodeOffset + n1 - 1,
-          nodeOffset + n2 - 1,
-          nodeOffset + n3 - 1,
-        );
-      }
-    }
-
-    nodeOffset += nbNodes;
-    // Drop OCCT-side wrappers we own. The triangulation itself lives on the
-    // face's TShape and must NOT be deleted here.
-    triangulationHandle.delete();
-    face.delete();
-    location.delete();
-    explorer.Next();
-  }
-
-  explorer.delete();
-
-  return {
-    positions: new Float32Array(positions),
-    normals: new Float32Array(normals),
-    indices: new Uint32Array(indices),
-  };
+function transferMesh(mesh: TessellatedMesh): TessellatedMesh {
+  return Comlink.transfer(mesh, [
+    mesh.positions.buffer,
+    mesh.normals.buffer,
+    mesh.indices.buffer,
+  ]);
 }
 
 const api: CadKernelApi = {
@@ -207,11 +102,51 @@ const api: CadKernelApi = {
     corner1.delete();
     corner2.delete();
 
-    return Comlink.transfer(mesh, [
-      mesh.positions.buffer,
-      mesh.normals.buffer,
-      mesh.indices.buffer,
-    ]);
+    return transferMesh(mesh);
+  },
+
+  async extrude(args: ExtrudeArgs) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("CAD kernel failed to initialise");
+    const oc = ocInstance;
+
+    let wire: any = null;
+    let solid: any = null;
+    try {
+      wire = sketchToWire(oc, args.plane, args.sketchPrimitives);
+      solid = extrudeWire(oc, wire, args.plane, args.depthMm, args.direction);
+      const mesh = tessellateShape(oc, solid);
+      return transferMesh(mesh);
+    } catch (err) {
+      // Re-throw with a clean message so the inspector can show it. Keep the
+      // original message if it's already user-friendly, otherwise wrap.
+      if (err instanceof Error) throw err;
+      throw new Error(`Extrude failed: ${String(err)}`);
+    } finally {
+      if (solid) solid.delete();
+      if (wire) wire.delete();
+    }
+  },
+
+  async revolve(args: RevolveArgs) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("CAD kernel failed to initialise");
+    const oc = ocInstance;
+
+    let wire: any = null;
+    let solid: any = null;
+    try {
+      wire = sketchToWire(oc, args.plane, args.sketchPrimitives);
+      solid = revolveWire(oc, wire, args.axis, args.angleDeg);
+      const mesh = tessellateShape(oc, solid);
+      return transferMesh(mesh);
+    } catch (err) {
+      if (err instanceof Error) throw err;
+      throw new Error(`Revolve failed: ${String(err)}`);
+    } finally {
+      if (solid) solid.delete();
+      if (wire) wire.delete();
+    }
   },
 };
 

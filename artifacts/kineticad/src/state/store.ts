@@ -2,7 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type {
   Assembly,
+  ExtrudeDirection,
+  ExtrudeFeature,
+  Feature,
   Part,
+  RevolveAxis,
+  RevolveFeature,
   SimulationState,
   AppMode,
   Sketch,
@@ -35,11 +40,78 @@ const defaultSketchSession: SketchSession = {
   committedPrimitives: [],
 };
 
+/**
+ * What the user currently has selected in the feature tree / scene.
+ * Drives the right inspector content. Not persisted — the user starts a
+ * fresh session with nothing selected.
+ */
+export type Selection =
+  | { kind: "sketch"; partId: string; sketchId: string }
+  | { kind: "feature"; partId: string; featureId: string }
+  | null;
+
+export type ExtrudeParams = {
+  depthMm: number;
+  direction: ExtrudeDirection;
+};
+
+export type RevolveParams = {
+  axis: RevolveAxis;
+  angleDeg: number;
+};
+
+/**
+ * In-flight feature being created or edited via the right-panel inspector.
+ * Lives outside `assembly` so the user can tweak parameters live (with
+ * 200ms-debounced regen) and either Apply (push into `part.features`) or
+ * Cancel (discard).
+ *
+ * Not persisted: a half-edited feature should not survive a reload.
+ */
+export type FeatureEditor =
+  | { open: false }
+  | {
+      open: true;
+      partId: string;
+      sketchId: string;
+      /** 'create' inserts a new feature on Apply; 'edit' replaces an existing one. */
+      mode: "create" | "edit";
+      /** Present only when mode === 'edit'. */
+      featureId?: string;
+      type: "extrude";
+      params: ExtrudeParams;
+      livePreview: boolean;
+    }
+  | {
+      open: true;
+      partId: string;
+      sketchId: string;
+      mode: "create" | "edit";
+      featureId?: string;
+      type: "revolve";
+      params: RevolveParams;
+      livePreview: boolean;
+    };
+
+const defaultFeatureEditor: FeatureEditor = { open: false };
+
+const DEFAULT_EXTRUDE_PARAMS: ExtrudeParams = {
+  depthMm: 10,
+  direction: "forward",
+};
+
+const DEFAULT_REVOLVE_PARAMS: RevolveParams = {
+  axis: "Y",
+  angleDeg: 360,
+};
+
 export type KinetiCADStore = {
   mode: AppMode;
   assembly: Assembly;
   simulation: SimulationState;
   sketchSession: SketchSession;
+  selection: Selection;
+  featureEditor: FeatureEditor;
 
   setMode: (mode: AppMode) => void;
   setSimulationRunning: (running: boolean) => void;
@@ -50,6 +122,27 @@ export type KinetiCADStore = {
   commitPrimitive: (primitive: SketchPrimitive) => void;
   finishSketch: () => void;
   cancelSketch: () => void;
+
+  selectSketch: (partId: string, sketchId: string) => void;
+  selectFeature: (partId: string, featureId: string) => void;
+  clearSelection: () => void;
+
+  /** Open the inspector to create a new extrude/revolve from the given sketch. */
+  beginCreateFeature: (
+    partId: string,
+    sketchId: string,
+    type: "extrude" | "revolve",
+  ) => void;
+  /** Open the inspector to edit an existing feature, populating from its current params. */
+  beginEditFeature: (partId: string, featureId: string) => void;
+  /** Replace the editor's params (caller supplies the full new params object). */
+  setFeatureEditorExtrudeParams: (params: ExtrudeParams) => void;
+  setFeatureEditorRevolveParams: (params: RevolveParams) => void;
+  setFeatureEditorLivePreview: (on: boolean) => void;
+  /** Commit the current editor state to part.features (insert or replace). */
+  applyFeatureEditor: () => void;
+  /** Discard the in-flight editor without touching part.features. */
+  cancelFeatureEditor: () => void;
 };
 
 const defaultAssembly: Assembly = {
@@ -78,6 +171,19 @@ function newId(prefix: string): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/** Look up a feature within a part by id. */
+function findFeature(
+  part: Part,
+  featureId: string,
+): Feature | undefined {
+  return part.features.find((f) => f.id === featureId);
+}
+
+/** Look up a part within the assembly by id. */
+function findPart(assembly: Assembly, partId: string): Part | undefined {
+  return assembly.parts.find((p) => p.id === partId);
+}
+
 export const useKinetiCADStore = create<KinetiCADStore>()(
   persist(
     (set, get) => ({
@@ -85,6 +191,8 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       assembly: defaultAssembly,
       simulation: defaultSimulation,
       sketchSession: defaultSketchSession,
+      selection: null,
+      featureEditor: defaultFeatureEditor,
 
       setMode: (mode) => set({ mode }),
 
@@ -161,11 +269,178 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       },
 
       cancelSketch: () => set({ sketchSession: defaultSketchSession }),
+
+      selectSketch: (partId, sketchId) =>
+        set({ selection: { kind: "sketch", partId, sketchId } }),
+
+      selectFeature: (partId, featureId) =>
+        set({ selection: { kind: "feature", partId, featureId } }),
+
+      clearSelection: () => set({ selection: null }),
+
+      beginCreateFeature: (partId, sketchId, type) => {
+        if (type === "extrude") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId,
+              mode: "create",
+              type: "extrude",
+              params: { ...DEFAULT_EXTRUDE_PARAMS },
+              livePreview: true,
+            },
+          });
+        } else {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId,
+              mode: "create",
+              type: "revolve",
+              params: { ...DEFAULT_REVOLVE_PARAMS },
+              livePreview: true,
+            },
+          });
+        }
+      },
+
+      beginEditFeature: (partId, featureId) => {
+        const part = findPart(get().assembly, partId);
+        if (!part) return;
+        const feature = findFeature(part, featureId);
+        if (!feature) return;
+
+        if (feature.type === "extrude") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId: feature.sketchId,
+              mode: "edit",
+              featureId: feature.id,
+              type: "extrude",
+              params: {
+                depthMm: feature.depthMm,
+                direction: feature.direction,
+              },
+              livePreview: true,
+            },
+            selection: { kind: "feature", partId, featureId },
+          });
+        } else if (feature.type === "revolve") {
+          set({
+            featureEditor: {
+              open: true,
+              partId,
+              sketchId: feature.sketchId,
+              mode: "edit",
+              featureId: feature.id,
+              type: "revolve",
+              params: { axis: feature.axis, angleDeg: feature.angleDeg },
+              livePreview: true,
+            },
+            selection: { kind: "feature", partId, featureId },
+          });
+        }
+        // Other feature types (fillet/chamfer/hole/boolean) are deferred to
+        // later phases; the editor doesn't open for them yet.
+      },
+
+      setFeatureEditorExtrudeParams: (params) =>
+        set((s) => {
+          if (!s.featureEditor.open || s.featureEditor.type !== "extrude") {
+            return {};
+          }
+          return {
+            featureEditor: { ...s.featureEditor, params },
+          };
+        }),
+
+      setFeatureEditorRevolveParams: (params) =>
+        set((s) => {
+          if (!s.featureEditor.open || s.featureEditor.type !== "revolve") {
+            return {};
+          }
+          return {
+            featureEditor: { ...s.featureEditor, params },
+          };
+        }),
+
+      setFeatureEditorLivePreview: (on) =>
+        set((s) => {
+          if (!s.featureEditor.open) return {};
+          return {
+            featureEditor: { ...s.featureEditor, livePreview: on },
+          };
+        }),
+
+      applyFeatureEditor: () => {
+        const state = get();
+        const editor = state.featureEditor;
+        if (!editor.open) return;
+
+        const part = findPart(state.assembly, editor.partId);
+        if (!part) {
+          set({ featureEditor: defaultFeatureEditor });
+          return;
+        }
+
+        let newFeature: Feature;
+        if (editor.type === "extrude") {
+          const base: ExtrudeFeature = {
+            id: editor.featureId ?? newId("feature"),
+            type: "extrude",
+            sketchId: editor.sketchId,
+            depthMm: editor.params.depthMm,
+            direction: editor.params.direction,
+          };
+          newFeature = base;
+        } else {
+          const base: RevolveFeature = {
+            id: editor.featureId ?? newId("feature"),
+            type: "revolve",
+            sketchId: editor.sketchId,
+            axis: editor.params.axis,
+            angleDeg: editor.params.angleDeg,
+          };
+          newFeature = base;
+        }
+
+        let updatedFeatures: Feature[];
+        if (editor.mode === "edit" && editor.featureId) {
+          updatedFeatures = part.features.map((f) =>
+            f.id === editor.featureId ? newFeature : f,
+          );
+        } else {
+          updatedFeatures = [...part.features, newFeature];
+        }
+
+        const updatedPart: Part = { ...part, features: updatedFeatures };
+        const updatedParts = state.assembly.parts.map((p) =>
+          p.id === editor.partId ? updatedPart : p,
+        );
+
+        set({
+          assembly: { ...state.assembly, parts: updatedParts },
+          featureEditor: defaultFeatureEditor,
+          selection: {
+            kind: "feature",
+            partId: editor.partId,
+            featureId: newFeature.id,
+          },
+        });
+      },
+
+      cancelFeatureEditor: () =>
+        set({ featureEditor: defaultFeatureEditor }),
     }),
     {
       name: "kineticad-state",
-      version: 1,
-      // Don't persist the active sketch session or live simulation flags.
+      version: 2,
+      // Don't persist the active sketch session, in-flight feature editor,
+      // selection, or live simulation flags.
       partialize: (state) => ({
         mode: state.mode,
         assembly: state.assembly,
@@ -174,6 +449,34 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           running: false,
         },
       }),
+      // v1 → v2: legacy extrude features stored `symmetric: boolean`. Map
+      // to the new `direction` field so old persisted state still loads.
+      migrate: (persisted, version) => {
+        if (!persisted || typeof persisted !== "object") return persisted;
+        const state = persisted as { assembly?: Assembly };
+        if (version < 2 && state.assembly) {
+          const migratedParts = state.assembly.parts.map((part) => ({
+            ...part,
+            features: part.features.map((f) => {
+              if (f.type !== "extrude") return f;
+              const legacy = f as ExtrudeFeature & { symmetric?: boolean };
+              if (legacy.direction) return f;
+              const direction: ExtrudeDirection = legacy.symmetric
+                ? "symmetric"
+                : "forward";
+              return {
+                id: legacy.id,
+                type: "extrude" as const,
+                sketchId: legacy.sketchId,
+                depthMm: legacy.depthMm,
+                direction,
+              };
+            }),
+          }));
+          state.assembly = { ...state.assembly, parts: migratedParts };
+        }
+        return state;
+      },
     },
   ),
 );
