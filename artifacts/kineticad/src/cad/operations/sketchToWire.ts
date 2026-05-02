@@ -324,7 +324,12 @@ export function sketchToWire(
       }
       const wire = wireBuilder.Wire();
       // Sanity: a circle wire should always report closed.
-      if (!wire.Closed()) {
+      // OCCT exposes `Closed` as a numbered overload pair on TopoDS_Shape:
+      // `Closed_1(): Standard_Boolean` (getter) and
+      // `Closed_2(value): void` (setter). The unsuffixed `Closed()` does
+      // NOT exist in this binding — calling it throws
+      // "wire.Closed is not a function" and silently breaks every extrude.
+      if (!wire.Closed_1()) {
         wire.delete();
         throw new Error("Circle wire reported as open by OCCT (unexpected).");
       }
@@ -380,7 +385,8 @@ export function sketchToWire(
       );
     }
     const wire = wireBuilder.Wire();
-    if (!wire.Closed()) {
+    // See note above on `Closed_1` vs `Closed`.
+    if (!wire.Closed_1()) {
       wire.delete();
       throw new Error(
         "Sketch is not closed. Use endpoint snap so adjacent primitives share endpoints.",

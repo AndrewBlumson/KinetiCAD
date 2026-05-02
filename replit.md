@@ -130,6 +130,19 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
   exception is now plainly visible — `[SELF-TEST] FAILED:
   wire.Closed is not a function` (a separate OCCT API binding bug to
   fix in the next pass; this diagnostic patch only surfaces it).
+- **`wire.Closed_1()` fix (immediate follow-up to diagnostic pass)** ✅
+  — Two-line fix in `cad/operations/sketchToWire.ts`. OCCT exposes
+  `Closed` on `TopoDS_Shape` as a numbered overload pair —
+  `Closed_1(): Standard_Boolean` (getter) and
+  `Closed_2(value): void` (setter); the unsuffixed `Closed()` does
+  NOT exist in this opencascade.js binding. Both call sites
+  (lines 327 and 383) updated to `wire.Closed_1()`. **This is the
+  root cause of T3 — every extrude has been silently failing on
+  this method call since Phase 3.** Phase 3 acceptance never
+  caught it because the runtime test never executed (it was a
+  code review only). After fix: `[SELF-TEST] OK: tris=12
+  bbox=[-10, -10, 0] → [10, 10, 10]` (a real 20×20×10mm extruded
+  box) prints on every kernel boot.
 
 **Sketch overlay & camera**: `Scene.tsx` subscribes to the Zustand store **and** runs the same reconciler once immediately after subscribe so a session that started before the WebGPU/OrbitControls were ready still triggers the camera tween, overlay reveal, and `controls.enabled = false`. Tweens are advanced inside the WebGPU `setAnimationLoop` callback (not `requestAnimationFrame`).
 
