@@ -34,6 +34,8 @@ import type {
   PhysicsInitResult,
   StepResult,
   StepTransform,
+  UpdateJointMotorArgs,
+  UpdateJointMotorResult,
 } from "./types";
 import type { Mate } from "@/state/schemas";
 
@@ -47,6 +49,53 @@ let timeStepMs = 1000 / 60;
  * each body's transform back out.
  */
 const partIdToBody = new Map<string, RAPIER.RigidBody>();
+
+/**
+ * Phase 9 — mapping from KinetiCAD mateId → Rapier joint handle. Only
+ * revolute and prismatic joints are stored (the only mate types that
+ * support motors). Used for live motor updates while the simulation
+ * is running.
+ */
+const mateIdToJoint = new Map<string, RAPIER.ImpulseJoint>();
+
+/**
+ * Convert a revolute mate's RPM into Rapier's expected rad/s.
+ */
+function rpmToRadPerSec(rpm: number): number {
+  return (rpm * 2 * Math.PI) / 60;
+}
+
+/**
+ * Configure (or clear) a revolute joint's velocity motor. Rapier's
+ * `configureMotorVelocity` lives on `UnitImpulseJoint` (the parent of
+ * Revolute/Prismatic); we cast through `unknown` because the base
+ * `ImpulseJoint` type returned by `createImpulseJoint` doesn't expose
+ * the method. Passing a target velocity of 0 effectively disables the
+ * motor — Rapier still solves for the constraint, just with no driving
+ * impulse.
+ */
+function applyRevoluteMotor(
+  joint: RAPIER.ImpulseJoint,
+  motorSpeedRpm: number | null | undefined,
+): void {
+  const rpm = motorSpeedRpm ?? 0;
+  const radPerSec = rpmToRadPerSec(rpm);
+  (joint as unknown as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(
+    radPerSec,
+    1.0,
+  );
+}
+
+function applyPrismaticMotor(
+  joint: RAPIER.ImpulseJoint,
+  motorVelocityMmPerSec: number | null | undefined,
+): void {
+  const v = motorVelocityMmPerSec ?? 0;
+  (joint as unknown as RAPIER.PrismaticImpulseJoint).configureMotorVelocity(
+    v,
+    1.0,
+  );
+}
 
 async function ensureRapier(): Promise<PhysicsInitResult> {
   if (initPromise) return initPromise;
@@ -277,7 +326,13 @@ function buildJoint(
         b,
         { x: ax[0], y: ax[1], z: ax[2] },
       );
-      rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
+      const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
+      mateIdToJoint.set(mate.id, joint);
+      // Phase 9 — wire the motor at build time so the mechanism is
+      // already spinning on frame 1 when the user has set an RPM.
+      if (mate.motorSpeedRpm != null && mate.motorSpeedRpm !== 0) {
+        applyRevoluteMotor(joint, mate.motorSpeedRpm);
+      }
       return { ok: true, warning: null };
     }
 
@@ -290,7 +345,14 @@ function buildJoint(
         b,
         { x: ax[0], y: ax[1], z: ax[2] },
       );
-      rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
+      const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
+      mateIdToJoint.set(mate.id, joint);
+      if (
+        mate.motorVelocityMmPerSec != null &&
+        mate.motorVelocityMmPerSec !== 0
+      ) {
+        applyPrismaticMotor(joint, mate.motorVelocityMmPerSec);
+      }
       return { ok: true, warning: null };
     }
 
@@ -360,6 +422,7 @@ function destroyWorld(): void {
     world = null;
   }
   partIdToBody.clear();
+  mateIdToJoint.clear();
 }
 
 const api: PhysicsApi = {
@@ -430,6 +493,37 @@ const api: PhysicsApi = {
       });
     });
     return { transforms, dtMs: timeStepMs };
+  },
+
+  async updateJointMotor(
+    args: UpdateJointMotorArgs,
+  ): Promise<UpdateJointMotorResult> {
+    if (!world) {
+      return { ok: false, error: "no active world" };
+    }
+    const joint = mateIdToJoint.get(args.mateId);
+    if (!joint) {
+      return { ok: false, error: `joint not found for mate ${args.mateId}` };
+    }
+    try {
+      if (args.motorSpeedRpm !== undefined) {
+        applyRevoluteMotor(joint, args.motorSpeedRpm);
+      }
+      if (args.motorVelocityMmPerSec !== undefined) {
+        applyPrismaticMotor(joint, args.motorVelocityMmPerSec);
+      }
+      // Wake both attached bodies — Rapier puts dynamic bodies to sleep
+      // when they idle, and a freshly-applied motor on a sleeping body
+      // would have no effect until the next external nudge.
+      const a = joint.body1();
+      const b = joint.body2();
+      a?.wakeUp();
+      b?.wakeUp();
+      return { ok: true };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { ok: false, error: msg };
+    }
   },
 
   async destroy(): Promise<void> {

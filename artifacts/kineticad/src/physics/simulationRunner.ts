@@ -20,7 +20,7 @@
 // `paused === true`.
 
 import { getCadKernel } from "@/cad/cadClient";
-import type { Part } from "@/state/schemas";
+import type { Mate, Part } from "@/state/schemas";
 import { useKinetiCADStore } from "@/state/store";
 import { getPartMeshLayer } from "@/three/partMeshLayerRef";
 import { getSimulationLayer } from "@/three/simulationLayerRef";
@@ -245,12 +245,77 @@ export function startSimulationRunner(): RunnerHandle {
     }
   });
 
+  // Phase 9 — live motor parameter updates. Subscribe to assembly.mates
+  // and diff motor fields against the previous snapshot. Only emit
+  // updateJointMotor calls while the simulation is running, otherwise
+  // the world doesn't exist on the worker side and there'd be nothing
+  // to update — buildWorld picks up the latest values on Play anyway.
+  let lastMates: Mate[] = useKinetiCADStore.getState().assembly.mates;
+  const unsubscribeMotors = useKinetiCADStore.subscribe((state) => {
+    const mates = state.assembly.mates;
+    if (mates === lastMates) return;
+    const prev = lastMates;
+    lastMates = mates;
+    if (!state.simulation.running) return;
+
+    const prevById = new Map(prev.map((m) => [m.id, m]));
+    for (const m of mates) {
+      const p = prevById.get(m.id);
+      if (!p) continue;
+      if (
+        m.type === "revolute" &&
+        p.type === "revolute" &&
+        m.motorSpeedRpm !== p.motorSpeedRpm
+      ) {
+        void pushMotorUpdate({
+          mateId: m.id,
+          motorSpeedRpm: m.motorSpeedRpm ?? 0,
+        });
+      } else if (
+        m.type === "prismatic" &&
+        p.type === "prismatic" &&
+        m.motorVelocityMmPerSec !== p.motorVelocityMmPerSec
+      ) {
+        void pushMotorUpdate({
+          mateId: m.id,
+          motorVelocityMmPerSec: m.motorVelocityMmPerSec ?? 0,
+        });
+      }
+    }
+  });
+
   active = {
     dispose: () => {
       unsubscribe();
+      unsubscribeMotors();
       void tearDownWorld();
       active = null;
     },
   };
   return active;
+}
+
+/**
+ * Forward a motor update to the physics worker, swallowing the
+ * "joint not found" failure mode that occurs when the simulation
+ * tears down between the dispatch and the worker reply.
+ */
+async function pushMotorUpdate(args: {
+  mateId: string;
+  motorSpeedRpm?: number;
+  motorVelocityMmPerSec?: number;
+}): Promise<void> {
+  try {
+    const physics = await getPhysicsKernel();
+    const result = await physics.updateJointMotor(args);
+    if (!result.ok && import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[PHYSICS] live motor update for ${args.mateId} failed: ${result.error}`,
+      );
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[PHYSICS] updateJointMotor threw:", err);
+  }
 }

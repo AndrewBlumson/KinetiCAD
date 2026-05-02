@@ -387,3 +387,41 @@ Three bugs reported by QA pass 7b that blocked end-to-end mate creation
   (`__kineticadKernel__`, `__kineticadPhysics__`). The slot survives
   module replacement during dev and is set exactly once in production
   builds (where there is no HMR).
+
+## Phase 9 — Motor Actuation (2026-05-02)
+
+Wired mate motors to Rapier's joint motor API so the simulation can
+drive a mechanism continuously instead of only reacting to gravity.
+
+**Worker side (`physics/physicsWorker.ts`)**:
+- Added a parallel `mateIdToJoint: Map<string, ImpulseJoint>` next to
+  `partIdToBody`. Populated for revolute and prismatic joints in
+  `buildJoint`; cleared in `destroyWorld`.
+- Helpers `applyRevoluteMotor` / `applyPrismaticMotor` cast the joint
+  to its `UnitImpulseJoint` subclass and call
+  `configureMotorVelocity(targetVel, 1.0)`. RPM → rad/s conversion
+  via `rpm × 2π / 60`; prismatic velocity passes through in mm/s.
+- New Comlink method `updateJointMotor({ mateId, motorSpeedRpm?,
+  motorVelocityMmPerSec? })`. Wakes both attached bodies via
+  `body.wakeUp()` so a freshly-applied motor takes effect on a
+  sleeping idle mechanism.
+
+**Main thread (`physics/simulationRunner.ts`)**:
+- Second store subscription dedicated to `assembly.mates`. Diffs the
+  current vs. previous slice, and while `simulation.running` calls
+  `physics.updateJointMotor(...)` for any mate whose `motorSpeedRpm`
+  (revolute) or `motorVelocityMmPerSec` (prismatic) changed.
+- Build-time motors are still picked up by `buildJoint` so users who
+  hit Play with a pre-configured RPM see the mechanism start moving
+  on frame 1 — the live subscription only handles parameter tweaks
+  during a running sim.
+
+**Types (`physics/types.ts`)**:
+- Added `UpdateJointMotorArgs` / `UpdateJointMotorResult` and exposed
+  `updateJointMotor` on the `PhysicsApi` Comlink contract.
+
+**Verification status**: typecheck clean. The four-bar linkage
+acceptance test (Ground/Crank/ConRod/Rocker, 60 RPM motor) was not
+exercised end-to-end in this session — that requires WebGPU which
+the in-IDE preview iframe does not provide; QA should run it on a
+deployed `.replit.app` URL in Chrome.

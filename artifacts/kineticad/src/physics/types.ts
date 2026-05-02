@@ -79,6 +79,24 @@ export type PhysicsInitResult = {
 };
 
 /**
+ * Phase 9 — live motor parameter update. Targets an existing joint by
+ * mate ID and reconfigures its Rapier motor without rebuilding the
+ * world. `motorSpeedRpm` is for revolute joints (converted to rad/s
+ * inside the worker); `motorVelocityMmPerSec` is for prismatic joints
+ * and forwarded as-is. Passing 0 (or null/undefined) disables the
+ * motor by setting target velocity to zero.
+ */
+export type UpdateJointMotorArgs = {
+  mateId: string;
+  motorSpeedRpm?: number | null;
+  motorVelocityMmPerSec?: number | null;
+};
+
+export type UpdateJointMotorResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+/**
  * Comlink-exposed API. All methods are async; the worker side may run
  * synchronous Rapier calls but Comlink wraps them in promises.
  */
@@ -86,6 +104,14 @@ export type PhysicsApi = {
   init: () => Promise<PhysicsInitResult>;
   buildWorld: (args: BuildWorldArgs) => Promise<BuildWorldResult>;
   step: () => Promise<StepResult>;
+  /**
+   * Phase 9 — update an existing joint's motor parameters live.
+   * Used so users can dial RPM/velocity while the simulation is
+   * running without paying the full buildWorld cost.
+   */
+  updateJointMotor: (
+    args: UpdateJointMotorArgs,
+  ) => Promise<UpdateJointMotorResult>;
   /**
    * Tear down the current world without re-creating it. The caller
    * must call `buildWorld` again before the next `step`.
