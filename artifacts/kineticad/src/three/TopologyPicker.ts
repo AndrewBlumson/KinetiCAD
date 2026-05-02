@@ -33,6 +33,14 @@ import type { FaceHighlightLayer } from "./FaceHighlightLayer";
 import type { StoreApi } from "zustand";
 
 const EDGE_PROXIMITY_PX = 8;
+// When a pick filter is active (e.g. Revolute restricting to circle/arc),
+// only inspector-valid edges are considered, so we can be much more generous
+// about how close the cursor must be. Without this widening, mouseup jitter
+// of even a few pixels can carry the cursor outside the 8 px band of the
+// only filter-matching edge nearby — producing `hit: null` on click despite
+// a clean hover highlight a moment earlier. The filter precludes wrong-type
+// picks, so the larger window can't accidentally select something invalid.
+const FILTERED_EDGE_PROXIMITY_PX = 24;
 const CLICK_PIXEL_TOL = 4;
 
 export type TopologyPicker = {
@@ -82,6 +90,15 @@ export function createTopologyPicker(opts: {
       pickFilter = state.pickFilter;
     }
   });
+
+  // Diagnostic captured by the most recent findEdgeHit call. Logged on click
+  // so QA can see, when hit is null, whether candidates were filtered out,
+  // none existed, or the cursor was just outside the proximity window.
+  let edgePickDiag: {
+    considered: number;
+    bestDistAll: number;
+    proximity: number;
+  } = { considered: 0, bestDistAll: Infinity, proximity: EDGE_PROXIMITY_PX };
 
   // Phase 9.5 — predicates derived from the active pick filter. Both hover
   // and click feed through these so the user can never visually highlight
@@ -178,18 +195,31 @@ export function createTopologyPicker(opts: {
     // analysis doesn't narrow `best` to `null` after the closure callback
     // (it can't reason across callback boundaries). Using a property write
     // sidesteps that without resorting to non-null assertions.
-    const slot: { value: { dist: number; hit: EdgeHit } | null } = {
-      value: null,
-    };
+    const slot: {
+      value: { dist: number; hit: EdgeHit } | null;
+      considered: number;
+      bestDistAll: number;
+    } = { value: null, considered: 0, bestDistAll: Infinity };
+    const proximity =
+      pickFilter?.edgeTypes && pickFilter.edgeTypes.length > 0
+        ? FILTERED_EDGE_PROXIMITY_PX
+        : EDGE_PROXIMITY_PX;
     partMeshLayer.forEachVisible((partId, _mesh, topology: PartTopology) => {
       for (const edge of topology.edges) {
         if (!edgeAllowed(edge)) continue;
+        slot.considered++;
         const d = polylineDistancePx(edge.polyline, cursor);
-        if (d < EDGE_PROXIMITY_PX && (!slot.value || d < slot.value.dist)) {
+        if (d < slot.bestDistAll) slot.bestDistAll = d;
+        if (d < proximity && (!slot.value || d < slot.value.dist)) {
           slot.value = { dist: d, hit: { partId, edge } };
         }
       }
     });
+    edgePickDiag = {
+      considered: slot.considered,
+      bestDistAll: slot.bestDistAll,
+      proximity,
+    };
     return slot.value ? slot.value.hit : null;
   };
 
@@ -295,6 +325,7 @@ export function createTopologyPicker(opts: {
           ? { partId: hit.partId, edgeId: hit.edge.id, edgeType: hit.edge.type }
           : null,
         filter: pickFilter,
+        diag: edgePickDiag,
       });
       if (!hit) {
         if (!shift) state.clearSelection();

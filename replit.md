@@ -499,3 +499,29 @@ the picker for the duration of the inspector session.
 clean; HMR re-applied across all three updated inspectors. Behavioural
 QA (click on a circular edge near a side seam reliably advances Stage
 A → Stage B) on the deployed `.replit.app` URL.
+
+#### Follow-up: filter-aware proximity tolerance
+
+QA's first deploy showed `[mate-click] edge pick { hit: null, filter:
+{...} }` on every Revolute click. Hover and click really do share
+`findEdgeHit`, so the symptom looked impossible — until walking
+through the geometry: `EDGE_PROXIMITY_PX = 8` CSS px is tight enough
+that hover can latch onto a circular edge for one frame at ~6 px while
+mouseup-jitter (within `CLICK_PIXEL_TOL = 4`) carries the cursor to
+~10 px from the circle and ~5 px from the side seam. Pre-filter the
+seam was returned (and the inspector rejected it). Post-filter the
+seam is skipped, the circle is now outside the 8 px window, and
+`findEdgeHit` returns `null`. Same root cause, different symptom.
+
+Fix: when a pick filter is active, widen the proximity window to
+`FILTERED_EDGE_PROXIMITY_PX = 24 px`. The filter already restricts
+candidates to inspector-valid types, so a wider window can't pick the
+wrong thing. The default 8 px stays for unfiltered picks where
+type-discrimination by proximity still matters.
+
+Diagnostics also enriched: `findEdgeHit` now records `considered`
+(filter-passing edges scanned), `bestDistAll` (min distance found),
+and `proximity` (active threshold) into a closure-scoped `edgePickDiag`
+that the click logger emits. Future regressions distinguish "no
+candidates exist" from "candidates exist but cursor is too far" at a
+glance.
