@@ -1,0 +1,128 @@
+Read CLAUDE.md from project root. Read all existing source files relevant to this phase: src/state/store.ts, src/state/schemas.ts, src/three/Scene.tsx, src/three/sceneSetup.ts, the Modeller view component, and the Toolbar component. Confirm understanding before implementation.
+Phase 2: Sketch Mode (2D Plane Drawing)
+This phase adds the entry point to all 3D modelling: 2D sketches on a plane. By the end of this phase, the user can pick a plane, draw lines, arcs, circles, and rectangles on it with grid snapping, exit sketch mode, and see the resulting primitives persist as a sketch in the scene tree.
+OpenCascade.js does not get involved yet. Sketches are pure Zustand state plus Three.js overlay rendering. The kernel becomes involved in Phase 3 (extrude and revolve).
+Dependencies to install (pin these versions):
+
+three-mesh-bvh@0.7.8 (used later for face picking, install now to lock the version)
+
+No other new dependencies for this phase. All sketch rendering uses Three.js primitives already available.
+File structure to create:
+src/
+  sketch/
+    SketchSession.ts          Class managing the active sketch: plane, primitives in flight, completed primitives, snap state
+    SketchOverlay.tsx         React component that renders the active sketch's plane indicator and primitives in 3D
+    SketchTools.ts            Tool state machine: idle, line-first-point, line-second-point, rectangle-first-corner, rectangle-second-corner, circle-centre, circle-radius, arc-first, arc-second, arc-third
+    snapEngine.ts             Snap calculation: grid snap, endpoint snap, midpoint snap, returns SnapResult
+    plane.ts                  Plane math: world-to-plane, plane-to-world, plane normal, plane orient camera helpers
+  components/
+    SketchToolbar.tsx         Sub-toolbar shown when sketch mode is active
+    PlanePicker.tsx           Modal/overlay that appears when "Sketch" is clicked: pick XY, XZ, or YZ
+Sketch entry flow:
+
+User clicks the existing "Sketch" button in the top toolbar.
+PlanePicker appears as a centred dropdown over the canvas with three options: XY (Top), XZ (Front), YZ (Right). UK English labels. Replit Orange highlight on hover.
+User picks a plane. Camera animates over 600ms easing to look directly at that plane normal: XY camera at (0, 0, 120), XZ camera at (0, 120, 0), YZ camera at (120, 0, 0). Orbit controls disabled during sketch mode.
+The chosen plane renders as a translucent rectangle, 400mm x 400mm, centred at origin, colour #141B2E at 0.15 opacity. Grid on this plane is emphasised: brighter #1F2942, lines at 1mm, 5mm, and 10mm with stepped opacity (0.2, 0.5, 0.9).
+Top toolbar updates to show the SketchToolbar: tool buttons (Line, Rectangle, Circle, Arc), "Finish Sketch" button, "Cancel Sketch" button.
+Inspector panel on the right shows "Sketch 1 (XY)" with a live count of primitives.
+
+Drawing tools (each button activates the relevant tool, only one active at a time):
+Line tool:
+
+First click: place start point, snap applies.
+Cursor moves: a "rubber band" line follows the cursor from start point to current snap position.
+Second click: place end point, line committed to sketch primitives.
+Tool stays active for chaining: next click starts a new line from the just-clicked endpoint (auto-chain). Press Escape or click Line again to break the chain.
+
+Rectangle tool:
+
+First click: place first corner.
+Cursor moves: a rubber-band rectangle follows.
+Second click: place opposite corner, rectangle committed as a single Rectangle primitive (not four lines).
+Tool stays active for placing additional rectangles.
+
+Circle tool:
+
+First click: place centre.
+Cursor moves: a rubber-band circle expands from centre.
+Second click: set radius, circle committed.
+Tool stays active for additional circles.
+
+Arc tool (3-point arc):
+
+First click: start point.
+Second click: end point. A rubber-band arc follows the cursor through these two points.
+Third click: point on arc determining the arc curvature, committed as an Arc primitive (centre and radius computed from the three points).
+
+Snap behaviour:
+
+Grid snap is on by default at 1mm. Visual feedback: small orange dot at the snap position, label showing coordinates "(15, 25)" in JetBrains Mono.
+Endpoint snap: when cursor is within 5px of an existing primitive endpoint, snap to it. Visual: orange diamond at endpoint.
+Midpoint snap: same range, snap to the midpoint of any committed line. Visual: orange triangle.
+Snap priority: endpoint > midpoint > grid.
+Hold Alt to disable snap.
+
+Sketch state machine:
+
+Tool state: 'idle' | 'line' | 'rectangle' | 'circle' | 'arc'.
+Within each tool, sub-state for in-flight primitives (e.g. line has 'awaiting-start' | 'awaiting-end').
+Escape key: cancels the in-flight primitive (drops the rubber band), tool stays active.
+Enter key: same as clicking "Finish Sketch".
+
+Exit sketch flow:
+
+"Finish Sketch": sketch saved to Zustand assembly state as a new Sketch object, sketch mode exits, camera animates back to default 3D view, orbit controls re-enabled, sketch primitives persist as a thin overlay (orange #FF6B1A lines, 0.6 opacity) visible from any angle.
+"Cancel Sketch": all primitives discarded, sketch mode exits, camera animates back, no sketch added to state.
+
+Visual treatment:
+
+Active sketch primitives (committed): solid Replit Orange #FF6B1A, line width 2, full opacity.
+Rubber-band primitive (in-flight): dashed Replit Orange, line width 1.5, opacity 0.7.
+Snap markers: solid Replit Orange filled glyphs.
+Grid on sketch plane: as specified above, brighter than the world grid.
+Cursor: thin orange crosshair within the sketch plane, replaces the system cursor while sketch mode is active.
+Use Line2 from three/examples/jsm/lines/Line2.js for crisp line rendering, not the default 1px Line.
+
+Zustand additions:
+ts// extends existing store
+sketchSession: {
+  active: boolean;
+  plane: 'XY' | 'XZ' | 'YZ' | null;
+  tool: 'idle' | 'line' | 'rectangle' | 'circle' | 'arc';
+  inFlightPrimitive: SketchPrimitive | null;
+  committedPrimitives: SketchPrimitive[];
+};
+// actions
+beginSketch(plane: 'XY' | 'XZ' | 'YZ'): void;
+setSketchTool(tool: SketchTool): void;
+commitInFlightPrimitive(): void;
+finishSketch(): void; // pushes Sketch to assembly.parts[].sketches and resets session
+cancelSketch(): void;
+Coordinate system:
+
+Sketch primitives stored in 2D plane-local coordinates [number, number].
+Conversion to/from world coordinates happens in src/sketch/plane.ts.
+XY plane: u=X, v=Y, world Z = 0.
+XZ plane: u=X, v=Z, world Y = 0.
+YZ plane: u=Y, v=Z, world X = 0.
+
+Acceptance criteria:
+
+Click "Sketch" in the toolbar, PlanePicker appears, click "XY", camera animates to top-down view, sketch plane renders.
+Click "Rectangle", click two corners on the plane, rectangle appears in Replit Orange.
+Click "Circle", click centre and radius point, circle appears.
+Snap to grid visibly works at 1mm increments, coordinate label updates.
+Snap to endpoint visibly works when cursor is near an existing corner.
+Click "Finish Sketch", camera animates back to default 3D view, sketch persists as overlay visible from any angle.
+The right inspector panel shows "Sketch 1 (XY)" with primitive count "3 primitives" or similar.
+Sketch survives a page reload via localStorage (use the existing persistence layer if any, otherwise stub localStorage.setItem('kineticad-state', ...) on every store mutation).
+
+Note for Agent:
+If this phase is too large to complete in one pass, split it as follows and stop after the first split for review:
+
+Split A: Sketch entry, plane picker, camera animation, sketch plane rendering, sketch state machine in Zustand, "Finish Sketch" and "Cancel Sketch" buttons. No drawing tools yet.
+Split B: Drawing tools (line, rectangle, circle, arc), snap engine, in-flight primitive rendering, committed primitive rendering.
+
+Do not split further than this. If Split A or Split B fails twice in a row, stop and report so Andrew can review the approach.
+Commit on completion. Do not push. Do not run git push under any circumstance. Stop after commit and report status.

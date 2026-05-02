@@ -20,6 +20,15 @@ import {
 } from "./sceneSetup";
 import { OrbitControls } from "./OrbitControls";
 import { getCadKernel } from "@/cad/cadClient";
+import { useKinetiCADStore } from "@/state/store";
+import {
+  DEFAULT_CAMERA_POSITION,
+  DEFAULT_CAMERA_TARGET,
+  DEFAULT_CAMERA_UP,
+  PLANE_VIEWS,
+  type CardinalPlane,
+} from "@/sketch/plane";
+import { createSketchOverlay, type SketchOverlay } from "@/sketch/sketchOverlay";
 
 type Status =
   | { kind: "checking-webgpu" }
@@ -28,6 +37,25 @@ type Status =
   | { kind: "loading-geometry" }
   | { kind: "ready"; initTimeMs: number }
   | { kind: "error"; message: string };
+
+type CameraTween = {
+  fromPos: THREE.Vector3;
+  toPos: THREE.Vector3;
+  fromUp: THREE.Vector3;
+  toUp: THREE.Vector3;
+  fromTarget: THREE.Vector3;
+  toTarget: THREE.Vector3;
+  startMs: number;
+  durationMs: number;
+  /** What to do when the tween completes. */
+  onComplete: "enable-controls" | "leave-controls-disabled";
+};
+
+const TWEEN_MS = 600;
+
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
 
 export default function Scene() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -46,6 +74,9 @@ export default function Scene() {
     let disposeEnv: (() => void) | null = null;
     let fpsTimer: ReturnType<typeof setInterval> | null = null;
     let frameCounter = 0;
+    let cameraTween: CameraTween | null = null;
+    let sketchOverlay: SketchOverlay | null = null;
+    let unsubscribeStore: (() => void) | null = null;
 
     const scene = createScene();
     const lights = createLights(scene);
@@ -140,10 +171,103 @@ export default function Scene() {
         controls.maxDistance = 500;
         controls.update();
 
+        // Sketch overlay: built once, hidden until the user enters sketch mode.
+        // Initial plane is XY but it's invisible at first so it doesn't matter.
+        sketchOverlay = createSketchOverlay("XY");
+        sketchOverlay.group.visible = false;
+        scene.add(sketchOverlay.group);
+
+        // Sketch session sync: reconcile the current sketch state with the
+        // camera, overlay, and orbit controls. We subscribe to the store AND
+        // run the reconciler once immediately so an already-active session
+        // (e.g. user clicked "New Sketch" before the scene finished booting)
+        // gets picked up — `subscribe` only fires on subsequent changes.
+        let prevSketchActive = false;
+        let prevSketchPlane: CardinalPlane | null = null;
+
+        const reconcileSketch = (state: ReturnType<typeof useKinetiCADStore.getState>) => {
+          if (!controls || !sketchOverlay) return;
+          const session = state.sketchSession;
+
+          if (session.active && session.plane) {
+            // Either entering sketch or switching plane while inside one.
+            if (!prevSketchActive || prevSketchPlane !== session.plane) {
+              const view = PLANE_VIEWS[session.plane];
+              cameraTween = {
+                fromPos: camera.position.clone(),
+                toPos: new THREE.Vector3(...view.cameraPosition),
+                fromUp: camera.up.clone(),
+                toUp: new THREE.Vector3(...view.cameraUp),
+                fromTarget: controls.target.clone(),
+                toTarget: new THREE.Vector3(...DEFAULT_CAMERA_TARGET),
+                startMs: performance.now(),
+                durationMs: TWEEN_MS,
+                onComplete: "leave-controls-disabled",
+              };
+              controls.enabled = false;
+              sketchOverlay.setPlane(session.plane);
+              sketchOverlay.group.visible = true;
+              prevSketchActive = true;
+              prevSketchPlane = session.plane;
+            }
+          } else if (prevSketchActive) {
+            // Exiting sketch — animate back to the default 3D view.
+            cameraTween = {
+              fromPos: camera.position.clone(),
+              toPos: new THREE.Vector3(...DEFAULT_CAMERA_POSITION),
+              fromUp: camera.up.clone(),
+              toUp: new THREE.Vector3(...DEFAULT_CAMERA_UP),
+              fromTarget: controls.target.clone(),
+              toTarget: new THREE.Vector3(...DEFAULT_CAMERA_TARGET),
+              startMs: performance.now(),
+              durationMs: TWEEN_MS,
+              onComplete: "enable-controls",
+            };
+            sketchOverlay.group.visible = false;
+            prevSketchActive = false;
+            prevSketchPlane = null;
+          }
+        };
+
+        unsubscribeStore = useKinetiCADStore.subscribe(reconcileSketch);
+        // Catch up to any sketch state set before this subscription existed.
+        reconcileSketch(useKinetiCADStore.getState());
+
         // Render loop. WebGPU requires setAnimationLoop, not rAF.
         const renderLoop = () => {
           if (!renderer) return;
-          controls?.update();
+
+          // Camera tween, if any. We disable controls during the tween and
+          // either re-enable on completion (exit) or leave disabled (enter).
+          if (cameraTween && controls) {
+            const t = Math.min(
+              1,
+              (performance.now() - cameraTween.startMs) /
+                cameraTween.durationMs,
+            );
+            const e = easeInOutCubic(t);
+            camera.position.lerpVectors(
+              cameraTween.fromPos,
+              cameraTween.toPos,
+              e,
+            );
+            camera.up.copy(cameraTween.fromUp).lerp(cameraTween.toUp, e);
+            controls.target.lerpVectors(
+              cameraTween.fromTarget,
+              cameraTween.toTarget,
+              e,
+            );
+            camera.lookAt(controls.target);
+            if (t >= 1) {
+              if (cameraTween.onComplete === "enable-controls") {
+                controls.enabled = true;
+              }
+              cameraTween = null;
+            }
+          } else {
+            controls?.update();
+          }
+
           renderer.renderAsync(scene, camera);
           frameCounter += 1;
         };
@@ -238,6 +362,7 @@ export default function Scene() {
 
     return () => {
       cancelled = true;
+      unsubscribeStore?.();
       if (fpsTimer) clearInterval(fpsTimer);
       resizeObserver?.disconnect();
       controls?.dispose();
@@ -251,6 +376,10 @@ export default function Scene() {
         scene.remove(shadowCatcher);
         shadowCatcher.geometry.dispose();
         (shadowCatcher.material as THREE.Material).dispose();
+      }
+      if (sketchOverlay) {
+        scene.remove(sketchOverlay.group);
+        sketchOverlay.dispose();
       }
       // Axes is a Group of cylinders + a sphere — walk and dispose all of it.
       scene.remove(axes);
