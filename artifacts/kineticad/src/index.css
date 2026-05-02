@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+
+  --color-orange: #FF6B1A;
+
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+/* KinetiCAD dark-only theme */
+:root {
+  /* Background: #0A0E1A deep navy */
+  --background: 228 34% 7%;
+  /* Foreground: #F5F5F5 off-white */
+  --foreground: 0 0% 96%;
+
+  /* Grid-level surface: #141B2E */
+  --card: 225 36% 13%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 225 36% 13%;
+  --popover-foreground: 0 0% 96%;
+
+  /* Replit Orange #FF6B1A */
+  --primary: 22 100% 55%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Muted navy panel */
+  --secondary: 224 30% 18%;
+  --secondary-foreground: 0 0% 96%;
+
+  /* Slightly lighter than card */
+  --muted: 224 28% 16%;
+  --muted-foreground: 220 14% 60%;
+
+  /* Accent = orange tint */
+  --accent: 22 100% 55%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 224 20% 22%;
+  --input: 224 20% 22%;
+  --ring: 22 100% 55%;
+
+  /* Sidebar: slightly lighter than background */
+  --sidebar: 226 34% 10%;
+  --sidebar-foreground: 0 0% 96%;
+  --sidebar-border: 224 20% 18%;
+
+  --app-font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --app-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --radius: 0.375rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* JetBrains Mono for measurements and labels */
+.font-technical {
+  font-family: var(--app-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel transition */
+.panel-transition {
+  transition: width 200ms ease, opacity 200ms ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
