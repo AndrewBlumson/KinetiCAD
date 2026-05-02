@@ -53,6 +53,16 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom"],
   },
+  // opencascade.js's convenience wrapper does a bare `.wasm` import that Vite
+  // cannot pre-bundle. We import the Emscripten factory directly from
+  // `dist/opencascade.full.js` instead (see src/cad/cadWorker.ts), so exclude
+  // the package from dep optimisation entirely.
+  optimizeDeps: {
+    exclude: ["opencascade.js"],
+  },
+  worker: {
+    format: "es",
+  },
   root: path.resolve(import.meta.dirname),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
