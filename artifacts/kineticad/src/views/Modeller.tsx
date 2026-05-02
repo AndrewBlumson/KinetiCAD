@@ -472,21 +472,24 @@ function RightInspectorBody({
     }
   }
   if (selection?.kind === 'feature') {
-    // Feature types beyond extrude/revolve don't open the editor yet — show
-    // a minimal placeholder so the user still sees something on click.
+    // Feature-selection without an open editor is now an unusual transient:
+    //   - applyFeatureEditor falls back to a part selection on save.
+    //   - clicking a feature row in the sidebar opens the editor.
+    //   - boolean/sketch flows have their own selection kinds.
+    // If we still land here (e.g. selection survived a part being removed),
+    // resolve the containing sketch when possible, otherwise show the
+    // empty state.
     const part = parts.find((p) => p.id === selection.partId);
     const feature = part?.features.find((f) => f.id === selection.featureId);
     if (part && feature) {
-      return (
-        <div className="px-3 py-3">
-          <div className="font-technical text-xs text-foreground">
-            {featureName(feature, part, 0)}
-          </div>
-          <div className="font-technical text-[11px] text-muted-foreground mt-1">
-            This feature type isn't editable yet.
-          </div>
-        </div>
-      );
+      const sketchId =
+        'sketchId' in feature ? (feature as { sketchId?: string }).sketchId : undefined;
+      const sketch = sketchId
+        ? part.sketches.find((s) => s.id === sketchId)
+        : undefined;
+      if (sketch) {
+        return <SketchInspector part={part} sketch={sketch} />;
+      }
     }
   }
   return <EmptyState text="Select a part or feature" />;

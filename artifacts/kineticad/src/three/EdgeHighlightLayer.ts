@@ -48,7 +48,6 @@ function buildLine(
   material: Line2NodeMaterial,
 ): Line2 {
   const geom = new LineGeometry();
-  // setPositions accepts a flat array of xyz triplets (typed or plain).
   geom.setPositions(Array.from(polyline));
   const line = new Line2(geom, material);
   line.computeLineDistances();
@@ -58,30 +57,45 @@ function buildLine(
   return line;
 }
 
+function makeHighlightMaterial(
+  color: number,
+  widthPx: number,
+  opacity: number,
+): Line2NodeMaterial {
+  const mat = new Line2NodeMaterial({
+    color,
+    linewidth: widthPx,
+    transparent: opacity < 1,
+    opacity,
+    depthTest: true,
+    depthWrite: false,
+    // Default is NoBlending under WebGPU which silently drops opacity.
+    blending: THREE.NormalBlending,
+  });
+  // Older three.js Line2NodeMaterial revisions used `material.resolution`
+  // imperatively; newer ones bind it via the viewport node. Guard so either
+  // works.
+  const maybeRes = (mat as unknown as {
+    resolution?: { set: (w: number, h: number) => void };
+  }).resolution;
+  maybeRes?.set(window.innerWidth, window.innerHeight);
+  return mat;
+}
+
 export function createEdgeHighlightLayer(): EdgeHighlightLayer {
   const group = new THREE.Group();
   group.name = "EdgeHighlightLayer";
 
-  const hoverMaterial = new LineMaterial({
-    color: HOVER_COLOR.getHex(),
-    linewidth: HOVER_WIDTH_PX,
-    transparent: true,
-    opacity: 0.6,
-    depthTest: true,
-    depthWrite: false,
-  });
-  // Initialise resolution to something sensible; Scene will overwrite.
-  hoverMaterial.resolution.set(window.innerWidth, window.innerHeight);
-
-  const selectedMaterial = new LineMaterial({
-    color: SELECTED_COLOR.getHex(),
-    linewidth: SELECTED_WIDTH_PX,
-    transparent: true,
-    opacity: 1.0,
-    depthTest: true,
-    depthWrite: false,
-  });
-  selectedMaterial.resolution.set(window.innerWidth, window.innerHeight);
+  const hoverMaterial = makeHighlightMaterial(
+    HOVER_COLOR.getHex(),
+    HOVER_WIDTH_PX,
+    0.6,
+  );
+  const selectedMaterial = makeHighlightMaterial(
+    SELECTED_COLOR.getHex(),
+    SELECTED_WIDTH_PX,
+    1.0,
+  );
 
   let hoverLine: Line2 | null = null;
   const selectedLines: Line2[] = [];
@@ -103,8 +117,14 @@ export function createEdgeHighlightLayer(): EdgeHighlightLayer {
   };
 
   const setResolution = (widthPx: number, heightPx: number): void => {
-    hoverMaterial.resolution.set(widthPx, heightPx);
-    selectedMaterial.resolution.set(widthPx, heightPx);
+    const setOn = (m: Line2NodeMaterial) => {
+      const r = (m as unknown as {
+        resolution?: { set: (w: number, h: number) => void };
+      }).resolution;
+      r?.set(widthPx, heightPx);
+    };
+    setOn(hoverMaterial);
+    setOn(selectedMaterial);
   };
 
   const setHover = (polyline: Float32Array | null): void => {

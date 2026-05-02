@@ -226,7 +226,7 @@ export default function Scene() {
 
         // PBR environment lighting via PMREM + RoomEnvironment.
         try {
-          disposeEnv = applyEnvironment(scene, renderer as unknown as THREE.WebGLRenderer);
+          disposeEnv = applyEnvironment(scene, renderer);
         } catch (envErr) {
           // Non-fatal: scene still has the directional light.
           // eslint-disable-next-line no-console

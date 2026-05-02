@@ -194,9 +194,15 @@ export default function NumericInput({
     }
     const clamped = clamp(parsed, min, max);
     setDraft(format(clamped, decimals));
-    if (clamped !== lastReportedRef.current) {
-      commit(clamped);
-    }
+    // Always commit the parsed value on blur — even when it appears equal
+    // to `lastReportedRef.current`. The previous "skip if equal" guard was
+    // racy on rapid Tab: if the user typed a new value (e.g. 30) on top of
+    // the current 10, the change handler scheduled a debounced commit, and
+    // blur fired BEFORE that debounce flushed. We still want the typed
+    // value persisted, so just commit unconditionally. `commit` is
+    // idempotent — it clamps and writes lastReportedRef before calling
+    // onChange, so a duplicate commit is harmless.
+    commit(clamped);
   };
 
   return (

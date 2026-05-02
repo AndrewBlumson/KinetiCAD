@@ -67,6 +67,20 @@ async function ensureKernel(): Promise<KernelInitResult> {
     });
 
     const initTimeMs = Math.round(performance.now() - start);
+
+    // Self-test: build a 20mm square, extrude 10mm, tessellate. Logs the
+    // triangle count + axis-aligned bounding box so QA can confirm the
+    // kernel is fully operational at boot. Catches any regression in the
+    // sketch→wire→prism→mesh pipeline immediately, without needing the
+    // user to draw a sketch first. Failure is logged loudly but does not
+    // throw — kernel init still succeeds so the UI doesn't deadlock.
+    runSelfTest(ocInstance).catch((err) => {
+      // Should never trigger (runSelfTest swallows its own errors), but
+      // belt-and-braces.
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] self-test wrapper threw:", err);
+    });
+
     return {
       initTimeMs,
       // Version metadata isn't directly exposed by opencascade.js. The package
@@ -76,6 +90,88 @@ async function ensureKernel(): Promise<KernelInitResult> {
   })();
 
   return initPromise;
+}
+
+/**
+ * Boot-time smoke test for the CAD pipeline. Builds a 20mm square sketch,
+ * extrudes it 10mm forward, tessellates the result and logs the triangle
+ * count + bounding box. Any failure is logged via console.error with the
+ * raw error so QA can see exactly where the pipeline broke.
+ *
+ * Expected output: triCount = 12 (six faces × two triangles each), bbox
+ * spanning roughly (-10,-10,0) → (10,10,10).
+ */
+async function runSelfTest(oc: OC): Promise<void> {
+  const ocAny = oc as any;
+  let wire: any = null;
+  let solid: any = null;
+  try {
+    const primitives = [
+      {
+        type: "rectangle" as const,
+        corner: [-10, -10] as [number, number],
+        width: 20,
+        height: 20,
+      },
+    ];
+    wire = sketchToWire(ocAny, "XY", primitives);
+    solid = extrudeWire(ocAny, wire, "XY", 10, "forward");
+    const tess = tessellateShape(ocAny, solid);
+    const triCount = tess.indices.length / 3;
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let minZ = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let maxZ = -Infinity;
+    const pos = tess.positions;
+    for (let i = 0; i < pos.length; i += 3) {
+      const x = pos[i];
+      const y = pos[i + 1];
+      const z = pos[i + 2];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+      if (z < minZ) minZ = z;
+      if (z > maxZ) maxZ = z;
+    }
+
+    if (triCount === 0 || pos.length === 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[CAD SELF-TEST] FAILED: empty mesh (tris=${triCount}, positions=${pos.length}). ` +
+          `Sketch→wire→prism→tessellate produced no geometry — extrude is broken.`,
+      );
+      return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.info(
+      `[CAD SELF-TEST] OK: tris=${triCount} ` +
+        `bbox=[${minX.toFixed(2)}, ${minY.toFixed(2)}, ${minZ.toFixed(2)}] → ` +
+        `[${maxX.toFixed(2)}, ${maxY.toFixed(2)}, ${maxZ.toFixed(2)}]`,
+    );
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[CAD SELF-TEST] FAILED:", err);
+  } finally {
+    if (solid) {
+      try {
+        solid.delete();
+      } catch {
+        // ignore
+      }
+    }
+    if (wire) {
+      try {
+        wire.delete();
+      } catch {
+        // ignore
+      }
+    }
+  }
 }
 
 /**
@@ -296,6 +392,11 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, solid);
       return transferMesh(mesh);
     } catch (err) {
+      // Always surface the raw error in the worker console so QA + dev tools
+      // can see exactly what OCCT reported, regardless of how the inspector
+      // chooses to render it.
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] extrude failed:", err);
       // Re-throw with a clean message so the inspector can show it. Keep the
       // original message if it's already user-friendly, otherwise wrap.
       if (err instanceof Error) throw err;
@@ -319,6 +420,8 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, solid);
       return transferMesh(mesh);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] revolve failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`Revolve failed: ${String(err)}`);
     } finally {
@@ -352,6 +455,8 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] fillet failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`Fillet failed: ${String(err)}`);
     } finally {
@@ -386,6 +491,8 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] chamfer failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`Chamfer failed: ${String(err)}`);
     } finally {
@@ -464,6 +571,8 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] hole failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`Hole failed: ${String(err)}`);
     } finally {
@@ -511,6 +620,8 @@ const api: CadKernelApi = {
       const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] booleanOp failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`boolean-failed: ${String(err)}`);
     } finally {

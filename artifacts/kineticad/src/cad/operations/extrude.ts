@@ -79,6 +79,8 @@ export function extrude(
   );
 
   let prismBuilder: any = null;
+  let prismShape: any = null;
+  let copyBuilder: any = null;
   let solid: any;
   try {
     prismBuilder = new ocAny.BRepPrimAPI_MakePrism_1(
@@ -88,11 +90,35 @@ export function extrude(
       true,
     );
     if (!prismBuilder.IsDone()) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "[CAD] extrude: BRepPrimAPI_MakePrism reported !IsDone()",
+        { plane, depthMm, direction },
+      );
       throw new Error("OCCT extrude (MakePrism) failed.");
     }
-    solid = prismBuilder.Shape();
+
+    // CRITICAL: deep-copy the prism shape before freeing the builder + the
+    // source face. opencascade.js's TopoDS_Shape wrapper holds a Handle to
+    // the underlying TShape, but in practice tessellation occasionally
+    // produces zero triangles when the shape is consumed AFTER its
+    // builder + source face wrappers have been deleted (the builder owns
+    // some intermediate sub-shapes that the swept solid still references).
+    // BRepBuilderAPI_Copy with copyGeom=true gives us a fully detached
+    // shape that survives the cleanup below — so the caller can safely
+    // call buildMesh() on it.
+    prismShape = prismBuilder.Shape();
+    copyBuilder = new ocAny.BRepBuilderAPI_Copy_2(prismShape, true, false);
+    if (!copyBuilder.IsDone()) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD] extrude: BRepBuilderAPI_Copy reported !IsDone()");
+      throw new Error("OCCT extrude (copy) failed.");
+    }
+    solid = copyBuilder.Shape();
   } finally {
     extrudeVec.delete();
+    if (copyBuilder) copyBuilder.delete();
+    if (prismShape) prismShape.delete();
     if (prismBuilder) prismBuilder.delete();
     face.delete();
     if (translatedBuilder) translatedBuilder.delete();

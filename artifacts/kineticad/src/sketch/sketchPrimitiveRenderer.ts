@@ -10,9 +10,9 @@
 // reliable 1.5–2px lines and dashed patterns.
 
 import * as THREE from "three";
-import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { Line2 } from "three/examples/jsm/lines/webgpu/Line2.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { Line2NodeMaterial } from "three/webgpu";
 import type { SketchPrimitive } from "@/state/schemas";
 import { planeToWorld, type CardinalPlane } from "./plane";
 import { arcSegmentCount, sampleArcPoints } from "./arcGeometry";
@@ -51,8 +51,22 @@ type LineStyle = {
 type ManagedLine = {
   line: Line2;
   geometry: LineGeometry;
-  material: LineMaterial;
+  material: Line2NodeMaterial;
 };
+
+function setMaterialResolution(
+  m: Line2NodeMaterial,
+  widthPx: number,
+  heightPx: number,
+): void {
+  // Older Line2NodeMaterial revisions expose `.resolution` directly; newer
+  // ones bind it via the viewport node. Guard so either works without
+  // crashing.
+  const r = (m as unknown as {
+    resolution?: { set: (w: number, h: number) => void };
+  }).resolution;
+  r?.set(widthPx, heightPx);
+}
 
 export type SketchPrimitiveRenderer = {
   /** Group to add to the scene; owns all lines for this renderer. */
@@ -86,8 +100,10 @@ export function createSketchPrimitiveRenderer(
   const setResolution = (w: number, h: number): void => {
     widthPx = Math.max(1, w);
     heightPx = Math.max(1, h);
-    if (inFlight) inFlight.material.resolution.set(widthPx, heightPx);
-    for (const m of committed) m.material.resolution.set(widthPx, heightPx);
+    if (inFlight) setMaterialResolution(inFlight.material, widthPx, heightPx);
+    for (const m of committed) {
+      setMaterialResolution(m.material, widthPx, heightPx);
+    }
   };
 
   const setInFlight = (primitive: SketchPrimitive | null): void => {
@@ -197,7 +213,7 @@ function buildManagedLine(
   const geometry = new LineGeometry();
   geometry.setPositions(flatPositions);
 
-  const material = new LineMaterial({
+  const material = new Line2NodeMaterial({
     color: style.color,
     linewidth: style.linewidth,
     opacity: style.opacity,
@@ -208,8 +224,13 @@ function buildManagedLine(
     worldUnits: false,
     depthTest: true,
     alphaToCoverage: false,
+    // Line2NodeMaterial defaults to NoBlending under WebGPU which silently
+    // drops opacity — force NormalBlending so the rubber-band's 0.7 opacity
+    // and the committed lines actually render.
+    blending: THREE.NormalBlending,
   });
-  material.resolution.set(
+  setMaterialResolution(
+    material,
     Math.max(1, resolution.widthPx),
     Math.max(1, resolution.heightPx),
   );

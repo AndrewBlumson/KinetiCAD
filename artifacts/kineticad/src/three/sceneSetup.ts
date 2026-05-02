@@ -3,7 +3,11 @@
 // on lifecycle. All units are millimetres.
 
 import * as THREE from "three";
-import { PMREMGenerator as WebGPUPMREMGenerator, type WebGPURenderer } from "three/webgpu";
+import {
+  PMREMGenerator as WebGPUPMREMGenerator,
+  type Renderer as WebGPUBaseRenderer,
+  type WebGPURenderer,
+} from "three/webgpu";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 export const COLOURS = {
@@ -163,8 +167,12 @@ export function applyEnvironment(
 ): () => void {
   const room = new RoomEnvironment();
   try {
+    // The webgpu PMREMGenerator constructor wants a `Renderer` (the
+    // three/webgpu base class). WebGPURenderer extends it, but the
+    // structural typing diverges across r184 type bundles, so cast through
+    // the base type to keep things explicit and lint-clean.
     const pmrem = new WebGPUPMREMGenerator(
-      renderer as unknown as THREE.WebGLRenderer,
+      renderer as unknown as WebGPUBaseRenderer,
     );
     const envTexture = pmrem.fromScene(room, 0.04).texture;
     scene.environment = envTexture;

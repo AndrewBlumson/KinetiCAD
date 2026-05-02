@@ -9,11 +9,16 @@
 //   - depthWrite:false so the overlay doesn't pollute the depth buffer.
 //   - renderOrder:998 (just below the edge layer at 999) so faces draw before
 //     edges.
+//
+// Outlines use the WebGPU-native `Line2` + `Line2NodeMaterial` from
+// `three/webgpu`; the legacy LineMaterial logs
+// `THREE.NodeBuilder: Material "LineMaterial" is not compatible.` per frame
+// under WebGPU.
 
 import * as THREE from "three";
-import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { Line2 } from "three/examples/jsm/lines/webgpu/Line2.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { Line2NodeMaterial } from "three/webgpu";
 import { COLOURS } from "./sceneSetup";
 import type { FaceMetadata } from "@/cad/types";
 
@@ -78,6 +83,17 @@ export function faceOverlayFromMetadata(
   return { triangles: face.triangles, positions, indices };
 }
 
+function setMaterialResolution(
+  m: Line2NodeMaterial,
+  widthPx: number,
+  heightPx: number,
+): void {
+  const r = (m as unknown as {
+    resolution?: { set: (w: number, h: number) => void };
+  }).resolution;
+  r?.set(widthPx, heightPx);
+}
+
 export function createFaceHighlightLayer(): FaceHighlightLayer {
   const group = new THREE.Group();
   group.name = "FaceHighlightLayer";
@@ -104,15 +120,16 @@ export function createFaceHighlightLayer(): FaceHighlightLayer {
     polygonOffsetUnits: -1,
     side: THREE.DoubleSide,
   });
-  const outlineMaterial = new LineMaterial({
+  const outlineMaterial = new Line2NodeMaterial({
     color: SELECTED_COLOR.getHex(),
     linewidth: 2,
     transparent: true,
     opacity: 1.0,
     depthTest: true,
     depthWrite: false,
+    blending: THREE.NormalBlending,
   });
-  outlineMaterial.resolution.set(window.innerWidth, window.innerHeight);
+  setMaterialResolution(outlineMaterial, window.innerWidth, window.innerHeight);
 
   let hoverMesh: THREE.Mesh | null = null;
   let selectedMesh: THREE.Mesh | null = null;
@@ -140,7 +157,7 @@ export function createFaceHighlightLayer(): FaceHighlightLayer {
   };
 
   const setResolution = (widthPx: number, heightPx: number): void => {
-    outlineMaterial.resolution.set(widthPx, heightPx);
+    setMaterialResolution(outlineMaterial, widthPx, heightPx);
   };
 
   const setHover = (input: FaceOverlayInput | null): void => {

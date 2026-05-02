@@ -837,11 +837,13 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           featureEditor: defaultFeatureEditor,
           featurePreview: defaultFeaturePreview,
           pickingMode: "idle",
-          selection: {
-            kind: "feature",
-            partId: editor.partId,
-            featureId: newFeature.id,
-          },
+          // After Apply, fall back to the part-level selection. The previous
+          // behaviour selected the feature itself which routed the inspector
+          // to a "this feature type isn't editable yet" stub for modifier
+          // features. Selecting the part instead surfaces the PartInspector
+          // (with its "+ Add" buttons and Delete) which is what the user
+          // typically wants next.
+          selection: { kind: "part", partId: editor.partId },
         });
       },
 
