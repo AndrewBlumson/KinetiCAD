@@ -37,8 +37,30 @@ export type Feature =
   | RevolveFeature
   | { id: string; type: 'fillet'; targetEdges: string[]; radiusMm: number }
   | { id: string; type: 'chamfer'; targetEdges: string[]; sizeMm: number }
-  | { id: string; type: 'hole'; targetFace: string; positionUV: [number, number]; diameterMm: number; depthMm: number }
-  | { id: string; type: 'boolean'; operation: 'union' | 'subtract' | 'intersect'; targetIds: string[] };
+  | { id: string; type: 'hole'; targetFace: string; positionUV: [number, number]; diameterMm: number; depthMm: number };
+
+/**
+ * Phase 5 boolean operations. Booleans are *assembly-level* features that
+ * combine 2+ parts, not per-part features. Subtract carries the tool part
+ * id (the cutter) on the operation itself; the body parts are the other
+ * entries in `inputPartIds`.
+ */
+export type BooleanOperation =
+  | { type: 'union' }
+  | { type: 'subtract'; toolPartId: string }
+  | { type: 'intersect' };
+
+export type BooleanFeature = {
+  id: string;
+  type: 'boolean';
+  operation: BooleanOperation;
+  /** 2 to 8 part ids that participate in this boolean. */
+  inputPartIds: string[];
+  /** Display name shown in the BOOLEANS tree section. Unique within the assembly. */
+  resultPartName: string;
+  /** When true, the input parts are hidden from the scene; the result mesh stands in for them. */
+  hideInputs: boolean;
+};
 
 export type Part = {
   id: string;
@@ -64,6 +86,12 @@ export type Assembly = {
   parts: Part[];
   mates: Mate[];
   groundPartId: string;
+  /**
+   * Phase 5 — assembly-level boolean features, regenerated in array order.
+   * Each boolean references existing parts by id; deleting an input part
+   * cascade-deletes the boolean (via the confirmation dialog).
+   */
+  booleanFeatures: BooleanFeature[];
 };
 
 export type SimulationState = {

@@ -52,14 +52,15 @@ export type PartTopology = {
 export type PartMeshLayer = {
   group: THREE.Group;
   /**
-   * Reconcile the layer with the given assembly. `hiddenPartId` (if non-null)
-   * suppresses rendering of that part — used while the inspector shows a
-   * preview mesh that should visually replace the original. `kernel` is the
-   * remote CAD kernel used by `regeneratePart`.
+   * Reconcile the layer with the given assembly. Every part id in
+   * `hiddenPartIds` is suppressed from rendering — used both by the active
+   * feature editor's live preview (replaces a single part) and by Phase 5
+   * booleans that hide their input parts in favour of the result mesh.
+   * `kernel` is the remote CAD kernel used by `regeneratePart`.
    */
   sync: (
     assembly: Assembly,
-    hiddenPartId: string | null,
+    hiddenPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ) => void;
   /** Total tracked part meshes (for diagnostics / tests). */
@@ -246,7 +247,7 @@ export function createPartMeshLayer(): PartMeshLayer {
 
   const sync = (
     assembly: Assembly,
-    hiddenPartId: string | null,
+    hiddenPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ): void => {
     if (isDisposed) return;
@@ -256,7 +257,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       seen.add(part.id);
       const entry = ensureEntry(part.id);
 
-      if (hiddenPartId === part.id) {
+      if (hiddenPartIds.has(part.id)) {
         // Suppressed by the preview overlay. Bump the token so any pending
         // regen for this part is dropped before it can flip visibility back
         // on. Keep the entry alive — we still want it when the preview

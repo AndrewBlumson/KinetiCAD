@@ -153,7 +153,7 @@ async function runFeature(
   }
 
   throw new Error(
-    `Feature type "${feature.type}" is not supported until a later phase.`,
+    `Feature type "${(feature as { type: string }).type}" is not supported until a later phase.`,
   );
 }
 

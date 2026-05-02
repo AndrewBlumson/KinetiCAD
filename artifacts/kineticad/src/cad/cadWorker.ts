@@ -13,6 +13,7 @@ import ocFactoryRaw from "opencascade.js/dist/opencascade.full.js";
 import ocWasmUrl from "opencascade.js/dist/opencascade.full.wasm?url";
 import type { OpenCascadeInstance } from "opencascade.js";
 import type {
+  BooleanOpArgs,
   CadKernelApi,
   ChamferArgs,
   ExtrudeArgs,
@@ -38,6 +39,7 @@ import {
 import { applyFillet } from "./operations/fillet";
 import { applyChamfer } from "./operations/chamfer";
 import { applyHole, type HoleFaceRef } from "./operations/hole";
+import { applyBoolean } from "./operations/boolean";
 
 type OC = OpenCascadeInstance;
 
@@ -234,7 +236,9 @@ function executeUpstreamChain(
         disposeRefMap(refs);
       }
     } else {
-      throw new Error(`Unsupported upstream feature type: ${feat.type}`);
+      throw new Error(
+        `Unsupported upstream feature type: ${(feat as { type: string }).type}`,
+      );
     }
 
     if (current) current.delete();
@@ -466,6 +470,54 @@ const api: CadKernelApi = {
       if (result) result.delete();
       if (faceRefs) disposeRefMap(faceRefs);
       if (upstream) upstream.delete();
+    }
+  },
+
+  async booleanOp(args: BooleanOpArgs) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("CAD kernel failed to initialise");
+    const oc = ocInstance;
+
+    if (!Array.isArray(args.inputs) || args.inputs.length < 2) {
+      throw new Error(
+        `boolean-failed: need ≥2 inputs, got ${args.inputs?.length ?? 0}.`,
+      );
+    }
+    if (args.operation.type === "subtract" && args.inputs.length !== 2) {
+      throw new Error(
+        `subtract-needs-tool: expected 2 inputs (body + tool), got ${args.inputs.length}.`,
+      );
+    }
+
+    // Build every input shape from its upstream chain. We hold them all in
+    // an array so we can free them in finally regardless of which step
+    // throws.
+    const shapes: any[] = [];
+    let result: any = null;
+    try {
+      for (const input of args.inputs) {
+        if (!input.features || input.features.length === 0) {
+          throw new Error(
+            `boolean-failed: input part ${input.partId} has no features.`,
+          );
+        }
+        const shape = executeUpstreamChain(oc, input.features, input.sketches);
+        shapes.push(shape);
+      }
+
+      // Worker trusts the orchestrator's ordering: for subtract the body
+      // shape is at index 0 and the tool shape at index 1.
+      result = applyBoolean(oc, shapes, args.operation);
+      const mesh = buildMesh(oc, result);
+      return transferMesh(mesh);
+    } catch (err) {
+      if (err instanceof Error) throw err;
+      throw new Error(`boolean-failed: ${String(err)}`);
+    } finally {
+      if (result) result.delete?.();
+      for (const s of shapes) {
+        s?.delete?.();
+      }
     }
   },
 };

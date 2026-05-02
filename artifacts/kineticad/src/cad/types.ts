@@ -2,7 +2,12 @@
 //
 // All units are millimetres unless stated otherwise.
 
-import type { Feature, Sketch, SketchPrimitive } from "@/state/schemas";
+import type {
+  BooleanOperation,
+  Feature,
+  Sketch,
+  SketchPrimitive,
+} from "@/state/schemas";
 import type { CardinalPlane } from "@/sketch/plane";
 
 /**
@@ -136,6 +141,26 @@ export type HoleArgs = {
   depthMm: number;
 };
 
+/**
+ * Phase 5 boolean op: each input describes one part's full feature chain
+ * (sketches + features in order). The worker re-executes every chain to
+ * obtain the live TopoDS_Shape, then runs Fuse_3 / Cut_3 / Common_3.
+ *
+ * Order of `inputs` is significant for `subtract`: the orchestrator MUST
+ * place the body part first and the tool part second.
+ */
+export type BooleanInputDescriptor = {
+  /** Source part id, surfaced back in error messages and for cache keys. */
+  partId: string;
+  features: Feature[];
+  sketches: Sketch[];
+};
+
+export type BooleanOpArgs = {
+  inputs: BooleanInputDescriptor[];
+  operation: BooleanOperation;
+};
+
 export type CadKernelApi = {
   init: () => Promise<KernelInitResult>;
   createTestCube: (sizeMm: number) => Promise<TessellatedMesh>;
@@ -166,4 +191,11 @@ export type CadKernelApi = {
    * `depthMm = 0` means through-all.
    */
   hole: (args: HoleArgs) => Promise<TessellatedMesh>;
+  /**
+   * Re-execute every input part's upstream feature chain, then apply the
+   * given boolean operation across the resulting solids. Returns the
+   * tessellated result. For `subtract`, the orchestrator MUST place the
+   * body shape first and the tool shape second.
+   */
+  booleanOp: (args: BooleanOpArgs) => Promise<TessellatedMesh>;
 };

@@ -8,7 +8,16 @@
 
 import { useKinetiCADStore } from "@/state/store";
 
-export default function PartInspector() {
+export type PartInspectorProps = {
+  /**
+   * Modeller wraps the cascade-aware confirm dialog and passes the partId
+   * back here when the user clicks Delete. Centralising the dialog at the
+   * Modeller level keeps the inspector free of modal state.
+   */
+  onRequestDelete?: (partId: string) => void;
+};
+
+export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
   const selection = useKinetiCADStore((s) => s.selection);
   const assembly = useKinetiCADStore((s) => s.assembly);
   const beginFillet = useKinetiCADStore((s) => s.beginCreateFilletFeature);
@@ -56,6 +65,16 @@ export default function PartInspector() {
           Add an Extrude or Revolve first; modifier features need an upstream
           shape.
         </div>
+      ) : null}
+      {onRequestDelete ? (
+        <button
+          type="button"
+          onClick={() => onRequestDelete(part.id)}
+          data-testid="part-delete"
+          className="h-8 w-full rounded font-technical text-[11px] uppercase tracking-widest text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition mt-2"
+        >
+          Delete
+        </button>
       ) : null}
     </div>
   );

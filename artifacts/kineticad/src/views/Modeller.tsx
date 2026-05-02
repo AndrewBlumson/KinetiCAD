@@ -6,8 +6,15 @@ import SketchCursor from '@/components/SketchCursor';
 import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
 import PartInspector from '@/components/inspectors/PartInspector';
+import BooleanInspector from '@/components/inspectors/BooleanInspector';
 import type { CardinalPlane } from '@/sketch/plane';
-import type { Feature, Part, SketchPlane } from '@/state/schemas';
+import type {
+  BooleanFeature,
+  BooleanOperation,
+  Feature,
+  Part,
+  SketchPlane,
+} from '@/state/schemas';
 
 const Scene = lazy(() => import('@/three/Scene'));
 
@@ -17,13 +24,21 @@ export default function Modeller() {
   const beginSketch = useKinetiCADStore((s) => s.beginSketch);
   const selection = useKinetiCADStore((s) => s.selection);
   const featureEditor = useKinetiCADStore((s) => s.featureEditor);
+  const booleanEditor = useKinetiCADStore((s) => s.booleanEditor);
   const selectPart = useKinetiCADStore((s) => s.selectPart);
   const selectSketch = useKinetiCADStore((s) => s.selectSketch);
   const selectFeature = useKinetiCADStore((s) => s.selectFeature);
+  const selectBoolean = useKinetiCADStore((s) => s.selectBoolean);
   const beginEditFeature = useKinetiCADStore((s) => s.beginEditFeature);
+  const beginCreateBoolean = useKinetiCADStore((s) => s.beginCreateBoolean);
+  const beginEditBoolean = useKinetiCADStore((s) => s.beginEditBoolean);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
 
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
+  // When the user asks to delete a part that's referenced by booleans we
+  // surface a small confirmation so they understand the cascade. The pending
+  // partId doubles as the modal's open flag.
+  const [cascadePartId, setCascadePartId] = useState<string | null>(null);
 
   const handlePlanePicked = (plane: CardinalPlane) => {
     setPlanePickerOpen(false);
@@ -41,6 +56,13 @@ export default function Modeller() {
     selectFeature(partId, featureId);
     beginEditFeature(partId, featureId);
   };
+  const onBooleanClick = (booleanId: string) => {
+    selectBoolean(booleanId);
+    beginEditBoolean(booleanId);
+  };
+
+  const canCreateBoolean =
+    assembly.parts.length >= 2 && !sketchSession.active && !featureEditor.open;
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
@@ -74,6 +96,32 @@ export default function Modeller() {
               <ToolbarBtn icon="↻" label="Revolve" disabled />
               <ToolbarBtn icon="◎" label="Hole" disabled />
             </ToolbarGroup>
+
+            <div className="w-px h-5 bg-border mx-1" />
+
+            <ToolbarGroup label="Boolean">
+              <ToolbarBtn
+                icon="∪"
+                label="Union"
+                disabled={!canCreateBoolean}
+                onClick={() => beginCreateBoolean('union')}
+                testId="boolean-union"
+              />
+              <ToolbarBtn
+                icon="−"
+                label="Subtract"
+                disabled={!canCreateBoolean}
+                onClick={() => beginCreateBoolean('subtract')}
+                testId="boolean-subtract"
+              />
+              <ToolbarBtn
+                icon="∩"
+                label="Intersect"
+                disabled={!canCreateBoolean}
+                onClick={() => beginCreateBoolean('intersect')}
+                testId="boolean-intersect"
+              />
+            </ToolbarGroup>
           </>
         )}
 
@@ -86,7 +134,7 @@ export default function Modeller() {
 
       {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar: Parts / Sketch tree */}
+        {/* Left Sidebar: Parts / Booleans / Mates tree */}
         <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden panel-transition">
           <SidebarSection title="Parts">
             {assembly.parts.length === 0 ? (
@@ -104,6 +152,23 @@ export default function Modeller() {
               ))
             )}
           </SidebarSection>
+
+          {(assembly.booleanFeatures ?? []).length > 0 ? (
+            <SidebarSection title="Booleans">
+              {(assembly.booleanFeatures ?? []).map((b) => (
+                <BooleanRow
+                  key={b.id}
+                  feature={b}
+                  parts={assembly.parts}
+                  selected={
+                    selection?.kind === 'boolean' &&
+                    selection.booleanId === b.id
+                  }
+                  onClick={() => onBooleanClick(b.id)}
+                />
+              ))}
+            </SidebarSection>
+          ) : null}
 
           <SidebarSection title="Mates">
             {assembly.mates.length === 0 ? (
@@ -132,6 +197,12 @@ export default function Modeller() {
             onPick={handlePlanePicked}
             onCancel={() => setPlanePickerOpen(false)}
           />
+          {cascadePartId ? (
+            <CascadeDeleteDialog
+              partId={cascadePartId}
+              onClose={() => setCascadePartId(null)}
+            />
+          ) : null}
         </main>
         <SketchCursor />
 
@@ -151,8 +222,10 @@ export default function Modeller() {
               sketchPlane={sketchSession.plane}
               sketchPrimitiveCount={sketchSession.committedPrimitives.length}
               editorOpen={featureEditor.open}
+              booleanEditorOpen={booleanEditor.open}
               selection={selection}
               parts={assembly.parts}
+              onRequestDeletePart={(partId) => setCascadePartId(partId)}
             />
           </SidebarSection>
 
@@ -227,6 +300,37 @@ function PartTree({
       })}
     </div>
   );
+}
+
+function BooleanRow({
+  feature,
+  parts,
+  selected,
+  onClick,
+}: {
+  feature: BooleanFeature;
+  parts: Part[];
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const inputNames = feature.inputPartIds
+    .map((id) => parts.find((p) => p.id === id)?.name ?? '?')
+    .join(', ');
+  const opGlyph = booleanOpGlyph(feature.operation);
+  return (
+    <SidebarItem
+      label={`${opGlyph} ${feature.resultPartName} (${inputNames})`}
+      selected={selected}
+      onClick={onClick}
+      testId={`tree-boolean-${feature.id}`}
+    />
+  );
+}
+
+function booleanOpGlyph(op: BooleanOperation): string {
+  if (op.type === 'union') return '∪';
+  if (op.type === 'subtract') return '−';
+  return '∩';
 }
 
 /** Human label for a feature row, e.g. "Extrude 1" or "Revolve 2". */
@@ -306,28 +410,35 @@ function FeatureTree({
 /**
  * Pick the inspector body based on the current store state. Order matters:
  *  1. Active sketch session   → ActiveSketchInspector
- *  2. featureEditor open      → FeatureInspector
- *  3. selection.kind=sketch   → SketchInspector
- *  4. selection.kind=feature  → FeatureInspector also handles this once the
+ *  2. booleanEditor open      → BooleanInspector (assembly-level editor)
+ *  3. featureEditor open      → FeatureInspector (per-part editor)
+ *  4. selection.kind=boolean  → BooleanInspector (read-only-ish view)
+ *  5. selection.kind=sketch   → SketchInspector
+ *  6. selection.kind=feature  → FeatureInspector also handles this once the
  *     store action `selectFeature` + `beginEditFeature` opens the editor;
  *     we still fall through to a stub label if the feature type isn't yet
  *     editable.
- *  5. Empty state.
+ *  7. selection.kind=part     → PartInspector
+ *  8. Empty state.
  */
 function RightInspectorBody({
   sketchActive,
   sketchPlane,
   sketchPrimitiveCount,
   editorOpen,
+  booleanEditorOpen,
   selection,
   parts,
+  onRequestDeletePart,
 }: {
   sketchActive: boolean;
   sketchPlane: CardinalPlane | null;
   sketchPrimitiveCount: number;
   editorOpen: boolean;
+  booleanEditorOpen: boolean;
   selection: ReturnType<typeof useKinetiCADStore.getState>['selection'];
   parts: Part[];
+  onRequestDeletePart: (partId: string) => void;
 }) {
   if (sketchActive && sketchPlane) {
     return (
@@ -337,11 +448,21 @@ function RightInspectorBody({
       />
     );
   }
+  if (booleanEditorOpen) {
+    return <BooleanInspector />;
+  }
   if (editorOpen) {
     return <FeatureInspector />;
   }
+  if (selection?.kind === 'boolean') {
+    // Selecting a committed boolean opens the editor in `edit` mode via the
+    // `selectBoolean` → `beginEditBoolean` chain in `onBooleanClick`. As a
+    // fallback (e.g. selection arrived via picker), still render the
+    // BooleanInspector — it gracefully no-ops when the editor is closed.
+    return <BooleanInspector />;
+  }
   if (selection?.kind === 'part') {
-    return <PartInspector />;
+    return <PartInspector onRequestDelete={onRequestDeletePart} />;
   }
   if (selection?.kind === 'sketch') {
     const part = parts.find((p) => p.id === selection.partId);
@@ -369,6 +490,105 @@ function RightInspectorBody({
     }
   }
   return <EmptyState text="Select a part or feature" />;
+}
+
+/**
+ * Cascade-delete confirmation dialog. Shown when the user clicks Delete on a
+ * part that's referenced by one or more booleans. Confirm dispatches
+ * `deletePartCascade` (removes the part AND every dependent boolean) — a
+ * quietly destructive action we don't want to perform without consent.
+ */
+function CascadeDeleteDialog({
+  partId,
+  onClose,
+}: {
+  partId: string;
+  onClose: () => void;
+}) {
+  const assembly = useKinetiCADStore((s) => s.assembly);
+  const getBooleansUsingPart = useKinetiCADStore(
+    (s) => s.getBooleansUsingPart,
+  );
+  const deletePartCascade = useKinetiCADStore((s) => s.deletePartCascade);
+
+  const part = assembly.parts.find((p) => p.id === partId);
+  const dependents = getBooleansUsingPart(partId);
+
+  if (!part) {
+    // Part vanished out from under us (e.g. another action deleted it) —
+    // close silently.
+    onClose();
+    return null;
+  }
+
+  const confirm = () => {
+    deletePartCascade(partId);
+    onClose();
+  };
+
+  return (
+    <div
+      className="absolute inset-0 z-30 flex items-center justify-center bg-black/50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-label="Confirm delete"
+        data-testid="cascade-delete-dialog"
+        className="w-80 max-w-[90vw] rounded border border-border bg-card shadow-2xl"
+      >
+        <div className="px-4 py-3 border-b border-border">
+          <div className="font-technical text-xs uppercase tracking-widest text-foreground">
+            Delete {part.name}?
+          </div>
+        </div>
+        <div className="px-4 py-3 flex flex-col gap-2">
+          {dependents.length === 0 ? (
+            <div className="font-technical text-[11px] text-muted-foreground leading-snug">
+              This part is not used by any booleans. Are you sure you want to
+              delete it?
+            </div>
+          ) : (
+            <>
+              <div className="font-technical text-[11px] text-foreground leading-snug">
+                The following booleans use this part and will also be deleted:
+              </div>
+              <ul className="flex flex-col gap-0.5 max-h-32 overflow-y-auto">
+                {dependents.map((b) => (
+                  <li
+                    key={b.id}
+                    className="font-technical text-[11px] text-[#FF6B6B] truncate"
+                  >
+                    • {b.resultPartName}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+        <div className="px-4 py-3 border-t border-border flex gap-2 justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            data-testid="cascade-delete-cancel"
+            className="h-8 px-3 rounded font-technical text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={confirm}
+            data-testid="cascade-delete-confirm"
+            className="h-8 px-3 rounded bg-[#FF6B6B] text-[#0A0E1A] font-technical text-[11px] uppercase tracking-widest font-semibold hover:brightness-110 transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ActiveSketchInspector({

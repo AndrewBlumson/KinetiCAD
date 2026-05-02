@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type {
   Assembly,
+  BooleanFeature,
+  BooleanOperation,
   ExtrudeDirection,
   ExtrudeFeature,
   Feature,
@@ -57,6 +59,8 @@ export type Selection =
   | { kind: "edges"; partId: string; edgeIds: string[] }
   | { kind: "face"; partId: string; faceId: string }
   | { kind: "point-on-face"; partId: string; faceId: string; uv: [number, number] }
+  /** Phase 5: a boolean feature on the assembly. */
+  | { kind: "boolean"; booleanId: string }
   | null;
 
 /**
@@ -165,6 +169,45 @@ export type FeatureEditor =
 const defaultFeatureEditor: FeatureEditor = { open: false };
 
 /**
+ * Phase 5 — in-flight boolean editor. Lives outside `assembly` so the user
+ * can tweak parameters live (with debounced regen) and either Apply (push
+ * into `assembly.booleanFeatures`) or Cancel (discard).
+ *
+ * `operation` carries Subtract's tool-part id directly (matches the
+ * persisted BooleanOperation shape). `inputPartIds` is the user-picked
+ * order; the orchestrator re-orders to `[body, tool]` for Subtract before
+ * calling the worker.
+ *
+ * Not persisted: a half-edited boolean should not survive a reload.
+ */
+export type BooleanEditorParams = {
+  operation: BooleanOperation;
+  inputPartIds: string[];
+  resultPartName: string;
+  hideInputs: boolean;
+};
+
+export type BooleanEditor =
+  | { open: false }
+  | {
+      open: true;
+      mode: "create" | "edit";
+      /** Present only when mode === 'edit'. */
+      featureId?: string;
+      params: BooleanEditorParams;
+      livePreview: boolean;
+    };
+
+const defaultBooleanEditor: BooleanEditor = { open: false };
+
+const DEFAULT_BOOLEAN_PARAMS: BooleanEditorParams = {
+  operation: { type: "union" },
+  inputPartIds: [],
+  resultPartName: "",
+  hideInputs: true,
+};
+
+/**
  * Live-preview status for the currently-open feature editor. Driven by
  * `Scene.tsx` after each debounced regen attempt, read by the inspector to
  * surface error messages in red. Not persisted.
@@ -214,6 +257,8 @@ export type KinetiCADStore = {
   sketchSession: SketchSession;
   selection: Selection;
   featureEditor: FeatureEditor;
+  /** Phase 5 boolean editor (separate slice from featureEditor). */
+  booleanEditor: BooleanEditor;
   featurePreview: FeaturePreview;
   /** Active picker mode. Not persisted. */
   pickingMode: PickingMode;
@@ -275,6 +320,34 @@ export type KinetiCADStore = {
 
   /** Scene.tsx pushes the regen status here after each preview attempt. */
   setFeaturePreview: (next: FeaturePreview) => void;
+
+  // ---- Phase 5: boolean selection / editor / cascade delete ----
+  /** Select a boolean feature (drives the right inspector). */
+  selectBoolean: (booleanId: string) => void;
+  /**
+   * Open the inspector to create a new boolean of the given operation
+   * type. Pre-fills `inputPartIds` with empty, picks a unique default
+   * `resultPartName` like "Union 1".
+   */
+  beginCreateBoolean: (op: BooleanOperation["type"]) => void;
+  /** Open the inspector to edit an existing boolean, populating from current params. */
+  beginEditBoolean: (booleanId: string) => void;
+  /** Replace the editor's params (caller supplies the full new params object). */
+  setBooleanEditorParams: (params: BooleanEditorParams) => void;
+  setBooleanEditorLivePreview: (on: boolean) => void;
+  /** Commit the current editor state to assembly.booleanFeatures (insert or replace). */
+  applyBooleanEditor: () => void;
+  /** Discard the in-flight boolean editor without touching assembly.booleanFeatures. */
+  cancelBooleanEditor: () => void;
+  /** Delete a boolean feature outright. */
+  deleteBooleanFeature: (booleanId: string) => void;
+  /**
+   * Delete a part AND every boolean that uses it. Caller is expected to
+   * confirm with the user first via the cascade-delete dialog.
+   */
+  deletePartCascade: (partId: string) => void;
+  /** Returns the booleans that include the given part as an input. */
+  getBooleansUsingPart: (partId: string) => BooleanFeature[];
 };
 
 const defaultAssembly: Assembly = {
@@ -283,6 +356,7 @@ const defaultAssembly: Assembly = {
   parts: [],
   mates: [],
   groundPartId: "",
+  booleanFeatures: [],
 };
 
 const defaultSimulation: SimulationState = {
@@ -325,6 +399,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       sketchSession: defaultSketchSession,
       selection: null,
       featureEditor: defaultFeatureEditor,
+      booleanEditor: defaultBooleanEditor,
       featurePreview: defaultFeaturePreview,
       pickingMode: "idle",
 
@@ -619,8 +694,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             selection: { kind: "feature", partId, featureId },
           });
         }
-        // 'boolean' isn't editable yet; the selectFeature path above shows a
-        // placeholder inspector for it.
+        // (Booleans use beginEditBoolean — they live on the assembly, not on a part.)
       },
 
       setFeatureEditorExtrudeParams: (params) =>
@@ -779,10 +853,235 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         }),
 
       setFeaturePreview: (next) => set({ featurePreview: next }),
+
+      // ---- Phase 5: boolean selection / editor / cascade delete ----
+
+      selectBoolean: (booleanId) =>
+        set({ selection: { kind: "boolean", booleanId } }),
+
+      beginCreateBoolean: (op) => {
+        const state = get();
+        // Pick a unique default name like "Union 1", "Subtract 2", etc.
+        const base =
+          op === "union"
+            ? "Union"
+            : op === "subtract"
+            ? "Subtract"
+            : "Intersect";
+        const existing = new Set(
+          state.assembly.booleanFeatures.map((b) => b.resultPartName),
+        );
+        let i = 1;
+        while (existing.has(`${base} ${i}`)) i++;
+        const name = `${base} ${i}`;
+
+        const operation: BooleanOperation =
+          op === "subtract"
+            ? { type: "subtract", toolPartId: "" }
+            : op === "intersect"
+            ? { type: "intersect" }
+            : { type: "union" };
+
+        set({
+          booleanEditor: {
+            open: true,
+            mode: "create",
+            params: {
+              ...DEFAULT_BOOLEAN_PARAMS,
+              operation,
+              inputPartIds: [],
+              resultPartName: name,
+            },
+            livePreview: true,
+          },
+          // Booleans don't use the topology picker; clear any stale state.
+          pickingMode: "idle",
+          selection: null,
+          // A separate editor is mutually exclusive with featureEditor.
+          featureEditor: defaultFeatureEditor,
+        });
+      },
+
+      beginEditBoolean: (booleanId) => {
+        const state = get();
+        const feature = state.assembly.booleanFeatures.find(
+          (b) => b.id === booleanId,
+        );
+        if (!feature) return;
+        set({
+          booleanEditor: {
+            open: true,
+            mode: "edit",
+            featureId: feature.id,
+            params: {
+              operation: feature.operation,
+              inputPartIds: [...feature.inputPartIds],
+              resultPartName: feature.resultPartName,
+              hideInputs: feature.hideInputs,
+            },
+            livePreview: true,
+          },
+          selection: { kind: "boolean", booleanId },
+          pickingMode: "idle",
+          featureEditor: defaultFeatureEditor,
+        });
+      },
+
+      setBooleanEditorParams: (params) =>
+        set((s) => {
+          if (!s.booleanEditor.open) return {};
+          return {
+            booleanEditor: { ...s.booleanEditor, params },
+          };
+        }),
+
+      setBooleanEditorLivePreview: (on) =>
+        set((s) => {
+          if (!s.booleanEditor.open) return {};
+          return {
+            booleanEditor: { ...s.booleanEditor, livePreview: on },
+          };
+        }),
+
+      applyBooleanEditor: () => {
+        const state = get();
+        const editor = state.booleanEditor;
+        if (!editor.open) return;
+        const { params } = editor;
+
+        // Validation: ≥2 inputs, ≤8 inputs, unique non-empty name,
+        // Subtract requires exactly 2 inputs and a tool that's in the list.
+        if (params.inputPartIds.length < 2 || params.inputPartIds.length > 8) {
+          return;
+        }
+        const trimmed = params.resultPartName.trim();
+        if (!trimmed) return;
+
+        // Name must be unique (excluding self when editing).
+        const nameClash = state.assembly.booleanFeatures.some(
+          (b) => b.resultPartName === trimmed && b.id !== editor.featureId,
+        );
+        if (nameClash) return;
+
+        if (params.operation.type === "subtract") {
+          if (params.inputPartIds.length !== 2) return;
+          if (!params.operation.toolPartId) return;
+          if (!params.inputPartIds.includes(params.operation.toolPartId)) {
+            return;
+          }
+        }
+
+        const newFeature: BooleanFeature = {
+          id: editor.featureId ?? newId("boolean"),
+          type: "boolean",
+          operation: params.operation,
+          inputPartIds: [...params.inputPartIds],
+          resultPartName: trimmed,
+          hideInputs: params.hideInputs,
+        };
+
+        let updatedBooleans: BooleanFeature[];
+        if (editor.mode === "edit" && editor.featureId) {
+          updatedBooleans = state.assembly.booleanFeatures.map((b) =>
+            b.id === editor.featureId ? newFeature : b,
+          );
+        } else {
+          updatedBooleans = [...state.assembly.booleanFeatures, newFeature];
+        }
+
+        set({
+          assembly: { ...state.assembly, booleanFeatures: updatedBooleans },
+          booleanEditor: defaultBooleanEditor,
+          featurePreview: defaultFeaturePreview,
+          selection: { kind: "boolean", booleanId: newFeature.id },
+        });
+      },
+
+      cancelBooleanEditor: () =>
+        set({
+          booleanEditor: defaultBooleanEditor,
+          featurePreview: defaultFeaturePreview,
+        }),
+
+      deleteBooleanFeature: (booleanId) =>
+        set((s) => {
+          const next = s.assembly.booleanFeatures.filter(
+            (b) => b.id !== booleanId,
+          );
+          if (next.length === s.assembly.booleanFeatures.length) return {};
+          return {
+            assembly: { ...s.assembly, booleanFeatures: next },
+            booleanEditor:
+              s.booleanEditor.open && s.booleanEditor.featureId === booleanId
+                ? defaultBooleanEditor
+                : s.booleanEditor,
+            selection:
+              s.selection?.kind === "boolean" &&
+              s.selection.booleanId === booleanId
+                ? null
+                : s.selection,
+          };
+        }),
+
+      deletePartCascade: (partId) =>
+        set((s) => {
+          const remainingParts = s.assembly.parts.filter(
+            (p) => p.id !== partId,
+          );
+          // Remove every boolean that references the deleted part.
+          const remainingBooleans = s.assembly.booleanFeatures.filter(
+            (b) => !b.inputPartIds.includes(partId),
+          );
+          const removedBooleanIds = new Set(
+            s.assembly.booleanFeatures
+              .filter((b) => b.inputPartIds.includes(partId))
+              .map((b) => b.id),
+          );
+          // Reset ground if it pointed to the deleted part.
+          const groundPartId =
+            s.assembly.groundPartId === partId ? "" : s.assembly.groundPartId;
+          // Drop any selection / editor that targeted the deleted part or a
+          // cascade-deleted boolean.
+          const sel = s.selection;
+          let selection: Selection = sel;
+          if (sel) {
+            if ("partId" in sel && sel.partId === partId) selection = null;
+            else if (sel.kind === "boolean" && removedBooleanIds.has(sel.booleanId)) {
+              selection = null;
+            }
+          }
+          const featureEditor =
+            s.featureEditor.open && s.featureEditor.partId === partId
+              ? defaultFeatureEditor
+              : s.featureEditor;
+          const booleanEditor =
+            s.booleanEditor.open &&
+            s.booleanEditor.featureId &&
+            removedBooleanIds.has(s.booleanEditor.featureId)
+              ? defaultBooleanEditor
+              : s.booleanEditor;
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: remainingParts,
+              booleanFeatures: remainingBooleans,
+              groundPartId,
+            },
+            selection,
+            featureEditor,
+            booleanEditor,
+            featurePreview: defaultFeaturePreview,
+          };
+        }),
+
+      getBooleansUsingPart: (partId) =>
+        get().assembly.booleanFeatures.filter((b) =>
+          b.inputPartIds.includes(partId),
+        ),
     }),
     {
       name: "kineticad-state",
-      version: 3,
+      version: 4,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation flags.
       partialize: (state) => ({
@@ -798,6 +1097,9 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       // v2 → v3: HoleFeature renamed `positionXY` → `positionUV`. Phase 4
       // Split A never created hole features, but we still re-key safely if
       // any stray data exists.
+      // v3 → v4: Phase 5 booleans. Add `booleanFeatures: []` to the
+      // assembly and strip any legacy per-part `boolean` Feature stubs
+      // (booleans are now assembly-level).
       migrate: (persisted, version) => {
         if (!persisted || typeof persisted !== "object") return persisted;
         const state = persisted as { assembly?: Assembly };
@@ -838,6 +1140,42 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             }),
           }));
           state.assembly = { ...state.assembly, parts: migratedParts };
+        }
+        if (version < 4 && state.assembly) {
+          const a = state.assembly as Assembly & {
+            booleanFeatures?: unknown;
+          };
+          // Strip any legacy per-part `boolean` stubs (Phase 5 moves
+          // booleans to the assembly level).
+          const migratedParts = a.parts.map((part) => ({
+            ...part,
+            features: part.features.filter(
+              (f) => (f as { type: string }).type !== "boolean",
+            ),
+          }));
+          state.assembly = {
+            ...a,
+            parts: migratedParts,
+            booleanFeatures: Array.isArray(a.booleanFeatures)
+              ? (a.booleanFeatures as Assembly["booleanFeatures"])
+              : [],
+          };
+        }
+        // Defensive: ensure `booleanFeatures` is always an array regardless of
+        // the recorded version. Catches partially-migrated v4 states left
+        // behind by an interrupted in-session upgrade (e.g. the persist
+        // version was bumped before the field was added in the same dev
+        // session, leaving a v4 row without the new field).
+        if (
+          state.assembly &&
+          !Array.isArray(
+            (state.assembly as { booleanFeatures?: unknown }).booleanFeatures,
+          )
+        ) {
+          state.assembly = {
+            ...state.assembly,
+            booleanFeatures: [],
+          };
         }
         return state;
       },

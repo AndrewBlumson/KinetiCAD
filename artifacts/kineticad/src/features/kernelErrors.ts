@@ -1,6 +1,6 @@
 // Map raw error messages thrown by the CAD worker (sketchToWire / extrude /
-// revolve / fillet / chamfer / hole / OCCT) into user-facing copy that the
-// inspector surfaces in red.
+// revolve / fillet / chamfer / hole / boolean / OCCT) into user-facing copy
+// that the inspector surfaces in red.
 //
 // Matches are deliberately substring-based on the messages defined in:
 //   src/cad/operations/sketchToWire.ts
@@ -9,6 +9,7 @@
 //   src/cad/operations/fillet.ts
 //   src/cad/operations/chamfer.ts
 //   src/cad/operations/hole.ts
+//   src/cad/operations/boolean.ts
 // so any future tightening of those throws still gets a sensible default.
 
 export type KernelErrorCode =
@@ -26,6 +27,9 @@ export type KernelErrorCode =
   | "fillet-self-intersect"
   | "chamfer-size-too-large"
   | "boolean-failed"
+  | "empty-result"
+  | "invalid-input-not-solid"
+  | "subtract-needs-tool"
   | "occt-internal"
   | "unknown";
 
@@ -56,7 +60,13 @@ const MESSAGES: Record<KernelErrorCode, string> = {
   "chamfer-size-too-large":
     "Chamfer size is too large for these edges. Try a smaller size.",
   "boolean-failed":
-    "Hole boolean operation failed. The hole may exit the part or sit on a curved area.",
+    "Boolean operation failed. The input parts may not overlap, or may produce a non-manifold result.",
+  "empty-result":
+    "Boolean produced an empty result. The inputs may not overlap, or Subtract removed the entire body.",
+  "invalid-input-not-solid":
+    "One or more inputs is not a closed solid. Booleans need solid bodies — finish or repair the inputs first.",
+  "subtract-needs-tool":
+    "Subtract needs exactly two inputs: a body and a tool. Pick exactly two parts.",
   "occt-internal":
     "Operation failed. Try a simpler sketch or different parameters.",
   unknown: "Operation failed. Try a simpler sketch or different parameters.",
@@ -77,7 +87,10 @@ const PATTERNS: Array<[RegExp, KernelErrorCode]> = [
   [/fillet-self-intersect|fillet.*self.?intersect/i, "fillet-self-intersect"],
   [/fillet-radius-too-large|fillet.*radius/i, "fillet-radius-too-large"],
   [/chamfer-size-too-large|chamfer.*size/i, "chamfer-size-too-large"],
-  [/boolean-failed|boolean.*fail|cut.*fail/i, "boolean-failed"],
+  [/subtract-needs-tool/i, "subtract-needs-tool"],
+  [/invalid-input-not-solid/i, "invalid-input-not-solid"],
+  [/empty-result/i, "empty-result"],
+  [/boolean-failed|boolean.*fail|cut.*fail|fuse.*fail|common.*fail/i, "boolean-failed"],
   [
     /makeprism|makerevol|makeface|makefillet|makechamfer|makecylinder|failed to (build|translate|assemble)/i,
     "occt-internal",

@@ -49,9 +49,17 @@ import {
   type PreviewMeshLayer,
 } from "./PreviewMeshLayer";
 import {
+  createBooleanResultLayer,
+  type BooleanResultLayer,
+} from "./BooleanResultLayer";
+import {
   computeFeatureHash,
   previewFeature,
 } from "@/features/featureRegen";
+import {
+  computeBooleanHash,
+  regenerateBoolean,
+} from "@/features/assemblyRegen";
 import { mapKernelError } from "@/features/kernelErrors";
 import {
   createEdgeHighlightLayer,
@@ -119,6 +127,7 @@ export default function Scene() {
     let unsubscribeFeatureEditor: (() => void) | null = null;
     let partMeshLayer: PartMeshLayer | null = null;
     let previewMeshLayer: PreviewMeshLayer | null = null;
+    let booleanResultLayer: BooleanResultLayer | null = null;
     let edgeHighlightLayer: EdgeHighlightLayer | null = null;
     let faceHighlightLayer: FaceHighlightLayer | null = null;
     let topologyPicker: TopologyPicker | null = null;
@@ -135,6 +144,9 @@ export default function Scene() {
     let previewDebounce: ReturnType<typeof setTimeout> | null = null;
     let previewToken = 0;
     let lastPreviewHash: string | null = null;
+    let booleanPreviewDebounce: ReturnType<typeof setTimeout> | null = null;
+    let booleanPreviewToken = 0;
+    let lastBooleanPreviewHash: string | null = null;
     let canvasResW = 1;
     let canvasResH = 1;
 
@@ -417,10 +429,12 @@ export default function Scene() {
         // 3. Build the part / preview layers and wire them up to the store.
         partMeshLayer = createPartMeshLayer();
         previewMeshLayer = createPreviewMeshLayer();
+        booleanResultLayer = createBooleanResultLayer();
         edgeHighlightLayer = createEdgeHighlightLayer();
         faceHighlightLayer = createFaceHighlightLayer();
         scene.add(partMeshLayer.group);
         scene.add(previewMeshLayer.group);
+        scene.add(booleanResultLayer.group);
         scene.add(edgeHighlightLayer.group);
         scene.add(faceHighlightLayer.group);
         edgeHighlightLayer.setResolution(canvasResW, canvasResH);
@@ -562,21 +576,63 @@ export default function Scene() {
           }
         };
 
-        // Helper: which part should PartMeshLayer hide because the preview
-        // is currently overlaying it? Only when the editor is open AND the
-        // user has live preview enabled.
-        const computeHiddenPartId = (
+        // Helper: which parts should PartMeshLayer hide?
+        // Union of:
+        //   - The feature editor's target part (when open + livePreview).
+        //   - Every committed boolean's `inputPartIds` whose `hideInputs=true`,
+        //     EXCEPT for the boolean currently being edited (its hidden set
+        //     comes from the in-flight editor params instead).
+        //   - The in-flight boolean editor's `inputPartIds` when
+        //     `hideInputs=true` (regardless of livePreview — the user wants
+        //     the workspace clear of inputs while editing).
+        const computeHiddenPartIds = (
           state: ReturnType<typeof useKinetiCADStore.getState>,
-        ): string | null => {
-          if (!state.featureEditor.open) return null;
-          if (!state.featureEditor.livePreview) return null;
-          return state.featureEditor.partId;
+        ): Set<string> => {
+          const out = new Set<string>();
+          if (state.featureEditor.open && state.featureEditor.livePreview) {
+            out.add(state.featureEditor.partId);
+          }
+          const editingBooleanId =
+            state.booleanEditor.open && state.booleanEditor.mode === "edit"
+              ? state.booleanEditor.featureId ?? null
+              : null;
+          for (const b of state.assembly.booleanFeatures) {
+            if (!b.hideInputs) continue;
+            if (b.id === editingBooleanId) continue;
+            for (const id of b.inputPartIds) out.add(id);
+          }
+          if (state.booleanEditor.open && state.booleanEditor.params.hideInputs) {
+            for (const id of state.booleanEditor.params.inputPartIds) {
+              out.add(id);
+            }
+          }
+          return out;
         };
 
-        // Initial sync: render any persisted parts.
+        /** Booleans hidden from BooleanResultLayer (the one being edited). */
+        const computeHiddenBooleanIds = (
+          state: ReturnType<typeof useKinetiCADStore.getState>,
+        ): Set<string> => {
+          const out = new Set<string>();
+          if (
+            state.booleanEditor.open &&
+            state.booleanEditor.mode === "edit" &&
+            state.booleanEditor.featureId
+          ) {
+            out.add(state.booleanEditor.featureId);
+          }
+          return out;
+        };
+
+        // Initial sync: render any persisted parts and boolean results.
         partMeshLayer.sync(
           useKinetiCADStore.getState().assembly,
-          computeHiddenPartId(useKinetiCADStore.getState()),
+          computeHiddenPartIds(useKinetiCADStore.getState()),
+          kernel,
+        );
+        booleanResultLayer.sync(
+          useKinetiCADStore.getState().assembly,
+          computeHiddenBooleanIds(useKinetiCADStore.getState()),
           kernel,
         );
 
@@ -736,21 +792,130 @@ export default function Scene() {
           previewDebounce = setTimeout(runPreview, PREVIEW_DEBOUNCE_MS);
         };
 
-        // Subscribe to assembly + featureEditor changes. We compare object
-        // identity to skip re-runs caused by unrelated state updates (e.g.
-        // sketchSession changes during drawing).
+        // Phase 5 — boolean editor live-preview pipeline. Mirrors
+        // schedulePreview / runPreview but routes through `regenerateBoolean`
+        // and writes into the same previewMeshLayer (the two pipelines are
+        // mutually exclusive — only one editor can be open at a time).
+        const runBooleanPreview = (): void => {
+          const state = useKinetiCADStore.getState();
+          const editor = state.booleanEditor;
+          if (!editor.open || !editor.livePreview) {
+            previewMeshLayer?.setMesh(null);
+            lastBooleanPreviewHash = null;
+            if (state.featurePreview.status !== "idle") {
+              state.setFeaturePreview({ status: "idle", error: null });
+            }
+            return;
+          }
+          const { params } = editor;
+          // Same validation gates the inspector enforces — skip preview
+          // until the user has a chance of producing valid output.
+          if (params.inputPartIds.length < 2) {
+            previewMeshLayer?.setMesh(null);
+            lastBooleanPreviewHash = null;
+            if (state.featurePreview.status !== "idle") {
+              state.setFeaturePreview({ status: "idle", error: null });
+            }
+            return;
+          }
+          if (params.operation.type === "subtract") {
+            if (params.inputPartIds.length !== 2) return;
+            if (
+              !params.operation.toolPartId ||
+              !params.inputPartIds.includes(params.operation.toolPartId)
+            ) {
+              return;
+            }
+          }
+          // Build a transient BooleanFeature for the regen helper. The id is
+          // arbitrary because we don't commit it; the cache key uses the
+          // operation + input chain hashes anyway.
+          const transient = {
+            id: editor.featureId ?? "preview",
+            type: "boolean" as const,
+            operation: params.operation,
+            inputPartIds: [...params.inputPartIds],
+            resultPartName: params.resultPartName,
+            hideInputs: params.hideInputs,
+          };
+          const hash = computeBooleanHash(transient, state.assembly.parts);
+          if (hash === lastBooleanPreviewHash) return;
+          lastBooleanPreviewHash = hash;
+
+          state.setFeaturePreview({ status: "computing", error: null });
+          const myToken = ++booleanPreviewToken;
+          regenerateBoolean(transient, state.assembly.parts, kernel)
+            .then((result) => {
+              if (myToken !== booleanPreviewToken) return;
+              if (result.error || !result.mesh) {
+                previewMeshLayer?.setMesh(null);
+                const mapped = mapKernelError(result.error ?? "");
+                useKinetiCADStore.getState().setFeaturePreview({
+                  status: "error",
+                  error: mapped.message,
+                });
+                return;
+              }
+              previewMeshLayer?.setMesh(result.mesh);
+              useKinetiCADStore
+                .getState()
+                .setFeaturePreview({ status: "ok", error: null });
+            })
+            .catch((err: unknown) => {
+              if (myToken !== booleanPreviewToken) return;
+              previewMeshLayer?.setMesh(null);
+              const message =
+                err instanceof Error ? err.message : String(err);
+              const mapped = mapKernelError(message);
+              useKinetiCADStore
+                .getState()
+                .setFeaturePreview({ status: "error", error: mapped.message });
+            });
+        };
+
+        const scheduleBooleanPreview = (): void => {
+          if (booleanPreviewDebounce) clearTimeout(booleanPreviewDebounce);
+          booleanPreviewDebounce = setTimeout(
+            runBooleanPreview,
+            PREVIEW_DEBOUNCE_MS,
+          );
+        };
+
+        // Subscribe to assembly + featureEditor + booleanEditor changes. We
+        // compare object identity to skip re-runs caused by unrelated state
+        // updates (e.g. sketchSession changes during drawing).
         let prevAssembly = useKinetiCADStore.getState().assembly;
         let prevEditor = useKinetiCADStore.getState().featureEditor;
-        let prevHidden = computeHiddenPartId(useKinetiCADStore.getState());
+        let prevBooleanEditor = useKinetiCADStore.getState().booleanEditor;
+        let prevHidden = computeHiddenPartIds(useKinetiCADStore.getState());
+        let prevHiddenBooleans = computeHiddenBooleanIds(
+          useKinetiCADStore.getState(),
+        );
+
+        const setsEqual = (a: Set<string>, b: Set<string>): boolean => {
+          if (a.size !== b.size) return false;
+          for (const v of a) if (!b.has(v)) return false;
+          return true;
+        };
 
         unsubscribeFeatureEditor = useKinetiCADStore.subscribe((state) => {
-          const hidden = computeHiddenPartId(state);
+          const hidden = computeHiddenPartIds(state);
+          const hiddenBooleans = computeHiddenBooleanIds(state);
           const editorChanged = state.featureEditor !== prevEditor;
+          const booleanEditorChanged =
+            state.booleanEditor !== prevBooleanEditor;
           const assemblyChanged = state.assembly !== prevAssembly;
-          const hiddenChanged = hidden !== prevHidden;
+          const hiddenChanged = !setsEqual(hidden, prevHidden);
+          const hiddenBooleansChanged = !setsEqual(
+            hiddenBooleans,
+            prevHiddenBooleans,
+          );
 
           if (assemblyChanged || hiddenChanged) {
             partMeshLayer?.sync(state.assembly, hidden, kernel);
+          }
+          if (assemblyChanged || hiddenBooleansChanged) {
+            booleanResultLayer?.sync(state.assembly, hiddenBooleans, kernel);
           }
 
           if (editorChanged) {
@@ -770,14 +935,33 @@ export default function Scene() {
             }
           }
 
+          if (booleanEditorChanged) {
+            if (!state.booleanEditor.open) {
+              previewMeshLayer?.setMesh(null);
+              lastBooleanPreviewHash = null;
+              booleanPreviewToken += 1;
+              if (booleanPreviewDebounce) {
+                clearTimeout(booleanPreviewDebounce);
+                booleanPreviewDebounce = null;
+              }
+            } else {
+              scheduleBooleanPreview();
+            }
+          }
+
           prevAssembly = state.assembly;
           prevEditor = state.featureEditor;
+          prevBooleanEditor = state.booleanEditor;
           prevHidden = hidden;
+          prevHiddenBooleans = hiddenBooleans;
         });
 
-        // Catch up if the editor was somehow already open at mount.
+        // Catch up if either editor was somehow already open at mount.
         if (useKinetiCADStore.getState().featureEditor.open) {
           schedulePreview();
+        }
+        if (useKinetiCADStore.getState().booleanEditor.open) {
+          scheduleBooleanPreview();
         }
 
         // Surface kernel meta in the status so the loading panel hides.
@@ -803,6 +987,7 @@ export default function Scene() {
     return () => {
       cancelled = true;
       if (previewDebounce) clearTimeout(previewDebounce);
+      if (booleanPreviewDebounce) clearTimeout(booleanPreviewDebounce);
       perFrameTopologyCheck = null;
       unsubscribeStore?.();
       unsubscribeAssembly?.();
@@ -834,6 +1019,10 @@ export default function Scene() {
       if (previewMeshLayer) {
         previewMeshLayer.dispose();
         previewMeshLayer = null;
+      }
+      if (booleanResultLayer) {
+        booleanResultLayer.dispose();
+        booleanResultLayer = null;
       }
       if (fpsTimer) clearInterval(fpsTimer);
       resizeObserver?.disconnect();
