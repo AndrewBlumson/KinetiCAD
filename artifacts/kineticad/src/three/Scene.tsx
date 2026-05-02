@@ -577,21 +577,49 @@ export default function Scene() {
           }
         };
 
-        // Helper: which parts should PartMeshLayer hide?
-        // Union of:
-        //   - The feature editor's target part (when open + livePreview).
-        //   - Every committed boolean's `inputPartIds` whose `hideInputs=true`,
-        //     EXCEPT for the boolean currently being edited (its hidden set
-        //     comes from the in-flight editor params instead).
-        //   - The in-flight boolean editor's `inputPartIds` when
-        //     `hideInputs=true` (regardless of livePreview — the user wants
-        //     the workspace clear of inputs while editing).
-        const computeHiddenPartIds = (
+        // Helpers: per-part and per-boolean visibility for the two layers.
+        //
+        // Three states per part / boolean:
+        //   - hidden  → not rendered at all (preview REPLACES the body)
+        //   - dimmed  → rendered at 0.4 opacity (preview OVERLAYS the body)
+        //   - default → full opacity, no entry in either set
+        //
+        // Routing:
+        //   - featureEditor open, CREATE on a base feature
+        //     (extrude / revolve from sketch) → HIDE (preview is the body)
+        //   - featureEditor open, CREATE on a modifier feature
+        //     (fillet / chamfer / hole) → DEFAULT (body must stay visible
+        //     so the user can hover edges/faces to pick them; preview
+        //     overlays at 0.85)
+        //   - featureEditor open, EDIT on any feature → DIM (so the user
+        //     sees both before and after, with the preview at 0.85 over
+        //     the dimmed body). Tied to livePreview because without an
+        //     overlay, dimming a body for no reason is just confusing.
+        //
+        // Boolean inputs always HIDDEN when their boolean has
+        // `hideInputs=true` (unchanged from before).
+        // Boolean editor's target boolean is DIMMED in EDIT mode with
+        // live-preview on (mirrors the per-part edit-mode rule); HIDDEN
+        // is no longer used for the edited boolean because the preview
+        // overlays at 0.85.
+        const computePartVisibility = (
           state: ReturnType<typeof useKinetiCADStore.getState>,
-        ): Set<string> => {
-          const out = new Set<string>();
-          if (state.featureEditor.open && state.featureEditor.livePreview) {
-            out.add(state.featureEditor.partId);
+        ): { hidden: Set<string>; dimmed: Set<string> } => {
+          const hidden = new Set<string>();
+          const dimmed = new Set<string>();
+          const ed = state.featureEditor;
+          if (ed.open) {
+            const isModifier =
+              ed.type === "fillet" ||
+              ed.type === "chamfer" ||
+              ed.type === "hole";
+            const isBaseCreate = ed.mode === "create" && !isModifier;
+            if (isBaseCreate && ed.livePreview) {
+              hidden.add(ed.partId);
+            } else if (ed.mode === "edit" && ed.livePreview) {
+              dimmed.add(ed.partId);
+            }
+            // CREATE on a modifier → no entry → full opacity.
           }
           const editingBooleanId =
             state.booleanEditor.open && state.booleanEditor.mode === "edit"
@@ -600,42 +628,50 @@ export default function Scene() {
           for (const b of state.assembly.booleanFeatures) {
             if (!b.hideInputs) continue;
             if (b.id === editingBooleanId) continue;
-            for (const id of b.inputPartIds) out.add(id);
+            for (const id of b.inputPartIds) hidden.add(id);
           }
           if (state.booleanEditor.open && state.booleanEditor.params.hideInputs) {
             for (const id of state.booleanEditor.params.inputPartIds) {
-              out.add(id);
+              hidden.add(id);
             }
           }
-          return out;
+          return { hidden, dimmed };
         };
 
-        /** Booleans hidden from BooleanResultLayer (the one being edited). */
-        const computeHiddenBooleanIds = (
+        const computeBooleanVisibility = (
           state: ReturnType<typeof useKinetiCADStore.getState>,
-        ): Set<string> => {
-          const out = new Set<string>();
+        ): { hidden: Set<string>; dimmed: Set<string> } => {
+          const hidden = new Set<string>();
+          const dimmed = new Set<string>();
           if (
             state.booleanEditor.open &&
             state.booleanEditor.mode === "edit" &&
-            state.booleanEditor.featureId
+            state.booleanEditor.featureId &&
+            state.booleanEditor.livePreview
           ) {
-            out.add(state.booleanEditor.featureId);
+            dimmed.add(state.booleanEditor.featureId);
           }
-          return out;
+          return { hidden, dimmed };
         };
 
         // Initial sync: render any persisted parts and boolean results.
-        partMeshLayer.sync(
-          useKinetiCADStore.getState().assembly,
-          computeHiddenPartIds(useKinetiCADStore.getState()),
-          kernel,
-        );
-        booleanResultLayer.sync(
-          useKinetiCADStore.getState().assembly,
-          computeHiddenBooleanIds(useKinetiCADStore.getState()),
-          kernel,
-        );
+        {
+          const initialState = useKinetiCADStore.getState();
+          const initialPartVis = computePartVisibility(initialState);
+          const initialBooleanVis = computeBooleanVisibility(initialState);
+          partMeshLayer.sync(
+            initialState.assembly,
+            initialPartVis.hidden,
+            initialPartVis.dimmed,
+            kernel,
+          );
+          booleanResultLayer.sync(
+            initialState.assembly,
+            initialBooleanVis.hidden,
+            initialBooleanVis.dimmed,
+            kernel,
+          );
+        }
 
         // Live preview pipeline. Watches the editor's parameters; on every
         // change we debounce 200ms then ask `previewFeature` for a fresh
@@ -975,8 +1011,8 @@ export default function Scene() {
         let prevAssembly = useKinetiCADStore.getState().assembly;
         let prevEditor = useKinetiCADStore.getState().featureEditor;
         let prevBooleanEditor = useKinetiCADStore.getState().booleanEditor;
-        let prevHidden = computeHiddenPartIds(useKinetiCADStore.getState());
-        let prevHiddenBooleans = computeHiddenBooleanIds(
+        let prevPartVis = computePartVisibility(useKinetiCADStore.getState());
+        let prevBooleanVis = computeBooleanVisibility(
           useKinetiCADStore.getState(),
         );
 
@@ -987,23 +1023,34 @@ export default function Scene() {
         };
 
         unsubscribeFeatureEditor = useKinetiCADStore.subscribe((state) => {
-          const hidden = computeHiddenPartIds(state);
-          const hiddenBooleans = computeHiddenBooleanIds(state);
+          const partVis = computePartVisibility(state);
+          const booleanVis = computeBooleanVisibility(state);
           const editorChanged = state.featureEditor !== prevEditor;
           const booleanEditorChanged =
             state.booleanEditor !== prevBooleanEditor;
           const assemblyChanged = state.assembly !== prevAssembly;
-          const hiddenChanged = !setsEqual(hidden, prevHidden);
-          const hiddenBooleansChanged = !setsEqual(
-            hiddenBooleans,
-            prevHiddenBooleans,
-          );
+          const partVisChanged =
+            !setsEqual(partVis.hidden, prevPartVis.hidden) ||
+            !setsEqual(partVis.dimmed, prevPartVis.dimmed);
+          const booleanVisChanged =
+            !setsEqual(booleanVis.hidden, prevBooleanVis.hidden) ||
+            !setsEqual(booleanVis.dimmed, prevBooleanVis.dimmed);
 
-          if (assemblyChanged || hiddenChanged) {
-            partMeshLayer?.sync(state.assembly, hidden, kernel);
+          if (assemblyChanged || partVisChanged) {
+            partMeshLayer?.sync(
+              state.assembly,
+              partVis.hidden,
+              partVis.dimmed,
+              kernel,
+            );
           }
-          if (assemblyChanged || hiddenBooleansChanged) {
-            booleanResultLayer?.sync(state.assembly, hiddenBooleans, kernel);
+          if (assemblyChanged || booleanVisChanged) {
+            booleanResultLayer?.sync(
+              state.assembly,
+              booleanVis.hidden,
+              booleanVis.dimmed,
+              kernel,
+            );
           }
 
           if (editorChanged) {
@@ -1040,8 +1087,8 @@ export default function Scene() {
           prevAssembly = state.assembly;
           prevEditor = state.featureEditor;
           prevBooleanEditor = state.booleanEditor;
-          prevHidden = hidden;
-          prevHiddenBooleans = hiddenBooleans;
+          prevPartVis = partVis;
+          prevBooleanVis = booleanVis;
         });
 
         // Catch up if either editor was somehow already open at mount.

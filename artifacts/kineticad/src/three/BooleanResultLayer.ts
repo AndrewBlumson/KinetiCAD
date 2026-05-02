@@ -19,14 +19,24 @@ import { regenerateBoolean } from "@/features/assemblyRegen";
 export type BooleanResultLayer = {
   group: THREE.Group;
   /**
-   * Reconcile the layer with the given assembly. Every boolean id in
-   * `hiddenBooleanIds` is suppressed from rendering — used while the
-   * boolean editor is editing that boolean and a preview mesh should
-   * replace the committed result.
+   * Reconcile the layer with the given assembly. Per-result visibility is
+   * driven by two disjoint id sets:
+   *
+   *  - `hiddenBooleanIds`: suppressed from rendering entirely. Reserved
+   *    for cases where the result mesh must be fully replaced (none used
+   *    today — see PartMeshLayer.sync for the same contract).
+   *
+   *  - `dimmedBooleanIds`: rendered at reduced opacity (0.4). Used while
+   *    the boolean editor is editing this boolean with live-preview on,
+   *    so the user sees the original result through the 0.85-opacity
+   *    preview overlay (mirrors PartMeshLayer's edit-mode dim path).
+   *
+   * If a boolean id appears in both sets, `hiddenBooleanIds` wins.
    */
   sync: (
     assembly: Assembly,
     hiddenBooleanIds: Set<string>,
+    dimmedBooleanIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ) => void;
   size: () => number;
@@ -51,6 +61,18 @@ export function createBooleanResultLayer(): BooleanResultLayer {
     color: RESULT_COLOR,
     metalness: 0.4,
     roughness: 0.5,
+  });
+
+  // Translucent variant for EDIT-mode dimming. Same rationale as
+  // PartMeshLayer's dimmedMaterial: depthWrite disabled so the dimmed
+  // result doesn't z-fight with the 0.85-opacity preview overlay.
+  const dimmedMaterial = new THREE.MeshStandardMaterial({
+    color: RESULT_COLOR,
+    metalness: 0.4,
+    roughness: 0.5,
+    transparent: true,
+    opacity: 0.4,
+    depthWrite: false,
   });
 
   const entries = new Map<string, Entry>();
@@ -132,6 +154,7 @@ export function createBooleanResultLayer(): BooleanResultLayer {
   const sync = (
     assembly: Assembly,
     hiddenBooleanIds: Set<string>,
+    dimmedBooleanIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ): void => {
     if (isDisposed) return;
@@ -145,6 +168,16 @@ export function createBooleanResultLayer(): BooleanResultLayer {
         entry.inFlightToken = ++nextToken;
         entry.mesh.visible = false;
         continue;
+      }
+
+      // Apply dim/full material before regen so the swap takes effect even
+      // when the regen short-circuits on a hash cache hit. Same pattern
+      // as PartMeshLayer.sync.
+      const desiredMaterial = dimmedBooleanIds.has(feature.id)
+        ? dimmedMaterial
+        : sharedMaterial;
+      if (entry.mesh.material !== desiredMaterial) {
+        entry.mesh.material = desiredMaterial;
       }
 
       const token = ++nextToken;
@@ -165,6 +198,7 @@ export function createBooleanResultLayer(): BooleanResultLayer {
       removeEntry(id);
     }
     sharedMaterial.dispose();
+    dimmedMaterial.dispose();
     if (group.parent) group.parent.remove(group);
   };
 

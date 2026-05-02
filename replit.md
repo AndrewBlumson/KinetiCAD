@@ -143,6 +143,30 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
   code review only). After fix: `[SELF-TEST] OK: tris=12
   bbox=[-10, -10, 0] → [10, 10, 10]` (a real 20×20×10mm extruded
   box) prints on every kernel boot.
+- **Body visibility per editor kind/mode (QA pass 5 follow-up)** ✅ —
+  Previously `PartMeshLayer.sync` hid the editor's part whenever
+  `featureEditor.open && livePreview`, regardless of feature kind
+  or mode. That broke modifier inspectors (fillet/chamfer/hole)
+  because the cube vanished the moment the user clicked +Fillet,
+  leaving no body to hover edges on; same broke Revolve edit on
+  an extruded part. Fix: `PartMeshLayer` and `BooleanResultLayer`
+  each gained a second sync parameter `dimmedPartIds` /
+  `dimmedBooleanIds` and a sibling `dimmedMaterial` (clone of the
+  shared material with `transparent: true, opacity: 0.4,
+  depthWrite: false`). `Scene.tsx`'s `computeHiddenPartIds` /
+  `computeHiddenBooleanIds` were refactored into
+  `computePartVisibility` / `computeBooleanVisibility`, returning
+  `{ hidden, dimmed }`. Routing rules:
+  - CREATE on base feature (extrude/revolve from sketch) → HIDE
+  - CREATE on modifier (fillet/chamfer/hole) → DEFAULT (full
+    opacity so edge/face picking still works)
+  - EDIT on any feature → DIM (0.4) so user sees both before and
+    after with the 0.85 preview overlay
+  - Boolean inputs always HIDDEN when `hideInputs=true`
+    (unchanged); the boolean being edited is now DIMMED instead
+    of hidden when `livePreview` is on (mirrors per-part edit
+    rule). Material swap happens synchronously in `sync()` BEFORE
+    the regen so it takes effect even on hash-cached short-circuits.
 
 **Sketch overlay & camera**: `Scene.tsx` subscribes to the Zustand store **and** runs the same reconciler once immediately after subscribe so a session that started before the WebGPU/OrbitControls were ready still triggers the camera tween, overlay reveal, and `controls.enabled = false`. Tweens are advanced inside the WebGPU `setAnimationLoop` callback (not `requestAnimationFrame`).
 

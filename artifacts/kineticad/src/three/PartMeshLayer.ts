@@ -52,15 +52,31 @@ export type PartTopology = {
 export type PartMeshLayer = {
   group: THREE.Group;
   /**
-   * Reconcile the layer with the given assembly. Every part id in
-   * `hiddenPartIds` is suppressed from rendering — used both by the active
-   * feature editor's live preview (replaces a single part) and by Phase 5
-   * booleans that hide their input parts in favour of the result mesh.
+   * Reconcile the layer with the given assembly. Per-part visibility is
+   * driven by two disjoint id sets:
+   *
+   *  - `hiddenPartIds`: suppressed from rendering entirely. Used by base-
+   *    feature CREATE editors (extrude/revolve from sketch) where the
+   *    preview mesh REPLACES the body, and by Phase 5 booleans that hide
+   *    their input parts in favour of the result mesh.
+   *
+   *  - `dimmedPartIds`: rendered at reduced opacity (0.4) instead of full.
+   *    Used during EDIT mode on any feature so the user sees the original
+   *    body underneath while the live-preview overlay shows the modified
+   *    state at 0.85 opacity. CREATE mode on a MODIFICATION feature
+   *    (fillet/chamfer/hole) leaves the part out of both sets, so the
+   *    body stays at full opacity and the user can hover edges/faces to
+   *    pick them.
+   *
+   * If a part id appears in both sets, `hiddenPartIds` wins (it's the
+   * stronger constraint).
+   *
    * `kernel` is the remote CAD kernel used by `regeneratePart`.
    */
   sync: (
     assembly: Assembly,
     hiddenPartIds: Set<string>,
+    dimmedPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ) => void;
   /** Total tracked part meshes (for diagnostics / tests). */
@@ -130,6 +146,20 @@ export function createPartMeshLayer(): PartMeshLayer {
     color: COLOURS.defaultPart,
     metalness: 0.4,
     roughness: 0.5,
+  });
+
+  // Translucent variant used during EDIT mode so the user sees the
+  // original body through the 0.85-opacity preview overlay. depthWrite is
+  // disabled to avoid the dimmed body z-fighting with the preview's own
+  // transparent surface (PreviewMeshLayer disables depthWrite for the
+  // same reason). Disposed alongside `sharedMaterial` in dispose().
+  const dimmedMaterial = new THREE.MeshStandardMaterial({
+    color: COLOURS.defaultPart,
+    metalness: 0.4,
+    roughness: 0.5,
+    transparent: true,
+    opacity: 0.4,
+    depthWrite: false,
   });
 
   const entries = new Map<string, Entry>();
@@ -248,6 +278,7 @@ export function createPartMeshLayer(): PartMeshLayer {
   const sync = (
     assembly: Assembly,
     hiddenPartIds: Set<string>,
+    dimmedPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
   ): void => {
     if (isDisposed) return;
@@ -282,6 +313,17 @@ export function createPartMeshLayer(): PartMeshLayer {
           _topologyVersion++;
         }
         continue;
+      }
+
+      // Apply the dim/full material BEFORE kicking off the regen so the
+      // swap takes effect on the very next frame even when the geometry
+      // is hash-cached and `regenAndApply` short-circuits without
+      // touching the mesh. Material is a runtime swap; geometry stays.
+      const desiredMaterial = dimmedPartIds.has(part.id)
+        ? dimmedMaterial
+        : sharedMaterial;
+      if (entry.mesh.material !== desiredMaterial) {
+        entry.mesh.material = desiredMaterial;
       }
 
       // Kick off (or replace) an in-flight regen for this part.
@@ -328,6 +370,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       removeEntry(id);
     }
     sharedMaterial.dispose();
+    dimmedMaterial.dispose();
     if (group.parent) group.parent.remove(group);
   };
 
