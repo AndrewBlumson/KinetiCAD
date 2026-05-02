@@ -1,0 +1,95 @@
+Read CLAUDE.md from project root. Read all existing source files relevant to this phase: src/state/store.ts, src/state/schemas.ts, src/cad/cadWorker.ts, src/cad/cadClient.ts, src/cad/types.ts, src/sketch/plane.ts, src/three/Scene.tsx, src/views/Modeller.tsx, src/components/SketchToolbar.tsx, and the right inspector and feature tree components. Confirm understanding before implementation.Phase 3: Extrude and Revolve FeaturesThis phase makes sketches into 3D. The user selects a finished sketch from the feature tree, clicks Extrude or Revolve, sets parameters in the inspector, and OpenCascade.js generates a B-rep solid. The result tessellates and renders as a Three.js mesh under the part. Editing parameters regenerates the mesh.Files to create:src/
+  cad/
+    operations/
+      extrude.ts                Wire-from-sketch builder + BRepPrimAPI_MakePrism
+      revolve.ts                Wire-from-sketch builder + BRepPrimAPI_MakeRevol
+      sketchToWire.ts           Converts SketchPrimitive[] to a TopoDS_Wire (closed) or TopoDS_Edge sequence (open)
+      tessellate.ts             Already exists from Phase 1 for the test cube; extract the logic into this shared helper
+  components/
+    FeatureInspector.tsx        Right-panel parameter editor that swaps based on selected feature type
+    ExtrudeInspector.tsx         Depth in mm, direction (forward/backward/symmetric), preview toggle
+    RevolveInspector.tsx         Axis (X/Y/Z), angle in degrees (1 to 360), direction
+  features/
+    featureRegen.ts             Top-level orchestrator: takes a Part, runs all features in order, returns final TessellatedMesh
+    featureCache.ts             Per-feature mesh cache keyed by parameter hash; invalidates downstream features when any upstream feature changesWorker API additions:ts// src/cad/cadWorker.ts exports via Comlink:
+
+extrude(args: {
+  sketchPrimitives: SketchPrimitive[];
+  plane: 'XY' | 'XZ' | 'YZ';
+  depthMm: number;
+  direction: 'forward' | 'backward' | 'symmetric';
+}): Promise<TessellatedMesh>;
+
+revolve(args: {
+  sketchPrimitives: SketchPrimitive[];
+  plane: 'XY' | 'XZ' | 'YZ';
+  axis: 'X' | 'Y' | 'Z';
+  angleDeg: number;
+}): Promise<TessellatedMesh>;Both methods return TessellatedMesh in the same shape Phase 1 established (positions, normals, indices, all Float32Array/Uint32Array, transferred ownership to main thread).Sketch to wire conversion (sketchToWire.ts):This is the single trickiest piece of the phase. OpenCascade requires a closed wire for extrude and revolve operations. The sketch primitives need to be converted to OCCT topology in the right order, with shared endpoints connected as shared vertices.Approach:
+Walk the sketch primitives and build a graph of endpoints. Two endpoints within 0.001mm are treated as the same vertex.
+Order the primitives end-to-end so each primitive's end vertex is the next primitive's start vertex.
+For each primitive, build an OCCT edge:
+
+Line: BRepBuilderAPI_MakeEdge(gp_Pnt(start), gp_Pnt(end))
+Circle: BRepBuilderAPI_MakeEdge(gp_Circ(centre, normal, radius)) produces a closed circular edge, on its own forms a closed wire
+Arc: BRepBuilderAPI_MakeEdge(gp_Circ(centre, normal, radius), startAngle, endAngle)
+Rectangle: emit four line edges in order (corner, corner+width, corner+width+height, corner+height, back to corner)
+
+
+Compose the edges into a BRepBuilderAPI_MakeWire. If any edge does not connect, log the gap and reject.
+Verify the wire is closed via wire.Closed(). If not closed, return an error. The user must finish their sketch before extruding.
+Return the TopoDS_Wire. The caller (extrude.ts or revolve.ts) is responsible for .delete() on the wire and all intermediate vertices/edges.
+Memory hygiene: every OCCT object created (gp_Pnt, gp_Circ, edge, wire, builder) must be .delete()'d after use. Phase 1 already established this pattern; follow it strictly.Plane orientation for the wire:Sketch primitives are in 2D plane-local coordinates [u, v]. Convert to 3D world coordinates using planeToWorld(plane, u, v) from src/sketch/plane.ts. The wire is built directly in 3D world space.Extrude operation (extrude.ts):tsfunction extrude(wire: TopoDS_Wire, plane: PlaneId, depthMm: number, direction: ExtrudeDirection): TopoDS_Shape {
+  // 1. Make a face from the wire: BRepBuilderAPI_MakeFace(wire)
+  // 2. Compute extrude vector based on plane normal and direction:
+  //    - Forward: +normal * depth
+  //    - Backward: -normal * depth
+  //    - Symmetric: translate face by -normal * (depth/2), then extrude +normal * depth
+  // 3. Use BRepPrimAPI_MakePrism(face, gp_Vec(extrudeVector))
+  // 4. Return the resulting solid
+  // 5. Delete face, builder, intermediate vec
+}Plane normals: XY plane normal is +Z, XZ is +Y, YZ is +X.Revolve operation (revolve.ts):tsfunction revolve(wire: TopoDS_Wire, axis: 'X' | 'Y' | 'Z', angleDeg: number): TopoDS_Shape {
+  // 1. Make a face from the wire
+  // 2. Build axis as gp_Ax1(gp_Pnt(0,0,0), axisDirection)
+  // 3. Convert angle to radians
+  // 4. BRepPrimAPI_MakeRevol(face, axis, angleRad)
+  // 5. Return the solid
+}If the sketch crosses the revolution axis, the resulting solid will self-intersect. Don't try to detect this in v1; if OCCT throws, surface the error to the inspector ("Revolve failed: sketch crosses axis").Tessellation (tessellate.ts):Extract from Phase 1's test cube logic. Standard params:tsconst linearDeflection = 0.1; // mm
+const angularDeflection = 0.5; // radians
+new BRepMesh_IncrementalMesh(shape, linearDeflection, false, angularDeflection, true);Walk all faces of the tessellated shape, accumulate positions, normals, and indices into one mesh. This is the same pattern Phase 1 used; refactor it into a reusable helper.Feature regeneration (featureRegen.ts):tsasync function regeneratePart(part: Part): Promise<TessellatedMesh> {
+  // Walk part.features in order
+  // For each feature:
+  //   - Compute its parameter hash
+  //   - If featureCache has a fresh entry for this feature's hash AND all upstream hashes match, use the cached mesh
+  //   - Otherwise, dispatch the operation to the worker
+  //   - Cache the resulting mesh
+  // Return the final feature's mesh as the part's display mesh
+}For Phase 3 there are only two operations (extrude, revolve), and a part has at most one feature. The cache infrastructure is built now to make Phase 4 and 5 cheap. Hash function: stable JSON serialise of the feature object's parameters plus all upstream feature hashes.Inspector UX:When a finished sketch is selected in the feature tree, show two buttons in the right inspector: "Extrude" and "Revolve". Click one, the inspector switches to the parameter editor:ExtrudeInspector:
+
+Depth (mm), number input, default 10, min 0.1, max 1000, step 0.1
+Direction: three-button toggle (Forward / Backward / Symmetric), default Forward
+Live preview toggle (default on): regen on every value change with 200ms debounce
+"Apply" button (orange primary): commits the feature to the part and exits the editor
+"Cancel" button: discards the in-progress feature
+RevolveInspector:
+
+Axis: three-button toggle (X / Y / Z), default Y
+Angle (degrees): number input, default 360, min 1, max 360, step 1
+Live preview toggle, Apply, Cancel
+Live preview rendering:While the inspector is open with live preview on, the part mesh updates on every parameter change (debounced). Use a temporary "preview part" group so the user sees the operation result without polluting the persistent assembly state. On Apply, the feature is added to part.features, the persistent mesh updates from the regen pipeline, and the preview group is removed.Editing existing features:Click an existing feature in the feature tree, the inspector reopens with the current parameters loaded. Changes update the feature in place. The regen pipeline reruns, updating the mesh.Material on the rendered mesh:MeshStandardMaterial with colour #A0A8B5, metalness 0.4, roughness 0.5 (same as the Phase 1 test cube). Phase 10 will replace this with the material library; for Phase 3 the default look is fine.Acceptance criteria:
+Draw a rectangle on the XY plane, finish the sketch.
+Select the sketch in the feature tree. Inspector shows Extrude and Revolve options.
+Click Extrude. Set depth to 25mm, direction Forward. Live preview shows the box.
+Click Apply. Feature appears in tree as "Extrude 1". Box persists.
+Click "Extrude 1" in tree. Inspector reopens with depth=25. Change to 40mm. Mesh regenerates.
+New sketch on YZ plane with a circle of radius 10mm. Finish.
+Select sketch, click Revolve, axis Y, angle 360, Apply. Sphere appears.
+Edit Revolve angle to 180 degrees. Half-sphere.
+Sketches that are not closed (a single line) reject the extrude with "Sketch must be closed" error in the inspector.
+State persists through reload: feature tree intact, meshes regenerate correctly on reload.
+Memory: open and close the inspector ten times with parameter changes; check the worker is not accumulating undeleted OCCT handles (visible via OCCT debug counters or worker memory growth).
+Performance targets:
+First extrude of a simple rectangle: under 250ms
+Live preview debounce: 200ms
+Cached regen on parameter unchange: under 5ms (cache hit)
+Note for Agent:The wire-from-sketch logic is the part most likely to fail. Sketches that look closed visually can fail OCCT's wire.Closed() check if endpoints are not exactly coincident. The 0.001mm tolerance on vertex merging should handle the common case (snap-to-endpoint produces matching coords), but if a sketch was drawn without snap, gaps may exist. Surface "Sketch is not closed" as an inspector error rather than crashing.If the worker rejects with a generic OCCT exception (most error messages from OpenCascade.js are unhelpful strings), wrap each operation in try/catch and return a structured error: { ok: false, error: 'wire-not-closed' | 'self-intersection' | 'occt-internal'; details: string }. The inspector should show a friendly message based on the error code.If BRepPrimAPI_MakePrism requires a gp_Vec and gets passed a gp_Dir, the build will fail silently or produce a unit-length prism. Make sure the extrude vector is a gp_Vec with magnitude equal to the depth.Test on the deployed .replit.app URL in external Chrome on an M-series Mac, not the Replit preview iframe.Commit on completion. Do not push. Do not run git push under any circumstance. Stop after commit and report status.
