@@ -102,19 +102,27 @@ function rpmToRadPerSec(rpm: number): number {
 const MOTOR_VELOCITY_GAIN = 100;
 
 /**
- * Rapier's default `MotorModel` is `AccelerationBased`, where the motor
- * commands a target acceleration that the constraint solver enforces
- * alongside the joint constraint itself. In practice this means once
- * the solver finds a state that satisfies the joint AND the velocity
- * target is "close enough", it stops applying corrective impulses —
- * combined with our other settings (canSleep=false, zero damping) the
- * mechanism nonetheless visibly stalls after one rotation.
+ * Phase 9.5 Follow-up #6 — switching back to `AccelerationBased`.
  *
- * `ForceBased` instead converts the motor target into a continuous
- * force/torque that is applied every step regardless of constraint
- * settling. For a velocity motor that's exactly what we want for a
- * spinning-arm demo: keep pushing on the part until its angular
- * velocity matches the target, every frame, forever.
+ * Follow-up #5 reasoned that the default `AccelerationBased` model was
+ * the cause of motor stalls and shipped `ForceBased` instead. QA's
+ * diagnostic logs (`[step-diag]` from Follow-up #6 instrumentation)
+ * proved that wrong: with `ForceBased` + gain=100, a 60 RPM target
+ * (6.28 rad/s) reached only ~1.08 rad/s steady-state — a ~83 %
+ * steady-state error. That's exactly what `ForceBased` is documented
+ * to do: it applies a force proportional to the velocity error
+ * (`gain × (target_v − current_v)`), so by construction it leaves a
+ * non-zero residual unless gain → ∞.
+ *
+ * `AccelerationBased`, despite the name, behaves as a true velocity
+ * servo in Rapier: the constraint solver computes the impulse needed
+ * to reach the target velocity each step and applies it directly.
+ * The "stall after one revolution" symptom we attributed to it in
+ * Follow-up #5 was actually caused by the *other* problems we
+ * subsequently fixed (mass-props NaN on inertia, canSleep, damping).
+ * Now that those are resolved, the velocity-servo model is the right
+ * one for a spinning-arm demo: it converges to the commanded RPM and
+ * holds it.
  */
 function applyRevoluteMotor(
   joint: RAPIER.ImpulseJoint,
@@ -122,18 +130,15 @@ function applyRevoluteMotor(
 ): void {
   const rpm = motorSpeedRpm ?? 0;
   const radPerSec = rpmToRadPerSec(rpm);
-  // Phase 9.5 diagnostic — confirms what Rapier actually receives.
   // eslint-disable-next-line no-console
   console.log("[motor-apply]", {
-    rpmInput: motorSpeedRpm,
-    rpmInputType: typeof motorSpeedRpm,
     rpm,
     radPerSec,
     gain: MOTOR_VELOCITY_GAIN,
-    motorModel: "ForceBased (1)",
+    model: "AccelerationBased",
   });
   const revolute = joint as unknown as RAPIER.RevoluteImpulseJoint;
-  revolute.configureMotorModel(RAPIER.MotorModel.ForceBased);
+  revolute.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
   revolute.configureMotorVelocity(radPerSec, MOTOR_VELOCITY_GAIN);
 }
 
@@ -143,7 +148,7 @@ function applyPrismaticMotor(
 ): void {
   const v = motorVelocityMmPerSec ?? 0;
   const prismatic = joint as unknown as RAPIER.PrismaticImpulseJoint;
-  prismatic.configureMotorModel(RAPIER.MotorModel.ForceBased);
+  prismatic.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
   prismatic.configureMotorVelocity(v, MOTOR_VELOCITY_GAIN);
 }
 

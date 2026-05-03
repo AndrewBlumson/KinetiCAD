@@ -718,3 +718,49 @@ This means Phase 9.5 has been a four-stage symptom march:
 
 Each step was necessary; none would have been visible without the
 preceding fix landing first.
+
+#### Follow-up #6: AccelerationBased was right all along
+
+QA's behavioural test on the deployed `.replit.app` after Follow-up
+#5 reported that bodies stayed attached but Part 2 still appeared to
+freeze at rest. To distinguish "motor not firing" from "motor firing
+but rendering broken" from "motor firing but underpowered", we
+shipped pure-diagnostic instrumentation: `[motor-apply]` on every
+motor configuration, `[joint-build]` on every revolute build, and
+`[step-diag]` once per second dumping `bodyB.angvel()` +
+`isSleeping()`.
+
+QA's logs were unambiguous:
+
+```
+[step-diag] bodyBangvel: { x: 0.06, y: -0.08, z: 1.08 }
+                                                ^ target was 6.28
+```
+
+The motor *was* firing. Part 2 *was* spinning around its Z axis
+(0.06/−0.08 are negligible wobble). But it was reaching only ~17 %
+of the commanded velocity — visually indistinguishable from "frozen"
+at this scale. That's the textbook signature of `MotorModel.ForceBased`
+running as a P-controller without integral term: it applies a force
+proportional to velocity error, so the steady state is wherever
+`gain × (target − actual) ≈ damping × actual`, leaving a residual
+that scales inversely with gain.
+
+The Follow-up #5 narrative ("`AccelerationBased` makes the solver
+stop applying impulses once velocity error is small") was wrong.
+What actually happened is that Follow-ups #1–#4 fixed several
+*independent* bugs (mate classifier, mass-props inertia, canSleep,
+damping) and the next-most-broken thing was just the motor model
+choice — but during #5 we hadn't yet built up the diagnostic
+machinery to see that.
+
+`AccelerationBased`, despite the name, behaves as a true velocity
+servo in Rapier: the constraint solver computes the impulse needed
+to reach the target velocity each step and applies it directly. It
+converges to the commanded RPM and holds it, exactly the spinning-
+arm demo semantics we want.
+
+Fix: flip both `applyRevoluteMotor` and `applyPrismaticMotor` to
+`RAPIER.MotorModel.AccelerationBased`. Diagnostic instrumentation
+left in place for one more QA round to confirm angvel reaches
+target.
