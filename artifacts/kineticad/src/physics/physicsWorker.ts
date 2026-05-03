@@ -59,6 +59,17 @@ const partIdToBody = new Map<string, RAPIER.RigidBody>();
 const mateIdToJoint = new Map<string, RAPIER.ImpulseJoint>();
 
 /**
+ * Phase 9.5 diagnostic — keep the original `Mate` records alongside
+ * their joints so the step-loop logger can read live `motorSpeedRpm`
+ * back out without round-tripping through the main thread. Cleared in
+ * `destroyWorld`.
+ */
+const mateById = new Map<string, Mate>();
+
+/** Step counter for periodic diagnostic logging (every 60 frames ≈ 1s). */
+let stepCount = 0;
+
+/**
  * Convert a revolute mate's RPM into Rapier's expected rad/s.
  */
 function rpmToRadPerSec(rpm: number): number {
@@ -111,6 +122,16 @@ function applyRevoluteMotor(
 ): void {
   const rpm = motorSpeedRpm ?? 0;
   const radPerSec = rpmToRadPerSec(rpm);
+  // Phase 9.5 diagnostic — confirms what Rapier actually receives.
+  // eslint-disable-next-line no-console
+  console.log("[motor-apply]", {
+    rpmInput: motorSpeedRpm,
+    rpmInputType: typeof motorSpeedRpm,
+    rpm,
+    radPerSec,
+    gain: MOTOR_VELOCITY_GAIN,
+    motorModel: "ForceBased (1)",
+  });
   const revolute = joint as unknown as RAPIER.RevoluteImpulseJoint;
   revolute.configureMotorModel(RAPIER.MotorModel.ForceBased);
   revolute.configureMotorVelocity(radPerSec, MOTOR_VELOCITY_GAIN);
@@ -394,6 +415,21 @@ function buildJoint(
       const a = pivotPoint(mate.pivotA);
       const b = pivotPoint(mate.pivotB);
       const ax = mate.axisLocal;
+      // Phase 9.5 diagnostic — surfaces the axis vector + body types so
+      // we can sanity-check (a) the axis is a unit vector pointing in
+      // the expected direction, (b) bodyA is fixed (1) and bodyB is
+      // dynamic (0), not accidentally both fixed.
+      // eslint-disable-next-line no-console
+      console.log("[joint-build]", {
+        mateId: mate.id,
+        axis: ax,
+        axisLength: Math.sqrt(ax[0] ** 2 + ax[1] ** 2 + ax[2] ** 2),
+        bodyAType: (bodyA as unknown as { bodyType?: () => number }).bodyType?.(),
+        bodyBType: (bodyB as unknown as { bodyType?: () => number }).bodyType?.(),
+        motorSpeedRpm: mate.motorSpeedRpm,
+        pivotA: a,
+        pivotB: b,
+      });
       const params = RAPIER.JointData.revolute(
         a,
         b,
@@ -401,6 +437,7 @@ function buildJoint(
       );
       const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
       mateIdToJoint.set(mate.id, joint);
+      mateById.set(mate.id, mate);
       // Phase 9 — wire the motor at build time so the mechanism is
       // already spinning on frame 1 when the user has set an RPM.
       if (mate.motorSpeedRpm != null && mate.motorSpeedRpm !== 0) {
@@ -420,6 +457,7 @@ function buildJoint(
       );
       const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
       mateIdToJoint.set(mate.id, joint);
+      mateById.set(mate.id, mate);
       if (
         mate.motorVelocityMmPerSec != null &&
         mate.motorVelocityMmPerSec !== 0
@@ -511,6 +549,8 @@ function destroyWorld(): void {
   }
   partIdToBody.clear();
   mateIdToJoint.clear();
+  mateById.clear();
+  stepCount = 0;
 }
 
 const api: PhysicsApi = {
@@ -580,6 +620,48 @@ const api: PhysicsApi = {
         rotationQuat: [r.x, r.y, r.z, r.w],
       });
     });
+
+    // Phase 9.5 diagnostic — once a second, dump bodyB's angular
+    // velocity + sleep status for each motorised joint. If angvel
+    // stays at zero with motorRpm non-zero, the motor is not firing
+    // (constraint, axis, or model bug). If angvel ramps but the mesh
+    // doesn't visibly rotate, it's a render-side bug.
+    stepCount += 1;
+    if (stepCount % 60 === 0) {
+      mateIdToJoint.forEach((_joint, mateId) => {
+        const mate = mateById.get(mateId);
+        if (!mate) return;
+        const bodyB = partIdToBody.get(mate.partB);
+        if (!bodyB) return;
+        const angvel = (
+          bodyB as unknown as {
+            angvel: () => { x: number; y: number; z: number };
+          }
+        ).angvel();
+        const sleeping = (
+          bodyB as unknown as { isSleeping?: () => boolean }
+        ).isSleeping?.();
+        const motorRpm =
+          mate.type === "revolute"
+            ? mate.motorSpeedRpm
+            : mate.type === "prismatic"
+              ? mate.motorVelocityMmPerSec
+              : null;
+        // eslint-disable-next-line no-console
+        console.log("[step-diag]", {
+          stepCount,
+          mateId,
+          mateType: mate.type,
+          bodyBangvel: angvel,
+          bodyBangvelMag: Math.sqrt(
+            angvel.x ** 2 + angvel.y ** 2 + angvel.z ** 2,
+          ),
+          bodyBSleeping: sleeping,
+          motorRpm,
+        });
+      });
+    }
+
     return { transforms, dtMs: timeStepMs };
   },
 
