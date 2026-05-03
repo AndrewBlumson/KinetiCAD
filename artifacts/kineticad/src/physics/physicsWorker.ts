@@ -432,6 +432,16 @@ function buildJoint(
         pivotA: a,
         pivotB: b,
       });
+      // eslint-disable-next-line no-console
+      console.log("[joint-build-pivots]", {
+        mateId: mate.id,
+        pivotA_local: { x: a.x, y: a.y, z: a.z },
+        pivotB_local: { x: b.x, y: b.y, z: b.z },
+        partA_position: bodyA.translation(),
+        partB_position: bodyB.translation(),
+        pivotA_world_expected: "partA.position + partA.rotation * pivotA_local",
+        pivotB_world_expected: "partB.position + partB.rotation * pivotB_local",
+      });
       const params = RAPIER.JointData.revolute(
         a,
         b,

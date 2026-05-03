@@ -420,6 +420,17 @@ export function enumerateEdges(oc: unknown, shape: unknown): EdgeMetadata[] {
         // the circle's axis rather than at a random point on the rim.
         const midpoint: [number, number, number] =
           curveInfo.circleCenter ?? midpointFromPolyline(curveInfo.polyline);
+        if (curveInfo.circleCenter) {
+          // eslint-disable-next-line no-console
+          console.log("[topology-circle]", {
+            edgeHash: baseHash,
+            edgeId: id,
+            edgeType: curveInfo.type,
+            circleCenter: curveInfo.circleCenter,
+            midpoint,
+            matched: "circleCenter used as midpoint",
+          });
+        }
         out.push({
           id,
           type: curveInfo.type,
