@@ -617,9 +617,12 @@ const api: PhysicsApi = {
     }
   },
 
-  async step(): Promise<StepResult> {
+  async step(scaledDtMs?: number): Promise<StepResult> {
     if (!world) {
       return { transforms: [], dtMs: 0 };
+    }
+    if (scaledDtMs != null && scaledDtMs > 0) {
+      world.timestep = scaledDtMs / 1000;
     }
     world.step();
     const transforms: StepTransform[] = [];

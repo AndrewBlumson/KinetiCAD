@@ -103,7 +103,7 @@ export type UpdateJointMotorResult =
 export type PhysicsApi = {
   init: () => Promise<PhysicsInitResult>;
   buildWorld: (args: BuildWorldArgs) => Promise<BuildWorldResult>;
-  step: () => Promise<StepResult>;
+  step: (scaledDtMs?: number) => Promise<StepResult>;
   /**
    * Phase 9 — update an existing joint's motor parameters live.
    * Used so users can dial RPM/velocity while the simulation is

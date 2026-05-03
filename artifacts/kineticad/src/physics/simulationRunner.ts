@@ -99,7 +99,7 @@ export function startSimulationRunner(): RunnerHandle {
   const stepOnce = async (dtWallMs: number): Promise<void> => {
     try {
       const physics = await getPhysicsKernel();
-      const result = await physics.step();
+      const result = await physics.step(dtWallMs > 0 ? dtWallMs : undefined);
       const simLayer = getSimulationLayer();
       if (!simLayer) return;
       for (const t of result.transforms) {
