@@ -417,6 +417,14 @@ function buildJoint(
       const a = pivotPoint(mate.pivotA);
       const b = pivotPoint(mate.pivotB);
       const ax = mate.axisLocal;
+      // eslint-disable-next-line no-console
+      console.log("[mate-read-pivot]", {
+        mateId: mate.id,
+        storedPivotA: mate.pivotA,
+        storedPivotB: mate.pivotB,
+        willPassToRapier_A: a,
+        willPassToRapier_B: b,
+      });
       // Phase 9.5 diagnostic — surfaces the axis vector + body types so
       // we can sanity-check (a) the axis is a unit vector pointing in
       // the expected direction, (b) bodyA is fixed (1) and bodyB is

@@ -268,11 +268,30 @@ function classifyAndExtractCurve(
               : [endParam, startParam];
           return `arc|${cen}|${rd}|${ax}|${r(s)}|${r(e)}`;
         })();
+    // For full circles: compute the centre from the polyline average rather
+    // than from gp_Circ.Location(). gp_Circ.Location() returns the centre in
+    // the circle's intrinsic geometric frame and does NOT include the edge's
+    // accumulated TopLoc_Location from its parent shapes — so it reads (0,0,0)
+    // for a top-face circle at z=60 even though D0 correctly places the
+    // polyline samples at z=60. Averaging the first `segments` non-duplicate
+    // points (sampleCurveUniform emits segments+1 points, with the last
+    // duplicating the first for a closed circle) is exact for a circle and
+    // inherits the correct placement from the adaptor's D0 evaluations.
+    let circleCenter: [number, number, number] | undefined;
+    if (full) {
+      let sx = 0, sy = 0, sz = 0;
+      for (let i = 0; i < segments; i++) {
+        sx += polyline[3 * i];
+        sy += polyline[3 * i + 1];
+        sz += polyline[3 * i + 2];
+      }
+      circleCenter = [sx / segments, sy / segments, sz / segments];
+    }
     return {
       type: full ? "circle" : "arc",
       polyline,
       hashSig,
-      circleCenter: centre,
+      circleCenter,
     };
   }
 

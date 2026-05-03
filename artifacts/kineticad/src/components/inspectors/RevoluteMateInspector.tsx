@@ -60,6 +60,15 @@ export default function RevoluteMateInspector() {
     }
 
     if (editor.stage === "pick-a") {
+      // eslint-disable-next-line no-console
+      console.log("[mate-create-pivot]", {
+        stage: "pick-a",
+        partId: selection.partId,
+        clickedEdge: edge.id,
+        edgeType: edge.type,
+        edgeMidpoint: edge.midpoint,
+        capturedPivot: edge.midpoint,
+      });
       setParams({
         ...editor.params,
         partA: selection.partId,
@@ -105,6 +114,16 @@ export default function RevoluteMateInspector() {
         clearSelection();
         return;
       }
+      // eslint-disable-next-line no-console
+      console.log("[mate-create-pivot]", {
+        stage: "pick-b",
+        partId: selection.partId,
+        clickedEdge: edge.id,
+        edgeType: edge.type,
+        edgeMidpoint: edge.midpoint,
+        capturedPivot: edge.midpoint,
+        pivotAAlreadyStored: editor.params.pivotA,
+      });
       setParams({
         ...editor.params,
         partB: selection.partId,
