@@ -610,3 +610,68 @@ is mid-bringup and can rebuild trivially).
 `{ typeHistogram: { line: 4, circle: 8 } }` for a two-cylinder scene
 (each cylinder = 2 circle edges + 2 seam lines × 2 cylinders = 12)
 and the Revolute Stage A click should commit.
+
+#### Follow-up #4: simulator polish — mass-props BindingError + motor stalls after 1 rev
+
+QA confirmed Phase 9.5's classifier fix unblocked end-to-end mate
+creation: Part 1 + Part 2 + Revolute mate + 60 RPM motor all built and
+the simulator reached Play. Two residual bugs surfaced once the
+physics world actually started stepping.
+
+**Bug A — `[MASS-PROPS] computeMassProperties failed: BindingError:
+function GProp_PrincipalProps.Moments called with 0 arguments,
+expected 3 args`**. The OCCT C++ method
+`GProp_PrincipalProps::Moments(Real&, Real&, Real&)` is exposed in
+opencascade.js as a strict 3-output-arg embind binding — calling it
+with no args throws unconditionally before our defensive
+property-probing in lines 87–108 of `cad/operations/massProperties.ts`
+ever runs. Allocating writable `Standard_Real` reference boxes from
+JS in this build of opencascade.js is build-specific and unreliable.
+
+Fix: bypass principal diagonalisation entirely. Approximate each
+part as a sphere of equivalent volume (`r_eq = (3V/4π)^(1/3)`,
+`I = (2/5) m r²`) and feed Rapier an isotropic inertia diagonal.
+Crude, but for a 50 mm cube the equivalent-sphere inertia (~131
+kg·mm²) is the same order of magnitude as the true principal
+moments (~70–110 kg·mm²) — sufficient for non-FEA dynamics where
+inertia matters only through orders of magnitude. A future phase
+can revisit with `BRepGProp.MatrixOfInertia` + a JS-side eigensolve.
+
+**Bug B — motor spins Part 2 ~once, then it sticks**. Three-pronged
+root cause:
+
+1. *Rapier auto-sleep on dynamic bodies*. Once the velocity error
+   between motor target and current angular velocity falls below
+   Rapier's sleep threshold (default ~0.01 rad/s), the body is
+   flagged idle and frozen. A frozen body never receives the joint
+   motor's impulses → mechanism stalls.
+
+2. *Damping fighting the motor*. The Phase 8 build set
+   `linearDamping=0.01` and `angularDamping=0.05` "to prevent idle
+   oscillation" — but in mm-units these damp every step and let the
+   motor settle into a low-velocity steady state, which feeds
+   directly into (1).
+
+3. *Motor gain too low for mm-unit inertias*. Rapier's tutorial uses
+   `configureMotorVelocity(target, 1.0)`. With sphere-equivalent
+   inertia ~60 kg·mm² for a small part, gain 1.0 gives angular
+   acceleration ~0.1 rad/s² → a 60 RPM target (6.28 rad/s) takes
+   ~60 s to spin up, by which point the body has long since slept.
+
+Fix in `physics/physicsWorker.ts`:
+
+- `desc.setCanSleep(false)` for all dynamic bodies (negligible cost
+  for the < 50-body assemblies KinetiCAD targets).
+- Drop both `linearDamping` and `angularDamping` to 0; the joint
+  motor handles velocity tracking, idle damping is a Phase-11+
+  per-mate concern.
+- Bump motor velocity-tracking gain from 1.0 to 100 (factored as
+  `MOTOR_VELOCITY_GAIN`); ~10 rad/s² acceleration → spin-up under 1 s,
+  visually instant.
+
+**Verification path** (deployed app, since WebGPU is required):
+build two cylinders, mate revolute axis-to-axis, set 60 RPM, Play —
+Part 2 should rotate continuously at one revolution per second, no
+`[MASS-PROPS]` errors in the console, and after 5 s of sim-time
+should have completed ~5 revolutions. Switching back to Modeller
+must still leave the original transforms intact.

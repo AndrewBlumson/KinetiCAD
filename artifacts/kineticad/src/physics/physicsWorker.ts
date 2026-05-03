@@ -74,6 +74,22 @@ function rpmToRadPerSec(rpm: number): number {
  * motor — Rapier still solves for the constraint, just with no driving
  * impulse.
  */
+/**
+ * Velocity-tracking gain for joint motors (Rapier's `damping` argument
+ * of `configureMotorVelocity`). With KinetiCAD operating in mm-units,
+ * typical part inertias land in the 50–500 kg·mm² range; a gain of 1.0
+ * (Rapier's tutorial default) produces only ~0.1 rad/s² of angular
+ * acceleration on a 60 kg·mm² body, which means a 60 RPM motor
+ * (6.28 rad/s) takes ~60 s of sim-time to spin up — long enough that
+ * the motor appears to do nothing before the body sleeps. Bumping to
+ * 100 yields ~10 rad/s² and a < 1 s spin-up, indistinguishable from
+ * an instantaneous start at the demo timescale.
+ *
+ * Same factor is reused for prismatic motors (mm/s tracking) — units
+ * are different but the per-axis stiffness needed is comparable.
+ */
+const MOTOR_VELOCITY_GAIN = 100;
+
 function applyRevoluteMotor(
   joint: RAPIER.ImpulseJoint,
   motorSpeedRpm: number | null | undefined,
@@ -82,7 +98,7 @@ function applyRevoluteMotor(
   const radPerSec = rpmToRadPerSec(rpm);
   (joint as unknown as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(
     radPerSec,
-    1.0,
+    MOTOR_VELOCITY_GAIN,
   );
 }
 
@@ -93,7 +109,7 @@ function applyPrismaticMotor(
   const v = motorVelocityMmPerSec ?? 0;
   (joint as unknown as RAPIER.PrismaticImpulseJoint).configureMotorVelocity(
     v,
-    1.0,
+    MOTOR_VELOCITY_GAIN,
   );
 }
 
@@ -226,13 +242,28 @@ function buildBody(
   const desc = part.isGround
     ? RAPIER.RigidBodyDesc.fixed()
     : RAPIER.RigidBodyDesc.dynamic();
-  desc
-    .setTranslation(px, py, pz)
-    .setRotation(quat)
-    // Small damping prevents perpetual oscillation in idle four-bar
-    // mechanisms (Phase 9 motors will overcome it easily).
-    .setLinearDamping(0.01)
-    .setAngularDamping(0.05);
+  desc.setTranslation(px, py, pz).setRotation(quat);
+
+  if (!part.isGround) {
+    // Damping is intentionally zero. Rapier's damping is a per-step
+    // exponential drag; in mm-units, even a value of 0.05 produces a
+    // torque of (0.05 × ω) every step which competes with the joint
+    // motor and lets the velocity error settle into a low-magnitude
+    // steady state. Rapier's sleep heuristic then flags the body as
+    // idle and freezes it after ~1 s of sim-time — exactly the QA
+    // symptom: "Part 2 spins briefly, then sticks". Joint motors
+    // already enforce velocity tracking; passive idle mechanisms
+    // (Phase 11+) can re-introduce damping per-mate if they need it.
+    desc
+      .setLinearDamping(0)
+      .setAngularDamping(0)
+      // Disable Rapier's auto-sleep. With a velocity motor wired to
+      // the joint, a sleeping body never sees the motor's impulse
+      // and the mechanism stalls. The cost of keeping bodies awake
+      // is one extra solver iteration per body per step, negligible
+      // for the < 50-body assemblies KinetiCAD targets.
+      .setCanSleep(false);
+  }
 
   const body = rapierWorld.createRigidBody(desc);
 

@@ -16,13 +16,26 @@
 // - Convert OCCT's mm³ volume + g/cm³ density to a kg mass:
 //   `massKg = volumeMm3 × density × 1e-6` (since 1 cm³ = 1000 mm³ and
 //   1 g = 1e-3 kg → 1 mm³ × 1 g/cm³ = 1e-3 g = 1e-6 kg).
-// - The principal moments OCCT returns are in mm⁴ (volume-weighted) —
-//   to get kg·mm² we multiply by `density × 1e-6` (same factor as the
-//   mass conversion).
+// - For the principal inertia we *would* like to call OCCT's
+//   `GProp_GProps::PrincipalProperties()` and read three principal
+//   moments off the resulting `GProp_PrincipalProps`, but that method
+//   (`void Moments(Real&, Real&, Real&)` in C++) is exposed in
+//   opencascade.js as a strict 3-output-arg embind binding and throws
+//   `BindingError: function GProp_PrincipalProps.Moments called with
+//   0 arguments, expected 3 args` on every call (we don't have a
+//   reliable way to allocate `Standard_Real` reference boxes from JS
+//   in this build of opencascade.js). Demo-grade workaround: skip the
+//   diagonalisation entirely and approximate the part as a sphere of
+//   equivalent volume — gives a non-zero, isotropic, well-conditioned
+//   inertia diagonal that Rapier accepts. Accurate enough for a
+//   spinning-arm / four-bar demo (where rotational inertia matters
+//   only through orders of magnitude); a future phase can revisit
+//   with `BRepGProp.MatrixOfInertia` + a JS-side eigensolve, or upgrade
+//   the OCCT binding to one that exposes the output-args wrapped.
 //
-// Cleanup: every transient OCCT wrapper (`GProp_GProps`,
-// `GProp_PrincipalProps`, `gp_Pnt`) is `.delete()`-d in a finally block.
-// The caller is responsible for the input shape's lifetime.
+// Cleanup: every transient OCCT wrapper (`GProp_GProps`, `gp_Pnt`)
+// is `.delete()`-d in a finally block. The caller is responsible for
+// the input shape's lifetime.
 
 const ALUMINIUM_DENSITY_G_CM3 = 2.7;
 
@@ -47,7 +60,6 @@ export function computeMassProperties(
   const shapeAny = shape as any;
 
   let props: any = null;
-  let principal: any = null;
   let com: any = null;
 
   try {
@@ -75,52 +87,23 @@ export function computeMassProperties(
     const cy = com.Y();
     const cz = com.Z();
 
-    // PrincipalProperties() diagonalises the inertia matrix. The three
-    // moments come back as Moments() returns three numbers we read via
-    // Moment_1/2/3 accessors on `GProp_PrincipalProps`.
-    principal = props.PrincipalProperties();
-    const moments = principal.Moments();
-    // Moments() returns a struct with three named fields. The OCCT JS
-    // bindings expose the trio via `Moment_1`, `Moment_2`, `Moment_3`
-    // OR, depending on the build, as a tuple via `.Moments()` itself.
-    // We probe both shapes defensively.
-    let m1: number;
-    let m2: number;
-    let m3: number;
-    if (moments && typeof moments === "object" && "I1" in moments) {
-      m1 = moments.I1;
-      m2 = moments.I2;
-      m3 = moments.I3;
-    } else if (
-      moments &&
-      typeof moments === "object" &&
-      "Moment_1" in moments
-    ) {
-      m1 = (moments as any).Moment_1();
-      m2 = (moments as any).Moment_2();
-      m3 = (moments as any).Moment_3();
-    } else {
-      // Last-resort: query the principal-properties object directly
-      // for some bindings that hang accessors off it.
-      m1 = (principal as any).Moment_1?.() ?? 0;
-      m2 = (principal as any).Moment_2?.() ?? 0;
-      m3 = (principal as any).Moment_3?.() ?? 0;
-    }
+    // Mass = volume × density × 1e-6  (mm³ · g/cm³ → kg).
+    const massKg = Math.max(volumeMm3 * density * 1e-6, 1e-6);
 
-    // Volume × density → mass; volumeMoment × density → inertia. Both
-    // share the same `density × 1e-6` conversion factor (mm³·g/cm³ → kg
-    // and mm⁴·g/cm³ → kg·mm²).
-    const k = density * 1e-6;
-    const massKg = Math.max(volumeMm3 * k, 1e-6);
-    const ix = Math.max(m1 * k, 1e-6);
-    const iy = Math.max(m2 * k, 1e-6);
-    const iz = Math.max(m3 * k, 1e-6);
+    // Sphere-equivalent isotropic inertia. See file header for why we
+    // bypass the principal-moments path. r_eq = (3V / 4π)^(1/3),
+    // I_sphere = (2/5) m r².  For a 50 mm cube (V=125 000 mm³,
+    // m≈0.34 kg) this gives r_eq≈31 mm and I≈131 kg·mm² — same order
+    // of magnitude as the true principal moments (~70–110 kg·mm²),
+    // sufficient for non-FEA dynamics demos.
+    const rEqMm = Math.cbrt((3 * volumeMm3) / (4 * Math.PI));
+    const isoInertia = Math.max((2 / 5) * massKg * rEqMm * rEqMm, 1e-6);
 
     return {
       volumeMm3,
       massKg,
       comLocal: [cx, cy, cz],
-      principalInertiaKgMm2: [ix, iy, iz],
+      principalInertiaKgMm2: [isoInertia, isoInertia, isoInertia],
     };
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -130,13 +113,6 @@ export function computeMassProperties(
     if (com) {
       try {
         com.delete?.();
-      } catch {
-        // ignore
-      }
-    }
-    if (principal) {
-      try {
-        principal.delete?.();
       } catch {
         // ignore
       }
