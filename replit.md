@@ -675,3 +675,46 @@ Part 2 should rotate continuously at one revolution per second, no
 `[MASS-PROPS]` errors in the console, and after 5 s of sim-time
 should have completed ~5 revolutions. Switching back to Modeller
 must still leave the original transforms intact.
+
+#### Follow-up #5: motor still stalls — switching to MotorModel.ForceBased
+
+After Follow-up #4 redeploy, QA confirmed the `[MASS-PROPS]` error
+was gone but motor rotation still stalled after roughly one
+revolution. Pasting the actual API signatures from
+`@dimforge/rapier3d-compat@0.12.0/dynamics/impulse_joint.d.ts`
+revealed the root cause was *not* the gain magnitude:
+
+```ts
+configureMotorVelocity(targetVel: number, factor: number): void;
+configureMotorModel(model: MotorModel): void;   // never called
+```
+
+`MotorModel` defaults to `AccelerationBased` (enum value 0). In that
+mode the motor commands a target *acceleration* that the constraint
+solver enforces alongside the joint constraint itself — and once the
+solver finds a state that satisfies both the joint and "velocity
+error is small enough", it stops applying corrective impulses. Even
+with `canSleep=false` and zero damping, the body coasts to a low-
+velocity equilibrium and visibly stalls.
+
+Fix: explicitly call
+`configureMotorModel(RAPIER.MotorModel.ForceBased)` *before*
+`configureMotorVelocity` in both `applyRevoluteMotor` and
+`applyPrismaticMotor`. `ForceBased` converts the motor target into a
+continuous force/torque applied every step regardless of constraint
+settling — exactly the "always pushing toward target" semantics a
+spinning-arm demo needs.
+
+This means Phase 9.5 has been a four-stage symptom march:
+
+1. *Filter rejects clicks* → added pick-filter slice + filtered
+   proximity (correct, but built on broken classifier output).
+2. *Histogram diagnostic* → revealed every edge tagged "other".
+3. *Embind enum coercion fix* → classifier dispatch now works,
+   mate creation unblocks end-to-end.
+4. *MASS-PROPS BindingError + motor settings* → physics world
+   builds, but motor uses `AccelerationBased` and stalls.
+5. *MotorModel.ForceBased* → motor sustains rotation.
+
+Each step was necessary; none would have been visible without the
+preceding fix landing first.

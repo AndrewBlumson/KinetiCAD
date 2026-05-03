@@ -90,16 +90,30 @@ function rpmToRadPerSec(rpm: number): number {
  */
 const MOTOR_VELOCITY_GAIN = 100;
 
+/**
+ * Rapier's default `MotorModel` is `AccelerationBased`, where the motor
+ * commands a target acceleration that the constraint solver enforces
+ * alongside the joint constraint itself. In practice this means once
+ * the solver finds a state that satisfies the joint AND the velocity
+ * target is "close enough", it stops applying corrective impulses —
+ * combined with our other settings (canSleep=false, zero damping) the
+ * mechanism nonetheless visibly stalls after one rotation.
+ *
+ * `ForceBased` instead converts the motor target into a continuous
+ * force/torque that is applied every step regardless of constraint
+ * settling. For a velocity motor that's exactly what we want for a
+ * spinning-arm demo: keep pushing on the part until its angular
+ * velocity matches the target, every frame, forever.
+ */
 function applyRevoluteMotor(
   joint: RAPIER.ImpulseJoint,
   motorSpeedRpm: number | null | undefined,
 ): void {
   const rpm = motorSpeedRpm ?? 0;
   const radPerSec = rpmToRadPerSec(rpm);
-  (joint as unknown as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(
-    radPerSec,
-    MOTOR_VELOCITY_GAIN,
-  );
+  const revolute = joint as unknown as RAPIER.RevoluteImpulseJoint;
+  revolute.configureMotorModel(RAPIER.MotorModel.ForceBased);
+  revolute.configureMotorVelocity(radPerSec, MOTOR_VELOCITY_GAIN);
 }
 
 function applyPrismaticMotor(
@@ -107,10 +121,9 @@ function applyPrismaticMotor(
   motorVelocityMmPerSec: number | null | undefined,
 ): void {
   const v = motorVelocityMmPerSec ?? 0;
-  (joint as unknown as RAPIER.PrismaticImpulseJoint).configureMotorVelocity(
-    v,
-    MOTOR_VELOCITY_GAIN,
-  );
+  const prismatic = joint as unknown as RAPIER.PrismaticImpulseJoint;
+  prismatic.configureMotorModel(RAPIER.MotorModel.ForceBased);
+  prismatic.configureMotorVelocity(v, MOTOR_VELOCITY_GAIN);
 }
 
 async function ensureRapier(): Promise<PhysicsInitResult> {
