@@ -105,6 +105,12 @@ async function runFeature(
       plane,
       depthMm: feature.depthMm,
       direction: feature.direction,
+      // Pass mode + upstream so the worker can accumulate (add/subtract)
+      // or replace (new-body). upstreamFeatures is [] for the first feature
+      // or when mode === 'new-body', which is fine — worker no-ops correctly.
+      extrudeMode: feature.extrudeMode,
+      upstreamFeatures: [...upstreamFeatures],
+      upstreamSketches: [...sketches],
     });
   }
 

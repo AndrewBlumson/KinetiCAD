@@ -293,14 +293,42 @@ function executeUpstreamChain(
         throw new Error("Upstream chain has a non-cardinal sketch plane.");
       }
       let wire: any = null;
+      let newSolid: any = null;
       try {
         wire = sketchToWire(ocAny, sketch.plane, sketch.primitives);
-        nextShape =
+        newSolid =
           feat.type === "extrude"
             ? extrudeWire(ocAny, wire, sketch.plane, feat.depthMm, feat.direction)
             : revolveWire(ocAny, wire, feat.axis, feat.angleDeg);
       } finally {
         if (wire) wire.delete();
+      }
+      // Boolean accumulation: union / subtract the new solid with the prior
+      // solid, or replace it (new-body mode, or first feature, or revolve).
+      const mode =
+        feat.type === "extrude" ? (feat.extrudeMode ?? "add") : "new-body";
+      if (current && (mode === "add" || mode === "subtract")) {
+        const op =
+          mode === "add"
+            ? { type: "union" as const }
+            : { type: "subtract" as const, toolPartId: "" };
+        let fused: any;
+        try {
+          fused = applyBoolean(ocAny, [current, newSolid], op);
+        } catch (boolErr) {
+          newSolid.delete();
+          current.delete();
+          current = null;
+          throw new Error(
+            `Extrude ${mode} failed on upstream chain: ${String(boolErr)}`,
+          );
+        }
+        newSolid.delete();
+        current.delete();
+        current = null; // prevents double-delete at bottom of loop iteration
+        nextShape = fused;
+      } else {
+        nextShape = newSolid;
       }
     } else if (feat.type === "fillet") {
       if (!current) throw new Error("Fillet has no upstream shape.");
@@ -437,13 +465,45 @@ const api: CadKernelApi = {
     await ensureKernel();
     if (!ocInstance) throw new Error("CAD kernel failed to initialise");
     const oc = ocInstance;
+    const ocAny = oc as any;
 
+    // wire + newSolid are intermediate shapes. priorSolid is the accumulated
+    // upstream solid (built when mode is 'add' or 'subtract'). result is the
+    // final shape handed to buildMesh.
     let wire: any = null;
-    let solid: any = null;
+    let newSolid: any = null;
+    let priorSolid: any = null;
+    let result: any = null;
     try {
       wire = sketchToWire(oc, args.plane, args.sketchPrimitives);
-      solid = extrudeWire(oc, wire, args.plane, args.depthMm, args.direction);
-      const mesh = buildMesh(oc, solid);
+      newSolid = extrudeWire(oc, wire, args.plane, args.depthMm, args.direction);
+      wire.delete();
+      wire = null;
+
+      const mode = args.extrudeMode ?? "new-body";
+      const hasUpstream =
+        (mode === "add" || mode === "subtract") &&
+        args.upstreamFeatures &&
+        args.upstreamFeatures.length > 0 &&
+        args.upstreamSketches;
+
+      if (hasUpstream) {
+        priorSolid = executeUpstreamChain(
+          oc,
+          args.upstreamFeatures!,
+          args.upstreamSketches!,
+        );
+        const op =
+          mode === "add"
+            ? { type: "union" as const }
+            : { type: "subtract" as const, toolPartId: "" };
+        result = applyBoolean(ocAny, [priorSolid, newSolid], op);
+      } else {
+        result = newSolid;
+        newSolid = null; // ownership transferred to result; prevent double-delete
+      }
+
+      const mesh = buildMesh(oc, result);
       return transferMesh(mesh);
     } catch (err) {
       // Always surface the raw error in the worker console so QA + dev tools
@@ -456,7 +516,9 @@ const api: CadKernelApi = {
       if (err instanceof Error) throw err;
       throw new Error(`Extrude failed: ${String(err)}`);
     } finally {
-      if (solid) solid.delete();
+      if (result) result.delete();
+      if (priorSolid) priorSolid.delete();
+      if (newSolid) newSolid.delete();
       if (wire) wire.delete();
     }
   },

@@ -888,12 +888,19 @@ export default function Scene() {
             editor.type === "chamfer" ||
             editor.type === "hole";
 
-          const upstreamFeatures: Feature[] = isModifier
-            ? part.features.filter(
-                (f) =>
-                  editor.mode === "create" || f.id !== editor.featureId,
-              )
-            : [];
+          // Extrude in add/subtract mode also needs the upstream chain so
+          // the live preview shows the accumulated result (e.g. disc + bar
+          // fusing into a lollipop as the user drags depth).
+          const isAdditive =
+            editor.type === "extrude" &&
+            editor.params.extrudeMode !== "new-body";
+          const upstreamFeatures: Feature[] =
+            isModifier || isAdditive
+              ? part.features.filter(
+                  (f) =>
+                    editor.mode === "create" || f.id !== editor.featureId,
+                )
+              : [];
 
           let feature: Feature | null = null;
           if (editor.type === "extrude") {
@@ -903,6 +910,7 @@ export default function Scene() {
               sketchId: editor.sketchId,
               depthMm: editor.params.depthMm,
               direction: editor.params.direction,
+              extrudeMode: editor.params.extrudeMode,
             };
           } else if (editor.type === "revolve") {
             feature = {

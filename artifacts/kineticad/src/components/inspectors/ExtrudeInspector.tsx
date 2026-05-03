@@ -6,7 +6,7 @@
 // preview through the kernel.
 
 import { useKinetiCADStore } from "@/state/store";
-import type { ExtrudeDirection } from "@/state/schemas";
+import type { ExtrudeDirection, ExtrudeMode } from "@/state/schemas";
 import NumericInput from "@/components/NumericInput";
 import SegmentedControl from "@/components/SegmentedControl";
 
@@ -17,6 +17,15 @@ const DIRECTION_OPTIONS: ReadonlyArray<{
   { value: "forward", label: "Forward" },
   { value: "backward", label: "Backward" },
   { value: "symmetric", label: "Symmetric" },
+];
+
+const MODE_OPTIONS: ReadonlyArray<{
+  value: ExtrudeMode;
+  label: string;
+}> = [
+  { value: "add", label: "Add" },
+  { value: "subtract", label: "Cut" },
+  { value: "new-body", label: "New Body" },
 ];
 
 export default function ExtrudeInspector() {
@@ -91,6 +100,18 @@ export default function ExtrudeInspector() {
           options={DIRECTION_OPTIONS}
           ariaLabel="Extrude direction"
           testId="extrude-direction"
+        />
+      </Field>
+
+      <Field label="Mode">
+        <SegmentedControl<ExtrudeMode>
+          value={editor.params.extrudeMode}
+          onChange={(v) =>
+            setExtrudeParams({ ...editor.params, extrudeMode: v })
+          }
+          options={MODE_OPTIONS}
+          ariaLabel="Extrude mode"
+          testId="extrude-mode"
         />
       </Field>
 

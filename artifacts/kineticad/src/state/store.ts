@@ -6,6 +6,7 @@ import type {
   BooleanOperation,
   ExtrudeDirection,
   ExtrudeFeature,
+  ExtrudeMode,
   Feature,
   FixedMate,
   Mate,
@@ -109,6 +110,7 @@ export type PickFilter = {
 export type ExtrudeParams = {
   depthMm: number;
   direction: ExtrudeDirection;
+  extrudeMode: ExtrudeMode;
 };
 
 export type RevolveParams = {
@@ -332,6 +334,7 @@ const defaultFeaturePreview: FeaturePreview = {
 const DEFAULT_EXTRUDE_PARAMS: ExtrudeParams = {
   depthMm: 10,
   direction: "forward",
+  extrudeMode: "add",
 };
 
 const DEFAULT_REVOLVE_PARAMS: RevolveParams = {
@@ -914,6 +917,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
               params: {
                 depthMm: feature.depthMm,
                 direction: feature.direction,
+                extrudeMode: feature.extrudeMode,
               },
               livePreview: true,
             },
@@ -1074,6 +1078,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             sketchId: editor.sketchId,
             depthMm: editor.params.depthMm,
             direction: editor.params.direction,
+            extrudeMode: editor.params.extrudeMode,
           };
           newFeature = base;
         } else if (editor.type === "revolve") {
@@ -1927,7 +1932,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     }),
     {
       name: "kineticad-state",
-      version: 7,
+      version: 8,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation runtime fields.
       partialize: (state) => ({
@@ -1971,6 +1976,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                 sketchId: legacy.sketchId,
                 depthMm: legacy.depthMm,
                 direction,
+                extrudeMode: "new-body" as ExtrudeMode,
               };
             }),
           }));
@@ -2155,6 +2161,59 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                 : defaultSimulation.speedMultiplier,
             simulationTimeMs: 0,
           };
+        }
+        // v7 → v8: Multi-feature parts. Add `extrudeMode` to every
+        // ExtrudeFeature that is missing it. Pre-v8 extrudes get
+        // 'new-body' so their geometry is unchanged — new features
+        // created in v8+ default to 'add' (Boolean-Union).
+        if (version < 8 && state.assembly) {
+          state.assembly = {
+            ...state.assembly,
+            parts: state.assembly.parts.map((part) => ({
+              ...part,
+              features: part.features.map((f) => {
+                if (f.type !== "extrude") return f;
+                const ext = f as ExtrudeFeature & { extrudeMode?: ExtrudeMode };
+                if (ext.extrudeMode) return f;
+                return { ...f, extrudeMode: "new-body" as ExtrudeMode };
+              }),
+            })),
+          };
+        }
+        // Defensive: patch any ExtrudeFeature still missing extrudeMode
+        // regardless of persisted version (handles partial migrates / dev
+        // hot-reload states that skipped the bump above).
+        if (state.assembly) {
+          let needsPatch = false;
+          for (const part of state.assembly.parts) {
+            for (const f of part.features) {
+              if (
+                f.type === "extrude" &&
+                !(f as ExtrudeFeature & { extrudeMode?: ExtrudeMode })
+                  .extrudeMode
+              ) {
+                needsPatch = true;
+                break;
+              }
+            }
+            if (needsPatch) break;
+          }
+          if (needsPatch) {
+            state.assembly = {
+              ...state.assembly,
+              parts: state.assembly.parts.map((part) => ({
+                ...part,
+                features: part.features.map((f) => {
+                  if (f.type !== "extrude") return f;
+                  const ext = f as ExtrudeFeature & {
+                    extrudeMode?: ExtrudeMode;
+                  };
+                  if (ext.extrudeMode) return f;
+                  return { ...f, extrudeMode: "new-body" as ExtrudeMode };
+                }),
+              })),
+            };
+          }
         }
         return state;
       },

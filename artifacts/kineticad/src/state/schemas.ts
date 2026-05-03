@@ -16,12 +16,26 @@ export type Sketch = {
 export type ExtrudeDirection = 'forward' | 'backward' | 'symmetric';
 export type RevolveAxis = 'X' | 'Y' | 'Z';
 
+/**
+ * How a new extrude solid interacts with the part's prior solid.
+ *
+ * - 'add'      → Boolean-Union the new extrude with the existing solid.
+ *                This is the default for new features, enabling the classic
+ *                "sketch → extrude → sketch → extrude" lollipop workflow.
+ * - 'subtract' → Boolean-Cut (remove) the new extrude from the existing
+ *                solid, equivalent to an Extrude-Cut / boss-base cut.
+ * - 'new-body' → Replace the existing solid entirely (legacy behaviour,
+ *                also used as the migration target for pre-v8 extrudes).
+ */
+export type ExtrudeMode = 'add' | 'subtract' | 'new-body';
+
 export type ExtrudeFeature = {
   id: string;
   type: 'extrude';
   sketchId: string;
   depthMm: number;
   direction: ExtrudeDirection;
+  extrudeMode: ExtrudeMode;
 };
 
 export type RevolveFeature = {

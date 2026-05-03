@@ -4,6 +4,7 @@
 
 import type {
   BooleanOperation,
+  ExtrudeMode,
   Feature,
   Sketch,
   SketchPrimitive,
@@ -99,6 +100,20 @@ export type ExtrudeArgs = {
   plane: CardinalPlane;
   depthMm: number;
   direction: "forward" | "backward" | "symmetric";
+  /**
+   * How this extrude solid interacts with the part's existing geometry.
+   * Defaults to 'new-body' for backward compatibility when omitted.
+   * New inspector-created features default to 'add' (Boolean-Union).
+   */
+  extrudeMode?: ExtrudeMode;
+  /**
+   * Feature chain preceding this extrude on the same part. Passed when
+   * extrudeMode is 'add' or 'subtract' so the worker can build the prior
+   * solid and fuse / cut the new extrude against it.
+   */
+  upstreamFeatures?: Feature[];
+  /** Part sketches needed to re-execute the upstream chain in the worker. */
+  upstreamSketches?: Sketch[];
 };
 
 export type RevolveArgs = {
