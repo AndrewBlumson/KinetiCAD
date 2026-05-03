@@ -764,3 +764,31 @@ Fix: flip both `applyRevoluteMotor` and `applyPrismaticMotor` to
 `RAPIER.MotorModel.AccelerationBased`. Diagnostic instrumentation
 left in place for one more QA round to confirm angvel reaches
 target.
+
+#### Follow-up #7: gain bumped 100 → 10000
+
+QA's transcript after #6 (AccelerationBased, gain=100) was almost
+identical to #5: body rotating, but at z = −0.50 rad/s against the
+6.28 rad/s target. Switching the motor model alone wasn't enough;
+the `factor` argument we'd been calling "gain" since Follow-up #4
+was still too low for KinetiCAD's mm-unit inertias.
+
+Why mm-units matter here: most Rapier tutorials assume SI (kg, m,
+s), where typical hand-built bodies have inertias in the 0.01–1
+kg·m² range. KinetiCAD operates in mm, so a comparable part has an
+inertia of 50–500 kg·mm² — three to six orders of magnitude larger
+in raw value. The constraint solver computes the impulse it needs
+based on `factor × inertia × Δv`, so to get the same effective
+stiffness we need a `factor` correspondingly larger than the
+tutorials' 1.0.
+
+Single-line fix: bump `MOTOR_VELOCITY_GAIN` from 100 to 10000. The
+inline comment above the constant now records the full progression
+(1.0 → 100 → 10000) so future readers don't repeat the SI-unit
+assumption mistake.
+
+Acceptance criterion for the next QA round: with the motor at
+60 RPM, `bodyBangvel.z` should converge to ~6.28 rad/s within 60
+steps (1 s). If 10000 still doesn't converge, the fallback is
+manual torque application (`body.applyTorqueImpulse` per step from
+the worker's step loop) rather than chasing the gain higher.

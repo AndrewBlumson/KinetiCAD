@@ -77,29 +77,26 @@ function rpmToRadPerSec(rpm: number): number {
 }
 
 /**
- * Configure (or clear) a revolute joint's velocity motor. Rapier's
- * `configureMotorVelocity` lives on `UnitImpulseJoint` (the parent of
- * Revolute/Prismatic); we cast through `unknown` because the base
- * `ImpulseJoint` type returned by `createImpulseJoint` doesn't expose
- * the method. Passing a target velocity of 0 effectively disables the
- * motor — Rapier still solves for the constraint, just with no driving
- * impulse.
- */
-/**
- * Velocity-tracking gain for joint motors (Rapier's `damping` argument
- * of `configureMotorVelocity`). With KinetiCAD operating in mm-units,
- * typical part inertias land in the 50–500 kg·mm² range; a gain of 1.0
- * (Rapier's tutorial default) produces only ~0.1 rad/s² of angular
- * acceleration on a 60 kg·mm² body, which means a 60 RPM motor
- * (6.28 rad/s) takes ~60 s of sim-time to spin up — long enough that
- * the motor appears to do nothing before the body sleeps. Bumping to
- * 100 yields ~10 rad/s² and a < 1 s spin-up, indistinguishable from
- * an instantaneous start at the demo timescale.
+ * Velocity-tracking gain (Rapier's `factor` argument of
+ * `configureMotorVelocity`). KinetiCAD operates in mm-units, so part
+ * inertias land in the 50–500 kg·mm² range — much larger absolute
+ * values than Rapier's SI-unit tutorials assume.
+ *
+ * History (Phase 9.5):
+ *  - 1.0 (tutorial default): ~0.1 rad/s² → 60 s spin-up, body sleeps
+ *    before the motor appears to do anything.
+ *  - 100 (Follow-ups #4–#6): bodies visibly rotate but converge to
+ *    only 0.5–1.1 rad/s against a 6.28 rad/s (60 RPM) target —
+ *    well under any reasonable demo threshold.
+ *  - 10000 (Follow-up #7, current): two orders of magnitude higher,
+ *    enough headroom for the AccelerationBased velocity servo to
+ *    converge to target within the 1 s acceptance window despite
+ *    the inflated mm-unit inertias.
  *
  * Same factor is reused for prismatic motors (mm/s tracking) — units
  * are different but the per-axis stiffness needed is comparable.
  */
-const MOTOR_VELOCITY_GAIN = 100;
+const MOTOR_VELOCITY_GAIN = 10000;
 
 /**
  * Phase 9.5 Follow-up #6 — switching back to `AccelerationBased`.
