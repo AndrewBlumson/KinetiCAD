@@ -165,6 +165,13 @@ type CurveInfo = {
   polyline: Float32Array;
   /** Hash material derived from the curve's *intrinsic* geometry. */
   hashSig: string;
+  /**
+   * For circle / arc edges only: the true geometric centre of the circle in
+   * the part's local frame (from `gp_Circ.Location()`). Used as the edge's
+   * `midpoint` so that revolute mate pivots land at the circle centre rather
+   * than at an arbitrary point on the circumference.
+   */
+  circleCenter?: [number, number, number];
 };
 
 function classifyAndExtractCurve(
@@ -265,6 +272,7 @@ function classifyAndExtractCurve(
       type: full ? "circle" : "arc",
       polyline,
       hashSig,
+      circleCenter: centre,
     };
   }
 
@@ -407,7 +415,11 @@ export function enumerateEdges(oc: unknown, shape: unknown): EdgeMetadata[] {
         const baseHash = fnv1a(curveInfo.hashSig);
         const id = disambiguateId(baseHash, occurrenceCounts);
         const lengthMm = lengthFromPolyline(curveInfo.polyline);
-        const midpoint = midpointFromPolyline(curveInfo.polyline);
+        // For circle / arc edges use the true geometric centre (from gp_Circ)
+        // rather than the arc midpoint so that revolute mate pivots land at
+        // the circle's axis rather than at a random point on the rim.
+        const midpoint: [number, number, number] =
+          curveInfo.circleCenter ?? midpointFromPolyline(curveInfo.polyline);
         out.push({
           id,
           type: curveInfo.type,
