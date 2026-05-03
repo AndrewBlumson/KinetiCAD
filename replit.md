@@ -792,3 +792,35 @@ Acceptance criterion for the next QA round: with the motor at
 steps (1 s). If 10000 still doesn't converge, the fallback is
 manual torque application (`body.applyTorqueImpulse` per step from
 the worker's step loop) rather than chasing the gain higher.
+
+#### Follow-up #8: WASM via jsDelivr CDN (production deploy fix)
+
+Production deploys at `kineticad.replit.app` were crashing with
+`WebAssembly.instantiate(): BufferSource argument is empty` while
+dev kept working. Root cause: Vite's `?url` import pulled
+`opencascade.full.wasm` (50.3 MB) into `dist/public/assets/`, and
+Replit's static-deploy pipeline returns 200 with an empty body for
+files past its size cap, so the streaming-instantiate call got an
+empty ArrayBuffer.
+
+Fix in `cad/cadWorker.ts`: drop the `?url` asset import and point
+`locateFile` at the pinned jsDelivr URL
+`https://cdn.jsdelivr.net/npm/opencascade.js@2.0.0-beta.94e2944/dist/opencascade.full.wasm`
+(immutable, `application/wasm`, CORS open). The version literal is
+extracted into an `OCCT_VERSION` constant that's now also reused as
+the kernel-init `version` field, so it must stay in lock-step with
+`opencascade.js` in `package.json`. Rebuild confirmed: no `.wasm`
+emitted under `dist/` and the bundle is ~13× smaller; dev kernel
+still boots in ~1.9 s with `[SELF-TEST] OK`.
+
+#### Issue 2 (visible cylinder rotation): no code change required
+
+QA flagged that motor rotation looked invisible because Part 2 is
+rotationally symmetric. The fix is a usage answer, not a code one:
+the existing `BooleanInspector` already supports a cross-part
+Union — pick ≥2 parts from the assembly, choose Union, hit Apply,
+and you get a single asymmetric "lollipop" result part (e.g.
+cylinder pin + offset bar). Mate that result part to the motor
+shaft and the rotation becomes visible. The cadWorker
+`booleanOp({ inputs: [...] })` path is what `assemblyRegen.ts`
+already calls into, so no new feature work is needed for Phase 9.5.

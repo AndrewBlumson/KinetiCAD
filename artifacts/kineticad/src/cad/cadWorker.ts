@@ -7,10 +7,22 @@
 import * as Comlink from "comlink";
 // We bypass opencascade.js's index.js wrapper because it does a bare
 // `import "./opencascade.full.wasm"` that Vite cannot pre-bundle. Instead we
-// import the Emscripten factory directly and feed it the Vite-resolved WASM
-// URL via locateFile.
+// import the Emscripten factory directly and feed it a CDN-hosted WASM URL
+// via locateFile.
+//
+// Phase 9.5 Follow-up #8 — load the 50 MB WASM blob from jsDelivr instead
+// of bundling it. Replit's static-deploy pipeline returns 200 + empty body
+// for assets above its size cap (~10 MB in practice), which manifested at
+// runtime as `WebAssembly.instantiate(): BufferSource argument is empty`
+// on the deployed `.replit.app` URL while dev kept working from
+// `localhost`. jsDelivr serves the exact pinned package version with
+// `application/wasm` content-type, permissive CORS, and a 1-year
+// immutable cache, so streaming-instantiate works first try.
+//
+// The version literal MUST stay in lock-step with `opencascade.js` in
+// `package.json` — there is a runtime check at `ensureKernel` that
+// records this string as the kernel version.
 import ocFactoryRaw from "opencascade.js/dist/opencascade.full.js";
-import ocWasmUrl from "opencascade.js/dist/opencascade.full.wasm?url";
 import type { OpenCascadeInstance } from "opencascade.js";
 import type {
   BooleanOpArgs,
@@ -44,6 +56,9 @@ import { applyHole, type HoleFaceRef } from "./operations/hole";
 import { applyBoolean } from "./operations/boolean";
 import { computeMassProperties } from "./operations/massProperties";
 
+const OCCT_VERSION = "2.0.0-beta.94e2944";
+const OCCT_WASM_URL = `https://cdn.jsdelivr.net/npm/opencascade.js@${OCCT_VERSION}/dist/opencascade.full.wasm`;
+
 type OC = OpenCascadeInstance;
 
 type OcFactorySettings = {
@@ -66,7 +81,7 @@ async function ensureKernel(): Promise<KernelInitResult> {
     // WASM module is fully initialised.
     ocInstance = await new ocFactory({
       locateFile: (path: string) =>
-        path.endsWith(".wasm") ? ocWasmUrl : path,
+        path.endsWith(".wasm") ? OCCT_WASM_URL : path,
     });
 
     const initTimeMs = Math.round(performance.now() - start);
@@ -86,9 +101,10 @@ async function ensureKernel(): Promise<KernelInitResult> {
 
     return {
       initTimeMs,
-      // Version metadata isn't directly exposed by opencascade.js. The package
-      // pin in package.json is the source of truth; we surface the npm tag.
-      version: "2.0.0-beta.94e2944",
+      // Version metadata isn't directly exposed by opencascade.js. The
+      // OCCT_VERSION constant above is the source of truth (it's also
+      // baked into the CDN URL the kernel just loaded from).
+      version: OCCT_VERSION,
     };
   })();
 
