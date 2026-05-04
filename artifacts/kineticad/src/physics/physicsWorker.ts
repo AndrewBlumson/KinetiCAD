@@ -70,27 +70,6 @@ const mateById = new Map<string, Mate>();
 let stepCount = 0;
 
 /**
- * Fixed-timestep accumulator (milliseconds).
- *
- * The canonical game-physics pattern: the caller passes wall-clock dt
- * (already scaled by speedMultiplier) on every animation frame.  We
- * accumulate that time here and drain it in whole `timeStepMs` increments
- * so that `world.timestep` is ALWAYS the fixed value set in `buildWorld` —
- * never mutated per-frame.
- *
- * Benefits:
- * - Rapier's constraint solver always sees the same dt → no calibration
- *   drift, no joint overcorrection.
- * - Speed-multiplier changes fill the accumulator faster/slower instead of
- *   shocking the solver with a sudden 4× timestep jump.
- * - Returns `alpha = accumulator / timeStepMs` so the render layer can
- *   lerp/slerp body positions for sub-step visual smoothness (Fix C).
- *
- * Reset to 0 in `destroyWorld` so a new `buildWorld` starts fresh.
- */
-let stepAccumulatorMs = 0;
-
-/**
  * Convert a revolute mate's RPM into Rapier's expected rad/s.
  */
 function rpmToRadPerSec(rpm: number): number {
@@ -592,7 +571,6 @@ function destroyWorld(): void {
   mateIdToJoint.clear();
   mateById.clear();
   stepCount = 0;
-  stepAccumulatorMs = 0;
 }
 
 const api: PhysicsApi = {
@@ -611,15 +589,6 @@ const api: PhysicsApi = {
       world = new RAPIER.World(gravity);
       timeStepMs = args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
       world.timestep = timeStepMs / 1000; // Rapier uses seconds.
-
-      // Fix B — increase constraint-solver accuracy.
-      // The default 4 iterations can leave visible joint-constraint drift
-      // on mm-unit assemblies where inertias are ~100× larger than the
-      // SI-unit tutorial examples Rapier's defaults target.  16 iterations
-      // is cheap for the < 50-body scenes KinetiCAD targets and measurably
-      // reduces positional error on the revolute joint axis.
-      world.integrationParameters.numSolverIterations = 16;
-      world.integrationParameters.numAdditionalFrictionIterations = 4;
 
       const warnings: string[] = [];
       let bodyCount = 0;
@@ -658,42 +627,12 @@ const api: PhysicsApi = {
 
   async step(scaledDtMs?: number): Promise<StepResult> {
     if (!world) {
-      return { transforms: [], dtMs: 0, alpha: 0 };
+      return { transforms: [], dtMs: 0 };
     }
-
-    // Fix A — fixed-timestep accumulator.
-    //
-    // We NEVER mutate world.timestep here.  It was set once in buildWorld
-    // and stays constant for the life of this world instance so Rapier's
-    // constraint solver always sees the same dt.
-    //
-    // The caller passes wall-clock time already scaled by speedMultiplier.
-    // We accumulate it and drain whole fixed steps, capping at MAX_SUBSTEPS
-    // to prevent a "spiral of death" when a frame is unusually slow.
-    //
-    // When speedMultiplier changes (e.g. 1x → 0.25x):
-    //   - Before fix: world.timestep suddenly jumped from 16.67ms to 4.17ms,
-    //     causing solver impulse overcorrection / jitter transient.
-    //   - After fix: accumulator just fills 4× slower.  No solver shock.
-    const MAX_SUBSTEPS = 4;
-    stepAccumulatorMs += scaledDtMs != null && scaledDtMs > 0
-      ? scaledDtMs
-      : timeStepMs;
-
-    let stepsRun = 0;
-    while (stepAccumulatorMs >= timeStepMs && stepsRun < MAX_SUBSTEPS) {
-      world.step();
-      stepAccumulatorMs -= timeStepMs;
-      stepsRun += 1;
+    if (scaledDtMs != null && scaledDtMs > 0) {
+      world.timestep = scaledDtMs / 1000;
     }
-
-    // Fractional residual — fraction of a fixed step still pending.
-    // 0 ≤ alpha < 1.  Returned for render-side lerp/slerp (Fix C).
-    const alpha = stepAccumulatorMs / timeStepMs;
-
-    // Always collect + return current body transforms, even if no step ran
-    // this frame (alpha < 1 frames repeat the last known positions, which is
-    // imperceptible at 60 fps).
+    world.step();
     const transforms: StepTransform[] = [];
     partIdToBody.forEach((body, partId) => {
       const t = body.translation();
@@ -734,8 +673,6 @@ const api: PhysicsApi = {
         // eslint-disable-next-line no-console
         console.log("[step-diag]", {
           stepCount,
-          stepsRun,
-          alpha: alpha.toFixed(3),
           mateId,
           mateType: mate.type,
           bodyBangvel: angvel,
@@ -748,7 +685,7 @@ const api: PhysicsApi = {
       });
     }
 
-    return { transforms, dtMs: timeStepMs * stepsRun, alpha };
+    return { transforms, dtMs: timeStepMs };
   },
 
   async updateJointMotor(

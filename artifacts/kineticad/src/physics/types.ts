@@ -57,13 +57,6 @@ export type StepResult = {
   transforms: StepTransform[];
   /** Physics-time advanced by this step, in milliseconds. */
   dtMs: number;
-  /**
-   * Fractional residual of the fixed-timestep accumulator after draining
-   * whole steps this tick (0 ≤ alpha < 1). Can be used by the render layer
-   * to lerp/slerp between the previous and current body transforms, giving
-   * sub-step visual smoothness without running extra physics steps.
-   */
-  alpha: number;
 };
 
 export type BuildWorldArgs = {
