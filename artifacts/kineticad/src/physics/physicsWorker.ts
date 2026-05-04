@@ -417,6 +417,34 @@ function buildJoint(
       const a = pivotPoint(mate.pivotA);
       const b = pivotPoint(mate.pivotB);
       const ax = mate.axisLocal;
+      // Compute axisLocalB to detect frame skew between the two bodies.
+      // Rapier 0.12 JointData.revolute applies ONE axis vector to BOTH
+      // bodies' local frames identically — correct only when A and B share
+      // the same world orientation.  For assemblies where they differ, the
+      // proper fix requires JointData.generic with explicit frame quaternions
+      // (which loses the RevoluteImpulseJoint motor API — deferred to a
+      // future phase).  Logged here so rotated-part cases surface in QA.
+      {
+        const qa      = bodyA.rotation();
+        const qb      = bodyB.rotation();
+        const qbi     = { x: -qb.x, y: -qb.y, z: -qb.z, w: qb.w };
+        const axisWorld  = quatRotateVec(qa, { x: ax[0], y: ax[1], z: ax[2] });
+        const axisLocalB = quatRotateVec(qbi, axisWorld);
+        const axisDrift  = Math.abs(
+          1 - Math.abs(
+            ax[0] * axisLocalB.x + ax[1] * axisLocalB.y + ax[2] * axisLocalB.z,
+          ),
+        );
+        if (axisDrift > 0.01) {
+          // eslint-disable-next-line no-console
+          console.warn("[joint-build] axis-frame skew detected", {
+            mateId: mate.id,
+            axisLocalA: ax,
+            axisLocalB,
+            axisDrift,
+          });
+        }
+      }
       // eslint-disable-next-line no-console
       console.log("[mate-read-pivot]", {
         mateId: mate.id,

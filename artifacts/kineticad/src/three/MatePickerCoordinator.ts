@@ -280,7 +280,18 @@ export function validateRevolutePicks(args: {
       error: "Could not derive a rotation axis from the picked edges.",
     };
   }
-  const axisLocalA = worldToLocalDir(a.axis, partA.transform);
+  // Raw axis from edge A's polyline cross-product — may point either way.
+  const axisLocalARaw = worldToLocalDir(a.axis, partA.transform);
+  // Bring edge B's world-space normal into part A's local frame.
+  // OCCT polyline winding gives opposite cross-product directions for a
+  // top-face vs bottom-face circle on the same cylinder; reconcile the
+  // sign so the stored axis always points consistently along the shared
+  // rotation axis rather than depending on which face was picked first.
+  const edgeBAxisLocalA = worldToLocalDir(b.axis, partA.transform);
+  const axisLocalA: Vec3 =
+    dot(axisLocalARaw, edgeBAxisLocalA) >= 0
+      ? axisLocalARaw
+      : [-axisLocalARaw[0], -axisLocalARaw[1], -axisLocalARaw[2]];
   return {
     ok: true,
     axisLocalA,
