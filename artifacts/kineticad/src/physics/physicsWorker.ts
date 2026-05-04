@@ -612,18 +612,13 @@ const api: PhysicsApi = {
       timeStepMs = args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
       world.timestep = timeStepMs / 1000; // Rapier uses seconds.
 
-      // Fix B — solver iterations tuned for fixed-timestep accumulator.
-      //
-      // History:
-      //   4  (Rapier default) — visible constraint drift on mm-unit assemblies.
-      //  16  (initial Fix B) — too many iterations with AccelerationBased motor
-      //      + MOTOR_VELOCITY_GAIN=10000: solver over-corrects per step,
-      //      producing bodyBangvel oscillation (5.6–8.2 rad/s) and spurious
-      //      x/y angular velocity components up to 1.3 rad/s.
-      //   8  (current) — enough to reduce positional drift while keeping the
-      //      velocity servo stable across the 1–4 substeps the accumulator
-      //      can run per frame.
-      world.integrationParameters.numSolverIterations = 8;
+      // Fix B — increase constraint-solver accuracy.
+      // The default 4 iterations can leave visible joint-constraint drift
+      // on mm-unit assemblies where inertias are ~100× larger than the
+      // SI-unit tutorial examples Rapier's defaults target.  16 iterations
+      // is cheap for the < 50-body scenes KinetiCAD targets and measurably
+      // reduces positional error on the revolute joint axis.
+      world.integrationParameters.numSolverIterations = 16;
       world.integrationParameters.numAdditionalFrictionIterations = 4;
 
       const warnings: string[] = [];
@@ -684,27 +679,6 @@ const api: PhysicsApi = {
     stepAccumulatorMs += scaledDtMs != null && scaledDtMs > 0
       ? scaledDtMs
       : timeStepMs;
-
-    // Re-apply motor targets once per frame, BEFORE the substep loop.
-    //
-    // Rapier's AccelerationBased motor stores the target velocity on the
-    // joint descriptor; the solver reads it during each world.step() call.
-    // Calling configureMotorVelocity inside the substep loop would reset the
-    // solver's internal impulse accumulator per substep, causing an effective
-    // gain multiplied by stepsRun — exactly the oscillation seen when
-    // stepsRun varies between 0, 1, 2 across frames.
-    //
-    // Calling it ONCE before the loop means the target is set consistently
-    // regardless of how many substeps run this frame.
-    mateIdToJoint.forEach((joint, mateId) => {
-      const mate = mateById.get(mateId);
-      if (!mate) return;
-      if (mate.type === "revolute") {
-        applyRevoluteMotor(joint, mate.motorSpeedRpm);
-      } else if (mate.type === "prismatic") {
-        applyPrismaticMotor(joint, mate.motorVelocityMmPerSec);
-      }
-    });
 
     let stepsRun = 0;
     while (stepAccumulatorMs >= timeStepMs && stepsRun < MAX_SUBSTEPS) {
