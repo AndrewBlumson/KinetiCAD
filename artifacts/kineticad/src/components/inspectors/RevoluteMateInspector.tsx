@@ -11,6 +11,8 @@ import { getPartMeshLayer } from "@/three/partMeshLayerRef";
 import {
   validateRevolutePicks,
   isCircularEdge,
+  worldToLocalPoint,
+  type Vec3,
 } from "@/three/MatePickerCoordinator";
 import MateInspectorShell, {
   NameField,
@@ -60,6 +62,9 @@ export default function RevoluteMateInspector() {
     }
 
     if (editor.stage === "pick-a") {
+      const part = assembly.parts.find((p) => p.id === selection.partId);
+      if (!part) return;
+      const localPoint = worldToLocalPoint(edge.midpoint as Vec3, part.transform);
       // eslint-disable-next-line no-console
       console.log("[mate-create-pivot]", {
         stage: "pick-a",
@@ -67,12 +72,12 @@ export default function RevoluteMateInspector() {
         clickedEdge: edge.id,
         edgeType: edge.type,
         edgeMidpoint: edge.midpoint,
-        capturedPivot: edge.midpoint,
+        capturedPivot: localPoint,
       });
       setParams({
         ...editor.params,
         partA: selection.partId,
-        pivotA: { kind: "edge", edgeId: edge.id, localPoint: edge.midpoint },
+        pivotA: { kind: "edge", edgeId: edge.id, localPoint },
       });
       setStage("pick-b");
       setError(null);
@@ -121,13 +126,18 @@ export default function RevoluteMateInspector() {
         clickedEdge: edge.id,
         edgeType: edge.type,
         edgeMidpoint: edge.midpoint,
-        capturedPivot: edge.midpoint,
+        capturedPivot: result.pivotLocalB,
+        pivotAUpdated: result.pivotLocalA,
         pivotAAlreadyStored: editor.params.pivotA,
       });
       setParams({
         ...editor.params,
         partB: selection.partId,
-        pivotB: { kind: "edge", edgeId: edge.id, localPoint: edge.midpoint },
+        pivotA: {
+          ...(editor.params.pivotA as { kind: "edge"; edgeId: string; localPoint: Vec3 }),
+          localPoint: result.pivotLocalA,
+        },
+        pivotB: { kind: "edge", edgeId: edge.id, localPoint: result.pivotLocalB },
         axisLocal: result.axisLocalA,
       });
       setStage("ready");

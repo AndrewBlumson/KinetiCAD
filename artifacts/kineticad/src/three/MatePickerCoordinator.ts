@@ -319,8 +319,8 @@ export function validateRevolutePicks(args: {
   return {
     ok: true,
     axisLocalA,
-    pivotLocalA: polylineCenter(edgeA.polyline),
-    pivotLocalB: polylineCenter(edgeB.polyline),
+    pivotLocalA: worldToLocalPoint(polylineCenter(edgeA.polyline), partA.transform),
+    pivotLocalB: worldToLocalPoint(polylineCenter(edgeB.polyline), partB.transform),
   };
 }
 
