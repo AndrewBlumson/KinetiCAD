@@ -1,10 +1,10 @@
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { join, extname, dirname } from "node:path";
+import { join, extname, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DIST = join(__dirname, "dist/public");
+const DIST = resolve(join(__dirname, "dist/public"));
 const PORT = Number(process.env.PORT) || 3000;
 
 const MIME = {
@@ -26,8 +26,15 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   let urlPath = url.pathname;
 
-  let filePath = join(DIST, urlPath);
+  let filePath = resolve(join(DIST, urlPath));
   let isIndexFallback = false;
+
+  // Guard against directory traversal — resolved path must stay inside DIST.
+  if (!filePath.startsWith(DIST + "/") && filePath !== DIST) {
+    res.writeHead(403, { "Content-Type": "text/plain" });
+    res.end("Forbidden");
+    return;
+  }
 
   try {
     const s = await stat(filePath);
