@@ -1,31 +1,27 @@
 kind = "web"
-previewPath = "/"
-title = "KinetiCAD"
-version = "1.0.0"
-id = "artifacts/kineticad"
-router = "path"
+  previewPath = "/"
+  title = "KinetiCAD"
+  version = "1.0.0"
+  id = "artifacts/kineticad"
+  router = "path"
 
-[[integratedSkills]]
-name = "react-vite"
-version = "1.0.0"
+  [[integratedSkills]]
+  name = "react-vite"
+  version = "1.0.0"
 
-[[services]]
-name = "web"
-paths = [ "/" ]
-localPort = 25157
+  [[services]]
+  name = "web"
+  paths = [ "/" ]
+  localPort = 25157
 
-[services.development]
-run = "pnpm --filter @workspace/kineticad run dev"
+  [services.development]
+  run = "pnpm --filter @workspace/kineticad run dev"
 
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/kineticad", "run", "build" ]
-publicDir = "artifacts/kineticad/dist/public"
-serve = "static"
+  [services.production]
+  build = [ "pnpm", "--filter", "@workspace/kineticad", "run", "build" ]
+  run = [ "node", "artifacts/kineticad/serve.mjs" ]
 
-[[services.production.rewrites]]
-from = "/*"
-to = "/index.html"
-
-[services.env]
-PORT = "25157"
-BASE_PATH = "/"
+  [services.env]
+  PORT = "25157"
+  BASE_PATH = "/"
+  
