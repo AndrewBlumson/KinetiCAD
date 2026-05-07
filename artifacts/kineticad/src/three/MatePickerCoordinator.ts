@@ -80,6 +80,30 @@ function normalize(a: Vec3): Vec3 {
 }
 
 /**
+ * Geometric centre of an edge's polyline: arithmetic mean of all sample
+ * points.  For a full circle this is exact (the polyline is uniformly
+ * distributed around the circumference, so the average is the centre).
+ * For an arc the result is the centroid of the sample set — a good-enough
+ * approximation for revolute pivot placement on the joint axis.
+ *
+ * Supersedes `edge.midpoint` for revolute pivots because `edge.midpoint`
+ * falls back to a single arc-length midpoint vertex whenever topology.ts's
+ * `circleCenter` branch was not triggered (e.g. when OCCT classifies a
+ * cylinder seam edge as a non-full arc).
+ */
+function polylineCenter(poly: Float32Array): Vec3 {
+  const n = Math.floor(poly.length / 3);
+  if (n === 0) return [0, 0, 0];
+  let sx = 0, sy = 0, sz = 0;
+  for (let i = 0; i < n; i++) {
+    sx += poly[i * 3];
+    sy += poly[i * 3 + 1];
+    sz += poly[i * 3 + 2];
+  }
+  return [sx / n, sy / n, sz / n];
+}
+
+/**
  * Build the 3×3 rotation matrix for an XYZ-Euler triple in degrees, applied
  * in XYZ order (matches three.js's default and the way `Part.transform`
  * is consumed elsewhere).
@@ -214,7 +238,7 @@ export function getEdgeAxisWorld(
   // Polyline is already in local coords; transform to world.
   const axisLocal = normalize(n);
   const axis = localToWorldDir(axisLocal, part.transform);
-  const centroid = localToWorldPoint(edge.midpoint, part.transform);
+  const centroid = localToWorldPoint(polylineCenter(edge.polyline), part.transform);
   return { axis, centroid };
 }
 
@@ -295,8 +319,8 @@ export function validateRevolutePicks(args: {
   return {
     ok: true,
     axisLocalA,
-    pivotLocalA: edgeA.midpoint,
-    pivotLocalB: edgeB.midpoint,
+    pivotLocalA: polylineCenter(edgeA.polyline),
+    pivotLocalB: polylineCenter(edgeB.polyline),
   };
 }
 
