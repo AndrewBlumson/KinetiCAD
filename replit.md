@@ -813,6 +813,49 @@ the kernel-init `version` field, so it must stay in lock-step with
 emitted under `dist/` and the bundle is ~13× smaller; dev kernel
 still boots in ~1.9 s with `[SELF-TEST] OK`.
 
+### STEP import fix session (2026-05-08) ✅
+
+End-to-end STEP import working. Four bugs peeled back in sequence:
+
+**Bug 1 — `ErrnoError` on `ReadFile`**: virtual FS path was `/virtual/`
+(non-existent in the WASM FS); changed to `/tmp/`.
+
+**Bug 2 — no geometry / empty mesh**: `OneShape()` returns a `TopoDS_Shape`
+that aliases the reader's internal topology. Deleting the reader in the
+`finally` block silently neutered the shape before tessellation — same
+aliasing pattern as the Phase 5–6 extrude regression. Fix: call
+`BRepBuilderAPI_Copy_2(combined, true, false)` to deep-copy the shape
+**while the reader is still alive** before the `finally` runs.
+`TransferRoots(progress)` + `OneShape()` is the correct documented OCCT
+import pattern; `TransferRoot(i)` (STEP-specific singular) throws raw WASM
+C++ exception pointers and must not be used.
+
+**Bug 3 — per-part auto-ground broke multi-part assemblies**: translating
+each solid to Z=0 individually destroyed relative positions. Replaced with
+per-assembly grounding: one pass over all extracted solids to find
+`assemblyZMin`, then a single uniform `dz = -assemblyZMin` applied to every
+solid only when `assemblyZMin < -0.001`. Each translated shape is
+deep-copied via `BRepBuilderAPI_Copy_2` before its `BRepBuilderAPI_Transform_2`
+is deleted.
+
+**Bug 4 — success toast never fired**: the `imported.some(p =>
+p.boundingBox…)` Y-up hint check was silently throwing after the Comlink
+transfer, jumping to `catch` with no visible error. Replaced branching toast
+logic with a single unconditional `toast.success(…)` call that always fires.
+
+**Additional UX fixes**:
+- `requestAnimationFrame(() => canvas?.focus())` after import toast restores
+  OrbitControls pointer events without requiring a manual canvas click.
+- Sonner `<Toaster>` container gets `style={{ pointerEvents: 'none' }}`;
+  individual toasts get `toastOptions.style: { pointerEvents: 'auto' }` so the
+  invisible dismissed-toast region no longer blocks orbit/zoom.
+
+**Tested** (deployed `.replit.app`, Chrome, M-series Mac):
+- McMaster M3 socket-head bolt (single part): import + STEP round-trip ✅
+- McMaster torque-limiting coupling 9132K11 (12-part assembly): import +
+  STEP round-trip, relative positions preserved, all parts grounded at Z=0 ✅
+- Windmill canary regression: `bodyBangvelMag` stable at π ±5e-7 ✅
+
 #### Issue 2 (visible cylinder rotation): no code change required
 
 QA flagged that motor rotation looked invisible because Part 2 is
