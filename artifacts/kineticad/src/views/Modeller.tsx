@@ -159,6 +159,12 @@ export default function Modeller() {
           `${imported.length} ${partWord} imported at origin. Drag to reposition.`,
         );
       }
+      // Restore canvas focus so OrbitControls regains pointer events immediately
+      // after the file-picker dialog closes.
+      requestAnimationFrame(() => {
+        const canvas = document.querySelector('canvas');
+        canvas?.focus();
+      });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[step-import] failed:', err);

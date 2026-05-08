@@ -1239,7 +1239,38 @@ const api: CadKernelApi = {
     const results: import('./types').ImportedPart[] = [];
 
     for (let j = 0; j < solidShapes.length; j++) {
-      const shape = solidShapes[j];
+      let shape = solidShapes[j];
+
+      // Ground the shape: translate so its lowest Z sits at Z=0 regardless
+      // of how the source CAD tool modelled it.
+      {
+        const bboxGround = new ocAny.Bnd_Box_1();
+        let groundTransformer: any = null;
+        let groundCopier: any = null;
+        try {
+          ocAny.BRepBndLib.Add(shape, bboxGround, false);
+          const cornerMin = bboxGround.CornerMin();
+          const zMin: number = cornerMin.Z();
+          cornerMin.delete();
+          if (Math.abs(zMin) > 0.001) {
+            const trsf = new ocAny.gp_Trsf_1();
+            const vec = new ocAny.gp_Vec_4(0, 0, -zMin);
+            trsf.SetTranslation_1(vec);
+            vec.delete();
+            // Copy=true so the result owns its topology.
+            groundTransformer = new ocAny.BRepBuilderAPI_Transform_2(shape, trsf, true);
+            trsf.delete();
+            // Deep-copy before deleting the transformer (same pattern as
+            // extrude) so the shape is truly independent.
+            groundCopier = new ocAny.BRepBuilderAPI_Copy_2(groundTransformer.Shape(), true, false);
+            shape = groundCopier.Shape();
+          }
+        } finally {
+          bboxGround.delete();
+          if (groundTransformer) groundTransformer.delete();
+          if (groundCopier) groundCopier.delete();
+        }
+      }
 
       // Unique key for this import session.
       const shapeId =
