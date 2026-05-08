@@ -1,4 +1,8 @@
 import { lazy, Suspense, useState } from 'react';
+import { toast } from 'sonner';
+import { Download, Loader2 } from 'lucide-react';
+import { getCadKernel } from '@/cad/cadClient';
+import { Toaster } from '@/components/ui/sonner';
 import { useKinetiCADStore } from '@/state/store';
 import type { MateType } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
@@ -45,6 +49,58 @@ export default function Modeller() {
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
 
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportStl = async () => {
+    const partsWithFeatures = assembly.parts.filter(
+      (p) => p.features && p.features.length > 0,
+    );
+    if (partsWithFeatures.length === 0) {
+      toast.error('Nothing to export. Add at least one feature first.');
+      return;
+    }
+    setExporting(true);
+    const t0 = performance.now();
+    try {
+      const kernel = await getCadKernel();
+      const bytes = await kernel.exportAssemblyStl(
+        partsWithFeatures.map((p) => ({
+          partId: p.id,
+          features: p.features,
+          sketches: p.sketches,
+          transform: p.transform,
+        })),
+      );
+      const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'model/stl' });
+      const url = URL.createObjectURL(blob);
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const filename =
+        `kineticad-export-` +
+        `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}` +
+        `-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+        `.stl`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      const durationMs = Math.round(performance.now() - t0);
+      // eslint-disable-next-line no-console
+      console.log('[stl-export]', {
+        partCount: partsWithFeatures.length,
+        fileSizeBytes: bytes.byteLength,
+        durationMs,
+      });
+      toast.success('STL downloaded');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[stl-export] failed:', err);
+      toast.error('Export failed. Check the console for details.');
+    } finally {
+      setExporting(false);
+    }
+  };
   // When the user asks to delete a part that's referenced by booleans we
   // surface a small confirmation so they understand the cascade. The pending
   // partId doubles as the modal's open flag.
@@ -167,6 +223,29 @@ export default function Modeller() {
                 />
               ))}
             </ToolbarGroup>
+
+            <div className="w-px h-5 bg-border mx-1" />
+
+            <button
+              type="button"
+              title="Export STL"
+              disabled={exporting}
+              onClick={handleExportStl}
+              data-testid="export-stl"
+              className={[
+                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
+                exporting
+                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
+                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
+              ].join(' ')}
+            >
+              {exporting ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Download size={13} />
+              )}
+              <span className="hidden sm:inline">Export STL</span>
+            </button>
           </>
         )}
 
@@ -306,6 +385,7 @@ export default function Modeller() {
           </SidebarSection>
         </aside>
       </div>
+      <Toaster position="bottom-right" />
     </div>
   );
 }

@@ -194,6 +194,17 @@ export type BooleanOpArgs = {
 };
 
 /**
+ * One part's contribution to an STL export. Mirrors BooleanInputDescriptor
+ * but is kept separate so the export pipeline can evolve independently.
+ */
+export type ExportPartDescriptor = {
+  partId: string;
+  features: Feature[];
+  sketches: Sketch[];
+  transform: Transform;
+};
+
+/**
  * Phase 8 — args for `getMassProperties`. The CAD worker re-executes the
  * upstream feature chain just like a regen, then queries OCCT's
  * `GProp_GProps` for volume / centre of mass / inertia tensor on the
@@ -281,4 +292,12 @@ export type CadKernelApi = {
   getMassProperties: (
     args: MassPropertiesArgs,
   ) => Promise<MassPropertiesResult>;
+  /**
+   * Build every part's geometry, apply its world transform, combine into a
+   * single compound, mesh it, and write binary STL. Returns the raw file
+   * bytes so the caller can wrap them in a Blob and trigger a download.
+   *
+   * Parts with no features are silently skipped.
+   */
+  exportAssemblyStl: (parts: ExportPartDescriptor[]) => Promise<Uint8Array>;
 };

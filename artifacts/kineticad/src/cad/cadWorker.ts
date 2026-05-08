@@ -28,6 +28,7 @@ import type {
   BooleanOpArgs,
   CadKernelApi,
   ChamferArgs,
+  ExportPartDescriptor,
   ExtrudeArgs,
   FilletArgs,
   HoleArgs,
@@ -879,6 +880,184 @@ const api: CadKernelApi = {
         } catch {
           // ignore
         }
+      }
+    }
+  },
+
+  async exportAssemblyStl(parts: ExportPartDescriptor[]) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("CAD kernel failed to initialise");
+    const oc = ocInstance;
+    const ocAny = oc as any;
+
+    const baseShapes: any[] = [];
+    const transformedShapes: any[] = [];
+    let compound: any = null;
+    let builder: any = null;
+    let meshBuilder: any = null;
+    let progressRange: any = null;
+    let writer: any = null;
+
+    try {
+      for (const part of parts) {
+        if (!part.features || part.features.length === 0) continue;
+
+        const base = executeUpstreamChain(oc, part.features, part.sketches);
+        baseShapes.push(base);
+
+        // Apply world transform — identical pattern to booleanOp.
+        const tx = part.transform;
+        const isIdentity =
+          !tx ||
+          (tx.positionMm[0] === 0 &&
+            tx.positionMm[1] === 0 &&
+            tx.positionMm[2] === 0 &&
+            tx.rotationDeg[0] === 0 &&
+            tx.rotationDeg[1] === 0 &&
+            tx.rotationDeg[2] === 0);
+
+        if (isIdentity) {
+          transformedShapes.push(base);
+          continue;
+        }
+
+        const trsf = new oc.gp_Trsf_1();
+        const origin = new oc.gp_Pnt_3(0, 0, 0);
+        const axisX = new oc.gp_Dir_4(1, 0, 0);
+        const axisY = new oc.gp_Dir_4(0, 1, 0);
+        const axisZ = new oc.gp_Dir_4(0, 0, 1);
+        const ax1X = new oc.gp_Ax1_2(origin, axisX);
+        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
+        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
+        const trsfRotZ = new oc.gp_Trsf_1();
+        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
+        const trsfRotY = new oc.gp_Trsf_1();
+        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
+        const trsfRotX = new oc.gp_Trsf_1();
+        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
+        const trsfTrans = new oc.gp_Trsf_1();
+        const transVec = new oc.gp_Vec_4(
+          tx.positionMm[0],
+          tx.positionMm[1],
+          tx.positionMm[2],
+        );
+        trsfTrans.SetTranslation_1(transVec);
+        trsf.Multiply(trsfRotZ);
+        trsf.Multiply(trsfRotY);
+        trsf.Multiply(trsfRotX);
+        trsf.Multiply(trsfTrans);
+
+        const transformer = new oc.BRepBuilderAPI_Transform_2(
+          base as never,
+          trsf,
+          true,
+        );
+        const transformed = transformer.Shape();
+        transformedShapes.push(transformed);
+
+        transformer.delete();
+        transVec.delete();
+        trsfTrans.delete();
+        trsfRotX.delete();
+        trsfRotY.delete();
+        trsfRotZ.delete();
+        ax1Z.delete();
+        ax1Y.delete();
+        ax1X.delete();
+        axisZ.delete();
+        axisY.delete();
+        axisX.delete();
+        origin.delete();
+        trsf.delete();
+      }
+
+      if (transformedShapes.length === 0) {
+        throw new Error(
+          "stl-export-failed: no parts with features to export.",
+        );
+      }
+
+      // Combine every transformed shape into a single compound so the
+      // STL writer sees one coherent B-Rep.
+      compound = new ocAny.TopoDS_Compound();
+      builder = new ocAny.BRep_Builder();
+      builder.MakeCompound(compound);
+      for (const shape of transformedShapes) {
+        builder.Add(compound, shape);
+      }
+      builder.delete();
+      builder = null;
+
+      // Triangulate the compound. Linear deflection 0.1 mm gives a
+      // reasonable balance between file size and surface accuracy.
+      meshBuilder = new ocAny.BRepMesh_IncrementalMesh_2(
+        compound,
+        0.1,
+        false,
+        0.5,
+        true,
+      );
+      progressRange = new ocAny.Message_ProgressRange_1();
+      meshBuilder.Perform(progressRange);
+      progressRange.delete();
+      progressRange = null;
+      meshBuilder.delete();
+      meshBuilder = null;
+
+      // Write binary STL to the Emscripten virtual FS, read it back as
+      // a Uint8Array, then clean up the temporary file.
+      const stlPath = "/tmp/kineticad-export.stl";
+      writer = new ocAny.StlAPI_Writer();
+      writer.ASCIIMode(false);
+      writer.Write(compound, stlPath);
+      writer.delete();
+      writer = null;
+
+      const bytes: Uint8Array = ocAny.FS.readFile(stlPath);
+      try {
+        ocAny.FS.unlink(stlPath);
+      } catch {
+        // Non-fatal: file may not exist if Write silently failed.
+      }
+      return bytes;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[CAD WORKER] exportAssemblyStl failed:", err);
+      if (err instanceof Error) throw err;
+      throw new Error(`stl-export-failed: ${String(err)}`);
+    } finally {
+      if (progressRange) {
+        try {
+          progressRange.delete();
+        } catch { /* ignore */ }
+      }
+      if (meshBuilder) {
+        try {
+          meshBuilder.delete();
+        } catch { /* ignore */ }
+      }
+      if (writer) {
+        try {
+          writer.delete();
+        } catch { /* ignore */ }
+      }
+      if (builder) {
+        try {
+          builder.delete();
+        } catch { /* ignore */ }
+      }
+      if (compound) {
+        try {
+          compound.delete();
+        } catch { /* ignore */ }
+      }
+      for (let i = 0; i < transformedShapes.length; i++) {
+        if (transformedShapes[i] !== baseShapes[i]) {
+          transformedShapes[i]?.delete?.();
+        }
+      }
+      for (const s of baseShapes) {
+        s?.delete?.();
       }
     }
   },
