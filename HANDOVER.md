@@ -50,7 +50,7 @@ Verifications done:
 - TypeScript compilation clean.
 - Dev server reload clean, no deprecation warning.
 - Windmill canary regression passed: bodyBangvelMag stable at π ±5e-7 across 1500+ steps.
-- Status: working in dev. **NOT YET PUBLISHED to production at kineticad.replit.app.** This is the only outstanding deployment from the renderAsync fix.
+- Status: published to production at kineticad.replit.app on 08/05/2026 at 21:51 BST as part of the Phase 4 deploy.
 
 ### Auto-ground imported parts to Z=0
 
@@ -114,9 +114,6 @@ Nothing. Per-assembly auto-ground fix landed and verified. All Phase 4 items com
 - WebGL2 fallback for browsers without WebGPU.
 - Mobile responsive layout.
 
-### Deployment
-- Publish renderAsync fix to production at kineticad.replit.app. Currently dev only.
-
 ---
 
 ## Verification log (this session)
@@ -148,7 +145,7 @@ Nothing. Per-assembly auto-ground fix landed and verified. All Phase 4 items com
 |------|--------|
 | `artifacts/kineticad/src/three/Scene.tsx` line 411 | renderAsync to render |
 | `artifacts/kineticad/src/cad/cadWorker.ts` | exportAssemblyStl, exportAssemblyStep, importStep, per-assembly auto-ground |
-| `artifacts/kineticad/src/cad/topology.ts` line 483 area | 3-point circumcenter for arc edges (unverified) |
+| `artifacts/kineticad/src/cad/operations/topology.ts` line 483 area | 3-point circumcenter for arc edges (unverified) |
 | `artifacts/kineticad/src/cad/types.ts` | EdgeMetadata.circleCenter field |
 | `artifacts/kineticad/src/three/MatePickerCoordinator.ts` | circleCenter ?? polylineCenter pivot calc (unverified) |
 | `artifacts/kineticad/src/views/Modeller.tsx` | IMPORT STEP, EXPORT STEP buttons, success toast handler with canvas focus |
@@ -158,11 +155,10 @@ Nothing. Per-assembly auto-ground fix landed and verified. All Phase 4 items com
 
 ## Suggested next session priorities
 
-1. **Publish the renderAsync fix to kineticad.replit.app** (one-line change, can't break, currently only in dev).
-2. **Verify the smart pivot picker for arc edges** (Checkpoint "Improve pivot placement for circular and arc edges", 08/05/2026 18:25). Diagnostic prompt drafted but not sent. Worth 30 minutes when fresh to either confirm working or identify the actual gap.
-3. **Post the round-trip story** on X and LinkedIn. Suggested framing: "Browser CAD now does full STEP round-trip. Imported a 12-part McMaster industrial coupling. Exported. Re-imported. Geometry, hierarchy, and relative positions all survive. Mates need re-establishing on import (same as Onshape, Solidworks, Fusion). WebGPU + WASM B-rep + multi-thread physics + MIT licence." Pin a screenshot of the imported coupling on the grid.
-4. **IndexedDB persistence layer for imported parts** (half-day job, phase 5 candidate). Removes the "refresh wipes geometry" limitation.
-5. **Other mate types** (Prismatic, Planar, Spherical, Cylindrical) once persistence is in.
+1. **Verify the smart pivot picker for arc edges** (Checkpoint "Improve pivot placement for circular and arc edges", 08/05/2026 18:25). Diagnostic prompt drafted but not sent. Worth 30 minutes when fresh to either confirm working or identify the actual gap.
+2. **Post the round-trip story** on X and LinkedIn. Suggested framing: "Browser CAD now does full STEP round-trip. Imported a 12-part McMaster industrial coupling. Exported. Re-imported. Geometry, hierarchy, and relative positions all survive. Mates need re-establishing on import (same as Onshape, Solidworks, Fusion). WebGPU + WASM B-rep + multi-thread physics + MIT licence." Pin a screenshot of the imported coupling on the grid.
+3. **IndexedDB persistence layer for imported parts** (half-day job, phase 5 candidate). Removes the "refresh wipes geometry" limitation.
+4. **Other mate types** (Prismatic, Planar, Spherical, Cylindrical) once persistence is in.
 
 ---
 
