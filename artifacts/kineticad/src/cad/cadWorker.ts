@@ -1089,7 +1089,7 @@ const api: CadKernelApi = {
     const ocAny = oc as any;
     const t0 = performance.now();
 
-    const virtualPath = `/virtual/kineticad-step-import-${Date.now()}.step`;
+    const virtualPath = `/tmp/kineticad-step-import-${Date.now()}.step`;
     let reader: any = null;
     // Shapes returned directly by the reader (may be compounds).
     const rawShapes: any[] = [];
