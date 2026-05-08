@@ -72,6 +72,13 @@ const ocFactory = ocFactoryRaw as unknown as OcFactory;
 let ocInstance: OC | null = null;
 let initPromise: Promise<KernelInitResult> | null = null;
 
+// Registry of OCCT shapes imported from STEP files. Keyed by shapeId (a
+// generated string). Lives in worker memory only — cleared when the worker
+// thread restarts (i.e. on page reload). Parts whose features reference a
+// shapeId that is no longer in this map will fail to regenerate with a
+// descriptive error asking the user to re-import the file.
+const importedShapeRegistry = new Map<string, unknown>();
+
 async function ensureKernel(): Promise<KernelInitResult> {
   if (initPromise) return initPromise;
 
@@ -413,6 +420,23 @@ function executeUpstreamChain(
         );
       } finally {
         disposeRefMap(refs);
+      }
+    } else if (feat.type === 'imported-step') {
+      const stored = importedShapeRegistry.get(feat.shapeId);
+      if (!stored) {
+        if (current) current.delete();
+        throw new Error(
+          `imported-step shape "${feat.shapeId}" is not in the worker registry. ` +
+          'Re-import the STEP file to restore this part.',
+        );
+      }
+      // Deep-copy the stored shape so downstream operations cannot corrupt
+      // the registry entry (e.g. a boolean cut would consume the input shape).
+      const copier = new ocAny.BRepBuilderAPI_Copy_2(stored, true, false);
+      try {
+        nextShape = copier.Shape();
+      } finally {
+        copier.delete();
       }
     } else {
       throw new Error(
@@ -1045,6 +1069,325 @@ const api: CadKernelApi = {
           compound.delete();
         } catch { /* ignore */ }
       }
+      for (let i = 0; i < transformedShapes.length; i++) {
+        if (transformedShapes[i] !== baseShapes[i]) {
+          transformedShapes[i]?.delete?.();
+        }
+      }
+      for (const s of baseShapes) {
+        s?.delete?.();
+      }
+    }
+  },
+
+  // ---- STEP import ----
+
+  async importStep(fileBytes: Uint8Array) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error('CAD kernel failed to initialise');
+    const oc = ocInstance;
+    const ocAny = oc as any;
+    const t0 = performance.now();
+
+    const virtualPath = `/virtual/kineticad-step-import-${Date.now()}.step`;
+    let reader: any = null;
+    // Shapes returned directly by the reader (may be compounds).
+    const rawShapes: any[] = [];
+
+    try {
+      oc.FS.writeFile(virtualPath, fileBytes);
+      reader = new ocAny.STEPControl_Reader_1();
+      const readStatus = reader.ReadFile(virtualPath);
+      const retDone = ocAny.IFSelect_ReturnStatus.IFSelect_RetDone;
+      if (readStatus !== retDone) {
+        throw new Error(
+          'STEP ReadFile failed — the file may be corrupt or use an unsupported STEP variant.',
+        );
+      }
+
+      const progress = new ocAny.Message_ProgressRange_1();
+      try {
+        reader.TransferRoots(progress);
+      } finally {
+        progress.delete();
+      }
+
+      const nbShapes = reader.NbShapes();
+      for (let i = 1; i <= nbShapes; i++) {
+        rawShapes.push(reader.Shape(i));
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[CAD WORKER] importStep read phase failed:', err);
+      throw err instanceof Error ? err : new Error(`step-import-failed: ${String(err)}`);
+    } finally {
+      if (reader) { try { reader.delete(); } catch { /* ignore */ } }
+      try { oc.FS.unlink(virtualPath); } catch { /* ignore */ }
+    }
+
+    // Expand compound roots into their top-level solid children, so each
+    // distinct body becomes a separate KinetiCAD part.
+    const solidShapes: any[] = [];
+    for (const raw of rawShapes) {
+      const shapeType = raw.ShapeType();
+      if (shapeType === ocAny.TopAbs_ShapeEnum.TopAbs_COMPOUND) {
+        const before = solidShapes.length;
+
+        // First pass: collect SOLID children.
+        const expSolid = new ocAny.TopExp_Explorer_2(
+          raw,
+          ocAny.TopAbs_ShapeEnum.TopAbs_SOLID,
+          ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE,
+        );
+        try {
+          while (expSolid.More()) {
+            solidShapes.push(expSolid.Value());
+            expSolid.Next();
+          }
+        } finally {
+          expSolid.delete();
+        }
+
+        if (solidShapes.length === before) {
+          // No solids found — fall back to SHELL (surface models).
+          const expShell = new ocAny.TopExp_Explorer_2(
+            raw,
+            ocAny.TopAbs_ShapeEnum.TopAbs_SHELL,
+            ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE,
+          );
+          try {
+            while (expShell.More()) {
+              solidShapes.push(expShell.Value());
+              expShell.Next();
+            }
+          } finally {
+            expShell.delete();
+          }
+        }
+
+        if (solidShapes.length === before) {
+          // Compound had neither solids nor shells — treat it as one body.
+          solidShapes.push(raw);
+        }
+      } else {
+        solidShapes.push(raw);
+      }
+    }
+
+    if (solidShapes.length === 0) {
+      throw new Error('step-import-failed: no geometry found in the STEP file.');
+    }
+
+    const results: import('./types').ImportedPart[] = [];
+
+    for (let j = 0; j < solidShapes.length; j++) {
+      const shape = solidShapes[j];
+
+      // Unique key for this import session.
+      const shapeId =
+        `step-${Date.now()}-${j}-${Math.random().toString(36).slice(2, 8)}`;
+
+      // Register in the worker-side registry for later STEP re-export.
+      importedShapeRegistry.set(shapeId, shape);
+
+      // Tessellate with full topology so edges/faces are highlight-able and
+      // the part is pickable for mates.
+      const mesh = buildMesh(oc, shape);
+
+      // Compute bounding box for the Y-up / Z-up orientation hint shown
+      // in the import toast.
+      let minArr: [number, number, number] = [0, 0, 0];
+      let maxArr: [number, number, number] = [0, 0, 0];
+      const bbox = new ocAny.Bnd_Box_1();
+      try {
+        ocAny.BRepBndLib.Add(shape, bbox, false);
+        const minPnt = bbox.CornerMin();
+        const maxPnt = bbox.CornerMax();
+        minArr = [minPnt.X(), minPnt.Y(), minPnt.Z()];
+        maxArr = [maxPnt.X(), maxPnt.Y(), maxPnt.Z()];
+        minPnt.delete();
+        maxPnt.delete();
+      } finally {
+        bbox.delete();
+      }
+
+      results.push({
+        shapeId,
+        name: `Imported Part ${j + 1}`,
+        tessellated: mesh,
+        boundingBox: { min: minArr, max: maxArr },
+      });
+    }
+
+    const durationMs = Math.round(performance.now() - t0);
+    // eslint-disable-next-line no-console
+    console.log('[step-import]', {
+      partCount: results.length,
+      fileSizeBytes: fileBytes.byteLength,
+      durationMs,
+    });
+
+    // Transfer all TypedArray buffers in one Comlink call.
+    const allTransferables: Transferable[] = [];
+    for (const r of results) {
+      allTransferables.push(...collectTransferables(r.tessellated));
+    }
+    return Comlink.transfer(results, allTransferables);
+  },
+
+  // ---- STEP export ----
+
+  async exportAssemblyStep(parts: ExportPartDescriptor[]) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error('CAD kernel failed to initialise');
+    const oc = ocInstance;
+    const ocAny = oc as any;
+
+    const baseShapes: any[] = [];
+    const transformedShapes: any[] = [];
+    let writer: any = null;
+    let compound: any = null;
+    let builder: any = null;
+    const t0 = performance.now();
+
+    try {
+      for (const part of parts) {
+        if (!part.features || part.features.length === 0) continue;
+
+        const base = executeUpstreamChain(oc, part.features, part.sketches);
+        baseShapes.push(base);
+
+        // Apply world transform — identical pattern to exportAssemblyStl.
+        const tx = part.transform;
+        const isIdentity =
+          !tx ||
+          (tx.positionMm[0] === 0 &&
+            tx.positionMm[1] === 0 &&
+            tx.positionMm[2] === 0 &&
+            tx.rotationDeg[0] === 0 &&
+            tx.rotationDeg[1] === 0 &&
+            tx.rotationDeg[2] === 0);
+
+        if (isIdentity) {
+          transformedShapes.push(base);
+          continue;
+        }
+
+        const trsf = new oc.gp_Trsf_1();
+        const origin = new oc.gp_Pnt_3(0, 0, 0);
+        const axisX = new oc.gp_Dir_4(1, 0, 0);
+        const axisY = new oc.gp_Dir_4(0, 1, 0);
+        const axisZ = new oc.gp_Dir_4(0, 0, 1);
+        const ax1X = new oc.gp_Ax1_2(origin, axisX);
+        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
+        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
+        const trsfRotZ = new oc.gp_Trsf_1();
+        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
+        const trsfRotY = new oc.gp_Trsf_1();
+        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
+        const trsfRotX = new oc.gp_Trsf_1();
+        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
+        const trsfTrans = new oc.gp_Trsf_1();
+        const transVec = new oc.gp_Vec_4(
+          tx.positionMm[0],
+          tx.positionMm[1],
+          tx.positionMm[2],
+        );
+        trsfTrans.SetTranslation_1(transVec);
+        trsf.Multiply(trsfRotZ);
+        trsf.Multiply(trsfRotY);
+        trsf.Multiply(trsfRotX);
+        trsf.Multiply(trsfTrans);
+
+        const transformer = new oc.BRepBuilderAPI_Transform_2(
+          base as never,
+          trsf,
+          true,
+        );
+        const transformed = transformer.Shape();
+        transformedShapes.push(transformed);
+
+        transformer.delete();
+        transVec.delete();
+        trsfTrans.delete();
+        trsfRotX.delete();
+        trsfRotY.delete();
+        trsfRotZ.delete();
+        ax1Z.delete();
+        ax1Y.delete();
+        ax1X.delete();
+        axisZ.delete();
+        axisY.delete();
+        axisX.delete();
+        origin.delete();
+        trsf.delete();
+      }
+
+      if (transformedShapes.length === 0) {
+        throw new Error('step-export-failed: no parts with features to export.');
+      }
+
+      // Combine all transformed shapes into a single compound.
+      compound = new ocAny.TopoDS_Compound();
+      builder = new ocAny.BRep_Builder();
+      builder.MakeCompound(compound);
+      for (const shape of transformedShapes) {
+        builder.Add(compound, shape);
+      }
+      builder.delete();
+      builder = null;
+
+      // Transfer the compound to STEP AP214 format.
+      writer = new ocAny.STEPControl_Writer_1();
+      const progress = new ocAny.Message_ProgressRange_1();
+      let transferStatus: any;
+      try {
+        transferStatus = writer.Transfer(
+          compound,
+          ocAny.STEPControl_StepModelType.STEPControl_AsIs,
+          true,
+          progress,
+        );
+      } finally {
+        progress.delete();
+      }
+
+      const retDone = ocAny.IFSelect_ReturnStatus.IFSelect_RetDone;
+      if (transferStatus !== retDone) {
+        throw new Error(
+          'step-export-failed: Transfer() returned a non-done status.',
+        );
+      }
+
+      const stepPath = '/tmp/kineticad-export.step';
+      const writeStatus = writer.Write(stepPath);
+      if (writeStatus !== retDone) {
+        throw new Error(
+          'step-export-failed: Write() returned a non-done status.',
+        );
+      }
+
+      const bytes: Uint8Array = ocAny.FS.readFile(stepPath);
+      try { ocAny.FS.unlink(stepPath); } catch { /* ignore */ }
+
+      const durationMs = Math.round(performance.now() - t0);
+      // eslint-disable-next-line no-console
+      console.log('[step-export]', {
+        partCount: transformedShapes.length,
+        fileSizeBytes: bytes.byteLength,
+        durationMs,
+      });
+
+      return Comlink.transfer(bytes, [bytes.buffer]);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[CAD WORKER] exportAssemblyStep failed:', err);
+      if (err instanceof Error) throw err;
+      throw new Error(`step-export-failed: ${String(err)}`);
+    } finally {
+      if (writer) { try { writer.delete(); } catch { /* ignore */ } }
+      if (builder) { try { builder.delete(); } catch { /* ignore */ } }
+      if (compound) { try { compound.delete(); } catch { /* ignore */ } }
       for (let i = 0; i < transformedShapes.length; i++) {
         if (transformedShapes[i] !== baseShapes[i]) {
           transformedShapes[i]?.delete?.();

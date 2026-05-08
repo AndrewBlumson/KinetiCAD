@@ -51,7 +51,14 @@ export type Feature =
   | RevolveFeature
   | { id: string; type: 'fillet'; targetEdges: string[]; radiusMm: number }
   | { id: string; type: 'chamfer'; targetEdges: string[]; sizeMm: number }
-  | { id: string; type: 'hole'; targetFace: string; positionUV: [number, number]; diameterMm: number; depthMm: number };
+  | { id: string; type: 'hole'; targetFace: string; positionUV: [number, number]; diameterMm: number; depthMm: number }
+  /**
+   * Flat B-rep shape imported from a STEP file. No parametric history is
+   * preserved — STEP is boundary representation only. The `shapeId`
+   * references a shape held in the CAD worker's in-memory registry; the
+   * part must be re-imported after a page reload.
+   */
+  | { id: string; type: 'imported-step'; shapeId: string };
 
 /**
  * Phase 5 boolean operations. Booleans are *assembly-level* features that

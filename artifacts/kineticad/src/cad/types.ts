@@ -245,6 +245,24 @@ export type MassPropertiesResult = {
   principalInertiaKgMm2: [number, number, number];
 };
 
+/**
+ * Metadata returned by `importStep` for a single B-rep body extracted
+ * from the STEP file. The shape itself stays in the CAD worker's in-memory
+ * registry; this record carries the tessellated mesh (already on the main
+ * thread via Comlink transfer) and the axis-aligned bounding box so the UI
+ * can show an orientation hint if the file uses Y-up instead of Z-up.
+ */
+export type ImportedPart = {
+  /** Key into the CAD worker's in-memory shape registry. */
+  shapeId: string;
+  /** Auto-generated display name ("Imported Part N"). */
+  name: string;
+  /** Full tessellated mesh with edge and face topology, ready for display. */
+  tessellated: TessellatedMesh;
+  /** Axis-aligned bounding box in STEP file coordinates (mm). */
+  boundingBox: { min: [number, number, number]; max: [number, number, number] };
+};
+
 export type CadKernelApi = {
   init: () => Promise<KernelInitResult>;
   createTestCube: (sizeMm: number) => Promise<TessellatedMesh>;
@@ -300,4 +318,20 @@ export type CadKernelApi = {
    * Parts with no features are silently skipped.
    */
   exportAssemblyStl: (parts: ExportPartDescriptor[]) => Promise<Uint8Array>;
+  /**
+   * Read a STEP file (raw bytes), expand any compound roots into individual
+   * solids, tessellate each solid with full edge + face topology, register
+   * the OCCT shapes in the worker's in-memory registry (for later re-export),
+   * and return the metadata + tessellated meshes for the store to create new
+   * parts. Parts whose geometry comes from STEP files do NOT carry parametric
+   * feature history — STEP is flat B-rep only.
+   */
+  importStep: (fileBytes: Uint8Array) => Promise<ImportedPart[]>;
+  /**
+   * Build every part's geometry (re-executing parametric chains, or
+   * retrieving STEP-imported shapes from the worker registry), apply world
+   * transforms, combine into a compound, and write an AP214 STEP file.
+   * Returns the raw file bytes. Parts with no features are silently skipped.
+   */
+  exportAssemblyStep: (parts: ExportPartDescriptor[]) => Promise<Uint8Array>;
 };

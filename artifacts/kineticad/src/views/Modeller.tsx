@@ -1,6 +1,7 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, Upload } from 'lucide-react';
+import { setImportedShapeMesh } from '@/cad/importedShapeCache';
 import { getCadKernel } from '@/cad/cadClient';
 import { Toaster } from '@/components/ui/sonner';
 import { useKinetiCADStore } from '@/state/store';
@@ -48,8 +49,13 @@ export default function Modeller() {
   const beginEditMate = useKinetiCADStore((s) => s.beginEditMate);
   const clearSelection = useKinetiCADStore((s) => s.clearSelection);
 
+  const addImportedStepPart = useKinetiCADStore((s) => s.addImportedStepPart);
+
   const [planePickerOpen, setPlanePickerOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [importingStep, setImportingStep] = useState(false);
+  const [exportingStep, setExportingStep] = useState(false);
+  const stepFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportStl = async () => {
     const partsWithFeatures = assembly.parts.filter(
@@ -101,6 +107,127 @@ export default function Modeller() {
       setExporting(false);
     }
   };
+  const handleImportStep = async (file: File) => {
+    setImportingStep(true);
+    const t0 = performance.now();
+    try {
+      const kernel = await getCadKernel();
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const imported = await kernel.importStep(bytes);
+      if (imported.length === 0) {
+        toast.error('No geometry found in the STEP file.');
+        return;
+      }
+      // Cache tessellated meshes on the main thread so the regen pipeline
+      // can display each imported part without a worker round-trip.
+      for (const part of imported) {
+        setImportedShapeMesh(part.shapeId, part.tessellated);
+      }
+      // Derive a friendly base name from the file name (strip extension).
+      const baseName = file.name.replace(/\.(step|stp)$/i, '');
+      for (let i = 0; i < imported.length; i++) {
+        const label = imported.length === 1
+          ? baseName
+          : `${baseName} (${i + 1})`;
+        addImportedStepPart(label, imported[i].shapeId);
+      }
+      const durationMs = Math.round(performance.now() - t0);
+      // eslint-disable-next-line no-console
+      console.log('[step-import]', {
+        fileName: file.name,
+        fileSizeBytes: file.size,
+        partCount: imported.length,
+        durationMs,
+      });
+      // Show a Y-up orientation hint if any imported part has a taller
+      // Y extent than Z extent (common with SolidWorks / Fusion 360 files
+      // exported without a Z-up setting).
+      const needsYUpHint = imported.some((p) => {
+        const heightY = p.boundingBox.max[1] - p.boundingBox.min[1];
+        const heightZ = p.boundingBox.max[2] - p.boundingBox.min[2];
+        return heightY > heightZ * 1.5;
+      });
+      const partWord = imported.length === 1 ? 'part' : 'parts';
+      if (needsYUpHint) {
+        toast.success(
+          `${imported.length} ${partWord} imported at origin. ` +
+          'If the part appears sideways, rotate -90° around X in the inspector.',
+          { duration: 6000 },
+        );
+      } else {
+        toast.success(
+          `${imported.length} ${partWord} imported at origin. Drag to reposition.`,
+        );
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[step-import] failed:', err);
+      toast.error('Import failed. Check the console for details.');
+    } finally {
+      setImportingStep(false);
+    }
+  };
+
+  const onStepFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset the input so re-uploading the same file fires onChange again.
+    e.target.value = '';
+    if (file) handleImportStep(file);
+  };
+
+  const handleExportStep = async () => {
+    const partsWithFeatures = assembly.parts.filter(
+      (p) => p.features && p.features.length > 0,
+    );
+    if (partsWithFeatures.length === 0) {
+      toast.error('Nothing to export. Add at least one feature first.');
+      return;
+    }
+    setExportingStep(true);
+    const t0 = performance.now();
+    try {
+      const kernel = await getCadKernel();
+      const bytes = await kernel.exportAssemblyStep(
+        partsWithFeatures.map((p) => ({
+          partId: p.id,
+          features: p.features,
+          sketches: p.sketches,
+          transform: p.transform,
+        })),
+      );
+      const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], {
+        type: 'application/STEP',
+      });
+      const url = URL.createObjectURL(blob);
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const filename =
+        `kineticad-export-` +
+        `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}` +
+        `-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+        `.step`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      const durationMs = Math.round(performance.now() - t0);
+      // eslint-disable-next-line no-console
+      console.log('[step-export]', {
+        partCount: partsWithFeatures.length,
+        fileSizeBytes: bytes.byteLength,
+        durationMs,
+      });
+      toast.success('STEP file downloaded');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[step-export] failed:', err);
+      toast.error('Export failed. Check the console for details.');
+    } finally {
+      setExportingStep(false);
+    }
+  };
+
   // When the user asks to delete a part that's referenced by booleans we
   // surface a small confirmation so they understand the cascade. The pending
   // partId doubles as the modal's open flag.
@@ -245,6 +372,57 @@ export default function Modeller() {
                 <Download size={13} />
               )}
               <span className="hidden sm:inline">Export STL</span>
+            </button>
+
+            {/* Hidden file input — triggered by the Import STEP button */}
+            <input
+              ref={stepFileInputRef}
+              type="file"
+              accept=".step,.stp"
+              className="hidden"
+              onChange={onStepFileChange}
+            />
+
+            <button
+              type="button"
+              title="Import STEP file"
+              disabled={importingStep}
+              onClick={() => stepFileInputRef.current?.click()}
+              data-testid="import-step"
+              className={[
+                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
+                importingStep
+                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
+                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
+              ].join(' ')}
+            >
+              {importingStep ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Upload size={13} />
+              )}
+              <span className="hidden sm:inline">Import STEP</span>
+            </button>
+
+            <button
+              type="button"
+              title="Export STEP file"
+              disabled={exportingStep}
+              onClick={handleExportStep}
+              data-testid="export-step"
+              className={[
+                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
+                exportingStep
+                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
+                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
+              ].join(' ')}
+            >
+              {exportingStep ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Download size={13} />
+              )}
+              <span className="hidden sm:inline">Export STEP</span>
             </button>
           </>
         )}

@@ -455,6 +455,14 @@ export type KinetiCADStore = {
   // ---- Phase 6: part-level CRUD + transform + visibility ----
   /** Create an empty part with a unique default name and select it. Returns the new part id. */
   createPart: () => string;
+  /**
+   * Add a new part whose sole feature is an imported STEP shape. The OCCT
+   * shape lives in the CAD worker's in-memory registry (keyed by `shapeId`);
+   * the tessellated mesh must be stored in importedShapeCache before calling
+   * this so the regen pipeline can display the part without a worker call.
+   * Returns the new part id.
+   */
+  addImportedStepPart: (name: string, shapeId: string) => string;
   /** Rename a part. No-op if the trimmed name is empty or the part doesn't exist. */
   renamePart: (partId: string, name: string) => void;
   /**
@@ -1366,6 +1374,32 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         return part.id;
       },
 
+      addImportedStepPart: (name, shapeId) => {
+        const state = get();
+        const part: Part = {
+          id: newId('part'),
+          name,
+          visible: true,
+          transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
+          sketches: [],
+          features: [{ id: newId('feature'), type: 'imported-step', shapeId }],
+          materialId: 'default',
+        };
+        const groundPartId =
+          state.assembly.groundPartId === ''
+            ? part.id
+            : state.assembly.groundPartId;
+        set({
+          assembly: {
+            ...state.assembly,
+            parts: [...state.assembly.parts, part],
+            groundPartId,
+          },
+          selection: { kind: 'part', partId: part.id },
+        });
+        return part.id;
+      },
+
       renamePart: (partId, name) => {
         const trimmed = name.trim();
         if (!trimmed) return;
@@ -1422,6 +1456,10 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           }
           if (f.type === "chamfer") {
             return { ...f, id: fid, targetEdges: [...f.targetEdges] };
+          }
+          // imported-step — no extra fields to deep-copy.
+          if (f.type === 'imported-step') {
+            return { ...f, id: fid };
           }
           // hole — copy positionUV tuple to avoid alias.
           return {

@@ -20,6 +20,7 @@ import type {
 } from "@/state/schemas";
 import { isCardinalPlane } from "@/sketch/plane";
 import { getCachedMesh, setCachedMesh } from "./featureCache";
+import { getImportedShapeMesh } from "@/cad/importedShapeCache";
 import type { Remote } from "comlink";
 
 /**
@@ -156,6 +157,17 @@ async function runFeature(
       diameterMm: feature.diameterMm,
       depthMm: feature.depthMm,
     });
+  }
+
+  if (feature.type === 'imported-step') {
+    const mesh = getImportedShapeMesh(feature.shapeId);
+    if (!mesh) {
+      throw new Error(
+        'This part was imported from a STEP file and is no longer available ' +
+        'in memory. Re-import the STEP file to restore it.',
+      );
+    }
+    return mesh;
   }
 
   throw new Error(
