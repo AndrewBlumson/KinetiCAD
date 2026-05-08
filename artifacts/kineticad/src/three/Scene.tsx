@@ -399,7 +399,7 @@ export default function Scene() {
             controls?.update();
           }
 
-          renderer.renderAsync(scene, camera);
+          renderer.render(scene, camera);
           frameCounter += 1;
         };
         renderer.setAnimationLoop(renderLoop);
