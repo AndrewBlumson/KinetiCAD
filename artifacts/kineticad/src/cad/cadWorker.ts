@@ -1099,36 +1099,51 @@ const api: CadKernelApi = {
 
       reader = new ocAny.STEPControl_Reader_1();
       const readStatus = reader.ReadFile(virtualPath);
+
+      // IFSelect_RetDone = 1 in the OCCT enum.  In some emscripten builds the
+      // binding returns a plain integer; in others an object with .value.  We
+      // accept either form so the check is robust across opencascade.js builds.
       const retDone = ocAny.IFSelect_ReturnStatus.IFSelect_RetDone;
-      if (readStatus !== retDone) {
+      const retDoneNum: number =
+        typeof retDone === 'number' ? retDone : (retDone as any)?.value ?? 1;
+      const readStatusNum: number =
+        typeof readStatus === 'number' ? readStatus : (readStatus as any)?.value ?? -1;
+      if (readStatusNum !== retDoneNum) {
         throw new Error(
-          'STEP ReadFile failed — the file may be corrupt or use an unsupported STEP variant.',
+          `STEP ReadFile failed (status ${readStatusNum}) — the file may be corrupt or use an unsupported STEP variant.`,
         );
       }
 
-      // STEPControl_Reader overrides TransferRoot (singular, STEP-specific)
-      // but NOT TransferRoots (plural, XSControl base). The base
-      // TransferRoots calls TransferOneRoot which is a different, non-STEP
-      // method — it transfers 0 shapes for STEP files. Use the explicit
-      // NbRootsForTransfer + TransferRoot(i) loop instead.
-      const nbRoots = reader.NbRootsForTransfer();
-      for (let i = 1; i <= nbRoots; i++) {
-        const progress = new ocAny.Message_ProgressRange_1();
-        try {
-          reader.TransferRoot(i, progress);
-        } finally {
-          progress.delete();
-        }
+      // Standard documented opencascade.js STEP import pattern:
+      //   TransferRoots (base-class plural) followed by OneShape().
+      // TransferRoot (singular, STEP-specific) throws C++ exceptions on some
+      // STEP files and must not be used here.
+      const progress = new ocAny.Message_ProgressRange_1();
+      try {
+        reader.TransferRoots(progress);
+      } finally {
+        progress.delete();
       }
 
-      const nbShapes = reader.NbShapes();
-      for (let i = 1; i <= nbShapes; i++) {
-        rawShapes.push(reader.Shape(i));
+      // OneShape() combines all transferred roots into a single shape (a
+      // COMPOUND when there are multiple bodies).  Prefer this over iterating
+      // NbShapes()/Shape(i) which can return 0 even when geometry was
+      // successfully transferred.
+      const combined = reader.OneShape();
+      if (combined && !combined.IsNull?.()) {
+        rawShapes.push(combined);
+      } else {
+        // Fallback: iterate individual shapes in case OneShape() is unavailable.
+        const nbShapes = reader.NbShapes();
+        for (let i = 1; i <= nbShapes; i++) {
+          rawShapes.push(reader.Shape(i));
+        }
       }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[CAD WORKER] importStep read phase failed:', err);
-      throw err instanceof Error ? err : new Error(`step-import-failed: ${String(err)}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`step-import-failed: ${msg}`);
     } finally {
       if (reader) { try { reader.delete(); } catch { /* ignore */ } }
       try { oc.FS.unlink(virtualPath); } catch { /* ignore */ }
