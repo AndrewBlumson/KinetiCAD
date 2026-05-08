@@ -139,26 +139,12 @@ export default function Modeller() {
         partCount: imported.length,
         durationMs,
       });
-      // Show a Y-up orientation hint if any imported part has a taller
-      // Y extent than Z extent (common with SolidWorks / Fusion 360 files
-      // exported without a Z-up setting).
-      const needsYUpHint = imported.some((p) => {
-        const heightY = p.boundingBox.max[1] - p.boundingBox.min[1];
-        const heightZ = p.boundingBox.max[2] - p.boundingBox.min[2];
-        return heightY > heightZ * 1.5;
-      });
-      const partWord = imported.length === 1 ? 'part' : 'parts';
-      if (needsYUpHint) {
-        toast.success(
-          `${imported.length} ${partWord} imported at origin. ` +
-          'If the part appears sideways, rotate -90° around X in the inspector.',
-          { duration: 6000 },
-        );
-      } else {
-        toast.success(
-          `${imported.length} ${partWord} imported at origin. Drag to reposition.`,
-        );
-      }
+      const partCount = imported.length;
+      toast.success(
+        `${partCount} part${partCount === 1 ? '' : 's'} imported at origin. ` +
+        'If the part appears sideways, rotate -90° around X in the inspector.',
+        { duration: 6000 },
+      );
       // Restore canvas focus so OrbitControls regains pointer events immediately
       // after the file-picker dialog closes.
       requestAnimationFrame(() => {
