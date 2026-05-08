@@ -51,6 +51,16 @@ export type EdgeMetadata = {
   lengthMm: number;
   midpoint: [number, number, number];
   polyline: Float32Array;
+  /**
+   * For circle and arc edges: the true geometric centre of the underlying
+   * circle, computed from polyline samples via D0 (so it inherits the correct
+   * accumulated TopLoc_Location). Undefined for non-circular edges.
+   *
+   * Prefer this over `polylineCenter(polyline)` for revolute mate pivots —
+   * for an arc the polyline average gives the arc centroid (offset from the
+   * circle centre), while this field always gives the exact centre.
+   */
+  circleCenter?: [number, number, number];
 };
 
 /**

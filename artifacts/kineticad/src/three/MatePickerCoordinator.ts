@@ -238,7 +238,10 @@ export function getEdgeAxisWorld(
   // Polyline is already in local coords; transform to world.
   const axisLocal = normalize(n);
   const axis = localToWorldDir(axisLocal, part.transform);
-  const centroid = localToWorldPoint(polylineCenter(edge.polyline), part.transform);
+  const centroid = localToWorldPoint(
+    edge.circleCenter ?? polylineCenter(edge.polyline),
+    part.transform,
+  );
   return { axis, centroid };
 }
 
@@ -319,8 +322,14 @@ export function validateRevolutePicks(args: {
   return {
     ok: true,
     axisLocalA,
-    pivotLocalA: worldToLocalPoint(polylineCenter(edgeA.polyline), partA.transform),
-    pivotLocalB: worldToLocalPoint(polylineCenter(edgeB.polyline), partB.transform),
+    pivotLocalA: worldToLocalPoint(
+      edgeA.circleCenter ?? polylineCenter(edgeA.polyline),
+      partA.transform,
+    ),
+    pivotLocalB: worldToLocalPoint(
+      edgeB.circleCenter ?? polylineCenter(edgeB.polyline),
+      partB.transform,
+    ),
   };
 }
 

@@ -268,15 +268,23 @@ function classifyAndExtractCurve(
               : [endParam, startParam];
           return `arc|${cen}|${rd}|${ax}|${r(s)}|${r(e)}`;
         })();
-    // For full circles: compute the centre from the polyline average rather
-    // than from gp_Circ.Location(). gp_Circ.Location() returns the centre in
-    // the circle's intrinsic geometric frame and does NOT include the edge's
-    // accumulated TopLoc_Location from its parent shapes — so it reads (0,0,0)
-    // for a top-face circle at z=60 even though D0 correctly places the
-    // polyline samples at z=60. Averaging the first `segments` non-duplicate
-    // points (sampleCurveUniform emits segments+1 points, with the last
-    // duplicating the first for a closed circle) is exact for a circle and
-    // inherits the correct placement from the adaptor's D0 evaluations.
+    // Compute circleCenter for both full circles and arcs using only the
+    // polyline samples from D0 (which correctly inherit the accumulated
+    // TopLoc_Location from all parent shapes). gp_Circ.Location() is NOT used
+    // here because it returns the centre in the circle's own intrinsic frame
+    // without the parent transform, giving (0,0,0) for a top-face circle at
+    // z=60 even though D0 correctly places the samples at z=60.
+    //
+    // Full circle: the average of N uniformly-spaced points on a circle is
+    // the exact centre (cos terms cancel over a full period). sampleCurveUniform
+    // emits segments+1 points with the last duplicating the first, so sum only
+    // the first `segments` to avoid double-counting the seam point.
+    //
+    // Arc: use the 3D circumcenter formula on 3 well-separated samples.
+    // The circumcenter of any 3 non-collinear points on a circle equals the
+    // circle's geometric centre.
+    //   a = p1 − p0,  b = p2 − p0,  n = cross(a, b)
+    //   centre = p0 + cross(|a|²·b − |b|²·a, n) / (2·|n|²)
     let circleCenter: [number, number, number] | undefined;
     if (full) {
       let sx = 0, sy = 0, sz = 0;
@@ -286,6 +294,37 @@ function classifyAndExtractCurve(
         sz += polyline[3 * i + 2];
       }
       circleCenter = [sx / segments, sy / segments, sz / segments];
+    } else {
+      const n = Math.floor(polyline.length / 3);
+      if (n >= 3) {
+        const i0 = 0;
+        const i1 = Math.floor(n / 2);
+        const i2 = n - 1;
+        const p0x = polyline[i0 * 3],     p0y = polyline[i0 * 3 + 1], p0z = polyline[i0 * 3 + 2];
+        const p1x = polyline[i1 * 3],     p1y = polyline[i1 * 3 + 1], p1z = polyline[i1 * 3 + 2];
+        const p2x = polyline[i2 * 3],     p2y = polyline[i2 * 3 + 1], p2z = polyline[i2 * 3 + 2];
+        const ax = p1x - p0x, ay = p1y - p0y, az = p1z - p0z; // a = p1 - p0
+        const bx = p2x - p0x, by = p2y - p0y, bz = p2z - p0z; // b = p2 - p0
+        const nx = ay * bz - az * by,                           // n = cross(a, b)
+              ny = az * bx - ax * bz,
+              nz = ax * by - ay * bx;
+        const nn = nx * nx + ny * ny + nz * nz;                 // |n|²
+        if (nn > 1e-12) {
+          const aa = ax * ax + ay * ay + az * az;               // |a|²
+          const bb = bx * bx + by * by + bz * bz;               // |b|²
+          const qx = aa * bx - bb * ax,                         // |a|²·b − |b|²·a
+                qy = aa * by - bb * ay,
+                qz = aa * bz - bb * az;
+          const ex = qy * nz - qz * ny,                         // cross(q, n)
+                ey = qz * nx - qx * nz,
+                ez = qx * ny - qy * nx;
+          circleCenter = [
+            p0x + ex / (2 * nn),
+            p0y + ey / (2 * nn),
+            p0z + ez / (2 * nn),
+          ];
+        }
+      }
     }
     return {
       type: full ? "circle" : "arc",
