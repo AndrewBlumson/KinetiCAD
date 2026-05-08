@@ -1099,6 +1099,8 @@ const api: CadKernelApi = {
 
       reader = new ocAny.STEPControl_Reader_1();
       const readStatus = reader.ReadFile(virtualPath);
+      // eslint-disable-next-line no-console
+      console.log('[step] ReadFile status:', readStatus);
 
       // IFSelect_RetDone = 1 in the OCCT enum.  In some emscripten builds the
       // binding returns a plain integer; in others an object with .value.  We
@@ -1114,29 +1116,54 @@ const api: CadKernelApi = {
         );
       }
 
-      // Standard documented opencascade.js STEP import pattern:
-      //   TransferRoots (base-class plural) followed by OneShape().
-      // TransferRoot (singular, STEP-specific) throws C++ exceptions on some
-      // STEP files and must not be used here.
+      const nRoots = reader.NbRootsForTransfer();
+      // eslint-disable-next-line no-console
+      console.log('[step] NbRootsForTransfer:', nRoots);
+
       const progress = new ocAny.Message_ProgressRange_1();
+      let transferred: number;
       try {
-        reader.TransferRoots(progress);
+        transferred = reader.TransferRoots(progress);
       } finally {
         progress.delete();
       }
+      // eslint-disable-next-line no-console
+      console.log('[step] TransferRoots returned:', transferred!);
+
+      const nShapes = reader.NbShapes();
+      // eslint-disable-next-line no-console
+      console.log('[step] NbShapes after transfer:', nShapes);
 
       // OneShape() combines all transferred roots into a single shape (a
       // COMPOUND when there are multiple bodies).  Prefer this over iterating
       // NbShapes()/Shape(i) which can return 0 even when geometry was
       // successfully transferred.
       const combined = reader.OneShape();
+      // eslint-disable-next-line no-console
+      console.log('[step] OneShape isNull:', combined?.IsNull?.());
+
+      // IMPORTANT: reader.delete() in the finally block frees internal OCCT
+      // data that OneShape()/Shape(i) alias via reference.  Deep-copy each
+      // shape NOW (while the reader is still alive) using BRepBuilderAPI_Copy
+      // so rawShapes holds truly independent TopoDS_Shape instances.
       if (combined && !combined.IsNull?.()) {
-        rawShapes.push(combined);
+        let copyBuilder: any = null;
+        try {
+          copyBuilder = new ocAny.BRepBuilderAPI_Copy_2(combined, true, false);
+          rawShapes.push(copyBuilder.Shape());
+        } finally {
+          if (copyBuilder) copyBuilder.delete();
+        }
       } else {
-        // Fallback: iterate individual shapes in case OneShape() is unavailable.
-        const nbShapes = reader.NbShapes();
-        for (let i = 1; i <= nbShapes; i++) {
-          rawShapes.push(reader.Shape(i));
+        // Fallback: iterate individual shapes.
+        for (let i = 1; i <= nShapes; i++) {
+          let copyBuilder: any = null;
+          try {
+            copyBuilder = new ocAny.BRepBuilderAPI_Copy_2(reader.Shape(i), true, false);
+            rawShapes.push(copyBuilder.Shape());
+          } finally {
+            if (copyBuilder) copyBuilder.delete();
+          }
         }
       }
     } catch (err) {
