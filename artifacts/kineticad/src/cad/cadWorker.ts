@@ -1096,6 +1096,7 @@ const api: CadKernelApi = {
 
     try {
       oc.FS.writeFile(virtualPath, fileBytes);
+
       reader = new ocAny.STEPControl_Reader_1();
       const readStatus = reader.ReadFile(virtualPath);
       const retDone = ocAny.IFSelect_ReturnStatus.IFSelect_RetDone;
@@ -1105,11 +1106,19 @@ const api: CadKernelApi = {
         );
       }
 
-      const progress = new ocAny.Message_ProgressRange_1();
-      try {
-        reader.TransferRoots(progress);
-      } finally {
-        progress.delete();
+      // STEPControl_Reader overrides TransferRoot (singular, STEP-specific)
+      // but NOT TransferRoots (plural, XSControl base). The base
+      // TransferRoots calls TransferOneRoot which is a different, non-STEP
+      // method — it transfers 0 shapes for STEP files. Use the explicit
+      // NbRootsForTransfer + TransferRoot(i) loop instead.
+      const nbRoots = reader.NbRootsForTransfer();
+      for (let i = 1; i <= nbRoots; i++) {
+        const progress = new ocAny.Message_ProgressRange_1();
+        try {
+          reader.TransferRoot(i, progress);
+        } finally {
+          progress.delete();
+        }
       }
 
       const nbShapes = reader.NbShapes();
