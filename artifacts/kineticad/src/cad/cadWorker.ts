@@ -1236,41 +1236,52 @@ const api: CadKernelApi = {
       throw new Error('step-import-failed: no geometry found in the STEP file.');
     }
 
+    // Assembly-level grounding: find the lowest Z across ALL parts first,
+    // then apply a single uniform dz so relative positions are preserved.
+    // Only lift if something is below Z=0; parts already above ground are
+    // left where they are.
+    {
+      let assemblyZMin = Infinity;
+      for (const s of solidShapes) {
+        const bb = new ocAny.Bnd_Box_1();
+        try {
+          ocAny.BRepBndLib.Add(s, bb, false);
+          const cMin = bb.CornerMin();
+          const z: number = cMin.Z();
+          cMin.delete();
+          if (z < assemblyZMin) assemblyZMin = z;
+        } finally {
+          bb.delete();
+        }
+      }
+
+      const dz = isFinite(assemblyZMin) && assemblyZMin < -0.001 ? -assemblyZMin : 0;
+
+      if (dz > 0.001) {
+        for (let k = 0; k < solidShapes.length; k++) {
+          let groundTransformer: any = null;
+          let groundCopier: any = null;
+          try {
+            const trsf = new ocAny.gp_Trsf_1();
+            const vec = new ocAny.gp_Vec_4(0, 0, dz);
+            trsf.SetTranslation_1(vec);
+            vec.delete();
+            groundTransformer = new ocAny.BRepBuilderAPI_Transform_2(solidShapes[k], trsf, true);
+            trsf.delete();
+            groundCopier = new ocAny.BRepBuilderAPI_Copy_2(groundTransformer.Shape(), true, false);
+            solidShapes[k] = groundCopier.Shape();
+          } finally {
+            if (groundTransformer) groundTransformer.delete();
+            if (groundCopier) groundCopier.delete();
+          }
+        }
+      }
+    }
+
     const results: import('./types').ImportedPart[] = [];
 
     for (let j = 0; j < solidShapes.length; j++) {
-      let shape = solidShapes[j];
-
-      // Ground the shape: translate so its lowest Z sits at Z=0 regardless
-      // of how the source CAD tool modelled it.
-      {
-        const bboxGround = new ocAny.Bnd_Box_1();
-        let groundTransformer: any = null;
-        let groundCopier: any = null;
-        try {
-          ocAny.BRepBndLib.Add(shape, bboxGround, false);
-          const cornerMin = bboxGround.CornerMin();
-          const zMin: number = cornerMin.Z();
-          cornerMin.delete();
-          if (Math.abs(zMin) > 0.001) {
-            const trsf = new ocAny.gp_Trsf_1();
-            const vec = new ocAny.gp_Vec_4(0, 0, -zMin);
-            trsf.SetTranslation_1(vec);
-            vec.delete();
-            // Copy=true so the result owns its topology.
-            groundTransformer = new ocAny.BRepBuilderAPI_Transform_2(shape, trsf, true);
-            trsf.delete();
-            // Deep-copy before deleting the transformer (same pattern as
-            // extrude) so the shape is truly independent.
-            groundCopier = new ocAny.BRepBuilderAPI_Copy_2(groundTransformer.Shape(), true, false);
-            shape = groundCopier.Shape();
-          }
-        } finally {
-          bboxGround.delete();
-          if (groundTransformer) groundTransformer.delete();
-          if (groundCopier) groundCopier.delete();
-        }
-      }
+      const shape = solidShapes[j];
 
       // Unique key for this import session.
       const shapeId =
