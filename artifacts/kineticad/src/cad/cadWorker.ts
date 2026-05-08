@@ -896,7 +896,6 @@ const api: CadKernelApi = {
     let builder: any = null;
     let meshBuilder: any = null;
     let progressRange: any = null;
-    let writer: any = null;
 
     try {
       for (const part of parts) {
@@ -1004,20 +1003,20 @@ const api: CadKernelApi = {
       meshBuilder.delete();
       meshBuilder = null;
 
-      // Write binary STL to the Emscripten virtual FS, read it back as
-      // a Uint8Array, then clean up the temporary file.
+      // Write binary STL to the Emscripten virtual FS using the static
+      // StlAPI.Write helper (third arg false = binary mode). Read the bytes
+      // back as a Uint8Array, then clean up the temporary file.
       const stlPath = "/tmp/kineticad-export.stl";
-      writer = new ocAny.StlAPI_Writer();
-      writer.ASCIIMode(false);
-      writer.Write(compound, stlPath);
-      writer.delete();
-      writer = null;
+      const writeOk = ocAny.StlAPI.Write(compound, stlPath, false);
+      if (!writeOk) {
+        throw new Error("stl-export-failed: StlAPI.Write returned false.");
+      }
 
       const bytes: Uint8Array = ocAny.FS.readFile(stlPath);
       try {
         ocAny.FS.unlink(stlPath);
       } catch {
-        // Non-fatal: file may not exist if Write silently failed.
+        // Non-fatal.
       }
       return bytes;
     } catch (err) {
@@ -1034,11 +1033,6 @@ const api: CadKernelApi = {
       if (meshBuilder) {
         try {
           meshBuilder.delete();
-        } catch { /* ignore */ }
-      }
-      if (writer) {
-        try {
-          writer.delete();
         } catch { /* ignore */ }
       }
       if (builder) {
