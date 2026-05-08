@@ -1095,12 +1095,16 @@ const api: CadKernelApi = {
     const rawShapes: any[] = [];
 
     try {
+      // eslint-disable-next-line no-console
+      console.log('[step-debug] file size:', fileBytes.byteLength);
       oc.FS.writeFile(virtualPath, fileBytes);
+      // eslint-disable-next-line no-console
+      console.log('[step-debug] FS /tmp after write:', (oc.FS as any).readdir('/tmp'));
 
       reader = new ocAny.STEPControl_Reader_1();
       const readStatus = reader.ReadFile(virtualPath);
       // eslint-disable-next-line no-console
-      console.log('[step] ReadFile status:', readStatus);
+      console.log('[step-debug] ReadFile status:', readStatus);
 
       // IFSelect_RetDone = 1 in the OCCT enum.  In some emscripten builds the
       // binding returns a plain integer; in others an object with .value.  We
@@ -1118,7 +1122,7 @@ const api: CadKernelApi = {
 
       const nRoots = reader.NbRootsForTransfer();
       // eslint-disable-next-line no-console
-      console.log('[step] NbRootsForTransfer:', nRoots);
+      console.log('[step-debug] NbRootsForTransfer:', nRoots);
 
       const progress = new ocAny.Message_ProgressRange_1();
       let transferred: number;
@@ -1128,19 +1132,22 @@ const api: CadKernelApi = {
         progress.delete();
       }
       // eslint-disable-next-line no-console
-      console.log('[step] TransferRoots returned:', transferred!);
+      console.log('[step-debug] TransferRoots returned:', transferred!);
 
       const nShapes = reader.NbShapes();
       // eslint-disable-next-line no-console
-      console.log('[step] NbShapes after transfer:', nShapes);
+      console.log('[step-debug] NbShapes after transfer:', nShapes);
 
       // OneShape() combines all transferred roots into a single shape (a
       // COMPOUND when there are multiple bodies).  Prefer this over iterating
       // NbShapes()/Shape(i) which can return 0 even when geometry was
       // successfully transferred.
       const combined = reader.OneShape();
+      const combinedIsNull = combined?.IsNull?.() ?? true;
       // eslint-disable-next-line no-console
-      console.log('[step] OneShape isNull:', combined?.IsNull?.());
+      console.log('[step-debug] OneShape isNull:', combinedIsNull);
+      // eslint-disable-next-line no-console
+      console.log('[step-debug] OneShape ShapeType:', combinedIsNull ? 'NULL' : combined.ShapeType());
 
       // IMPORTANT: reader.delete() in the finally block frees internal OCCT
       // data that OneShape()/Shape(i) alias via reference.  Deep-copy each
