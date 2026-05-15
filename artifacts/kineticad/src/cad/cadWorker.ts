@@ -60,6 +60,10 @@ import { computeMassProperties } from "./operations/massProperties";
 const OCCT_VERSION = "2.0.0-beta.94e2944";
 const OCCT_WASM_URL = `https://cdn.jsdelivr.net/npm/opencascade.js@${OCCT_VERSION}/dist/opencascade.full.wasm`;
 
+// Set true to emit per-label XCAF walk diagnostics. Flip to false once the
+// naming pipeline is confirmed correct. 16/05/2026
+const STEP_NAME_DEBUG = true;
+
 type OC = OpenCascadeInstance;
 
 type OcFactorySettings = {
@@ -1145,7 +1149,7 @@ const api: CadKernelApi = {
     // All TDF_Label objects allocated by Value() are deleted in finally blocks
     // to prevent WASM heap leaks.
     // ------------------------------------------------------------------
-    function walkLabel(label: any, out: string[]): void {
+    function walkLabel(label: any, out: string[], depth = 0): void {
       if (ocAny.XCAFDoc_ShapeTool.IsAssembly(label)) {
         const compLabels = new ocAny.TDF_LabelSequence_1();
         try {
@@ -1165,15 +1169,33 @@ const api: CadKernelApi = {
                 ocAny.XCAFDoc_ShapeTool.IsAssembly(referred)
               ) {
                 // Sub-assembly: recurse depth-first so DFS order is preserved.
-                walkLabel(referred, out);
+                if (STEP_NAME_DEBUG) {
+                  // eslint-disable-next-line no-console
+                  console.log(
+                    `[xcaf-walk] depth=${depth} isAssembly=true componentCount=${n}` +
+                    ` referredHasName=false referredName=""` +
+                    ` componentHasName=false componentName="" chosen="(sub-assembly, recursing)"`,
+                  );
+                }
+                walkLabel(referred, out, depth + 1);
               } else {
                 // Leaf part: prefer the referred prototype's name, then the
                 // component instance name, then empty string (fallback applies).
-                const name =
-                  (hasReferred && !referred.IsNull()
-                    ? extractLabelName(referred)
-                    : '') || extractLabelName(comp);
-                out.push(name);
+                // Pre-compute both names so they can be used in the log and the push.
+                const referredName =
+                  hasReferred && !referred.IsNull() ? extractLabelName(referred) : '';
+                const componentName = extractLabelName(comp);
+                const chosen = referredName || componentName;
+                if (STEP_NAME_DEBUG) {
+                  // eslint-disable-next-line no-console
+                  console.log(
+                    `[xcaf-walk] depth=${depth} isAssembly=true componentCount=${n}` +
+                    ` referredHasName=${!!referredName} referredName="${referredName}"` +
+                    ` componentHasName=${!!componentName} componentName="${componentName}"` +
+                    ` chosen="${chosen}"`,
+                  );
+                }
+                out.push(chosen);
               }
             } finally {
               try { referred.delete(); } catch { /* ignore */ }
@@ -1184,7 +1206,16 @@ const api: CadKernelApi = {
           compLabels.delete();
         }
       } else {
-        out.push(extractLabelName(label));
+        const name = extractLabelName(label);
+        if (STEP_NAME_DEBUG) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `[xcaf-walk] depth=${depth} isAssembly=false componentCount=0` +
+            ` referredHasName=false referredName=""` +
+            ` componentHasName=${!!name} componentName="${name}" chosen="${name}"`,
+          );
+        }
+        out.push(name);
       }
     }
 
@@ -1312,8 +1343,18 @@ const api: CadKernelApi = {
           );
           shapeTool.get().GetFreeShapes(freeLabels);
           const nFree: number = freeLabels.Length();
-          // eslint-disable-next-line no-console
-          console.log('[step-debug] XCAF free shapes:', nFree);
+          if (STEP_NAME_DEBUG) {
+            // Count how many root labels carry a name attribute before the walk.
+            let rootsWithName = 0;
+            for (let i = 1; i <= nFree; i++) {
+              const lbl = freeLabels.Value(i);
+              try { if (extractLabelName(lbl)) rootsWithName++; } finally {
+                try { lbl.delete(); } catch { /* ignore */ }
+              }
+            }
+            // eslint-disable-next-line no-console
+            console.log(`[xcaf-roots] freeShapeCount=${nFree} rootsWithName=${rootsWithName}`);
+          }
           for (let i = 1; i <= nFree; i++) {
             const label = freeLabels.Value(i);
             try {
@@ -1322,8 +1363,14 @@ const api: CadKernelApi = {
               try { label.delete(); } catch { /* ignore */ }
             }
           }
-          // eslint-disable-next-line no-console
-          console.log('[step-debug] XCAF names extracted:', xcafNames.length, xcafNames);
+          if (STEP_NAME_DEBUG) {
+            const labelsWithName = xcafNames.filter(n => !!n).length;
+            // eslint-disable-next-line no-console
+            console.log(
+              `[xcaf-summary] totalLabelsVisited=${xcafNames.length}` +
+              ` labelsWithName=${labelsWithName} labelsEmpty=${xcafNames.length - labelsWithName}`,
+            );
+          }
         } catch (xcafErr) {
           // eslint-disable-next-line no-console
           console.warn(
