@@ -39,6 +39,22 @@ import type {
 } from "./types";
 import type { Mate } from "@/state/schemas";
 
+// Worker→main-thread console bridge. 16/05/2026
+// Mirrors the same bridge in cadWorker.ts -- see that file for rationale.
+const __origLog   = console.log;
+const __origInfo  = console.info;
+const __origDebug = console.debug;
+const __origWarn  = console.warn;
+const __origError = console.error;
+function __forward(level: string, args: unknown[]): void {
+  try { self.postMessage({ __log: true, level, args }); } catch { /* swallow DataCloneError */ }
+}
+console.log   = (...a: unknown[]) => { __origLog(...a);   __forward('log',   a); };
+console.info  = (...a: unknown[]) => { __origInfo(...a);  __forward('info',  a); };
+console.debug = (...a: unknown[]) => { __origDebug(...a); __forward('debug', a); };
+console.warn  = (...a: unknown[]) => { __origWarn(...a);  __forward('warn',  a); };
+console.error = (...a: unknown[]) => { __origError(...a); __forward('error', a); };
+
 let initPromise: Promise<PhysicsInitResult> | null = null;
 let world: RAPIER.World | null = null;
 let timeStepMs = 1000 / 60;

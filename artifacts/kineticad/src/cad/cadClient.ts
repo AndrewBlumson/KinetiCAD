@@ -29,18 +29,22 @@ export function getCadKernel(): Promise<Comlink.Remote<CadKernelApi>> {
   slot.promise = (async () => {
     const worker = new CadWorker();
 
-    // Bridge worker-side `[SELF-TEST]` results to the main-thread console.
-    // Chrome's default DevTools filter hides worker console output from the
-    // page console, so the kernel boot smoke-test was invisible to QA. We
-    // re-emit it on the main thread (always at error level so it survives
-    // the default filter) before handing the worker over to Comlink.
-    //
-    // We keep the listener registered for the worker's lifetime — Comlink
-    // ignores messages it doesn't recognise (no `id` field), so this won't
-    // interfere with the RPC channel.
+    // Bridge worker console logs to the page console, and forward self-test
+    // results. Production builds do not surface worker console output in the
+    // page DevTools context; the __log envelope fixes that. Comlink ignores
+    // messages that lack its RPC envelope shape (no `id` field), so both
+    // discriminators are safe to inspect here. 16/05/2026
     worker.addEventListener("message", (e: MessageEvent) => {
-      const data = e.data as { type?: string; ok?: boolean; message?: string };
-      if (data && data.type === "self-test") {
+      const data = e.data as {
+        type?: string; ok?: boolean; message?: string;
+        __log?: boolean; level?: string; args?: unknown[];
+      };
+      if (data && data.__log === true) {
+        const fn = (console as unknown as Record<string, unknown>)[data.level ?? 'log'];
+        ((typeof fn === 'function' ? fn : console.log) as (...a: unknown[]) => void)(
+          '[worker]', ...(data.args ?? []),
+        );
+      } else if (data && data.type === "self-test") {
         // eslint-disable-next-line no-console
         console.error(data.message ?? "[SELF-TEST] (no message)");
       }

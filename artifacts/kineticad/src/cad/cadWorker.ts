@@ -57,6 +57,26 @@ import { applyHole, type HoleFaceRef } from "./operations/hole";
 import { applyBoolean } from "./operations/boolean";
 import { computeMassProperties } from "./operations/massProperties";
 
+// Worker→main-thread console bridge. 16/05/2026
+// Production builds do not forward worker console.log to the page's DevTools
+// context. We patch each console method to also postMessage a __log envelope
+// that cadClient.ts picks up before Comlink sees the message. The try/catch in
+// __forward swallows DataCloneError silently so a non-cloneable arg (e.g. an
+// OCCT handle) never crashes the worker.
+const __origLog   = console.log;
+const __origInfo  = console.info;
+const __origDebug = console.debug;
+const __origWarn  = console.warn;
+const __origError = console.error;
+function __forward(level: string, args: unknown[]): void {
+  try { self.postMessage({ __log: true, level, args }); } catch { /* swallow DataCloneError */ }
+}
+console.log   = (...a: unknown[]) => { __origLog(...a);   __forward('log',   a); };
+console.info  = (...a: unknown[]) => { __origInfo(...a);  __forward('info',  a); };
+console.debug = (...a: unknown[]) => { __origDebug(...a); __forward('debug', a); };
+console.warn  = (...a: unknown[]) => { __origWarn(...a);  __forward('warn',  a); };
+console.error = (...a: unknown[]) => { __origError(...a); __forward('error', a); };
+
 const OCCT_VERSION = "2.0.0-beta.94e2944";
 const OCCT_WASM_URL = `https://cdn.jsdelivr.net/npm/opencascade.js@${OCCT_VERSION}/dist/opencascade.full.wasm`;
 

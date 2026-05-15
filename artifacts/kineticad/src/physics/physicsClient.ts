@@ -25,6 +25,17 @@ export function getPhysicsKernel(): Promise<Comlink.Remote<PhysicsApi>> {
 
   slot.promise = (async () => {
     const worker = new PhysicsWorker();
+    // Bridge worker console logs to the page console before handing the
+    // worker to Comlink. See cadClient.ts for full rationale. 16/05/2026
+    worker.addEventListener('message', (e: MessageEvent) => {
+      const data = e.data as { __log?: boolean; level?: string; args?: unknown[] };
+      if (data && data.__log === true) {
+        const fn = (console as unknown as Record<string, unknown>)[data.level ?? 'log'];
+        ((typeof fn === 'function' ? fn : console.log) as (...a: unknown[]) => void)(
+          '[worker]', ...(data.args ?? []),
+        );
+      }
+    });
     const api = Comlink.wrap<PhysicsApi>(worker);
     const meta = await api.init();
     slot.meta = meta;
