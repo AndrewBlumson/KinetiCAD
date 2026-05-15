@@ -1116,6 +1116,48 @@ const api: CadKernelApi = {
     // extStr is a reference owned by nameHandle -- it must NOT be deleted.
     // ------------------------------------------------------------------
     function extractLabelName(label: any): string {
+      // ------------------------------------------------------------------
+      // PROBE (STEP_NAME_DEBUG): verify that the base-handle + DownCast
+      // pattern resolves the embind BindingError before committing it as
+      // the production path. 16/05/2026
+      // FindAttribute_1 requires Handle_TDF_Attribute (the base-class
+      // generic handle) -- embind cannot implicitly upcast from the typed
+      // subclass Handle_TDataStd_Name_1. The probe allocates the base
+      // handle, calls FindAttribute_1, then DownCasts to the typed handle
+      // to read the ExtendedString. Remove this block once confirmed.
+      // ------------------------------------------------------------------
+      if (STEP_NAME_DEBUG) {
+        const baseHandle = new ocAny.Handle_TDF_Attribute_1();
+        let typedHandle: any = null;
+        try {
+          const found = label.FindAttribute_1(
+            ocAny.TDataStd_Name.GetID(),
+            baseHandle,
+          );
+          typedHandle = ocAny.Handle_TDataStd_Name.DownCast(baseHandle);
+          let probeName = '';
+          if (!typedHandle.IsNull()) {
+            const extStr = typedHandle.get().Get();
+            const len: number = extStr.Length();
+            for (let k = 1; k <= len; k++) {
+              probeName += String.fromCharCode(extStr.Value(k));
+            }
+            probeName = probeName.trim();
+          }
+          // eslint-disable-next-line no-console
+          console.log('[xcaf-probe]', { found, isNull: typedHandle.IsNull(), name: probeName });
+        } catch (probeErr) {
+          // eslint-disable-next-line no-console
+          console.error('[xcaf-probe] FAILED:', probeErr);
+        } finally {
+          try { baseHandle.delete(); } catch { /* ignore */ }
+          try { if (typedHandle) typedHandle.delete(); } catch { /* ignore */ }
+        }
+      }
+
+      // Existing implementation -- currently broken because embind rejects
+      // Handle_TDataStd_Name_1 where Handle_TDF_Attribute& is expected.
+      // This will be replaced by the probe pattern above once confirmed.
       const nameHandle = new ocAny.Handle_TDataStd_Name_1();
       let name = '';
       try {
