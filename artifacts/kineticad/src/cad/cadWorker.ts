@@ -1198,7 +1198,7 @@ const api: CadKernelApi = {
       // STEPCAFControl_Reader is used instead of STEPControl_Reader_1 so the
       // XCAF document tree is populated alongside the geometry.  The underlying
       // STEPControl_Reader is accessed via ChangeReader() for OneShape().
-      cafReader = new ocAny.STEPCAFControl_Reader();
+      cafReader = new ocAny.STEPCAFControl_Reader_1();
       const readStatus = cafReader.ReadFile(virtualPath);
       // eslint-disable-next-line no-console
       console.log('[step-debug] ReadFile status:', readStatus);
