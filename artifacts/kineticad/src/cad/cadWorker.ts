@@ -60,9 +60,8 @@ import { computeMassProperties } from "./operations/massProperties";
 const OCCT_VERSION = "2.0.0-beta.94e2944";
 const OCCT_WASM_URL = `https://cdn.jsdelivr.net/npm/opencascade.js@${OCCT_VERSION}/dist/opencascade.full.wasm`;
 
-// Set true to emit per-label XCAF walk diagnostics. Flip to false once the
-// naming pipeline is confirmed correct. 16/05/2026
-const STEP_NAME_DEBUG = true;
+// XCAF label-name debug logging. Permanently false -- see extractLabelName.
+const STEP_NAME_DEBUG = false;
 
 type OC = OpenCascadeInstance;
 
@@ -1109,74 +1108,29 @@ const api: CadKernelApi = {
     const xcafNames: string[] = [];
 
     // ------------------------------------------------------------------
-    // Extracts the TDataStd_Name string from a TDF_Label.  Returns '' if
-    // the label carries no name attribute.  Characters are read one-by-one
-    // via Value(k) which produces the correct BMP codepoint for each cell
-    // of the ExtendedString (Standard_ExtCharacter = unsigned short).
-    // extStr is a reference owned by nameHandle -- it must NOT be deleted.
+    // extractLabelName -- permanently stubbed out. 16/05/2026
+    //
+    // opencascade.js 2.0.0-beta.94e2944 does not expose the APIs needed
+    // to read a TDataStd_Name attribute from a TDF_Label:
+    //
+    //   - Handle_TDataStd_Name.DownCast is not present in the binding.
+    //   - TDataStd_Name.Get_1 / Get_2 static methods are not present.
+    //   - TDF_Label.FindAttribute_1 only accepts Handle_TDF_Attribute
+    //     (the base handle); embind rejects Handle_TDataStd_Name_1 with
+    //     a BindingError, and there is no overload that accepts the typed
+    //     subclass handle directly.
+    //   - TDF_Attribute (the type returned by Handle_TDF_Attribute.get())
+    //     does not expose Get() in its binding, so duck-typing through the
+    //     base handle is also structurally impossible.
+    //
+    // All eight candidate paths were exhausted in the xcaf-api-probe
+    // script (scripts/src/xcaf-api-probe.ts). None are available.
+    //
+    // The documented behaviour is therefore to return an empty string
+    // here and let the call sites fall back to filename-stem names.
     // ------------------------------------------------------------------
-    function extractLabelName(label: any): string {
-      // ------------------------------------------------------------------
-      // PROBE (STEP_NAME_DEBUG): verify that the base-handle + DownCast
-      // pattern resolves the embind BindingError before committing it as
-      // the production path. 16/05/2026
-      // FindAttribute_1 requires Handle_TDF_Attribute (the base-class
-      // generic handle) -- embind cannot implicitly upcast from the typed
-      // subclass Handle_TDataStd_Name_1. The probe allocates the base
-      // handle, calls FindAttribute_1, then DownCasts to the typed handle
-      // to read the ExtendedString. Remove this block once confirmed.
-      // ------------------------------------------------------------------
-      if (STEP_NAME_DEBUG) {
-        const baseHandle = new ocAny.Handle_TDF_Attribute_1();
-        let typedHandle: any = null;
-        try {
-          const found = label.FindAttribute_1(
-            ocAny.TDataStd_Name.GetID(),
-            baseHandle,
-          );
-          typedHandle = ocAny.Handle_TDataStd_Name.DownCast(baseHandle);
-          let probeName = '';
-          if (!typedHandle.IsNull()) {
-            const extStr = typedHandle.get().Get();
-            const len: number = extStr.Length();
-            for (let k = 1; k <= len; k++) {
-              probeName += String.fromCharCode(extStr.Value(k));
-            }
-            probeName = probeName.trim();
-          }
-          // eslint-disable-next-line no-console
-          console.log('[xcaf-probe]', { found, isNull: typedHandle.IsNull(), name: probeName });
-        } catch (probeErr) {
-          // eslint-disable-next-line no-console
-          console.error('[xcaf-probe] FAILED:', probeErr);
-        } finally {
-          try { baseHandle.delete(); } catch { /* ignore */ }
-          try { if (typedHandle) typedHandle.delete(); } catch { /* ignore */ }
-        }
-      }
-
-      // Existing implementation -- currently broken because embind rejects
-      // Handle_TDataStd_Name_1 where Handle_TDF_Attribute& is expected.
-      // This will be replaced by the probe pattern above once confirmed.
-      const nameHandle = new ocAny.Handle_TDataStd_Name_1();
-      let name = '';
-      try {
-        const found = label.FindAttribute_1(
-          ocAny.TDataStd_Name.GetID(),
-          nameHandle,
-        );
-        if (found && !nameHandle.IsNull()) {
-          const extStr = nameHandle.get().Get();
-          const len: number = extStr.Length();
-          for (let k = 1; k <= len; k++) {
-            name += String.fromCharCode(extStr.Value(k));
-          }
-          name = name.trim();
-        }
-      } finally {
-        nameHandle.delete();
-      }
-      return name;
+    function extractLabelName(_label: any): string {
+      return '';
     }
 
     // ------------------------------------------------------------------
