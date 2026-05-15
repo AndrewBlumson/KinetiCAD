@@ -28,6 +28,12 @@ export type Vec3 = [number, number, number];
 const EPSILON = 1e-9;
 const DEG = Math.PI / 180;
 
+// Set true locally to log raw circle centres and computed local pivots for
+// every validateRevolutePicks call. Left false in committed code; the
+// existing [mate-create-pivot] logs in RevoluteMateInspector.tsx are
+// sufficient for normal regression verification.
+const MATE_PIVOT_DEBUG = false;
+
 /* -------------------------------------------------------------------------- */
 /*  Topology classifiers                                                      */
 /* -------------------------------------------------------------------------- */
@@ -319,18 +325,27 @@ export function validateRevolutePicks(args: {
     dot(axisLocalARaw, edgeBAxisLocalA) >= 0
       ? axisLocalARaw
       : [-axisLocalARaw[0], -axisLocalARaw[1], -axisLocalARaw[2]];
-  return {
-    ok: true,
-    axisLocalA,
-    pivotLocalA: worldToLocalPoint(
-      edgeA.circleCenter ?? polylineCenter(edgeA.polyline),
-      partA.transform,
-    ),
-    pivotLocalB: worldToLocalPoint(
-      edgeB.circleCenter ?? polylineCenter(edgeB.polyline),
-      partB.transform,
-    ),
-  };
+  const pivotLocalA = worldToLocalPoint(
+    edgeA.circleCenter ?? polylineCenter(edgeA.polyline),
+    partA.transform,
+  );
+  const pivotLocalB = worldToLocalPoint(
+    edgeB.circleCenter ?? polylineCenter(edgeB.polyline),
+    partB.transform,
+  );
+  if (MATE_PIVOT_DEBUG) {
+    // eslint-disable-next-line no-console
+    console.log("[validateRevolutePicks]", {
+      centerA_raw: edgeA.circleCenter ?? polylineCenter(edgeA.polyline),
+      centerA_hadCircleCenter: edgeA.circleCenter !== undefined,
+      pivotLocalA,
+      centerB_raw: edgeB.circleCenter ?? polylineCenter(edgeB.polyline),
+      centerB_hadCircleCenter: edgeB.circleCenter !== undefined,
+      pivotLocalB,
+      axisLocalA,
+    });
+  }
+  return { ok: true, axisLocalA, pivotLocalA, pivotLocalB };
 }
 
 export type PrismaticValidationOk = {

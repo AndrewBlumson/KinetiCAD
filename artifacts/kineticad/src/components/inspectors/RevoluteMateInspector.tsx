@@ -64,6 +64,11 @@ export default function RevoluteMateInspector() {
     if (editor.stage === "pick-a") {
       const part = assembly.parts.find((p) => p.id === selection.partId);
       if (!part) return;
+      // TODO: frame-mismatch when Part A has non-identity world transform;
+      // edge.midpoint is in part-local body space but worldToLocalPoint
+      // treats it as world space — harmless for identity-transform parts
+      // (e.g. the seeded windmill post) but wrong in the general case.
+      // See arc-pivot fix 15/05/2026.
       const localPoint = worldToLocalPoint(edge.midpoint as Vec3, part.transform);
       // eslint-disable-next-line no-console
       console.log("[mate-create-pivot]", {

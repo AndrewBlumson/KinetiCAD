@@ -495,6 +495,7 @@ export function enumerateEdges(oc: unknown, shape: unknown): EdgeMetadata[] {
           lengthMm,
           midpoint,
           polyline: curveInfo.polyline,
+          circleCenter: curveInfo.circleCenter,
         });
       } catch {
         // Skip pathological edges (degenerate, no curve, etc.). Adding them
