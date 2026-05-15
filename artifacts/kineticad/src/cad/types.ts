@@ -255,7 +255,9 @@ export type MassPropertiesResult = {
 export type ImportedPart = {
   /** Key into the CAD worker's in-memory shape registry. */
   shapeId: string;
-  /** Auto-generated display name ("Imported Part N"). */
+  /** STEP PRODUCT name extracted from the XCAF document tree, or a fallback
+   *  stem derived from the file name ("filename_01") when no PRODUCT label is
+   *  present.  Never the generic "Imported Part N" placeholder. */
   name: string;
   /** Full tessellated mesh with edge and face topology, ready for display. */
   tessellated: TessellatedMesh;
@@ -326,7 +328,7 @@ export type CadKernelApi = {
    * parts. Parts whose geometry comes from STEP files do NOT carry parametric
    * feature history — STEP is flat B-rep only.
    */
-  importStep: (fileBytes: Uint8Array) => Promise<ImportedPart[]>;
+  importStep: (fileBytes: Uint8Array, fileName?: string) => Promise<ImportedPart[]>;
   /**
    * Build every part's geometry (re-executing parametric chains, or
    * retrieving STEP-imported shapes from the worker registry), apply world

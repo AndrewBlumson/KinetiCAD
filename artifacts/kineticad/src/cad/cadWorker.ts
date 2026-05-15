@@ -1082,17 +1082,111 @@ const api: CadKernelApi = {
 
   // ---- STEP import ----
 
-  async importStep(fileBytes: Uint8Array) {
+  async importStep(fileBytes: Uint8Array, fileName?: string) {
     await ensureKernel();
     if (!ocInstance) throw new Error('CAD kernel failed to initialise');
     const oc = ocInstance;
     const ocAny = oc as any;
     const t0 = performance.now();
 
+    // Derive a stem for fallback naming: strip the STEP extension and collapse
+    // whitespace so '9132K11.step' becomes '9132K11', not '9132K11.step'.
+    const fileStem = fileName
+      ? (fileName.replace(/\.(step|stp)$/i, '').replace(/\s+/g, '_') || 'part')
+      : 'part';
+
     const virtualPath = `/tmp/kineticad-step-import-${Date.now()}.step`;
-    let reader: any = null;
+    let cafReader: any = null;
+    let doc: any = null;
+    let docHandle: any = null;
     // Shapes returned directly by the reader (may be compounds).
     const rawShapes: any[] = [];
+    // XCAF PRODUCT names in DFS order, aligned with TopExp_Explorer solid order.
+    const xcafNames: string[] = [];
+
+    // ------------------------------------------------------------------
+    // Extracts the TDataStd_Name string from a TDF_Label.  Returns '' if
+    // the label carries no name attribute.  Characters are read one-by-one
+    // via Value(k) which produces the correct BMP codepoint for each cell
+    // of the ExtendedString (Standard_ExtCharacter = unsigned short).
+    // extStr is a reference owned by nameHandle -- it must NOT be deleted.
+    // ------------------------------------------------------------------
+    function extractLabelName(label: any): string {
+      const nameHandle = new ocAny.Handle_TDataStd_Name_1();
+      let name = '';
+      try {
+        const found = label.FindAttribute_1(
+          ocAny.TDataStd_Name.GetID(),
+          nameHandle,
+        );
+        if (found && !nameHandle.IsNull()) {
+          const extStr = nameHandle.get().Get();
+          const len: number = extStr.Length();
+          for (let k = 1; k <= len; k++) {
+            name += String.fromCharCode(extStr.Value(k));
+          }
+          name = name.trim();
+        }
+      } finally {
+        nameHandle.delete();
+      }
+      return name;
+    }
+
+    // ------------------------------------------------------------------
+    // Depth-first walk of the XCAF label tree.  The traversal order matches
+    // TopExp_Explorer SOLID enumeration on the compound shape, so out[j]
+    // corresponds to solidShapes[j] after the explorer pass.
+    //
+    // Simple shapes push one name.  Assembly labels recurse into their
+    // components.  If a component's referred prototype is itself an assembly,
+    // we recurse again (handles nested sub-assemblies in files like 9132K11).
+    //
+    // All TDF_Label objects allocated by Value() are deleted in finally blocks
+    // to prevent WASM heap leaks.
+    // ------------------------------------------------------------------
+    function walkLabel(label: any, out: string[]): void {
+      if (ocAny.XCAFDoc_ShapeTool.IsAssembly(label)) {
+        const compLabels = new ocAny.TDF_LabelSequence_1();
+        try {
+          ocAny.XCAFDoc_ShapeTool.GetComponents(label, compLabels, false);
+          const n: number = compLabels.Length();
+          for (let j = 1; j <= n; j++) {
+            const comp = compLabels.Value(j);
+            const referred = new ocAny.TDF_Label();
+            try {
+              const hasReferred = ocAny.XCAFDoc_ShapeTool.GetReferredShape(
+                comp,
+                referred,
+              );
+              if (
+                hasReferred &&
+                !referred.IsNull() &&
+                ocAny.XCAFDoc_ShapeTool.IsAssembly(referred)
+              ) {
+                // Sub-assembly: recurse depth-first so DFS order is preserved.
+                walkLabel(referred, out);
+              } else {
+                // Leaf part: prefer the referred prototype's name, then the
+                // component instance name, then empty string (fallback applies).
+                const name =
+                  (hasReferred && !referred.IsNull()
+                    ? extractLabelName(referred)
+                    : '') || extractLabelName(comp);
+                out.push(name);
+              }
+            } finally {
+              try { referred.delete(); } catch { /* ignore */ }
+              try { comp.delete(); } catch { /* ignore */ }
+            }
+          }
+        } finally {
+          compLabels.delete();
+        }
+      } else {
+        out.push(extractLabelName(label));
+      }
+    }
 
     try {
       // eslint-disable-next-line no-console
@@ -1101,8 +1195,11 @@ const api: CadKernelApi = {
       // eslint-disable-next-line no-console
       console.log('[step-debug] FS /tmp after write:', (oc.FS as any).readdir('/tmp'));
 
-      reader = new ocAny.STEPControl_Reader_1();
-      const readStatus = reader.ReadFile(virtualPath);
+      // STEPCAFControl_Reader is used instead of STEPControl_Reader_1 so the
+      // XCAF document tree is populated alongside the geometry.  The underlying
+      // STEPControl_Reader is accessed via ChangeReader() for OneShape().
+      cafReader = new ocAny.STEPCAFControl_Reader();
+      const readStatus = cafReader.ReadFile(virtualPath);
       // eslint-disable-next-line no-console
       console.log('[step-debug] ReadFile status:', readStatus);
 
@@ -1116,25 +1213,47 @@ const api: CadKernelApi = {
         typeof readStatus === 'number' ? readStatus : (readStatus as any)?.value ?? -1;
       if (readStatusNum !== retDoneNum) {
         throw new Error(
-          `STEP ReadFile failed (status ${readStatusNum}) — the file may be corrupt or use an unsupported STEP variant.`,
+          `STEP ReadFile failed (status ${readStatusNum}) -- the file may be corrupt or use an unsupported STEP variant.`,
         );
       }
 
-      const nRoots = reader.NbRootsForTransfer();
+      const nRoots = cafReader.NbRootsForTransfer();
       // eslint-disable-next-line no-console
       console.log('[step-debug] NbRootsForTransfer:', nRoots);
 
+      // Create a TDocStd_Document for XCAF name extraction.
+      // TCollection_ExtendedString_2 takes (Standard_CString, isMultiByte).
+      // Handle_TDocStd_Document_2(ptr) is used when the binding exposes it
+      // (single-step from-pointer construction); falls back to _1() + reset().
+      // eslint-disable-next-line no-console
+      doc = new ocAny.TDocStd_Document(
+        new ocAny.TCollection_ExtendedString_2('XCAF', false),
+      );
+      if (typeof ocAny.Handle_TDocStd_Document_2 !== 'undefined') {
+        docHandle = new ocAny.Handle_TDocStd_Document_2(doc);
+        // eslint-disable-next-line no-console
+        console.log('[step-import] docHandle: used Handle_TDocStd_Document_2(doc)');
+      } else {
+        docHandle = new ocAny.Handle_TDocStd_Document_1();
+        docHandle.reset(doc);
+        // eslint-disable-next-line no-console
+        console.log('[step-import] docHandle: used Handle_TDocStd_Document_1 + reset');
+      }
+
       const progress = new ocAny.Message_ProgressRange_1();
-      let transferred: number;
+      let transferred: boolean;
       try {
-        transferred = reader.TransferRoots(progress);
+        transferred = cafReader.Transfer_1(docHandle, progress);
       } finally {
         progress.delete();
       }
       // eslint-disable-next-line no-console
-      console.log('[step-debug] TransferRoots returned:', transferred!);
+      console.log('[step-debug] Transfer_1 returned:', transferred!);
 
-      const nShapes = reader.NbShapes();
+      // Get the combined shape via the underlying STEPControl_Reader reference.
+      // ChangeReader() returns a reference -- do not call .delete() on it.
+      const underlyingReader = cafReader.ChangeReader();
+      const nShapes = underlyingReader.NbShapes();
       // eslint-disable-next-line no-console
       console.log('[step-debug] NbShapes after transfer:', nShapes);
 
@@ -1142,14 +1261,14 @@ const api: CadKernelApi = {
       // COMPOUND when there are multiple bodies).  Prefer this over iterating
       // NbShapes()/Shape(i) which can return 0 even when geometry was
       // successfully transferred.
-      const combined = reader.OneShape();
+      const combined = underlyingReader.OneShape();
       const combinedIsNull = combined?.IsNull?.() ?? true;
       // eslint-disable-next-line no-console
       console.log('[step-debug] OneShape isNull:', combinedIsNull);
       // eslint-disable-next-line no-console
       console.log('[step-debug] OneShape ShapeType:', combinedIsNull ? 'NULL' : combined.ShapeType());
 
-      // IMPORTANT: reader.delete() in the finally block frees internal OCCT
+      // IMPORTANT: cafReader.delete() in the finally block frees internal OCCT
       // data that OneShape()/Shape(i) alias via reference.  Deep-copy each
       // shape NOW (while the reader is still alive) using BRepBuilderAPI_Copy
       // so rawShapes holds truly independent TopoDS_Shape instances.
@@ -1166,11 +1285,55 @@ const api: CadKernelApi = {
         for (let i = 1; i <= nShapes; i++) {
           let copyBuilder: any = null;
           try {
-            copyBuilder = new ocAny.BRepBuilderAPI_Copy_2(reader.Shape(i), true, false);
+            copyBuilder = new ocAny.BRepBuilderAPI_Copy_2(
+              underlyingReader.Shape(i),
+              true,
+              false,
+            );
             rawShapes.push(copyBuilder.Shape());
           } finally {
             if (copyBuilder) copyBuilder.delete();
           }
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // XCAF name extraction: walk the document label tree depth-first.
+      // The walk order matches TopExp_Explorer's SOLID enumeration so that
+      // xcafNames[j] aligns with solidShapes[j] after the explorer pass.
+      // Any failure here is non-fatal -- fallback names apply per solid.
+      // ------------------------------------------------------------------
+      {
+        let shapeTool: any = null;
+        const freeLabels = new ocAny.TDF_LabelSequence_1();
+        try {
+          shapeTool = ocAny.XCAFDoc_DocumentTool.ShapeTool(
+            docHandle.get().Main(),
+          );
+          shapeTool.get().GetFreeShapes(freeLabels);
+          const nFree: number = freeLabels.Length();
+          // eslint-disable-next-line no-console
+          console.log('[step-debug] XCAF free shapes:', nFree);
+          for (let i = 1; i <= nFree; i++) {
+            const label = freeLabels.Value(i);
+            try {
+              walkLabel(label, xcafNames);
+            } finally {
+              try { label.delete(); } catch { /* ignore */ }
+            }
+          }
+          // eslint-disable-next-line no-console
+          console.log('[step-debug] XCAF names extracted:', xcafNames.length, xcafNames);
+        } catch (xcafErr) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            '[step-import] XCAF name walk failed -- fallback names will be used:',
+            xcafErr,
+          );
+          xcafNames.length = 0;
+        } finally {
+          try { freeLabels.delete(); } catch { /* ignore */ }
+          try { if (shapeTool) shapeTool.delete(); } catch { /* ignore */ }
         }
       }
     } catch (err) {
@@ -1179,7 +1342,9 @@ const api: CadKernelApi = {
       const msg = err instanceof Error ? err.message : String(err);
       throw new Error(`step-import-failed: ${msg}`);
     } finally {
-      if (reader) { try { reader.delete(); } catch { /* ignore */ } }
+      if (cafReader) { try { cafReader.delete(); } catch { /* ignore */ } }
+      if (docHandle) { try { docHandle.delete(); } catch { /* ignore */ } }
+      if (doc) { try { doc.delete(); } catch { /* ignore */ } }
       try { oc.FS.unlink(virtualPath); } catch { /* ignore */ }
     }
 
@@ -1313,7 +1478,7 @@ const api: CadKernelApi = {
 
       results.push({
         shapeId,
-        name: `Imported Part ${j + 1}`,
+        name: xcafNames[j] || `${fileStem}_${String(j + 1).padStart(2, '0')}`,
         tessellated: mesh,
         boundingBox: { min: minArr, max: maxArr },
       });

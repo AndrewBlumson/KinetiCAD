@@ -113,7 +113,7 @@ export default function Modeller() {
     try {
       const kernel = await getCadKernel();
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const imported = await kernel.importStep(bytes);
+      const imported = await kernel.importStep(bytes, file.name);
       if (imported.length === 0) {
         toast.error('No geometry found in the STEP file.');
         return;
@@ -123,13 +123,10 @@ export default function Modeller() {
       for (const part of imported) {
         setImportedShapeMesh(part.shapeId, part.tessellated);
       }
-      // Derive a friendly base name from the file name (strip extension).
-      const baseName = file.name.replace(/\.(step|stp)$/i, '');
+      // The worker supplies the name directly from the XCAF document tree
+      // (or a file-stem fallback).  No local name derivation needed here.
       for (let i = 0; i < imported.length; i++) {
-        const label = imported.length === 1
-          ? baseName
-          : `${baseName} (${i + 1})`;
-        addImportedStepPart(label, imported[i].shapeId);
+        addImportedStepPart(imported[i].name, imported[i].shapeId);
       }
       const durationMs = Math.round(performance.now() - t0);
       // eslint-disable-next-line no-console
