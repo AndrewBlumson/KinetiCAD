@@ -51,7 +51,7 @@
             "type": "extrude",
             "sketchId": "sk-sun-1",
             "depthMm": 25,
-            "direction": "symmetric",
+            "direction": "forward",
             "extrudeMode": "new-body"
           }
         ]
@@ -265,7 +265,7 @@
     "gravity": [
       0,
       0,
-      -9810
+      0
     ],
     "speedMultiplier": 1,
     "simulationTimeMs": 0

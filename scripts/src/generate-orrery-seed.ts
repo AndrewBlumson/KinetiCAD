@@ -52,6 +52,12 @@ const PARAMS = {
   periodOuter: 13,                          // seconds (planet 8 orbit period — fixed span)
   moonPeriod: 2.5,                          // seconds per moon orbit
   ringPeriod: 18,                           // seconds per ring orbit
+
+  // Physics
+  // [0,0,0] = weightless. An orrery is a powered mechanism; gravity is
+  // irrelevant to its operation and creates large bending loads on the
+  // joint constraints that destabilise the solver. Spec section 4.
+  gravity: [0, 0, 0] as [number, number, number],
 };
 
 // Must match the `version` field in src/state/store.ts persist config.
@@ -101,7 +107,7 @@ function buildSunPart(): object {
         type: "extrude",
         sketchId: "sk-sun-1",
         depthMm: PARAMS.sunHeight,
-        direction: "symmetric",
+        direction: "forward",
         extrudeMode: "new-body",
       },
     ],
@@ -334,7 +340,7 @@ const state = {
     running: false,
     paused: false,
     timeStepMs: 1000 / 60,
-    gravity: [0, 0, -9810],
+    gravity: PARAMS.gravity,
     speedMultiplier: 1,
     simulationTimeMs: 0,
   },

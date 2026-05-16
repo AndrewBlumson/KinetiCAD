@@ -67,6 +67,8 @@ The orbital plane is the world XY plane, horizontal. Every planet, every moon an
 
 All arms radiate outward in the XY plane. The whole mechanism is flat, with a small vertical offset only if needed to stop bodies overlapping in Z, see section 5.
 
+The simulation runs at zero gravity, `gravity: [0, 0, 0]`. An orrery is a powered mechanism; gravitational force is irrelevant to its operation. Running weightless also eliminates large bending loads on the revolute joint constraints that would otherwise destabilise the solver for horizontal unbalanced arms.
+
 ---
 
 ## 5. Parts and geometry
@@ -291,6 +293,12 @@ The windmill canary checks one motor against pi rad/s. The orrery has many motor
 - **Body count may hit a performance wall.** Untested past 3 parts. If frame rate collapses at Phase 2 or 4, reduce planet count or asteroid lump count via generator parameters.
 - **Revolve in seed form may be awkward.** Fall back to discs and cylinders for round bodies, section 5.5.
 - **Non-identity initial transforms.** The arms are placed with initial Z rotations. A secondary frame-mismatch issue was noted in `RevoluteMateInspector.tsx` for parts with non-identity world transforms, but that is a UI pick-flow bug; the orrery seed writes joints directly and should sidestep it. If seeded joints on rotated parts behave wrongly, this is the first thing to investigate.
+
+### Known issues resolved (Phase 1, 16/05/2026)
+
+**Inter-part collision causing chaotic simulation.** When two dynamic bodies are both jointed to a common Fixed parent but not to each other, their convex-hull colliders can overlap. Rapier only auto-suppresses contacts for directly-jointed pairs; unjointed pairs receive full contact-separation impulses that overwhelm the revolute motors. In the minimal orrery, both planet arms originate at world [0,0,0], so their collider bases overlapped. Fix applied to `physicsWorker.ts`: all part colliders are given `setSolverGroups(0x00010000)` (membership group 0, filter nothing), disabling contact-force resolution across the entire physics world. Joints still solve fully. This change affects every KinetiCAD assembly by design; the simulator is joint-driven and part-to-part contact response is always unwanted noise.
+
+**Gravity fighting joint constraints.** Horizontal cantilever arms under Z gravity create large bending loads on the revolute constraint solver, amplifying the instability above. Fix: the orrery seed runs at `gravity: [0,0,0]`. See section 4.
 
 ---
 

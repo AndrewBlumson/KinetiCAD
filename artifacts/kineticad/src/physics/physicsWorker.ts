@@ -372,6 +372,24 @@ function buildBody(
 
   // Density 0 → no auto mass; we'll set it explicitly below.
   colliderDesc.setDensity(0);
+
+  // Suppress contact-force resolution between all part colliders. 16/05/2026.
+  // KinetiCAD is a joint-driven kinematic simulator; part-to-part contact
+  // impulses are unwanted noise. Joints still solve fully; only the contact
+  // constraint rows are dropped from the solver.
+  //
+  // Root cause that prompted this: in a multi-body assembly two dynamic arm
+  // bodies were jointed to a common Fixed parent but not to each other.
+  // Their convex-hull colliders overlapped at the shared origin. Rapier only
+  // auto-suppresses contacts for directly-jointed pairs, so Rapier generated
+  // large contact-separation impulses that overwhelmed the revolute motors.
+  //
+  // Fix: set setSolverGroups so that no collider interacts with any other.
+  //   High 16 bits = 0x0001  → membership in group 0.
+  //   Low  16 bits = 0x0000  → filter matches nothing.
+  // Neither fixed nor dynamic colliders resolve contacts with each other.
+  colliderDesc.setSolverGroups(0x00010000);
+
   rapierWorld.createCollider(colliderDesc, body);
 
   if (!part.isGround) {
