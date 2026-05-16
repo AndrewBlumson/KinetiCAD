@@ -31,8 +31,10 @@ export const COLOURS = {
 export function createScene(): THREE.Scene {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(COLOURS.background);
-  // Distance fog gives the grid a natural fade without a custom shader.
-  scene.fog = new THREE.Fog(COLOURS.background, 200, 600);
+  // Fog disabled: THREE.Fog(background, 200, 600) faded the scene to black
+  // before controls.maxDistance (1500mm), which darkened the orrery at zoom-out.
+  // Re-add with near/far set well beyond maxDistance if depth-cueing is wanted.
+  scene.fog = null;
   return scene;
 }
 
