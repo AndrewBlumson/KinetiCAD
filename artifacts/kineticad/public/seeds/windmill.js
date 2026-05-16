@@ -1,12 +1,6 @@
-// Backward-compat shim. The canonical seed is now at /seeds/windmill.js.
-// fetch('/seed-windmill.js').then(r=>r.text()).then(eval) continues to work
-// unchanged from the browser console. Updated 16/05/2026.
-fetch('/seeds/windmill.js').then(function (r) { return r.text(); }).then(eval);
-
-// ---------------------------------------------------------------------------
-// Original IIFE kept below for reference only. Not executed.
-// ---------------------------------------------------------------------------
-/* (function () {
+// Paste in the browser console while on the KinetiCAD tab.
+// Builds the pivot-test windmill assembly and reloads the app.
+(function () {
   const state = {
     mode: "modeller",
     assembly: {
@@ -203,4 +197,4 @@ fetch('/seeds/windmill.js').then(function (r) { return r.text(); }).then(eval);
   localStorage.setItem("kineticad-state", JSON.stringify({ state, version: 8 }));
   console.log("[seed] State written. Reloading…");
   location.reload();
-})(); */
+})();
