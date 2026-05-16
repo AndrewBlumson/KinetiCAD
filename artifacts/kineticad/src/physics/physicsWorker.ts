@@ -104,15 +104,22 @@ function rpmToRadPerSec(rpm: number): number {
  *  - 100 (Follow-ups #4–#6): bodies visibly rotate but converge to
  *    only 0.5–1.1 rad/s against a 6.28 rad/s (60 RPM) target —
  *    well under any reasonable demo threshold.
- *  - 10000 (Follow-up #7, current): two orders of magnitude higher,
+ *  - 10000 (Follow-up #7): two orders of magnitude higher,
  *    enough headroom for the AccelerationBased velocity servo to
  *    converge to target within the 1 s acceptance window despite
  *    the inflated mm-unit inertias.
+ *  - 40000 (Phase 5.1): 4× increase to reduce moon-induced wobble on
+ *    mooned planets. Each moon is a rotating imbalance coupled to its
+ *    parent planet via the shared revolute joint; two AccelerationBased
+ *    velocity servos at the same gain under-damp the coupled chain and
+ *    produce a ±6–10% sustained ripple on the mooned bodies. Raising
+ *    the gain stiffens both servos so the planet motor has enough
+ *    authority to reject the moon imbalance before the error grows.
  *
  * Same factor is reused for prismatic motors (mm/s tracking) — units
  * are different but the per-axis stiffness needed is comparable.
  */
-const MOTOR_VELOCITY_GAIN = 10000;
+const MOTOR_VELOCITY_GAIN = 40000;
 
 /**
  * Phase 9.5 Follow-up #6 — switching back to `AccelerationBased`.
