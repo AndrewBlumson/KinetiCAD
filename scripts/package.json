@@ -6,6 +6,7 @@
   "scripts": {
     "hello": "tsx ./src/hello.ts",
     "xcaf-api-probe": "tsx ./src/xcaf-api-probe.ts",
+    "generate-orrery-seed": "tsx ./src/generate-orrery-seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

@@ -29,6 +29,11 @@
       name: 'Windmill',
       description: 'Two-body revolute joint with 30 RPM motor. Used as physics canary.',
     },
+    {
+      id: 'orrery',
+      name: 'Orrery',
+      description: 'Nested planetary model: sun, 8 planets, 3 moons, asteroid ring. 13 bodies, 12 revolute joints.',
+    },
     // Add future seeds here: { id, name, description }
   ];
 
