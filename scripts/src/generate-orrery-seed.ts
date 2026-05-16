@@ -20,9 +20,11 @@ const PARAMS = {
   moonOnPlanets: [] as number[],            // Phase 1: [] | Phase 3: [2,4,6] (1-based)
   ring: false,                              // Phase 1: false | Phase 4: true
 
-  // Geometry — sun
+  // Geometry — sun column
   sunRadius: 25,                            // mm disc radius
-  sunHeight: 25,                            // mm symmetric extrude depth (±12.5 mm in Z)
+  // Hub height is derived: (planetCount + 1) * tierSpacingMm.
+  // tierSpacingMm also controls the arm Z step; see tierHeight() below.
+  tierSpacingMm: 15,                        // mm vertical gap between successive arm tiers
 
   // Geometry — planets (one entry per planet slot, index 0 = planet 1)
   planetRadii: [12, 12, 14, 10, 16, 11, 13, 9] as number[],
@@ -64,7 +66,16 @@ const PARAMS = {
 // Check store.ts before bumping this — wrong version triggers migrations.
 const PERSIST_VERSION = 8;
 
+// Hub height: one tier spacing of margin above the top arm, floor at Z=0.
+const hubHeight = (PARAMS.planetCount + 1) * PARAMS.tierSpacingMm;
+
 // ── Maths helpers ─────────────────────────────────────────────────────────────
+
+function tierHeight(i: number): number {
+  // i is 1-based planet index. Each arm sits on its own Z level so arms
+  // never intersect as they rotate. Tier 1 = tierSpacingMm, tier 8 = 8×tierSpacingMm.
+  return i * PARAMS.tierSpacingMm;
+}
 
 function orbitRadius(i: number): number {
   // i is 1-based. Spec section 6.1.
@@ -106,7 +117,7 @@ function buildSunPart(): object {
         id: "feat-sun-1",
         type: "extrude",
         sketchId: "sk-sun-1",
-        depthMm: PARAMS.sunHeight,
+        depthMm: hubHeight,
         direction: "forward",
         extrudeMode: "new-body",
       },
@@ -128,7 +139,7 @@ function buildPlanetPart(i: number): object {
     name: `Planet ${i}`,
     visible: true,
     materialId: "default",
-    transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, (i - 1) * 45] },
+    transform: { positionMm: [0, 0, tierHeight(i)], rotationDeg: [0, 0, (i - 1) * 45] },
     sketches: [
       {
         id: `sk-${pid}-arm`,
@@ -261,7 +272,7 @@ function buildPlanetMate(i: number): object {
     name: `Planet ${i}`,
     partA: "part-sun",
     partB: `part-planet-${i}`,
-    pivotA: { kind: "edge", edgeId: "sun-center", localPoint: [0, 0, 0] },
+    pivotA: { kind: "edge", edgeId: "sun-center", localPoint: [0, 0, tierHeight(i)] },
     pivotB: { kind: "edge", edgeId: `planet-${i}-origin`, localPoint: [0, 0, 0] },
     axisLocal: [0, 0, 1],
     motorSpeedRpm: r4(planetRpm(i)),

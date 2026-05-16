@@ -260,7 +260,7 @@ export default function Scene() {
         controls.dampingFactor = 0.08;
         controls.target.set(0, 0, 0);
         controls.minDistance = 20;
-        controls.maxDistance = 500;
+        controls.maxDistance = 1500;
         controls.update();
 
         // Sketch overlay: built once, hidden until the user enters sketch mode.

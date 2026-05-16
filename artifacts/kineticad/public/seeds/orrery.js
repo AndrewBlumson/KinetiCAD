@@ -50,7 +50,7 @@
             "id": "feat-sun-1",
             "type": "extrude",
             "sketchId": "sk-sun-1",
-            "depthMm": 25,
+            "depthMm": 135,
             "direction": "forward",
             "extrudeMode": "new-body"
           }
@@ -65,7 +65,7 @@
           "positionMm": [
             0,
             0,
-            0
+            15
           ],
           "rotationDeg": [
             0,
@@ -133,7 +133,7 @@
           "positionMm": [
             0,
             0,
-            0
+            30
           ],
           "rotationDeg": [
             0,
@@ -201,7 +201,7 @@
           "positionMm": [
             0,
             0,
-            0
+            45
           ],
           "rotationDeg": [
             0,
@@ -269,7 +269,7 @@
           "positionMm": [
             0,
             0,
-            0
+            60
           ],
           "rotationDeg": [
             0,
@@ -337,7 +337,7 @@
           "positionMm": [
             0,
             0,
-            0
+            75
           ],
           "rotationDeg": [
             0,
@@ -405,7 +405,7 @@
           "positionMm": [
             0,
             0,
-            0
+            90
           ],
           "rotationDeg": [
             0,
@@ -473,7 +473,7 @@
           "positionMm": [
             0,
             0,
-            0
+            105
           ],
           "rotationDeg": [
             0,
@@ -541,7 +541,7 @@
           "positionMm": [
             0,
             0,
-            0
+            120
           ],
           "rotationDeg": [
             0,
@@ -614,7 +614,7 @@
           "localPoint": [
             0,
             0,
-            0
+            15
           ]
         },
         "pivotB": {
@@ -645,7 +645,7 @@
           "localPoint": [
             0,
             0,
-            0
+            30
           ]
         },
         "pivotB": {
@@ -676,7 +676,7 @@
           "localPoint": [
             0,
             0,
-            0
+            45
           ]
         },
         "pivotB": {
@@ -707,7 +707,7 @@
           "localPoint": [
             0,
             0,
-            0
+            60
           ]
         },
         "pivotB": {
@@ -738,7 +738,7 @@
           "localPoint": [
             0,
             0,
-            0
+            75
           ]
         },
         "pivotB": {
@@ -769,7 +769,7 @@
           "localPoint": [
             0,
             0,
-            0
+            90
           ]
         },
         "pivotB": {
@@ -800,7 +800,7 @@
           "localPoint": [
             0,
             0,
-            0
+            105
           ]
         },
         "pivotB": {
@@ -831,7 +831,7 @@
           "localPoint": [
             0,
             0,
-            0
+            120
           ]
         },
         "pivotB": {
