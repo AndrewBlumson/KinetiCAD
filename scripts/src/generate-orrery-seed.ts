@@ -16,7 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PARAMS = {
   // Scale toggles — the only things that change between phases 1–4.
-  planetCount: 2,                           // Phase 1: 2 | Phase 2+: 8
+  planetCount: 8,                           // Phase 1: 2 | Phase 2+: 8
   moonOnPlanets: [] as number[],            // Phase 1: [] | Phase 3: [2,4,6] (1-based)
   ring: false,                              // Phase 1: false | Phase 4: true
 
