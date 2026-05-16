@@ -1728,4 +1728,19 @@ const api: CadKernelApi = {
   },
 };
 
+// Diagnostic: log the path array of every incoming Comlink call so the bad
+// path that triggers the Array.reduce TypeError can be identified at runtime.
+// Set COMLINK_TRACE to false once the offending call site is found.
+// Added 16/05/2026.
+const COMLINK_TRACE = true;
+if (COMLINK_TRACE) {
+  self.addEventListener('message', (msg) => {
+    const d = (msg as MessageEvent).data;
+    if (d && Array.isArray(d.path)) {
+      // eslint-disable-next-line no-console
+      console.log('[comlink-in]', { path: d.path, type: d.type });
+    }
+  });
+}
+
 Comlink.expose(api);
