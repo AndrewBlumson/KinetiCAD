@@ -119,7 +119,7 @@ function rpmToRadPerSec(rpm: number): number {
  * Same factor is reused for prismatic motors (mm/s tracking) — units
  * are different but the per-axis stiffness needed is comparable.
  */
-const MOTOR_VELOCITY_GAIN = 40000;
+const MOTOR_VELOCITY_GAIN = 10000;
 
 /**
  * Phase 9.5 Follow-up #6 — switching back to `AccelerationBased`.
