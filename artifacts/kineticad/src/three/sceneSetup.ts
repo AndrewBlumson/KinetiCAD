@@ -37,7 +37,7 @@ export function createScene(): THREE.Scene {
 }
 
 export function createCamera(aspect: number): THREE.PerspectiveCamera {
-  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 2000);
+  const camera = new THREE.PerspectiveCamera(45, aspect, 1, 5000);
   // Z-up convention (mechanical CAD: SolidWorks/Onshape). World X=right,
   // Y=forward, Z=up. Floor is the XY plane at Z=0.
   // IMPORTANT: set camera.up BEFORE OrbitControls is constructed — the
