@@ -62,24 +62,6 @@ function ModeToggle() {
   );
 }
 
-function VersionBadge() {
-  const t = __BUILD_TIME__;
-  const d = new Date(t);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const label =
-    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
-    `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
-  return (
-    <div
-      style={{ position: 'fixed', top: 4, right: 8, zIndex: 9999 }}
-      className="font-technical text-[10px] text-muted-foreground/50 select-none pointer-events-none"
-      title={t}
-    >
-      {label}
-    </div>
-  );
-}
-
 function Router() {
   return (
     <>
@@ -91,7 +73,6 @@ function Router() {
         </Switch>
       </Suspense>
       <ModeToggle />
-      <VersionBadge />
     </>
   );
 }
