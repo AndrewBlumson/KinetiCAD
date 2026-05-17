@@ -1,7 +1,8 @@
-// Backward-compat shim. The canonical seed is now at /seeds/windmill.js.
-// fetch('/seed-windmill.js').then(r=>r.text()).then(eval) continues to work
-// unchanged from the browser console. Updated 16/05/2026.
-fetch('/seeds/windmill.js').then(function (r) { return r.text(); }).then(eval);
+// Backward-compat shim. The canonical seed is now at /app/seeds/windmill.js.
+// fetch('/app/seed-windmill.js').then(r=>r.text()).then(eval) continues to work
+// from the browser console. Uses window.__seedBase (set by index.html) to
+// resolve the seed path correctly regardless of BASE_PATH. Updated 17/05/2026.
+fetch((window.__seedBase || '/') + 'seeds/windmill.js').then(function (r) { return r.text(); }).then(eval);
 
 // ---------------------------------------------------------------------------
 // Original IIFE kept below for reference only. Not executed.

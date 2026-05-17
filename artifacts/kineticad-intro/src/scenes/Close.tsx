@@ -128,7 +128,7 @@ export const Close = forwardRef<SceneHandle>((_, ref) => {
           className="font-mono text-[16px] tracking-[0.04em] text-ink-dim opacity-0"
         >
           <span className="text-orange">Try it →</span>{" "}
-          <span className="text-ink">KinetiCAD.replit.app</span>
+          <span className="text-ink">kineticad.co.uk</span>
         </p>
       </div>
 

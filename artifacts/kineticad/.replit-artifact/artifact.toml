@@ -1,5 +1,5 @@
 kind = "web"
-  previewPath = "/"
+  previewPath = "/app"
   title = "KinetiCAD"
   version = "1.0.0"
   id = "artifacts/kineticad"
@@ -11,7 +11,7 @@ kind = "web"
 
   [[services]]
   name = "web"
-  paths = [ "/" ]
+  paths = [ "/app" ]
   localPort = 25157
 
   [services.development]
@@ -23,5 +23,4 @@ kind = "web"
 
   [services.env]
   PORT = "25157"
-  BASE_PATH = "/"
-  
+  BASE_PATH = "/app"

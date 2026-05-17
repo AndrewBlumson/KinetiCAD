@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 import type { SceneHandle } from "../types";
 
 const CAPTIONS = [
-  "Four parts. Four mate joints. One motor. Real physics.",
+  "13 bodies. 12 motorised revolute joints. One orrery.",
   "60 RPM. 60 FPS. Browser tab.",
   "No install. No license. No CAD seat.",
 ];

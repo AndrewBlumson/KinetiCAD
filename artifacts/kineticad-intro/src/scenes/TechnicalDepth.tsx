@@ -96,6 +96,33 @@ const BULLETS: Bullet[] = [
       </>
     ),
   },
+  {
+    layer: "occt",
+    body: (
+      <>
+        <strong className="text-ink">STEP round-trip + Save/Load.</strong>{" "}
+        Import STEP files into the assembly, model over them, and export back to STEP for
+        downstream tooling. Save the full assembly state to a{" "}
+        <span className="font-mono text-orange">portable JSON file</span> and reload
+        it at any time — no proprietary format, no cloud account.
+      </>
+    ),
+  },
+  {
+    layer: "rapier",
+    body: (
+      <>
+        <strong className="text-ink">8-material library.</strong>{" "}
+        <span className="font-mono text-orange">
+          Aluminium, steel, brass, titanium, nylon, PLA, ABS, acrylic
+        </span>
+        — each with real density. The physics simulation derives mass and rotational
+        inertia directly from computed{" "}
+        <span className="font-mono text-ink">volume × density</span>, so the orrery's
+        13 bodies behave correctly without manual mass entry.
+      </>
+    ),
+  },
 ];
 
 const SCENE_DURATION = 30; // seconds

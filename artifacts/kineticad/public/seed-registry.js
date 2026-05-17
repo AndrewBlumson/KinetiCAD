@@ -44,7 +44,7 @@
       console.error('[seed-registry] Unknown id: "' + id + '". Available:', available);
       return;
     }
-    fetch('/seeds/' + id + '.js')
+    fetch((window.__seedBase || '/') + 'seeds/' + id + '.js')
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.text();
