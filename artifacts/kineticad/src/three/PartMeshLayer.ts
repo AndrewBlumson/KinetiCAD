@@ -14,14 +14,18 @@
 //   pending regen (hide, empty-features, remove, dispose), otherwise a late
 //   resolve could resurrect a hidden part or leak geometry into a detached
 //   mesh.
-// - Phase 3 has at most one feature per part, so a single in-flight regen
-//   per part is the realistic upper bound.
 //
 // Phase 4 Split A: each entry now also caches the tip mesh's edge + face
 // topology so the topology picker (TopologyPicker.ts) can resolve raycaster
-// hits to face ids and compute screen-space proximity for edges. The cache is
-// invalidated on every transition that drops `lastHash` (failure, hide,
-// empty-features, remove).
+// hits to face ids and compute screen-space proximity for edges.
+//
+// Phase 10: per-materialId MeshStandardMaterial pairs (opaque + dimmed) are
+// created lazily and cached for the layer's lifetime. The `sync` loop applies
+// the correct pair immediately (no regen required) so colour changes are
+// instantaneous. After each successful regen (or material change), the layer
+// fetches mass properties from the CAD worker and fires `onMassPropsUpdate`
+// so Scene.tsx can dispatch `updatePartMassProps` to the store for the
+// PartInspector readout.
 
 import * as THREE from "three";
 import type { Remote } from "comlink";
@@ -32,6 +36,7 @@ import type {
   FaceMetadata,
   TessellatedMesh,
 } from "@/cad/types";
+import { getMaterial } from "@/cad/materials";
 import { regeneratePart } from "@/features/featureRegen";
 import { COLOURS } from "./sceneSetup";
 
@@ -72,12 +77,21 @@ export type PartMeshLayer = {
    * stronger constraint).
    *
    * `kernel` is the remote CAD kernel used by `regeneratePart`.
+   *
+   * `onMassPropsUpdate` is called after each successful regen (or material
+   * change) with the computed volume and mass. Scene.tsx dispatches these
+   * to the store so the PartInspector can display them.
    */
   sync: (
     assembly: Assembly,
     hiddenPartIds: Set<string>,
     dimmedPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
+    onMassPropsUpdate?: (
+      partId: string,
+      volumeCm3: number,
+      massKg: number,
+    ) => void,
   ) => void;
   /** Total tracked part meshes (for diagnostics / tests). */
   size: () => number;
@@ -108,12 +122,25 @@ type Entry = {
   mesh: THREE.Mesh;
   /** Hash of the part's last-rendered tip mesh, so we can skip pointless rebuilds. */
   lastHash: string | null;
+  /**
+   * MaterialId that was in effect during the last mass-properties fetch.
+   * When the user changes material, this diverges from `part.materialId` and
+   * triggers a new getMassProperties call (density changed) even if geometry
+   * is unchanged.
+   */
+  lastMaterialId: string | null;
   /** Token of the most recent sync started for this part. */
   inFlightToken: number;
   /** Cleared by removeEntry — late async completions check this before mutating. */
   alive: boolean;
   /** Cached topology for picking. Null when the mesh is hidden / empty / failed. */
   topology: PartTopology | null;
+};
+
+/** A lazily-created pair of materials for one materialId. */
+type MatPair = {
+  opaque: THREE.MeshStandardMaterial;
+  dimmed: THREE.MeshStandardMaterial;
 };
 
 function buildFaceForTriangle(
@@ -139,33 +166,49 @@ export function createPartMeshLayer(): PartMeshLayer {
   const group = new THREE.Group();
   group.name = "PartMeshLayer";
 
-  // One shared material across all parts until Phase 10 introduces the
-  // material library. MeshStandardMaterial keeps the look consistent with
-  // the Phase 1 test cube.
-  const sharedMaterial = new THREE.MeshStandardMaterial({
-    color: COLOURS.defaultPart,
-    metalness: 0.4,
-    roughness: 0.5,
-  });
+  // Per-materialId material pairs, created lazily on first use and disposed
+  // together in dispose(). Using a cache means all parts with the same
+  // material share the same Three.js material object — saves GPU state
+  // switches and avoids memory leaks from per-mesh material creation.
+  const materialCache = new Map<string, MatPair>();
 
-  // Translucent variant used during EDIT mode so the user sees the
-  // original body through the 0.85-opacity preview overlay. depthWrite is
-  // disabled to avoid the dimmed body z-fighting with the preview's own
-  // transparent surface (PreviewMeshLayer disables depthWrite for the
-  // same reason). Disposed alongside `sharedMaterial` in dispose().
-  const dimmedMaterial = new THREE.MeshStandardMaterial({
-    color: COLOURS.defaultPart,
-    metalness: 0.4,
-    roughness: 0.5,
-    transparent: true,
-    opacity: 0.4,
-    depthWrite: false,
-  });
+  const getOrCreatePair = (materialId: string): MatPair => {
+    let pair = materialCache.get(materialId);
+    if (pair) return pair;
+    const mat = getMaterial(materialId);
+    const colour = mat.colour;
+    const opaque = new THREE.MeshStandardMaterial({
+      color: colour !== undefined ? colour : COLOURS.defaultPart,
+      metalness: mat.metalness,
+      roughness: mat.roughness,
+    });
+    const dimmed = new THREE.MeshStandardMaterial({
+      color: colour !== undefined ? colour : COLOURS.defaultPart,
+      metalness: mat.metalness,
+      roughness: mat.roughness,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+    });
+    pair = { opaque, dimmed };
+    materialCache.set(materialId, pair);
+    return pair;
+  };
+
+  // Seed the default material pair immediately so `ensureEntry` has
+  // something to reference before the first sync.
+  getOrCreatePair("aluminium-6061");
 
   const entries = new Map<string, Entry>();
   let nextToken = 1;
   let isDisposed = false;
   let _topologyVersion = 0;
+
+  // Latest callback passed by Scene.tsx. Updated by each sync() call so
+  // in-flight regens always fire the current handler.
+  let _onMassPropsUpdate:
+    | ((partId: string, volumeCm3: number, massKg: number) => void)
+    | undefined;
 
   const buildGeometry = (mesh: TessellatedMesh): THREE.BufferGeometry => {
     const geom = new THREE.BufferGeometry();
@@ -182,10 +225,11 @@ export function createPartMeshLayer(): PartMeshLayer {
     return geom;
   };
 
-  const ensureEntry = (partId: string): Entry => {
+  const ensureEntry = (partId: string, materialId: string): Entry => {
     let entry = entries.get(partId);
     if (entry) return entry;
-    const mesh = new THREE.Mesh(new THREE.BufferGeometry(), sharedMaterial);
+    const pair = getOrCreatePair(materialId);
+    const mesh = new THREE.Mesh(new THREE.BufferGeometry(), pair.opaque);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.name = `Part:${partId}`;
@@ -194,6 +238,7 @@ export function createPartMeshLayer(): PartMeshLayer {
     entry = {
       mesh,
       lastHash: null,
+      lastMaterialId: null,
       inFlightToken: 0,
       alive: true,
       topology: null,
@@ -212,7 +257,7 @@ export function createPartMeshLayer(): PartMeshLayer {
     entry.topology = null;
     group.remove(entry.mesh);
     entry.mesh.geometry.dispose();
-    // Material is shared — do NOT dispose it here.
+    // Materials are owned by materialCache — do NOT dispose per-entry.
     entries.delete(partId);
     _topologyVersion++;
   };
@@ -229,47 +274,77 @@ export function createPartMeshLayer(): PartMeshLayer {
       //  1. The layer was disposed.
       //  2. The entry was removed (alive=false).
       //  3. A newer sync started for this part (token mismatch).
-      // The token check handles "hidden" / "no features" transitions because
-      // sync() bumps inFlightToken in those branches too.
       if (isDisposed) return;
       if (!entry.alive) return;
       if (entry.inFlightToken !== token) return;
 
       const last = result.perFeature[result.perFeature.length - 1];
       if (!result.mesh || !last || !last.ok) {
-        // Failure: hide the mesh. The inspector handles error messaging via
-        // the live-preview path; PartMeshLayer just renders what succeeds.
         entry.mesh.visible = false;
         entry.lastHash = null;
+        entry.lastMaterialId = null;
         entry.topology = null;
         _topologyVersion++;
         return;
       }
-      // Skip rebuild if the tip hash hasn't changed (cache hit).
-      if (entry.lastHash === last.hash) {
+
+      const hashChanged = entry.lastHash !== last.hash;
+      const materialChanged = part.materialId !== entry.lastMaterialId;
+
+      // Skip geometry rebuild if the tip hash hasn't changed (cache hit).
+      if (!hashChanged) {
         entry.mesh.visible = true;
-        return;
+      } else {
+        const newGeom = buildGeometry(result.mesh);
+        const oldGeom = entry.mesh.geometry;
+        entry.mesh.geometry = newGeom;
+        oldGeom.dispose();
+        entry.mesh.visible = true;
+        entry.lastHash = last.hash;
+        // Build the triangle-to-face lookup.
+        const triangleCount = result.mesh.indices.length / 3;
+        entry.topology = {
+          edges: result.mesh.edges,
+          faces: result.mesh.faces,
+          faceForTriangle: buildFaceForTriangle(
+            triangleCount,
+            result.mesh.faces,
+          ),
+        };
+        _topologyVersion++;
       }
-      const newGeom = buildGeometry(result.mesh);
-      const oldGeom = entry.mesh.geometry;
-      entry.mesh.geometry = newGeom;
-      oldGeom.dispose();
-      entry.mesh.visible = true;
-      entry.lastHash = last.hash;
-      // Build the triangle-to-face lookup. The mesh's index buffer is the
-      // canonical source of triangle count (length / 3).
-      const triangleCount = result.mesh.indices.length / 3;
-      entry.topology = {
-        edges: result.mesh.edges,
-        faces: result.mesh.faces,
-        faceForTriangle: buildFaceForTriangle(triangleCount, result.mesh.faces),
-      };
-      _topologyVersion++;
+
+      // Fetch mass properties when geometry changed (new density applies to
+      // new volume) or when the material changed (same geometry, new density).
+      if ((hashChanged || materialChanged) && _onMassPropsUpdate) {
+        entry.lastMaterialId = part.materialId;
+        const cb = _onMassPropsUpdate;
+        try {
+          const mat = getMaterial(part.materialId);
+          const massResult = await kernel.getMassProperties({
+            features: [...part.features],
+            sketches: [...part.sketches],
+            density: mat.densityGcm3,
+          });
+          // Re-check guards after the async mass-props round-trip.
+          if (isDisposed || !entry.alive || entry.inFlightToken !== token)
+            return;
+          const volumeCm3 = massResult.volumeMm3 / 1000;
+          cb(part.id, volumeCm3, massResult.massKg);
+        } catch {
+          // Mass-properties failure is non-fatal — geometry is still shown.
+        }
+      } else if (materialChanged) {
+        // No callback registered but track the change so a future sync
+        // with a callback doesn't skip the fetch.
+        entry.lastMaterialId = part.materialId;
+      }
     } catch {
       if (isDisposed || !entry.alive) return;
       if (entry.inFlightToken !== token) return;
       entry.mesh.visible = false;
       entry.lastHash = null;
+      entry.lastMaterialId = null;
       entry.topology = null;
       _topologyVersion++;
     }
@@ -280,31 +355,27 @@ export function createPartMeshLayer(): PartMeshLayer {
     hiddenPartIds: Set<string>,
     dimmedPartIds: Set<string>,
     kernel: Remote<CadKernelApi>,
+    onMassPropsUpdate?: (
+      partId: string,
+      volumeCm3: number,
+      massKg: number,
+    ) => void,
   ): void => {
     if (isDisposed) return;
+    _onMassPropsUpdate = onMassPropsUpdate;
     const seen = new Set<string>();
 
     for (const part of assembly.parts) {
       seen.add(part.id);
-      const entry = ensureEntry(part.id);
+      const entry = ensureEntry(part.id, part.materialId);
 
       if (hiddenPartIds.has(part.id)) {
-        // Suppressed by the preview overlay. Bump the token so any pending
-        // regen for this part is dropped before it can flip visibility back
-        // on. Keep the entry alive — we still want it when the preview
-        // clears.
         entry.inFlightToken = ++nextToken;
         entry.mesh.visible = false;
-        // Topology stays cached: when the preview clears we re-sync and the
-        // hash check skips a rebuild. But the picker shouldn't see hidden
-        // parts, so forEachVisible filters by mesh.visible.
         continue;
       }
 
       if (part.features.length === 0) {
-        // Sketches-only parts have nothing to render. Same token-bump
-        // reasoning as the hidden case: a stale extrude regen returning
-        // here must not light the mesh back up.
         entry.inFlightToken = ++nextToken;
         entry.mesh.visible = false;
         entry.lastHash = null;
@@ -315,13 +386,13 @@ export function createPartMeshLayer(): PartMeshLayer {
         continue;
       }
 
-      // Apply the dim/full material BEFORE kicking off the regen so the
-      // swap takes effect on the very next frame even when the geometry
-      // is hash-cached and `regenAndApply` short-circuits without
-      // touching the mesh. Material is a runtime swap; geometry stays.
+      // Apply the correct PBR material (opaque or dimmed) based on the
+      // part's current materialId and dim flag. Synchronous — no regen
+      // required — so colour changes take effect on the very next frame.
+      const pair = getOrCreatePair(part.materialId);
       const desiredMaterial = dimmedPartIds.has(part.id)
-        ? dimmedMaterial
-        : sharedMaterial;
+        ? pair.dimmed
+        : pair.opaque;
       if (entry.mesh.material !== desiredMaterial) {
         entry.mesh.material = desiredMaterial;
       }
@@ -333,7 +404,11 @@ export function createPartMeshLayer(): PartMeshLayer {
       // 'XYZ' order; this matches the OCCT composition in cadWorker
       // (rotZ -> rotY -> rotX -> translate, i.e. M = T·Rx·Ry·Rz).
       const tx = part.transform;
-      entry.mesh.position.set(tx.positionMm[0], tx.positionMm[1], tx.positionMm[2]);
+      entry.mesh.position.set(
+        tx.positionMm[0],
+        tx.positionMm[1],
+        tx.positionMm[2],
+      );
       entry.mesh.rotation.set(
         (tx.rotationDeg[0] * Math.PI) / 180,
         (tx.rotationDeg[1] * Math.PI) / 180,
@@ -341,11 +416,7 @@ export function createPartMeshLayer(): PartMeshLayer {
         "XYZ",
       );
 
-      // Phase 6: visibility flag wins. Hidden parts are still synced
-      // (geometry stays warm) but the mesh isn't rendered.
       if (!part.visible) {
-        // Bump the token so any pending regen for this part is dropped
-        // before it can flip visibility back on.
         entry.inFlightToken = ++nextToken;
         entry.mesh.visible = false;
         continue;
@@ -394,8 +465,12 @@ export function createPartMeshLayer(): PartMeshLayer {
     for (const id of Array.from(entries.keys())) {
       removeEntry(id);
     }
-    sharedMaterial.dispose();
-    dimmedMaterial.dispose();
+    // Dispose all cached material pairs.
+    for (const pair of materialCache.values()) {
+      pair.opaque.dispose();
+      pair.dimmed.dispose();
+    }
+    materialCache.clear();
     if (group.parent) group.parent.remove(group);
   };
 

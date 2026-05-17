@@ -2,6 +2,10 @@
 // surfaces inline rename, visibility toggle, position/rotation NumericInputs,
 // reset transform, the "+ Add" buttons for modifier features, and Delete.
 //
+// Phase 10 adds:
+//  - Material picker (drop-down over the MATERIAL_LIST constant).
+//  - Mass readout (volume in cm³ and mass in kg) populated after regen.
+//
 // NumericInputs:
 //   - Position step 1mm (Shift × 10), 2 decimals shown.
 //   - Rotation step 5deg (Shift × 10), 2 decimals shown.
@@ -10,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useKinetiCADStore } from "@/state/store";
+import { MATERIAL_LIST, getMaterial } from "@/cad/materials";
 
 export type PartInspectorProps = {
   /**
@@ -33,6 +38,7 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
   );
   const resetPartTransform = useKinetiCADStore((s) => s.resetPartTransform);
   const setGroundPart = useKinetiCADStore((s) => s.setGroundPart);
+  const setPartMaterial = useKinetiCADStore((s) => s.setPartMaterial);
 
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState("");
@@ -48,6 +54,16 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
   const effectiveGroundId =
     assembly.groundPartId || assembly.parts[0]?.id || "";
   const isGround = effectiveGroundId === part.id;
+
+  const currentMaterial = getMaterial(part.materialId);
+
+  // Format mass readout values.
+  const volumeCm3 = part.volumeCm3;
+  const massKg = part.massKg;
+  const hasMassData =
+    typeof volumeCm3 === "number" &&
+    typeof massKg === "number" &&
+    volumeCm3 > 0;
 
   const startRename = () => {
     setDraftName(part.name);
@@ -97,6 +113,67 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
           {part.visible ? <Eye size={14} /> : <EyeOff size={14} />}
         </button>
       </div>
+
+      {/* Material picker */}
+      <div className="font-technical text-[10px] uppercase tracking-widest text-muted-foreground">
+        Material
+      </div>
+      <div className="relative">
+        {/* Colour swatch */}
+        <span
+          className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-sm border border-border/60 shrink-0"
+          style={{ backgroundColor: `#${currentMaterial.colour.toString(16).padStart(6, "0")}` }}
+        />
+        <select
+          value={part.materialId}
+          onChange={(e) => setPartMaterial(part.id, e.target.value)}
+          data-testid="part-material"
+          className="w-full h-8 pl-7 pr-2 rounded border border-border bg-background font-technical text-[11px] text-foreground focus:outline-none focus:border-[#FF6B1A] cursor-pointer appearance-none"
+        >
+          {MATERIAL_LIST.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+            </option>
+          ))}
+        </select>
+        {/* Density hint */}
+        <span className="absolute right-6 top-1/2 -translate-y-1/2 font-technical text-[10px] text-muted-foreground pointer-events-none">
+          {currentMaterial.densityGcm3.toFixed(2)} g/cm³
+        </span>
+      </div>
+
+      {/* Mass properties readout */}
+      {hasMassData ? (
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="flex flex-col items-start bg-secondary/30 rounded px-2 py-1.5">
+            <span className="font-technical text-[9px] uppercase tracking-widest text-muted-foreground">
+              Volume
+            </span>
+            <span className="font-technical text-[11px] text-foreground mt-0.5">
+              {volumeCm3! < 0.01
+                ? volumeCm3!.toExponential(2)
+                : volumeCm3!.toFixed(volumeCm3! < 1 ? 3 : 2)}{" "}
+              cm³
+            </span>
+          </div>
+          <div className="flex flex-col items-start bg-secondary/30 rounded px-2 py-1.5">
+            <span className="font-technical text-[9px] uppercase tracking-widest text-muted-foreground">
+              Mass
+            </span>
+            <span className="font-technical text-[11px] text-foreground mt-0.5">
+              {massKg! < 0.001
+                ? `${(massKg! * 1000).toFixed(1)} g`
+                : massKg! < 1
+                  ? `${massKg!.toFixed(3)} kg`
+                  : `${massKg!.toFixed(2)} kg`}
+            </span>
+          </div>
+        </div>
+      ) : hasBaseFeature ? (
+        <div className="font-technical text-[10px] text-muted-foreground italic">
+          Computing mass properties…
+        </div>
+      ) : null}
 
       {/* Transform: position */}
       <div className="font-technical text-[10px] uppercase tracking-widest text-muted-foreground">

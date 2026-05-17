@@ -14,7 +14,7 @@
           id: "part-post",
           name: "Part 1",
           visible: true,
-          materialId: "default",
+          materialId: "aluminium-6061",
           transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
           sketches: [
             {
@@ -41,7 +41,7 @@
           id: "part-rotor",
           name: "Part 2",
           visible: true,
-          materialId: "default",
+          materialId: "aluminium-6061",
           // Hub bottom at world z=100 → part-local z=-12 → part z-origin=112
           transform: { positionMm: [0, 0, 112], rotationDeg: [0, 0, 0] },
           sketches: [
@@ -194,7 +194,7 @@
     },
   };
 
-  localStorage.setItem("kineticad-state", JSON.stringify({ state, version: 8 }));
+  localStorage.setItem("kineticad-state", JSON.stringify({ state, version: 9 }));
   console.log("[seed] State written. Reloading…");
   location.reload();
 })();

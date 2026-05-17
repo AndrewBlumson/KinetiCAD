@@ -829,6 +829,11 @@ export default function Scene() {
             initialPartVis.hidden,
             initialPartVis.dimmed,
             kernel,
+            (partId, volumeCm3, massKg) => {
+              useKinetiCADStore
+                .getState()
+                .updatePartMassProps(partId, volumeCm3, massKg);
+            },
           );
           booleanResultLayer.sync(
             initialState.assembly,
@@ -1226,6 +1231,11 @@ export default function Scene() {
               partVis.hidden,
               partVis.dimmed,
               kernel,
+              (partId, volumeCm3, massKg) => {
+                useKinetiCADStore
+                  .getState()
+                  .updatePartMassProps(partId, volumeCm3, massKg);
+              },
             );
           }
           if (assemblyChanged || booleanVisChanged) {

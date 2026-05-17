@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { DEFAULT_MATERIAL_ID } from "@/cad/materials";
 import type {
   Assembly,
   BooleanFeature,
@@ -485,6 +486,13 @@ export type KinetiCADStore = {
   ) => void;
   /** Reset a part's transform back to identity (zero position + zero rotation). */
   resetPartTransform: (partId: string) => void;
+  /** Phase 10: change a part's material. */
+  setPartMaterial: (partId: string, materialId: string) => void;
+  /**
+   * Phase 10: write mass-properties results back to the part after a regen.
+   * Non-persisted — recomputed on every regen. Drives the inspector readout.
+   */
+  updatePartMassProps: (partId: string, volumeCm3: number, massKg: number) => void;
 
   // ---- Phase 5: boolean selection / editor / cascade delete ----
   /** Select a boolean feature (drives the right inspector). */
@@ -735,7 +743,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
             transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
             sketches: [],
             features: [],
-            materialId: "default",
+            materialId: DEFAULT_MATERIAL_ID,
           };
           parts = [auto];
           targetPartId = auto.id;
@@ -1352,7 +1360,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
           sketches: [],
           features: [],
-          materialId: "default",
+          materialId: DEFAULT_MATERIAL_ID,
         };
         // Phase 9.5 — auto-promote the first part to ground so the
         // persisted `groundPartId` is always populated. Previously the
@@ -1383,7 +1391,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
           sketches: [],
           features: [{ id: newId('feature'), type: 'imported-step', shapeId }],
-          materialId: 'default',
+          materialId: DEFAULT_MATERIAL_ID,
         };
         const groundPartId =
           state.assembly.groundPartId === ''
@@ -1585,6 +1593,32 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                       },
                     }
                   : p,
+              ),
+            },
+          };
+        }),
+
+      setPartMaterial: (partId, materialId) =>
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId ? { ...p, materialId } : p,
+              ),
+            },
+          };
+        }),
+
+      updatePartMassProps: (partId, volumeCm3, massKg) =>
+        set((s) => {
+          if (!s.assembly.parts.some((p) => p.id === partId)) return {};
+          return {
+            assembly: {
+              ...s.assembly,
+              parts: s.assembly.parts.map((p) =>
+                p.id === partId ? { ...p, volumeCm3, massKg } : p,
               ),
             },
           };
@@ -1970,12 +2004,21 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     }),
     {
       name: "kineticad-state",
-      version: 8,
+      version: 9,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation runtime fields.
+      // Phase 10: volumeCm3 and massKg are non-persisted — they are
+      // always recomputed after regen and are stripped here so stale
+      // values never survive a reload.
       partialize: (state) => ({
         mode: state.mode,
-        assembly: state.assembly,
+        assembly: {
+          ...state.assembly,
+          parts: state.assembly.parts.map((p) => {
+            const { volumeCm3: _v, massKg: _m, ...rest } = p;
+            return rest as Part;
+          }),
+        },
         simulation: {
           ...state.simulation,
           // Phase 8 — never resume a runtime physics state across reload.
@@ -2250,6 +2293,46 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
                   return { ...f, extrudeMode: "new-body" as ExtrudeMode };
                 }),
               })),
+            };
+          }
+        }
+        // v8 → v9: Phase 10 material library. Any part whose materialId is
+        // absent or the legacy sentinel "default" is promoted to the aluminium
+        // default so the PBR layer has a valid material from the first render.
+        if (version < 9 && state.assembly) {
+          state.assembly = {
+            ...state.assembly,
+            parts: state.assembly.parts.map((part) => {
+              const p = part as Part & { materialId?: string };
+              const id = p.materialId;
+              if (!id || id === "default") {
+                return { ...part, materialId: DEFAULT_MATERIAL_ID };
+              }
+              return part;
+            }),
+          };
+        }
+        // Defensive: patch any part still missing a valid materialId regardless
+        // of the recorded version (handles interrupted dev-session hot-reloads).
+        if (state.assembly) {
+          let needsPatch = false;
+          for (const part of state.assembly.parts) {
+            const p = part as Part & { materialId?: string };
+            if (!p.materialId || p.materialId === "default") {
+              needsPatch = true;
+              break;
+            }
+          }
+          if (needsPatch) {
+            state.assembly = {
+              ...state.assembly,
+              parts: state.assembly.parts.map((part) => {
+                const p = part as Part & { materialId?: string };
+                if (!p.materialId || p.materialId === "default") {
+                  return { ...part, materialId: DEFAULT_MATERIAL_ID };
+                }
+                return part;
+              }),
             };
           }
         }

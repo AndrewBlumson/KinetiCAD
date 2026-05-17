@@ -37,19 +37,20 @@
 // is `.delete()`-d in a finally block. The caller is responsible for
 // the input shape's lifetime.
 
-const ALUMINIUM_DENSITY_G_CM3 = 2.7;
-
 /**
  * Compute the mass properties of `shape` under the given `density`
  * (g/cm³). Returns kg-scale mass + centre-of-mass + principal inertia
  * (kg·mm²). Returns null only if OCCT outright refuses to compute on
  * the shape (e.g. empty compound) — the caller should treat that as a
  * massless static body.
+ *
+ * `density` is required: the caller must look up the material via
+ * `getMaterial(part.materialId).densityGcm3` before calling.
  */
 export function computeMassProperties(
   oc: unknown,
   shape: unknown,
-  density: number = ALUMINIUM_DENSITY_G_CM3,
+  density: number,
 ): {
   volumeMm3: number;
   massKg: number;

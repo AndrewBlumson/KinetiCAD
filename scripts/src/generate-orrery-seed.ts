@@ -71,7 +71,7 @@ const PARAMS = {
 
 // Must match the `version` field in src/state/store.ts persist config.
 // Check store.ts before bumping this — wrong version triggers migrations.
-const PERSIST_VERSION = 8;
+const PERSIST_VERSION = 9;
 
 // Hub height: one tier spacing of margin above the top arm, floor at Z=0.
 const hubHeight = (PARAMS.planetCount + 1) * PARAMS.tierSpacingMm;
@@ -109,7 +109,7 @@ function buildSunPart(): object {
     id: "part-sun",
     name: "Sun",
     visible: true,
-    materialId: "default",
+    materialId: "aluminium-6061",
     transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] },
     sketches: [
       {
@@ -145,7 +145,7 @@ function buildPlanetPart(i: number): object {
     id: pid,
     name: `Planet ${i}`,
     visible: true,
-    materialId: "default",
+    materialId: "aluminium-6061",
     transform: { positionMm: [0, 0, tierHeight(i)], rotationDeg: [0, 0, (i - 1) * 45] },
     sketches: [
       {
@@ -206,7 +206,7 @@ function buildMoonPart(moonIndex: number, planetIndex: number): object {
     id: mid,
     name: `Moon ${moonIndex}`,
     visible: true,
-    materialId: "default",
+    materialId: "aluminium-6061",
     transform: { positionMm: [moonWorldX, moonWorldY, moonWorldZ], rotationDeg: [0, 0, 0] },
     sketches: [
       {
@@ -276,7 +276,7 @@ function buildRingPart(): object {
     id: "part-ring",
     name: "Asteroid ring",
     visible: true,
-    materialId: "default",
+    materialId: "aluminium-6061",
     transform: { positionMm: [0, 0, PARAMS.ringZ], rotationDeg: [0, 0, 0] },
     sketches,
     features,

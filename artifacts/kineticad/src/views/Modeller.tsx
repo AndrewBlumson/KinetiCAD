@@ -206,10 +206,12 @@ export default function Modeller() {
           return;
         }
         const p = parsed as { version: unknown; state: unknown };
-        // Must match the persist version in store.ts (currently 8).
-        if (p.version !== 8) {
+        // Accept v8 and v9. v8 files are migrated to v9 automatically on
+        // load via the store's migrate function. All earlier versions are
+        // rejected: the migration chain before v8 is not guaranteed safe.
+        if (p.version !== 8 && p.version !== 9) {
           toast.error(
-            `Version mismatch — file is version ${String(p.version)}, app expects version 8.`,
+            `Version mismatch — file is version ${String(p.version)}, app expects version 8 or 9.`,
           );
           return;
         }

@@ -1000,7 +1000,85 @@ to the CAD tool itself.
 
 ---
 
-## Current persist version: 8
+## Phase 10 — Material Library (2026-05-17)
+
+Eight engineering materials with physically-based rendering colours and
+density values. Material is set per-part; mass properties are computed
+after every regen and shown live in the inspector.
+
+**`cad/materials.ts`** (new): defines the `Material` type and
+`MATERIAL_LIST` constant with eight entries — aluminium-6061 (2.70 g/cm³,
+#A8B0BC, m0.7 r0.35), steel-1018 (7.87, #8C909A), brass-c36000 (8.50,
+#B5A642), titanium-grade5 (4.43, #9DA8B0), nylon-6 (1.14, #E8D8C0),
+pla (1.25, #C8D8E8), abs (1.04, #D4C8B8), acrylic (1.18, #C0D8E8).
+`getMaterial(id)` returns the entry or falls back to aluminium-6061.
+
+**`cad/operations/massProperties.ts`**: `density` parameter is now
+required (was optional with a hard-coded aluminium default). Callers
+must pass `getMaterial(part.materialId).densityGcm3`.
+
+**`state/store.ts`** (persist v8 → v9):
+- `Part` schema already had optional `volumeCm3` / `massKg`; `materialId`
+  was already required. New default is `"aluminium-6061"`.
+- New actions: `setPartMaterial(partId, materialId)` and
+  `updatePartMassProps(partId, volumeCm3, massKg)`.
+- `partialize` now strips `volumeCm3` / `massKg` from every part before
+  writing to `localStorage` so stale computed values never survive reload.
+- v8→v9 migration: any part with `materialId` absent or `"default"` is
+  promoted to `"aluminium-6061"`. A defensive second pass runs regardless
+  of the recorded version to handle hot-reload edge cases.
+
+**`three/PartMeshLayer.ts`** (rewritten):
+- Replaced the single `sharedMaterial` + `dimmedMaterial` pair with a
+  `Map<materialId, { opaque, dimmed }>` cache keyed by material id.
+  Pairs are created lazily on first use and disposed together in
+  `dispose()`.
+- `Entry` gains `lastMaterialId: string | null`.
+- `sync()` accepts an optional `onMassPropsUpdate` callback. The correct
+  PBR pair is applied synchronously to the mesh every sync (colour change
+  is instant, no regen needed).
+- `regenAndApply` detects `hashChanged || materialChanged`; when either is
+  true it calls `kernel.getMassProperties({ density })` and fires the
+  callback. The async mass-props call shares the same token guard as regen
+  so stale results from superseded syncs are dropped.
+
+**`three/Scene.tsx`**: both `partMeshLayer.sync` call sites (initial
+mount and store subscription) now pass `onMassPropsUpdate` which
+dispatches `updatePartMassProps` to the store via `getState()`.
+
+**`components/inspectors/PartInspector.tsx`**:
+- Material picker: `<select>` pre-populated from `MATERIAL_LIST` with a
+  colour swatch and a density hint (g/cm³) shown as a suffix. Calls
+  `setPartMaterial` on change.
+- Mass readout: two tiles (Volume cm³ / Mass kg) shown once
+  `volumeCm3 > 0`; "Computing mass properties…" shown while the regen
+  is in flight for a part that has a base feature.
+
+**`views/Modeller.tsx`**: load validation now accepts `version === 8`
+OR `version === 9` so saved v8 files still open (migrate runs on load).
+
+**Seeds**:
+- `scripts/src/generate-orrery-seed.ts`: `PERSIST_VERSION = 9`,
+  all `materialId: "default"` → `"aluminium-6061"`.
+- `public/seeds/orrery.js`: regenerated (version 9, 13 bodies, 12 joints).
+- `public/seeds/windmill.js`: updated version 8→9 and
+  `materialId: "default"` → `"aluminium-6061"` for both parts.
+
+**Verification**: `pnpm --filter @workspace/kineticad run typecheck` —
+clean (zero errors). End-to-end test requires WebGPU; deploy to
+`.replit.app` and open in Chrome:
+1. Load the orrery seed — all 13 parts render with aluminium colouring.
+2. Select a part, open PartInspector — material picker shows
+   "Aluminium 6061 / 2.70 g/cm³"; volume + mass tiles populate after
+   ~1–2 s.
+3. Change material to "Steel 1018" — mesh colour updates immediately;
+   mass readout refreshes with ~2.9× higher mass.
+4. Save model → reload → confirm v9 file loads without version error.
+5. Load a v8 file → confirm it opens (migration promotes materialId).
+
+---
+
+## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
 ## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: deploy to .replit.app and open in Chrome on M-series Mac
