@@ -56,6 +56,7 @@ export default function Modeller() {
   const [importingStep, setImportingStep] = useState(false);
   const [exportingStep, setExportingStep] = useState(false);
   const stepFileInputRef = useRef<HTMLInputElement>(null);
+  const modelFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportStl = async () => {
     const partsWithFeatures = assembly.parts.filter(
@@ -162,6 +163,79 @@ export default function Modeller() {
     // Reset the input so re-uploading the same file fires onChange again.
     e.target.value = '';
     if (file) handleImportStep(file);
+  };
+
+  const handleSaveModel = () => {
+    // Read directly from localStorage — the persist middleware writes the
+    // exact { state, version } format the seed system uses, so no
+    // re-serialisation is needed.
+    const raw = localStorage.getItem('kineticad-state');
+    if (!raw) {
+      toast.error('Nothing to save — no model state found.');
+      return;
+    }
+    const blob = new Blob([raw], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const filename =
+      `kineticad-model-` +
+      `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}` +
+      `-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
+      `.json`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLoadModel = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      try {
+        const parsed: unknown = JSON.parse(text);
+        if (
+          typeof parsed !== 'object' ||
+          parsed === null ||
+          !('version' in parsed) ||
+          !('state' in parsed)
+        ) {
+          toast.error('Invalid model file — not a KinetiCAD model.');
+          return;
+        }
+        const p = parsed as { version: unknown; state: unknown };
+        // Must match the persist version in store.ts (currently 8).
+        if (p.version !== 8) {
+          toast.error(
+            `Version mismatch — file is version ${String(p.version)}, app expects version 8.`,
+          );
+          return;
+        }
+        if (
+          typeof p.state !== 'object' ||
+          p.state === null ||
+          !('assembly' in (p.state as object))
+        ) {
+          toast.error('Invalid model file — missing assembly data.');
+          return;
+        }
+        // Reuse exactly the seed-loader mechanism: write the raw JSON into
+        // the same localStorage key and reload so the workers rebuild cleanly.
+        localStorage.setItem('kineticad-state', text);
+        location.reload();
+      } catch {
+        toast.error('Failed to read model file — invalid JSON.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const onModelFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) handleLoadModel(file);
   };
 
   const handleExportStep = async () => {
@@ -412,6 +486,39 @@ export default function Modeller() {
                 <Download size={13} />
               )}
               <span className="hidden sm:inline">Export STEP</span>
+            </button>
+
+            <div className="w-px h-5 bg-border mx-1" />
+
+            {/* Hidden file input — triggered by the Load Model button */}
+            <input
+              ref={modelFileInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={onModelFileChange}
+            />
+
+            <button
+              type="button"
+              title="Save model to file"
+              onClick={handleSaveModel}
+              data-testid="save-model"
+              className="flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors text-foreground hover:bg-secondary active:bg-secondary/80"
+            >
+              <Download size={13} />
+              <span className="hidden sm:inline">Save</span>
+            </button>
+
+            <button
+              type="button"
+              title="Load model from file"
+              onClick={() => modelFileInputRef.current?.click()}
+              data-testid="load-model"
+              className="flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors text-foreground hover:bg-secondary active:bg-secondary/80"
+            >
+              <Upload size={13} />
+              <span className="hidden sm:inline">Load</span>
             </button>
           </>
         )}
