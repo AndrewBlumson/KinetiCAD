@@ -1,3 +1,5 @@
+import { Link } from "wouter";
+
 const LOGO = `${import.meta.env.BASE_URL}logo.webp`;
 
 const FEATURE_COLS = [
@@ -392,9 +394,11 @@ export function DesktopLanding() {
           position: "relative",
           zIndex: 1,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "space-between",
           padding: "36px 64px",
+          flexWrap: "wrap",
+          gap: "24px",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -416,18 +420,63 @@ export function DesktopLanding() {
             KinetiCAD
           </span>
         </div>
-        <a
-          href="https://kineticad.co.uk"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "13px",
-            color: "rgba(245,245,245,0.32)",
-            textDecoration: "none",
-            transition: "color 0.15s",
-          }}
-        >
-          kineticad.co.uk
-        </a>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            <a
+              href="https://kineticad.co.uk"
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "13px",
+                color: "rgba(245,245,245,0.32)",
+                textDecoration: "none",
+              }}
+            >
+              kineticad.co.uk
+            </a>
+            <Link
+              href="/terms"
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "13px",
+                color: "rgba(245,245,245,0.32)",
+                textDecoration: "none",
+              }}
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "13px",
+                color: "rgba(245,245,245,0.32)",
+                textDecoration: "none",
+              }}
+            >
+              Privacy
+            </Link>
+          </div>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "12px",
+              color: "rgba(245,245,245,0.40)",
+            }}
+          >
+            © 2026 Adevious Ltd. All rights reserved.
+          </span>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px",
+              color: "rgba(245,245,245,0.24)",
+              textAlign: "right",
+            }}
+          >
+            Adevious AI is a trading name of Adevious Ltd. Company No. 08550853, registered in England and Wales.
+          </span>
+        </div>
       </footer>
     </div>
   );

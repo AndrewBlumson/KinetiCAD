@@ -1172,6 +1172,37 @@ even though the attribute substitution gave `/app/seed-registry.js`.
 
 ---
 
+## Landing page legal routes (`artifacts/landing`)
+
+Two legal pages added to the landing site (18/05/2026). Both are client-side
+routes within `artifacts/landing` — they do not touch the `/app` artifact.
+
+| URL | Component |
+|-----|-----------|
+| `/terms` | `src/pages/TermsPage.tsx` — Terms of Service |
+| `/privacy` | `src/pages/PrivacyPage.tsx` — Privacy Policy |
+
+**Routing**: `App.tsx` now uses wouter `<Switch>` + `<Route>`. `/` retains the
+existing mobile/desktop detection (`Home` component). Legal pages are rendered
+without the mobile gate — they are plain text, readable on any screen.
+
+**Shared layout**: `src/components/LegalPage.tsx` — takes `title`,
+`lastUpdated`, and `sections` props; renders the `#0A0E1A` background layers,
+a 760px-wide content column, `← Back to KinetiCAD` wouter link at top, numbered
+sections, and the full site footer.
+
+**Footer** (`DesktopLanding.tsx`): right side updated from a single
+`kineticad.co.uk` link to a stacked column:
+- Row 1: `kineticad.co.uk` · `Terms` (wouter Link) · `Privacy` (wouter Link)
+- Row 2: © 2026 Adevious Ltd. All rights reserved.
+- Row 3 (11px, low opacity): Adevious AI is a trading name of Adevious Ltd.
+  Company No. 08550853, registered in England and Wales.
+
+**Legal text**: verbatim as supplied. Contact email `support@adevious.co.uk`.
+`MobileHolding.tsx` is unchanged.
+
+---
+
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
 ## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')

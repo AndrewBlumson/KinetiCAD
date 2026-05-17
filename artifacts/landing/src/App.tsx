@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { Switch, Route } from "wouter";
 import { DesktopLanding } from "./components/DesktopLanding";
 import { MobileHolding } from "./components/MobileHolding";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import NotFound from "./pages/not-found";
 
 function detectMobile(): boolean {
   const touchDevice =
@@ -9,7 +13,7 @@ function detectMobile(): boolean {
   return touchDevice || manyTouchPoints;
 }
 
-export default function App() {
+function Home() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -18,4 +22,15 @@ export default function App() {
 
   if (isMobile) return <MobileHolding />;
   return <DesktopLanding />;
+}
+
+export default function App() {
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route component={NotFound} />
+    </Switch>
+  );
 }
