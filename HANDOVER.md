@@ -1,455 +1,306 @@
-# KinetiCAD Handover, 08/05/2026 21:30
+# KinetiCAD Handover, 17/05/2026
 
 ## Project
 
-**KinetiCAD** is an open-source browser-based parametric CAD with B-rep underneath, physics simulation, and mate constraints. Built on Replit by Andrew Blumson (Adevious AI Ltd, UK Replit Ambassador). MIT licence.
+KinetiCAD is an open-source browser-based parametric CAD tool with B-rep geometry underneath, real-time physics simulation, and mate constraints. Built on Replit by Andrew Blumson (Adevious AI Ltd, UK Replit Ambassador), co-built with Kevin Blumson. MIT licence.
 
-- Repo: https://github.com/AndrewBlumson/KinetiCAD
+- Repository: https://github.com/AndrewBlumson/KinetiCAD
 - Live: https://kineticad.replit.app
-- Stack: React 19, Vite 8, TypeScript 6, Three.js r184 + WebGPU, OpenCascade.js 2.0.0-beta.94e2944 (B-rep, WASM, Web Worker, Comlink), Rapier3D 0.12.0 (physics, Web Worker), Zustand, Tailwind, Sonner toasts.
-- Coordinate system: Z-up, mm units. UK English, GBP, DD/MM/YYYY.
-- Repo structure: Replit pnpm monorepo at root with artifacts/kineticad/, lib/, scripts/, pnpm-workspace.yaml.
+- Stack: React 19, Vite 8, TypeScript 6, Three.js r184 with WebGPURenderer, OpenCascade.js 2.0.0-beta.94e2944 (B-rep, WebAssembly, Web Worker, Comlink), Rapier3D 0.12.0 (physics, separate Web Worker), Zustand, Tailwind, Sonner toasts, Howler.js
+- Coordinate system: Z-up, millimetre units. UK English, GBP, DD/MM/YYYY.
+- Repository structure: pnpm monorepo at the root, with the main CAD app at `artifacts/kineticad/`.
 
----
+This handover is the deep reference for anyone picking up the code. The phase-by-phase build log lives in `replit.md` at the repository root and is the authoritative record of what was built when. Where this handover and `replit.md` disagree, `replit.md` wins, because it is regenerated from git history.
+
+## Current status
+
+The build follows a 12-phase spec. Phases 0 to 9 are complete: app shell, WebGPU scene, sketching, Extrude and Revolve, topology picking, modifier features (Fillet, Chamfer, Hole), boolean operations, multi-part scene management, mate joints, Rapier3D physics integration, and motor actuation. Phases 10 to 12 are pending.
+
+Post-phase work also complete: the Z-up convention switch, the STEP import fix session, the seed registry, the orrery showcase build, and the Save/Load model feature.
+
+Nothing is in flight at the time of this handover. The outstanding and parked work is listed below.
 
 ## What ships and is verified
 
-### STL export (Phase 3, complete)
+### Modelling
 
-Binary STL export from compound assembly via `StlAPI.Write` static call. World transforms preserved via `BRepBuilderAPI_Transform_2`. Mesh generated with `BRepMesh_IncrementalMesh` (linear deflection 0.1, angular deflection 0.5).
+Sketching on the global XY, XZ and YZ planes, with line, rectangle, three-point arc and circle tools, a snap engine (endpoint, midpoint, grid priority), and a live overlay. Extrude and Revolve features with forward, backward and symmetric directions. Modifier features Fillet, Chamfer and Hole, driven by edge and face picking. Boolean operations Union, Subtract and Intersect at assembly level. Multi-part assemblies with per-part visibility, inline rename, duplicate, and a translate/rotate transform gizmo.
 
-Verifications done:
-- macOS Preview opened the windmill STL and rendered geometry correctly: vertical post, horizontal rotor disc, four blades extending radially.
-- Programmatic Python verification confirmed binary format, 408 triangles, 20,484 bytes (file size matches formula 84 + 408 × 50 exactly), zero degenerate triangles, zero zero-normals, zero NaN/Inf, bounding box 48mm × 48mm × 116mm sensible for the windmill.
-- Bambu Studio loaded the STL, sliced at 0.20mm layer height for the Bambu Lab A1 profile, generated a complete 454-layer print plan (1h13m, 2.45m filament, 7.43g, £0.19 cost). Cantilever warning for the blades, resolved with tree-auto supports (707 layers with supports). Slice OK.
-- Four non-manifold edges detected on compound-of-solids contact lines (rotor on post tip, blades meeting rotor disc). Expected, not a defect. Slicers handle each shell separately.
+### Mates
 
-### STEP import (Phase 4, complete)
+Five mate types can be created: Revolute, Prismatic, Spherical, Fixed and Planar. Revolute and Prismatic carry a motor parameter (RPM for revolute, mm/s for prismatic). One part can be set as the ground anchor. Cascade delete removes dependent mates and booleans and resets the ground anchor when the ground part is deleted.
 
-Pattern: `STEPControl_Reader_1` + `ReadFile(path)` + `TransferRoots(progress)` + `OneShape()`. Compound shapes decomposed via `TopExp_Explorer` to get individual `TopoDS_Solid` bodies, each becoming its own Part panel entry.
+### Physics
 
-Verifications done:
-- Single-part STEP: imported McMaster-Carr 91290A115 black-oxide alloy steel socket-head screw cleanly. Toast confirmed "1 part imported at origin." Inspector populated with name and zero position.
-- Multi-part assembly STEP: imported McMaster-Carr 9132K11 torque-limiting coupling. Decomposed into 12 separate Part entries with relative positions preserved. Visually re-assembled correctly on screen.
-- Diagnostic logging in place inside `cadWorker.ts importStep` covering write path, FS contents after write, ReadFile status, NbRootsForTransfer, TransferRoots return, NbShapes after transfer, OneShape isNull, OneShape ShapeType.
-- Exception decoding tested. `Standard_Failure::Caught()` not exposed in this opencascade.js build, fell back to throwing `step-import-failed: no geometry found in the STEP file` for the 0-shapes case.
+Real-time rigid-body simulation via Rapier3D, in a dedicated Web Worker. Mate joints become Rapier joints; motorised joints sustain a commanded velocity. Four mate types actuate in simulation: Revolute, Prismatic, Spherical and Fixed. The Planar mate is created and stored but skipped by the physics joint builder, because Rapier 0.12 has no native planar joint. Mass properties are derived from the B-rep geometry. Default gravity is Z-down in mm/s squared.
 
-### STEP export (Phase 4, complete)
+### File interop
 
-Pattern: `STEPControl_Writer` + transfer of compound shape + write to OpenCascade virtual filesystem + read bytes back via `oc.FS.readFile`.
+STL export, binary.
 
-Verifications done:
-- Round-trip: exported the McMaster torque-limiting coupling from KinetiCAD, re-imported the same file. All geometry preserved. Original 12 parts came back as 43 parts because export iterates over `TopoDS_Solid` directly, flattening any compound-of-solids hierarchy that was originally grouped in the source file.
-- Round-trip windmill: export and re-import attempted, 6 parts came back (post + rotor + 4 blades = 6, correct). Geometry preserved. Mates not preserved (STEP format does not carry mate/joint information; this is a STEP limitation, not a KinetiCAD bug, applies equally to Onshape, Solidworks, Fusion).
+STEP import, single-part and multi-part assembly. The reader uses `STEPControl_Reader_1` with `TransferRoots(progress)` then `OneShape()`; compound shapes are decomposed into individual solids, each becoming its own part. Imported parts are auto-grounded: a single uniform Z translation across all solids drops the assembly onto the Z=0 plane while preserving relative positions.
 
-### Three.js r184 renderAsync deprecation fix
+STEP export, with full round-trip. KinetiCAD-exported STEP files re-import cleanly with geometry, hierarchy and relative positions preserved.
 
-One-line change in `Scene.tsx` line 411: `renderer.renderAsync(scene, camera)` to `renderer.render(scene, camera)`. Three.js r184 deprecated `renderAsync()` in favour of `render()` with `await renderer.init()` already in place earlier in the file.
+Verification done on the deployed `.replit.app` URL in Chrome on an M-series Mac:
 
-Verifications done:
-- TypeScript compilation clean.
-- Dev server reload clean, no deprecation warning.
-- Windmill canary regression passed: bodyBangvelMag stable at π ±5e-7 across 1500+ steps.
-- Status: published to production at kineticad.replit.app on 08/05/2026 at 21:51 BST as part of the Phase 4 deploy.
+- STL export: the windmill STL renders correctly in macOS Preview. A programmatic check confirms binary format, 408 triangles, 20,484 bytes, zero degenerate triangles, zero zero-normals, zero NaN or Inf values. Bambu Studio sliced the windmill to a complete 454-layer print plan and to 707 layers with tree-auto supports.
+- STEP import, single part: McMaster-Carr M3 socket-head screw 91290A115 imported and grounded.
+- STEP import, multi-part assembly: McMaster-Carr torque-limiting coupling 9132K11 imported as 12 separate parts with relative positions preserved.
+- STEP round-trip: coupling exported and re-imported, geometry preserved. Hierarchy flattens on round-trip: 12 source parts return as 43 because export iterates over each solid directly. The windmill round-trips as 6 parts (post, rotor, four blades).
+- Windmill physics canary: bodyBangvelMag stable at pi plus or minus 5e-7.
 
-### Auto-ground imported parts to Z=0
+### Save and Load
 
-When a STEP file is imported, parts are translated via `Bnd_Box_1` + `gp_Trsf_1` + `BRepBuilderAPI_Transform_2` so the lowest point of each shape sits on Z=0. Avoids the "half-buried bolt" UX problem when source files were modelled around their geometric centre.
+Two toolbar buttons in the Modeller, placed after Export STEP. Save reads the persisted state from `localStorage["kineticad-state"]`, which the persist middleware writes synchronously on every state change, and downloads it as `kineticad-model-YYYYMMDD-HHMMSS.json`. The file is byte-for-byte identical to a seed file, in `{ state, version }` format. Load opens a JSON file picker and validates before touching state: the `version` and `state` keys must be present, `version` must equal the current persist version, and `state.assembly` must be present. Any failure shows a toast and leaves state untouched. On a valid file, the state is written to localStorage and the page reloaded, reusing the seed loader mechanism so the workers and physics engine rebuild cleanly.
 
-Per-assembly grounding implemented: one union bounding box pass across all imported solids, single `dz = -assemblyZMin` applied uniformly to every solid, preserving relative positions. Each translated shape deep-copied with `BRepBuilderAPI_Copy_2` before its transformer is deleted.
+Save and Load persists sketch-based parts, features, mates and booleans. It does not persist imported B-rep geometry: see the limitations below.
 
-Verification status:
-- Single-part import: works correctly (M3 bolt rests on floor).
-- Multi-part assembly import where source was already grounded: works (McMaster torque-limiting coupling sits cleanly on the floor).
-- Multi-part assembly import with non-zero Z offsets: fixed by per-assembly approach.
+## Known limitations, by design or by format
 
-### Canvas focus restoration after import
+STEP files do not carry mates or joints. Round-tripping an assembly through STEP loses the kinematic relationships, so mates must be re-established after import. This is a STEP format characteristic affecting all CAD tools, not specific to KinetiCAD. STEP AP242 has provisions for kinematic data but industry support is patchy.
 
-In `Modeller.tsx` import success handler, `requestAnimationFrame(() => canvas.focus())` runs after the success toast fires. OrbitControls regain pointer events without needing a manual click.
+STEP export flattens compound-of-solids hierarchy. Each solid is written as a separate root entity. Geometry is preserved, sub-assembly grouping is lost.
 
-Verifications done:
-- Pan, zoom, and orbit work immediately after STEP import without clicking the canvas first.
+Imported parts do not survive a page refresh. B-rep geometry lives in OpenCascade.js WebAssembly memory, which is wiped on reload. The persist layer holds assembly metadata but cannot persist WebAssembly-managed objects. Sketch-based parts survive a refresh because the feature regeneration pipeline reconstructs them from the sketch and feature list; imported STEP parts have no regeneration path. The fix is an IndexedDB layer that persists the original STEP bytes and replays the import on load.
 
-### Sonner toast pointer-events fix
+Imported parts are named after the source filename. STEP files contain a PRODUCT entity name per component, but reading it back was investigated and found impossible in this OpenCascade.js binding. `STEPCAFControl_Reader_1` is required to populate the XCAF label tree, but eight separate paths to read the `TDataStd_Name` attribute all failed against the embind binding. XCAF label name extraction is therefore not available; file-stem naming is permanent documented behaviour, not a roadmap item.
 
-`<Sonner>` wrapper `<ol>` set to `pointerEvents: none`. Individual toast boxes get `pointerEvents: auto` via `toastOptions.style`. Invisible region around dismissed toasts no longer blocks orbit and zoom.
+The Planar mate is created and stored but does not actuate in simulation. Rapier 0.12 has no native planar joint, and the generic six-degree-of-freedom API is awkward. This is left for a later polish phase.
 
-Verifications done:
-- Bundled with the canvas focus fix above. Pan, zoom, and orbit work after toast appears, regardless of toast position.
+## Outstanding and parked work
 
----
+Not in flight; carried as the backlog.
 
-## What is in flight at handover time
+### Bugs and technical debt
 
-Nothing. Per-assembly auto-ground fix landed and verified. All Phase 4 items complete.
+Arc-edge pivot, end-to-end verification. The topology-side fix is in and committed: `topology.ts` now writes the true circle centre into the emitted edge metadata. The windmill canary holds pi after it. What remains unverified is the full pick path: a user clicking a partial-arc edge, for example on a boolean-cut rim, and getting a correct pivot through `MatePickerCoordinator`. A diagnostic prompt was drafted for this but not run, partly because edge picking by hand and the browser automation both proved difficult. See "The arc versus circle issue" below for the underlying geometry.
 
----
+The Hole feature position-picker clears the face selection on the second click.
 
-## Known limitations (by design or by format)
+Sketch profiles cannot contain multiple closed loops, for example a plate with a hole.
 
-1. **STEP files do not carry mates or joints.** Round-tripping an assembly through STEP loses the kinematic relationships. User must re-mate after import. This is a STEP format characteristic affecting all CAD tools, not specific to KinetiCAD. STEP AP242 has provisions for kinematic data but support across the industry is patchy.
+Sketch on a selected face is not implemented; only the global XY, XZ and YZ planes are available.
 
-2. **STEP export flattens compound-of-solids hierarchy.** Original 12 parts in the McMaster coupling source file became 43 parts on round-trip because each `TopoDS_Solid` is written as a separate root entity. Geometry preserved, hierarchy flattened. Polish item for a future phase.
-
-3. **Imported parts do not survive page refresh.** B-rep geometry lives in opencascade.js WASM memory, which gets wiped on page reload. localStorage persists assembly metadata (name, ID, position, rotation) but cannot persist WASM-managed objects. Sketch-based parts survive refresh because the feature regen pipeline reconstructs them from the sketch and feature list. Imported STEP parts have no regen path. Fix requires an IndexedDB layer to persist original STEP bytes (or tessellated mesh) and replay on load.
-
-4. **All imported parts named after filename.** STEP files contain `PRODUCT('part-name', ...)` entries that name each individual component, but the import code currently uses the filename for every part. Phase 5 polish.
-
----
-
-## Outstanding work (parked, not in flight)
-
-### Bug fixes and technical debt
-- Smart pivot picker for arc edges. Code is in topology.ts (3-point circumcenter), types.ts (EdgeMetadata.circleCenter), MatePickerCoordinator.ts (use circleCenter ?? polylineCenter for pivot). Topology side confirmed via `[topology-circle]` log. MatePickerCoordinator side never verified due to wrong-edge picks and Claude in Chrome crashes. Diagnostic prompt drafted but not sent. Replit checkpoint name "Improve pivot placement for circular and arc edges", 08/05/2026 18:25.
-- Hole feature position-pick clears face on second click.
-- Multi-loop sketch profiles (plate with hole).
-- Sketch on selected face, currently only XY/XZ/YZ globals.
+Boolean result meshes are not wired into the topology picker. They can be selected only from the BOOLEANS sidebar, not by clicking in the 3D view.
 
 ### Feature roadmap
-- IndexedDB cache for imported STEP file bytes, so imported parts survive refresh.
-- Save/load assembly state, proper version generalising the seed-windmill.js pattern.
-- Other mate types: Prismatic, Planar, Spherical, Cylindrical.
-- Test coverage (Vitest unit tests, Playwright end-to-end) and CI/CD via GitHub Actions.
+
+- IndexedDB cache for imported STEP file bytes, so imported parts survive a refresh.
+- IGES import and export, for wider CAD interop.
 - Undo/redo via Zustand history middleware.
 - WebGL2 fallback for browsers without WebGPU.
 - Mobile responsive layout.
+- Inline thumbnails in the Boolean inspector for input parts, the Subtract tool slot and the live result.
+- Native planar joint actuation in physics.
+- Test coverage (Vitest unit tests, Playwright end-to-end) and CI/CD via GitHub Actions.
 
----
+## Developer Guide (permanent reference)
 
-## Verification log (this session)
-
-| Test | Result | Method |
-|------|--------|--------|
-| Three.js r184 renderAsync warning | PASS | TypeScript clean, dev server clean, windmill canary stable to 7 dec |
-| STL binary format | PASS | macOS Preview render, Python parser confirms 80-byte header + 408 triangles |
-| STL geometry validity | PASS | 0 degenerate, 0 zero-normals, 0 NaN/Inf, sensible bbox |
-| STL printability | PASS | Bambu Studio sliced 454 layers, generated print plan, identified cantilever |
-| STL with supports | PASS | Tree-auto supports generated, 707 layers, ready for printer |
-| STEP import single-part | PASS | McMaster M3 bolt loaded, named, positioned at origin |
-| STEP import multi-part assembly | PASS | McMaster coupling loaded as 12 parts with preserved relative positions |
-| STEP export | PASS | Coupling exported, file size sensible (>50KB), readable on re-import |
-| STEP round-trip coupling | PASS (with caveat) | Geometry preserved, hierarchy flattened 12 to 43 parts |
-| STEP round-trip windmill | PASS | Geometry preserved, mates lost (expected per STEP format), assembly positions preserved |
-| Canvas focus after import | PASS | Pan, zoom, orbit work without prior click |
-| Sonner toast pointer-events | PASS | No event interception |
-| Auto-ground single part | PASS | M3 bolt rests on floor at Z=0 |
-| Auto-ground assembly already grounded | PASS | McMaster coupling unchanged, base on floor |
-| Auto-ground assembly with offsets | PASS | Per-assembly fix landed; uniform dz preserves relative positions |
-| Windmill physics canary | PASS | bodyBangvelMag stable at π ±5e-7 across 300 steps |
-
----
-
-## Files modified this session
-
-| File | Change |
-|------|--------|
-| `artifacts/kineticad/src/three/Scene.tsx` line 411 | renderAsync to render |
-| `artifacts/kineticad/src/cad/cadWorker.ts` | exportAssemblyStl, exportAssemblyStep, importStep, per-assembly auto-ground |
-| `artifacts/kineticad/src/cad/operations/topology.ts` line 483 area | 3-point circumcenter for arc edges (unverified) |
-| `artifacts/kineticad/src/cad/types.ts` | EdgeMetadata.circleCenter field |
-| `artifacts/kineticad/src/three/MatePickerCoordinator.ts` | circleCenter ?? polylineCenter pivot calc (unverified) |
-| `artifacts/kineticad/src/views/Modeller.tsx` | IMPORT STEP, EXPORT STEP buttons, success toast handler with canvas focus |
-| `artifacts/kineticad/src/components/ui/sonner.tsx` | pointerEvents none on wrapper, auto on toasts |
-
----
-
-## Suggested next session priorities
-
-1. **Verify the smart pivot picker for arc edges** (Checkpoint "Improve pivot placement for circular and arc edges", 08/05/2026 18:25). Diagnostic prompt drafted but not sent. Worth 30 minutes when fresh to either confirm working or identify the actual gap.
-2. **Post the round-trip story** on X and LinkedIn. Suggested framing: "Browser CAD now does full STEP round-trip. Imported a 12-part McMaster industrial coupling. Exported. Re-imported. Geometry, hierarchy, and relative positions all survive. Mates need re-establishing on import (same as Onshape, Solidworks, Fusion). WebGPU + WASM B-rep + multi-thread physics + MIT licence." Pin a screenshot of the imported coupling on the grid.
-3. **IndexedDB persistence layer for imported parts** (half-day job, phase 5 candidate). Removes the "refresh wipes geometry" limitation.
-4. **Other mate types** (Prismatic, Planar, Spherical, Cylindrical) once persistence is in.
-
----
-
-## Acronym index
-
-- AP: Application Protocol (STEP variant identifier, e.g. AP203, AP214, AP242)
-- API: Application Programming Interface
-- B-rep: Boundary Representation
-- BST: British Summer Time
-- CAD: Computer-Aided Design
-- CI/CD: Continuous Integration / Continuous Deployment
-- CSS: Cascading Style Sheets
-- DD/MM/YYYY: UK date format
-- FPS: Frames Per Second
-- FS: Filesystem
-- GBP: Great British Pound
-- GitHub: code hosting platform
-- HTML: Hypertext Markup Language
-- IGES: Initial Graphics Exchange Specification
-- ISO: International Organisation for Standardisation
-- JS: JavaScript
-- MIT: Massachusetts Institute of Technology (licence context)
-- mm: millimetre
-- npm: node package manager
-- OCC: OpenCascade
-- OCCT: OpenCascade Technology
-- PMI: Product and Manufacturing Information
-- pnpm: performant npm
-- POC: Proof of Concept
-- PWA: Progressive Web App
-- RBAC: Role-Based Access Control
-- rAF: requestAnimationFrame
-- RPM: Revolutions Per Minute
-- SDK: Software Development Kit
-- SPA: Single Page Application
-- STEP: Standard for the Exchange of Product Model Data
-- STL: Stereolithography
-- TS: TypeScript
-- UI: User Interface
-- URL: Uniform Resource Locator
-- UTC: Coordinated Universal Time
-- UX: User Experience
-- WASM: WebAssembly
-- WebGL: Web Graphics Library
-
----
-
----
-
-# Developer Guide (permanent reference)
-
-## Repo structure
+### Repository structure
 
 ```
 /
-├── artifacts/
-│   ├── kineticad/                # Main CAD application
-│   │   ├── src/
-│   │   │   ├── cad/              # OCCT worker, topology, geometry helpers
-│   │   │   ├── three/            # Three.js scene, MatePickerCoordinator
-│   │   │   ├── physics/          # Rapier worker, joint construction
-│   │   │   ├── state/            # Zustand stores
-│   │   │   ├── components/       # React UI (Modeller, Simulator, Inspector)
-│   │   │   └── shared/           # Types and constants
-│   │   ├── public/
-│   │   │   ├── seed-windmill.js  # Pre-baked demo assembly
-│   │   │   └── ...
-│   │   ├── serve.mjs             # Production Node server with cache headers
-│   │   └── package.json
-│   └── kineticad-intro/          # Intro showcase app
-├── lib/                          # Shared utilities across artifacts
-├── scripts/                      # Build and dev scripts
-├── pnpm-workspace.yaml
-├── README.md
-├── HANDOVER.md                   # This file
-└── LICENSE
+|-- artifacts/
+|   |-- kineticad/                 # Main CAD application
+|   |   |-- src/
+|   |   |   |-- cad/               # OCCT worker, topology, geometry operations
+|   |   |   |-- three/             # Three.js scene, layers, MatePickerCoordinator
+|   |   |   |-- physics/           # Rapier worker, joint construction, runner
+|   |   |   |-- features/          # Feature regen, caching, kernel error mapping
+|   |   |   |-- state/             # Zustand store
+|   |   |   |-- components/        # React UI, inspectors
+|   |   |   |-- views/             # Modeller, Simulator
+|   |   |   `-- sketch/            # Sketch plane definitions
+|   |   |-- public/
+|   |   |   |-- seed-registry.js   # Defines window.loadSeed(id)
+|   |   |   |-- seeds/
+|   |   |   |   |-- windmill.js    # Canonical windmill seed
+|   |   |   |   `-- orrery.js      # Orrery seed (generated)
+|   |   |   |-- seed-windmill.js   # Backward-compat shim, three lines
+|   |   |   `-- ...
+|   |   |-- docs/
+|   |   |   `-- orrery-build-spec.md
+|   |   |-- serve.mjs              # Production Node server with cache headers
+|   |   `-- package.json
+|   `-- kineticad-intro/           # Intro and landing-page app
+|-- scripts/                       # Build and dev scripts, including the orrery seed generator
+|-- README.md
+|-- HANDOVER.md                    # This file
+|-- replit.md                      # Phase-by-phase build log, authoritative
+`-- LICENSE
 ```
 
-The pnpm monorepo at root contains multiple artifacts. The main CAD app lives at `artifacts/kineticad/`.
+The pnpm monorepo at the root contains multiple artifacts. The main CAD app lives at `artifacts/kineticad/`. The README, this handover and `replit.md` all sit at the repository root.
 
-## Architecture
+### Architecture: three threads
 
-KinetiCAD runs three threads:
+KinetiCAD runs three threads.
 
-**Main thread** handles React rendering, Three.js scene management, user input, and orchestration. Should never block.
+The main thread handles React rendering, Three.js scene management, user input and orchestration. It should never block.
 
-**CAD Worker** runs OpenCascade.js compiled to WASM. All B-rep operations (sketch curve evaluation, extrusion, boolean ops, edge classification, polyline tessellation) happen here. Communicates with main via Comlink. Returns triangulated geometry plus topology metadata (edge IDs, types, polylines, circle centres, normals).
+The CAD Worker runs OpenCascade.js, compiled to WebAssembly. All B-rep operations (sketch curve evaluation, extrusion, revolve, boolean operations, edge and face classification, tessellation) happen here. It communicates with the main thread via Comlink and returns triangulated geometry plus topology metadata: edge IDs, types, polylines, circle centres, normals.
 
-**Physics Worker** runs Rapier3D compiled to WASM. Receives body definitions and joint configurations from main. Steps the simulation at fixed 60Hz. Posts back body transforms each frame.
+The Physics Worker runs Rapier3D, compiled to WebAssembly. It receives body definitions and joint configurations, steps the simulation at a fixed 60 Hz, and posts body transforms back each frame.
 
-The two-worker split keeps both heavy computations off the main thread, so the UI stays responsive even during a complex extrude or active simulation.
+The two-worker split keeps both heavy computations off the main thread, so the UI stays responsive during a complex extrude or an active simulation.
 
 ### Data flow for a typical mate creation
 
-1. User clicks an edge in the Three.js viewport
-2. Main thread raycasts against the rendered geometry
-3. Edge metadata is looked up from the topology cache returned by the CAD worker
-4. `MatePickerCoordinator.validateRevolutePicks` validates the pick (axis alignment, edge type)
-5. `polylineCenter()` computes the geometric centre from polyline samples
-6. `worldToLocalPoint()` converts the centre into each part's local frame
-7. The pivot is stored on the mate via Zustand
-8. When the user clicks Play, the mate is sent to the physics worker
-9. Rapier creates a `RevoluteJoint` with the supplied local-frame anchors
-10. The simulation steps and posts body transforms back
+1. The user clicks an edge in the Three.js viewport.
+2. The main thread raycasts against the rendered geometry.
+3. Edge metadata is looked up from the topology cache returned by the CAD worker.
+4. `MatePickerCoordinator` validates the pick: axis alignment, edge type.
+5. The pivot point is computed and converted into each part's local frame.
+6. The pivot is stored on the mate via Zustand.
+7. When the user presses Play, the mate is sent to the physics worker.
+8. Rapier creates the joint with the supplied local-frame anchors.
+9. The simulation steps and posts body transforms back.
 
-## The pivot frame bug, explained
+### The pivot frame bug, explained
 
-This is the most subtle bug we hit during the build, fixed in the latest revision. Worth understanding because it cuts to the core of how the mate system works.
+This was the most subtle bug hit during the build. It is worth understanding because it cuts to the core of how the mate system works.
 
-**Symptom:** rotor spun in place when stationary but jumped off-axis when physics started, then orbited around an offset point instead of rotating cleanly.
+Symptom: the rotor spun in place when stationary but jumped off-axis when physics started, then orbited around an offset point instead of rotating cleanly.
 
-**Diagnosis:** mate pivots were being stored as world-space coordinates and passed to Rapier, which expects part-local frame.
+Diagnosis: mate pivots were being stored as world-space coordinates and passed to Rapier, which expects a part-local frame.
 
 Rapier's revolute joint constraint is:
 
 ```
-anchorA = bodyA.position + bodyA.rotation × pivotA_local
-anchorB = bodyB.position + bodyB.rotation × pivotB_local
+anchorA = bodyA.position + bodyA.rotation x pivotA_local
+anchorB = bodyB.position + bodyB.rotation x pivotB_local
 constraint: anchorA == anchorB at all times
 ```
 
-When `pivotB_local` was a world-space point (e.g. `[0, 0, 100]` because the disc was at world z=100), and the body was also at world z=100, Rapier evaluated:
+When `pivotB_local` was a world-space point, for example [0, 0, 100] because the disc was at world z=100, and the body was also at world z=100, Rapier evaluated:
 
 ```
-anchorB = [0, 0, 100] + identity × [0, 0, 100] = [0, 0, 200]
+anchorB = [0, 0, 100] + identity x [0, 0, 100] = [0, 0, 200]
 ```
 
-That doesn't match `anchorA` at `[0, 0, 100]`, so Rapier yanked the body to satisfy the constraint, producing the visible jump and orbit.
+That does not match `anchorA` at [0, 0, 100], so Rapier yanked the body to satisfy the constraint, producing the visible jump and orbit.
 
-**Fix:** in `MatePickerCoordinator.ts`, after computing the polyline centre in world space, convert it to part-local frame using `worldToLocalPoint(centre, part.transform)` before storing as `localPoint`. The corresponding update was made in `RevoluteMateInspector.tsx` to overwrite the captured pivot with the validated local-frame value.
+Fix: after computing the pivot centre in world space, convert it to the part-local frame using `worldToLocalPoint(centre, part.transform)` before storing it. Anchors then coincide at simulation start, so there is no jump, and the local-frame Z component is invariant under Z-axis rotation, so there is no orbital drift.
 
-**Result:** anchors now coincide at sim start (no jump), and the local-frame Z-component is invariant under Z-axis rotation (no orbital drift).
+### The arc versus circle issue
 
-The fix touches three call sites:
+The `polylineCenter()` helper averages all polyline sample coordinates. For a uniformly sampled full circle this returns the exact centre. For an arc segment it returns the centroid of the arc, which is offset from the underlying circle's centre.
 
-- `validateRevolutePicks` (returns local-frame pivots)
-- `getEdgeAxisWorld` (centroid for axis indicator visual)
-- `RevoluteMateInspector` apply path (writes validated values to mate state)
+For a 90 degree arc of radius R, the centroid sits at roughly 0.9R from the circle centre along the arc bisector. For a windmill disc with R=12 and four 90 degree arcs, that is an offset of around 10.8 mm rather than zero.
 
-## Geometry and topology subtleties
+This matters because a boolean union of intersecting solids splits shared edges. When four blades fuse into a disc rim, the rim circle is cut into four arc segments, and there is no full circle on the merged part to use as a pivot reference. The workaround used in the windmill seed is to add a separate cylindrical hub feature whose bottom edge is a clean full circle, not split by the blade intersections, and mate to that.
 
-### The arc vs circle issue
+The proper fix has two parts. `topology.ts` can expose the true underlying circle centre of an arc-typed edge. That side is now done: the classifier computes `circleCenter` for every circle and arc edge, and a fix has been applied so the value is actually written into the emitted edge metadata, where previously it was computed but dropped. The remaining part is verifying the full pick path through `MatePickerCoordinator`: that a user clicking a partial-arc edge gets the correct circle centre as the pivot. That has not yet been verified end-to-end. See "Outstanding and parked work" above.
 
-The `polylineCenter()` helper averages all polyline sample coordinates. For a uniformly sampled full circle, this returns the exact centre. For an arc segment, it returns the centroid of the arc, which is offset from the underlying circle's centre.
+### OCCT aliasing, the recurring bug pattern
 
-For a 90° arc of radius R, the centroid sits at distance `2R/π × sin(45°) ≈ 0.9R` from origin along the arc bisector. For our windmill disc with R=12 and four 90° arcs, that's a 10.8mm offset rather than zero.
+OpenCascade.js WebAssembly wrappers alias internal topology by reference. When a builder or reader object is deleted with `.delete()`, any `TopoDS_Shape` obtained from it, via `.Shape()`, `.OneShape()` and similar, becomes invalid. This shows up as empty meshes or silent geometry failures, not crashes.
 
-This matters because boolean union of intersecting solids splits shared edges. When 4 blades fuse into a disc rim, the rim circle gets cut into 4 arc segments. There's no full circle on the boolean-merged Part 2 to use as a pivot reference.
+The fix, applied consistently across the codebase: call `BRepBuilderAPI_Copy_2(shape, true, false)` to deep-copy the shape while the source object is still alive, then delete the source. The copy owns its topology independently.
 
-**Workaround used in the windmill demo:** add a separate cylindrical hub feature whose edges are not split by the blade intersections. The hub's bottom circle (extruded with negative depth so it points downward from the disc) is a clean full circle and serves as the pivot reference.
+Sites where this matters:
 
-**The smarter fix not yet implemented:** OCCT can expose the underlying circle of an arc-typed edge via its geometry curve. A future `MatePickerCoordinator` could detect arc edges and use the underlying circle's centre rather than the arc centroid. This would let users click any circular feature on the geometry without needing a clean full circle. Likely a single-line addition in `topology.ts` plus a fallback in `MatePickerCoordinator.ts`.
+- `cad/operations/extrude.ts`: copy the prism shape before the builder is released.
+- `cadWorker.ts` STEP import: copy the `OneShape()` result before the reader is released.
+- `cadWorker.ts` STEP import: copy each grounded shape before its transformer is released.
 
-### Negative-direction extrude
+If geometry comes back empty after an operation involving a builder, this is the first thing to check.
 
-The extrude tool supports negative depth. Sketch on XY, extrude with depth -12, and the resulting solid extends from part-local z=0 to z=-12. This was used for the windmill hub so the disc could sit above the post tip with the hub extending down to meet it.
+### OCCT API quirks, this build's bindings
 
-### Sketch plane limitations
+- Constructors use numeric suffixes: `BRepPrimAPI_MakeBox_4`, `TopExp_Explorer_2`, `gp_Pnt_3`.
+- OCCT enums are returned as embind value objects, not integers. Compare via a defensive helper that reads `.value`, not by strict equality against an integer constant. An early version of the topology classifier compared an embind enum object against a raw integer, which was always false, so every edge and face fell through to the "other" type. This silently broke the mate pick filters until it was traced and fixed.
+- `Closed` on `TopoDS_Shape` is exposed as a numbered overload pair: `Closed_1()` is the getter, `Closed_2(value)` the setter. The unsuffixed `Closed()` does not exist in this binding.
+- Poly_Triangulation nodes and triangles are 1-indexed.
+- Always `.delete()` transient OCCT wrappers to free WebAssembly heap.
 
-Sketches can be created on global XY, XZ, or YZ planes only. Sketch on selected face is not implemented. This means features can only originate from one of the three global planes.
+### Production deployment
 
-## OCCT aliasing — the recurring bug pattern
+The Replit deployment uses a custom Node server, `serve.mjs`, rather than a plain static serve, so it can set explicit cache headers. This was necessary because the CDN was caching `index.html` aggressively, which broke deploys: users loaded a stale `index.html` referencing dead asset hashes.
 
-OpenCascade.js WASM wrappers alias internal topology by reference. When you delete a builder or reader object (`.delete()`), any `TopoDS_Shape` obtained from it (via `.Shape()`, `.OneShape()`, etc.) becomes invalid. This manifests as empty meshes or silent geometry failures, not crashes.
+The server sets `Cache-Control: no-cache, must-revalidate` on `index.html`, `Cache-Control: public, max-age=31536000, immutable` on hashed assets under `/assets/`, and `no-cache` on the seed registry. This is the standard single-page-app caching pattern. New bundle hashes are picked up immediately.
 
-**The fix, applied consistently throughout the codebase:** call `BRepBuilderAPI_Copy_2(shape, true, false)` to deep-copy the shape **while the source object is still alive**, then delete the source. The copy owns its topology independently.
+The OpenCascade.js WebAssembly binary is loaded from a pinned jsDelivr CDN URL, not bundled. Replit's static-deploy pipeline returns an empty body for files past a size cap, and the 50 MB WebAssembly file tripped it, so production deploys crashed with an empty-buffer instantiate error. Pointing `locateFile` at the pinned `cdn.jsdelivr.net` URL for `opencascade.js@2.0.0-beta.94e2944` fixed it; the version literal is held in an `OCCT_VERSION` constant and must stay in lock-step with `package.json`.
 
-Affected sites in this codebase:
-- `cad/operations/extrude.ts` — copy prism shape before builder delete
-- `cadWorker.ts importStep` — copy `OneShape()` result before reader delete
-- `cadWorker.ts importStep` — copy each grounded shape before transformer delete
+### WebGPU testing note
 
-If you see empty geometry after an operation involving a builder, this is the first thing to check.
+The Replit preview iframe does not support WebGPU and will show the "WebGPU required" message. Real testing must be done on the deployed `.replit.app` URL in Chrome on an M-series Mac.
+
+### Diagnostics note
+
+The `[SELF-TEST]` kernel check logs its success line on the console error channel deliberately, so it survives Chrome's default "Errors only" DevTools filter. These lines are passing tests, not faults. Worker-side `console.error` is also bridged to the main-thread console with a `[worker]` prefix, because Chrome's filter otherwise hides worker errors.
 
 ## Verified physics
 
-The pivot frame fix was verified on the seeded windmill demo:
+The pivot frame fix was verified on the seeded windmill demo.
 
 ```
-Target:   30 RPM = π rad/s = 3.141592653589793
-
-Measured at runtime (sample range across 23s of sim time):
+Target:   30 RPM = pi rad/s = 3.141592653589793
+Measured at runtime, sample range:
   bodyBangvelMag:  3.14159270 to 3.14159298
-  bodyBangvel.x:   3.24e-16    (precision floor)
-  bodyBangvel.y:   -3.78e-10   (precision floor)
+  bodyBangvel.x:   approximately 3e-16   (precision floor)
+  bodyBangvel.y:   approximately 4e-10   (precision floor)
   bodyBangvel.z:   3.14159
-
-Error from π:    ~3e-7 rad/s
-Stability:       ±5e-7 rad/s over 23 seconds
-Drift:           none
+Error from pi:     approximately 3e-7 rad/s
+Stability:         plus or minus 5e-7 rad/s
+Drift:             none
 ```
 
-Off-axis components sit at floating-point single-precision noise. Pure Z-axis rotation. The result is mathematically as clean as a real-time physics engine can produce.
+Off-axis components sit at floating-point single-precision noise. The rotation is pure Z-axis. The result is as clean as a real-time physics engine can produce.
 
-To reproduce: open the live demo, paste this in the browser console:
+To reproduce: open the live demo, paste `window.loadSeed('windmill')` into the browser console, switch to the Simulator, press Play, and watch the `[step-diag]` console output for live bodyBangvel values.
 
-```js
-fetch('/seed-windmill.js').then(r=>r.text()).then(code=>eval(code))
-```
-
-The page reloads with the assembly pre-built and the mate pre-configured. Switch to Simulator, press Play, and observe the `[step-diag]` console output for live `bodyBangvel` values.
-
-## Production deployment
-
-The Replit deployment uses a custom Node server (`serve.mjs`) rather than static-serve to set explicit cache headers. This was necessary because Replit's CDN was caching `index.html` aggressively, which broke deploys (users would load stale `index.html` referencing dead asset hashes).
-
-The server sets:
-
-- `Cache-Control: no-cache, must-revalidate` on `index.html`
-- `Cache-Control: public, max-age=31536000, immutable` on hashed assets in `/assets/`
-- `Cache-Control: no-cache` on `/seed-windmill.js`
-
-This is the standard SPA caching pattern used by Vercel, Netlify, and CloudFront. Future deploys with new bundle hashes will pick up immediately.
-
-## Known issues with file pointers
-
-**Mate pivot picker requires full circle edges.**
-Location: `artifacts/kineticad/src/three/MatePickerCoordinator.ts`
-The `polylineCenter()` helper handles full circles correctly but gives an arc centroid for arc-typed edges. See "Geometry and topology subtleties" above.
-
-**Sketch profiles cannot contain multiple closed loops.**
-Location: `artifacts/kineticad/src/cad/` (sketch worker pipeline)
-A plate with a hole through it would require the inner loop to be subtracted from the outer loop before extrusion. Currently each sketch supports one outer loop only.
-
-**Hole feature position-pick clears face selection on second click.**
-Location: relevant React component for the Hole feature inspector.
-The hole feature is implemented but the position-picker UI has a state bug.
-
-**Sketch on selected face not implemented.**
-Currently only XY, XZ, YZ globals are available as sketch planes. Implementing this requires capturing the picked face's world transform and presenting it as a custom sketch plane in the sketcher.
-
-**No save/load.**
-The seed script approach used for `seed-windmill.js` shows how an assembly state can be serialised to localStorage, which is a starting point for a save/load implementation.
-
-**No undo/redo.**
-The Zustand store does not currently maintain a history stack.
+The orrery seed extends the same physics and mate system to 13 bodies and 12 motorised revolute joints in nested chains, and runs as a continuous mechanism. Load it with `window.loadSeed('orrery')`.
 
 ## Local development
 
-Clone the repo:
-
-```bash
+```
 git clone https://github.com/AndrewBlumson/KinetiCAD.git
 cd KinetiCAD
 pnpm install
-```
-
-Run the dev server for the main app:
-
-```bash
 cd artifacts/kineticad
 pnpm dev
 ```
 
-The dev server runs at http://localhost:5173 by default.
-
-Build for production:
-
-```bash
-pnpm build
-```
-
-Build artifacts go to `artifacts/kineticad/dist/`.
-
-## Contribution areas
-
-Listed in rough order of value to the project:
-
-1. **STEP / IGES / native JSON export** — complete as of Phase 4. STEP import and export both working with round-trip verification.
-2. **Smart pivot picker for arc edges** — small but high-impact. Detect arc-typed edges in `MatePickerCoordinator` and use the underlying circle centre from `topology.ts` rather than the arc centroid. Would remove the "must pick a full circle" UX constraint.
-3. **Multi-loop sketch profiles** — supports plates with holes, ring shapes, and any sketch with disjoint closed loops. Touches the sketch worker pipeline in `artifacts/kineticad/src/cad/`.
-4. **Sketch on selected face** — required for any kind of practical CAD work beyond simple primitives. The picker already returns face metadata; the work is in capturing the face transform and presenting it as a sketch plane.
-5. **Hole feature position-pick fix** — small, contained UI bug. State-management fix in the relevant React component.
-6. **IndexedDB persistence for imported parts** — imported STEP parts currently vanish on page refresh. Persist the original STEP bytes in IndexedDB and replay the import on load.
-7. **Save / load assembly state** — see the `seed-windmill.js` script for a serialisation pattern.
-8. **Undo / redo** — Zustand history middleware would handle this.
-
-CAD or graphics engineering experience is particularly valuable on items 2, 3, and 4.
+The dev server runs at http://localhost:5173. Build for production with `pnpm build`; artifacts go to `artifacts/kineticad/dist/`.
 
 ## Questions answered
 
 These came up in public discussion of the open-source release.
 
-**Is the geometry manifold?**
-Yes. OpenCascade.js produces manifold B-rep solids through the standard sketch + extrude + boolean pipeline.
+Is the geometry manifold? Yes. OpenCascade.js produces manifold B-rep solids through the standard sketch, extrude and boolean pipeline.
 
-**Is it 3D printable?**
-Yes. Binary STL export is implemented (Phase 3). Bambu Studio sliced the windmill STL to a complete print plan. STEP export (Phase 4) enables round-tripping with Fusion 360, SolidWorks, and other CAD packages.
+Is it 3D printable? Yes. Binary STL export is implemented and the windmill STL slices to a complete print plan in Bambu Studio. STEP export enables round-tripping with Fusion 360, SolidWorks and other packages.
 
-**Are you using B-rep underneath?**
-Yes. OpenCascade.js running in a Web Worker via Comlink. All boolean operations, edge classification, and topology metadata come from OCCT.
+Are you using B-rep underneath? Yes. OpenCascade.js running in a Web Worker via Comlink. All boolean operations, edge classification and topology metadata come from OCCT.
 
-**What about WebGL2 for broader browser support?**
-Currently WebGPU only. The WebGPU codepath was chosen for compute shader support and modern rendering features. A WebGL2 fallback is possible via Three.js's renderer abstraction but is not implemented.
+Does it do physics? Yes. Rapier3D in a separate Web Worker, driven by the mate joints, with motorised revolute and prismatic joints.
+
+What about WebGL2 for broader browser support? Currently WebGPU only. A WebGL2 fallback is possible through the Three.js renderer abstraction but is not implemented.
+
+## Acronym index
+
+AP: Application Protocol (STEP variant identifier, for example AP242)
+API: Application Programming Interface
+B-rep: Boundary Representation
+CAD: Computer-Aided Design
+CDN: Content Delivery Network
+CI/CD: Continuous Integration and Continuous Deployment
+DD/MM/YYYY: UK date format
+GBP: Great British Pound
+IGES: Initial Graphics Exchange Specification
+JSON: JavaScript Object Notation
+MIT: Massachusetts Institute of Technology
+mm: millimetre
+OCCT: Open CASCADE Technology
+pnpm: performant npm
+RPM: Revolutions Per Minute
+STEP: Standard for the Exchange of Product Model Data
+STL: Stereolithography
+UI: User Interface
+URL: Uniform Resource Locator
+UV: surface parameter coordinates (U, V)
+WebGL: Web Graphics Library
+WebGPU: browser graphics and compute API
+XCAF: Extended Common Application Framework (OCCT document model)
