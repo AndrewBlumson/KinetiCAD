@@ -535,7 +535,7 @@ export default function Modeller() {
       {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar: Parts / Booleans / Mates tree */}
-        <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden panel-transition">
+        <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-y-auto panel-transition">
           <SidebarSection title="Parts">
             <NewPartButton />
             {assembly.parts.length === 0 ? (
@@ -628,7 +628,7 @@ export default function Modeller() {
 
         {/* Right Inspector */}
         <aside
-          className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-hidden panel-transition"
+          className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto panel-transition"
           // Click on the inspector's empty area clears any selection. Buttons
           // and inputs inside child components stop propagation by virtue of
           // their own click handlers.
