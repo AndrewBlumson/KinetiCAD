@@ -19,8 +19,6 @@ function ModeToggle() {
   const [location] = useLocation();
   const setMode = useKinetiCADStore((s) => s.setMode);
 
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-
   const isModeller = !location.startsWith('/simulator');
 
   return (
@@ -35,7 +33,7 @@ function ModeToggle() {
       className="flex items-center gap-0.5 bg-card border border-border rounded p-0.5 shadow-lg"
     >
       <Link
-        href={base + '/'}
+        href="/"
         onClick={() => setMode('modeller')}
         className={[
           'px-4 py-1.5 rounded text-xs font-technical uppercase tracking-widest transition-colors',
@@ -47,7 +45,7 @@ function ModeToggle() {
         Modeller
       </Link>
       <Link
-        href={base + '/simulator'}
+        href="/simulator"
         onClick={() => setMode('simulator')}
         className={[
           'px-4 py-1.5 rounded text-xs font-technical uppercase tracking-widest transition-colors',

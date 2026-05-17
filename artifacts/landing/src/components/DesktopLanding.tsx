@@ -179,52 +179,29 @@ export function DesktopLanding() {
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <a
-            href="/app"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "14px 32px",
-              background: "#FF6B1A",
-              color: "#fff",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "13px",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              textDecoration: "none",
-              borderRadius: "6px",
-              boxShadow:
-                "0 0 0 1px rgba(255,107,26,0.5), 0 8px 32px rgba(255,107,26,0.30)",
-              transition: "box-shadow 0.15s",
-            }}
-          >
-            Launch KinetiCAD <span aria-hidden="true">→</span>
-          </a>
-          <a
-            href="/kineticad-intro/"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "14px 28px",
-              background: "transparent",
-              color: "rgba(245,245,245,0.68)",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "13px",
-              textTransform: "uppercase",
-              letterSpacing: "0.10em",
-              textDecoration: "none",
-              borderRadius: "6px",
-              border: "1px solid rgba(255,107,26,0.28)",
-              transition: "border-color 0.15s, color 0.15s",
-            }}
-          >
-            Watch the intro
-          </a>
-        </div>
+        <a
+          href="/app"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "14px 32px",
+            background: "#FF6B1A",
+            color: "#fff",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "13px",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+            textDecoration: "none",
+            borderRadius: "6px",
+            boxShadow:
+              "0 0 0 1px rgba(255,107,26,0.5), 0 8px 32px rgba(255,107,26,0.30)",
+            transition: "box-shadow 0.15s",
+          }}
+        >
+          Launch KinetiCAD <span aria-hidden="true">→</span>
+        </a>
 
         {/* Scroll hint */}
         <div

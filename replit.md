@@ -1128,6 +1128,28 @@ under simulation with correct density. Typecheck clean.
 
 ---
 
+## Routing / BASE_PATH notes (`artifacts/kineticad`)
+
+The app lives at `/app` (BASE_PATH = `/app`, set in `.replit-artifact/artifact.toml`).
+
+**ModeToggle double-prefix bug (fixed 17/05/2026):** `WouterRouter` is
+initialised with `base={import.meta.env.BASE_URL.replace(/\/$/, '')}` = `/app`.
+Wouter's `<Link>` automatically prepends this base on navigation, so hrefs
+inside the routed tree must be plain internal paths (`"/"`, `"/simulator"`).
+An earlier version of `ModeToggle` also manually prepended `BASE_URL`, causing
+wouter to apply it twice → `/app/app/simulator`. Fixed by removing the manual
+`base +` prefix; `const base` line deleted entirely.
+
+**Seed paths:** Seeds live in `public/seeds/<id>.js` and are fetched via
+`(window.__seedBase || '/') + 'seeds/' + id + '.js'`. `window.__seedBase` is
+injected by `index.html` as `'%BASE_URL%'` (Vite replaces this at build time
+with the real base path, e.g. `/app/`). `generate-orrery-seed.ts` writes to
+`artifacts/kineticad/public/seeds/orrery.js` — matches the registry path.
+`public/seed-windmill.js` is a backwards-compat shim; the canonical windmill
+seed is `public/seeds/windmill.js`.
+
+---
+
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
 ## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')

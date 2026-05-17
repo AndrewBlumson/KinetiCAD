@@ -148,7 +148,7 @@ async function tryDuckTyping(ocAny: Record<string, unknown>): Promise<boolean> {
       return false;
     }
 
-    const attr = (baseHandle as { get(): unknown }).get();
+    const attr = (baseHandle as unknown as { get(): unknown }).get();
     const hasGet = attr != null && typeof (attr as Record<string, unknown>).Get === 'function';
 
     if (hasGet) {
@@ -218,14 +218,14 @@ async function tryRawPtrCoercion(ocAny: Record<string, unknown>): Promise<void> 
     }
 
     // Get the raw TDF_Attribute* and try to pass it to Handle_TDataStd_Name_2.
-    const rawAttrPtr = (baseHandle as { get(): unknown }).get();
+    const rawAttrPtr = (baseHandle as unknown as { get(): unknown }).get();
 
     typedHandleCoerced = new (ocAny.Handle_TDataStd_Name_2 as new (ptr: unknown) => {
       delete(): void;
     })(rawAttrPtr);
 
     // If construction succeeded, try reading via the typed handle.
-    const typedObj = (typedHandleCoerced as { get(): unknown }).get();
+    const typedObj = (typedHandleCoerced as unknown as { get(): unknown }).get();
     const hasGet = typedObj != null && typeof (typedObj as Record<string, unknown>).Get === 'function';
 
     if (hasGet) {
@@ -286,7 +286,7 @@ async function tryAttributeIterator(ocAny: Record<string, unknown>): Promise<voi
       delete(): void;
     })(childLabel, true);
 
-    const itTyped = iter as {
+    const itTyped = iter as unknown as {
       More(): boolean;
       Next(): void;
       Value(): unknown;
