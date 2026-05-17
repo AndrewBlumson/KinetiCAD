@@ -1078,6 +1078,49 @@ clean (zero errors). End-to-end test requires WebGPU; deploy to
 
 ---
 
+## Post-Phase-10 fix — Volume cache + simulation density correctness (2026-05-17)
+
+Two bugs found by diagnosis of Play latency on the 13-part orrery.
+
+**Correctness fix (`physics/simulationRunner.ts`)**: removed the hardcoded
+`ALUMINIUM_DENSITY_G_CM3 = 2.7` constant. The simulation now calls
+`getMaterial(part.materialId).densityGcm3` per part so physics mass/inertia
+reflects the material the user actually set. Previously the simulation always
+treated every part as aluminium regardless of the inspector selection.
+
+**Performance fix — volume cache (`features/volumeCache.ts`, new module)**:
+`VolumeData = { volumeMm3: number; comLocal: [number, number, number] }` keyed
+by tip-feature hash (the same FNV-1a string `featureCache` uses for tessellated
+meshes). Volume and centre-of-mass are geometry-only; mass is just
+`volume × density × 1e-6`, which is arithmetic. Caching by tip hash gives
+automatic invalidation — geometry changes → new hash → cache miss; material
+changes → same hash → cache hit.
+
+**`three/PartMeshLayer.ts`** updated in `regenAndApply`:
+- On geometry change (`hashChanged`): after the OCCT `getMassProperties` call,
+  writes `{ volumeMm3, comLocal }` into the volume cache.
+- On material-only change (`materialChanged && !hashChanged`): reads volume from
+  cache and computes `massKg` as arithmetic — **zero OCCT calls**.
+- Cold-cache fallback (first regen, imported-STEP): falls back to
+  `getMassProperties` worker call, then populates cache.
+
+**`physics/simulationRunner.ts`** updated in `buildAndStart`:
+- Computes the tip hash with a pure-JS `computeTipHash` helper (loops over
+  `part.features`, calls `computeFeatureHash`, no worker round-trip).
+- Warm cache path: derives `massKg`, `rEqMm`, `isoInertia` on the main thread
+  from `volumeMm3 + density` — no `await`, no OCCT. For the 13-part orrery
+  with a warm cache the entire mass-props loop is now synchronous.
+- Cold-cache fallback: calls `getMassProperties` with the correct per-material
+  density, then writes result to the volume cache for subsequent Play presses.
+
+**No schema or persist changes.** `volumeCache.ts` is a module-level `Map` with
+the same in-memory lifecycle as `featureCache.ts`. `part.volumeCm3` / `massKg`
+in the store remain non-persisted (stripped by `partialize`).
+
+**Typecheck**: `pnpm --filter @workspace/kineticad run typecheck` — clean.
+
+---
+
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
 ## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')

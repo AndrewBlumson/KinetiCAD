@@ -38,6 +38,7 @@ import type {
 } from "@/cad/types";
 import { getMaterial } from "@/cad/materials";
 import { regeneratePart } from "@/features/featureRegen";
+import { getVolumeData, setVolumeData } from "@/features/volumeCache";
 import { COLOURS } from "./sceneSetup";
 
 /**
@@ -314,28 +315,47 @@ export function createPartMeshLayer(): PartMeshLayer {
         _topologyVersion++;
       }
 
-      // Fetch mass properties when geometry changed (new density applies to
-      // new volume) or when the material changed (same geometry, new density).
+      // Update mass properties when geometry changed or material changed.
+      // Volume + COM depend only on shape; mass = volume × density (arithmetic).
+      // We cache { volumeMm3, comLocal } by tip hash so a material-only change
+      // never needs an OCCT round-trip — just multiply by the new density.
       if ((hashChanged || materialChanged) && _onMassPropsUpdate) {
         entry.lastMaterialId = part.materialId;
         const cb = _onMassPropsUpdate;
-        try {
-          const mat = getMaterial(part.materialId);
-          const massResult = await kernel.getMassProperties({
-            features: [...part.features],
-            sketches: [...part.sketches],
-            density: mat.densityGcm3,
-          });
-          // Re-check guards after the async mass-props round-trip.
-          if (isDisposed || !entry.alive || entry.inFlightToken !== token)
-            return;
-          const volumeCm3 = massResult.volumeMm3 / 1000;
-          cb(part.id, volumeCm3, massResult.massKg);
-        } catch {
-          // Mass-properties failure is non-fatal — geometry is still shown.
+        const mat = getMaterial(part.materialId);
+        const tipHash = last.hash;
+        const cachedVol = getVolumeData(tipHash);
+        if (cachedVol) {
+          // Warm cache — pure arithmetic, no worker call.
+          const massKg = Math.max(
+            cachedVol.volumeMm3 * mat.densityGcm3 * 1e-6,
+            1e-6,
+          );
+          cb(part.id, cachedVol.volumeMm3 / 1000, massKg);
+        } else {
+          // Cold cache (first regen this session, or imported-step part).
+          // Fall back to the OCCT worker; populate cache so the next
+          // material change and the next Play press are free.
+          try {
+            const massResult = await kernel.getMassProperties({
+              features: [...part.features],
+              sketches: [...part.sketches],
+              density: mat.densityGcm3,
+            });
+            // Re-check guards after the async round-trip.
+            if (isDisposed || !entry.alive || entry.inFlightToken !== token)
+              return;
+            setVolumeData(tipHash, {
+              volumeMm3: massResult.volumeMm3,
+              comLocal: massResult.comLocal,
+            });
+            cb(part.id, massResult.volumeMm3 / 1000, massResult.massKg);
+          } catch {
+            // Mass-properties failure is non-fatal — geometry is still shown.
+          }
         }
       } else if (materialChanged) {
-        // No callback registered but track the change so a future sync
+        // No callback registered; still track the id so a future sync
         // with a callback doesn't skip the fetch.
         entry.lastMaterialId = part.materialId;
       }

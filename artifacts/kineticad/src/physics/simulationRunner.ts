@@ -20,14 +20,34 @@
 // `paused === true`.
 
 import { getCadKernel } from "@/cad/cadClient";
-import type { Mate, Part } from "@/state/schemas";
+import { getMaterial } from "@/cad/materials";
+import type { Feature, Mate, Part, Sketch } from "@/state/schemas";
 import { useKinetiCADStore } from "@/state/store";
+import { computeFeatureHash } from "@/features/featureRegen";
+import { getVolumeData, setVolumeData } from "@/features/volumeCache";
 import { getPartMeshLayer } from "@/three/partMeshLayerRef";
 import { getSimulationLayer } from "@/three/simulationLayerRef";
 import { getPhysicsKernel } from "./physicsClient";
 import type { PartDescriptor } from "./types";
 
-const ALUMINIUM_DENSITY_G_CM3 = 2.7;
+/**
+ * Walk a part's feature chain and return the tip hash — the same key that
+ * featureCache and volumeCache use. Pure JS, no worker round-trip.
+ * Returns null when the part has no features.
+ */
+function computeTipHash(
+  features: ReadonlyArray<Feature>,
+  sketches: ReadonlyArray<Sketch>,
+): string | null {
+  const upstreamHashes: string[] = [];
+  let lastHash: string | null = null;
+  for (const feature of features) {
+    const h = computeFeatureHash(feature, sketches, upstreamHashes);
+    upstreamHashes.push(h);
+    lastHash = h;
+  }
+  return lastHash;
+}
 
 type RunnerHandle = {
   dispose: () => void;
@@ -165,28 +185,63 @@ export function startSimulationRunner(): RunnerHandle {
     for (const [partId, snap] of meshSnapshots) {
       const part = partsById.get(partId);
       if (!part) continue;
-      try {
-        const props = await cad.getMassProperties({
-          features: part.features,
-          sketches: part.sketches,
-          density: ALUMINIUM_DENSITY_G_CM3,
-        });
+
+      const density = getMaterial(part.materialId).densityGcm3;
+      const tipHash = computeTipHash(part.features, part.sketches);
+      const cachedVol = tipHash !== null ? getVolumeData(tipHash) : undefined;
+
+      if (cachedVol) {
+        // Warm volume cache — derive all physics quantities on the main
+        // thread. No OCCT worker call, no await. On the 13-part orrery
+        // this keeps the entire loop synchronous once the cache is warm.
+        const { volumeMm3, comLocal } = cachedVol;
+        const massKg = Math.max(volumeMm3 * density * 1e-6, 1e-6);
+        const rEqMm = Math.cbrt((3 * volumeMm3) / (4 * Math.PI));
+        const isoInertia = Math.max((2 / 5) * massKg * rEqMm * rEqMm, 1e-6);
         descriptors.push({
           id: partId,
           transform: part.transform,
           meshPositions: snap.positions,
           meshIndices: snap.indices,
-          massKg: props.massKg,
-          comLocal: props.comLocal,
-          principalInertiaKgMm2: props.principalInertiaKgMm2,
+          massKg,
+          comLocal,
+          principalInertiaKgMm2: [isoInertia, isoInertia, isoInertia],
           isGround: partId === groundId,
         });
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[PHYSICS] mass-props failed for ${partId}, skipping body:`,
-          err,
-        );
+      } else {
+        // Cold cache — Play pressed before PartMeshLayer finished its first
+        // regen (e.g. cold reload), or the part is an imported-STEP body
+        // whose feature chain executeUpstreamChain handles. Fall back to
+        // the OCCT worker and populate the cache for next time.
+        try {
+          const props = await cad.getMassProperties({
+            features: part.features,
+            sketches: part.sketches,
+            density,
+          });
+          if (tipHash !== null) {
+            setVolumeData(tipHash, {
+              volumeMm3: props.volumeMm3,
+              comLocal: props.comLocal,
+            });
+          }
+          descriptors.push({
+            id: partId,
+            transform: part.transform,
+            meshPositions: snap.positions,
+            meshIndices: snap.indices,
+            massKg: props.massKg,
+            comLocal: props.comLocal,
+            principalInertiaKgMm2: props.principalInertiaKgMm2,
+            isGround: partId === groundId,
+          });
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[PHYSICS] mass-props failed for ${partId}, skipping body:`,
+            err,
+          );
+        }
       }
     }
 
