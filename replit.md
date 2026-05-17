@@ -923,15 +923,29 @@ never reaches the worker.
 
 ### Seed registry ✅
 
-`public/seed-registry.js` — plain-JS IIFE defining `window.loadSeed(id)`
-at page load. Loads `public/seeds/<id>.js` dynamically; the IIFE in
-each seed file writes the persist JSON to `localStorage["kineticad-state"]`
-and calls `location.reload()`. `public/seeds/windmill.js` is now the
-canonical windmill seed (former `seed-windmill.js` replaced with a
-3-line backward-compat shim). `index.html` loads `seed-registry.js`
-before `main.tsx`. How to add a seed: create `seeds/<id>.js` IIFE,
-match `version: N` to the current store persist version (currently 8),
-add one `SEEDS` array entry.
+The seed registry IIFE (`window.loadSeed(id)`) is **inlined directly into
+`index.html`** as a `<script data-base="%BASE_URL%">` block. It is no longer
+fetched as a separate file. `public/seed-registry.js` remains in the repo as
+a readable reference copy only — it is not loaded.
+
+**Why inlined:** when the app is at a non-root base path (`/app`), Vite dev
+does not serve `public/` files at the base-prefixed URL. A
+`<script src="%BASE_URL%seed-registry.js">` tag caused a 404 because Vite dev
+served the file at `/seed-registry.js` but `%BASE_URL%` substitution made the
+browser request `/app/seed-registry.js`.
+
+**Base path derivation:** the inline script reads
+`document.currentScript.dataset.base` (the `data-base` attribute set to
+`"%BASE_URL%"` on the script element). Vite's HTML-attribute substitution is
+reliable for both dev and production; inline-script-text substitution is not.
+`document.currentScript` is captured synchronously into a local `base` variable
+at the top of the IIFE so the async `fetch()` call uses the correct value.
+
+Loads `public/seeds/<id>.js` dynamically; each seed IIFE writes the persist
+JSON to `localStorage["kineticad-state"]` and calls `location.reload()`.
+How to add a seed: create `seeds/<id>.js` IIFE, match `version: N` to the
+current store persist version (currently 9), add one `SEEDS` array entry
+**in the inlined block inside `index.html`** (not in `public/seed-registry.js`).
 
 ### Orrery — full build ✅
 
@@ -1141,12 +1155,20 @@ wouter to apply it twice → `/app/app/simulator`. Fixed by removing the manual
 `base +` prefix; `const base` line deleted entirely.
 
 **Seed paths:** Seeds live in `public/seeds/<id>.js` and are fetched via
-`(window.__seedBase || '/') + 'seeds/' + id + '.js'`. `window.__seedBase` is
-injected by `index.html` as `'%BASE_URL%'` (Vite replaces this at build time
-with the real base path, e.g. `/app/`). `generate-orrery-seed.ts` writes to
+`base + 'seeds/' + id + '.js'` where `base` comes from
+`document.currentScript.dataset.base` (the `data-base="%BASE_URL%"` attribute
+on the inlined script tag in `index.html`). This works in both dev (`/app/`) and
+the production build. `generate-orrery-seed.ts` writes to
 `artifacts/kineticad/public/seeds/orrery.js` — matches the registry path.
 `public/seed-windmill.js` is a backwards-compat shim; the canonical windmill
 seed is `public/seeds/windmill.js`.
+
+**Seed registry inlining (17/05/2026):** the `window.loadSeed` IIFE was moved
+from `public/seed-registry.js` (fetched via `<script src>`) into a single inline
+`<script data-base="%BASE_URL%">` block in `index.html`. Root cause of the
+regression: Vite dev serves public files at the root path, not at the base-prefixed
+path, so `<script src="%BASE_URL%seed-registry.js">` produced a 404 at `/app`
+even though the attribute substitution gave `/app/seed-registry.js`.
 
 ---
 

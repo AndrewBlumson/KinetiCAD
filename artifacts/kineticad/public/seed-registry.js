@@ -1,4 +1,19 @@
 /*
+ * REFERENCE COPY — NOT LOADED BY index.html
+ * -------------------------------------------------
+ * This file is kept as a readable reference only. The seed registry is now
+ * inlined directly into index.html as a <script data-base="%BASE_URL%"> block.
+ *
+ * Reason for inlining: when the app is served at a non-root base path (/app),
+ * Vite dev does not serve public/ files at the base-prefixed URL
+ * (/app/seed-registry.js). A <script src="%BASE_URL%seed-registry.js"> tag
+ * caused a 404 in dev because %BASE_URL% substitution made the browser request
+ * /app/seed-registry.js, but Vite dev only served the file at /seed-registry.js.
+ * Inlining removes the fetch entirely. The base path is derived at runtime from
+ * document.currentScript.dataset.base (populated via the data-base="%BASE_URL%"
+ * HTML attribute, where Vite's attribute substitution is reliable in both dev
+ * and production).
+ *
  * How to add a seed
  * -----------------
  * 1. Create public/seeds/<id>.js as a self-contained IIFE with this shape:
@@ -11,17 +26,17 @@
  *      })();
  *
  * 2. The version: N value MUST match the current Zustand persist version in
- *    src/state/store.ts (currently 8). If the number is wrong the seed will
+ *    src/state/store.ts (currently 9). If the number is wrong the seed will
  *    load as stale data and trigger the migration chain, producing unexpected
  *    state. Always check store.ts before writing a new seed.
  *
- * 3. Add one { id, name, description } entry to the SEEDS array below.
- *    That is the only change needed in this file.
+ * 3. Add one { id, name, description } entry to the SEEDS array in the
+ *    inlined block inside artifacts/kineticad/index.html. That is the only
+ *    change needed alongside the new seed file.
  */
 
 // Seed registry for KinetiCAD test fixtures and demo scenes.
 // window.loadSeed(id) is available in the browser console once the app loads.
-// Added 16/05/2026.
 (function () {
   var SEEDS = [
     {
@@ -37,6 +52,8 @@
     // Add future seeds here: { id, name, description }
   ];
 
+  var base = (window.__seedBase || '/');
+
   window.loadSeed = function (id) {
     var entry = SEEDS.find(function (s) { return s.id === id; });
     if (!entry) {
@@ -44,7 +61,7 @@
       console.error('[seed-registry] Unknown id: "' + id + '". Available:', available);
       return;
     }
-    fetch((window.__seedBase || '/') + 'seeds/' + id + '.js')
+    fetch(base + 'seeds/' + id + '.js')
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.text();

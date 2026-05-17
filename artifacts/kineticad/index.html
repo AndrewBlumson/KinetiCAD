@@ -14,8 +14,57 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>window.__seedBase = '%BASE_URL%';</script>
-    <script src="%BASE_URL%seed-registry.js"></script>
+    <!--
+      Seed registry — inlined so it is never fetched as a separate file.
+      Base path is read from the data-base attribute (set via Vite's reliable
+      %BASE_URL% attribute substitution) into a local variable at the top of
+      the IIFE, before any async code runs, so the fetch URL is correct in
+      both dev (/app/seeds/…) and the production build.
+      public/seed-registry.js is kept as a reference/comment copy only.
+    -->
+    <script data-base="%BASE_URL%">
+      (function () {
+        var base = (document.currentScript && document.currentScript.dataset.base) || '/';
+        window.__seedBase = base;
+
+        var SEEDS = [
+          {
+            id: 'windmill',
+            name: 'Windmill',
+            description: 'Two-body revolute joint with 30 RPM motor. Used as physics canary.',
+          },
+          {
+            id: 'orrery',
+            name: 'Orrery',
+            description: 'Nested planetary model: sun, 8 planets, 3 moons, asteroid ring. 13 bodies, 12 revolute joints.',
+          },
+        ];
+
+        window.loadSeed = function (id) {
+          var entry = SEEDS.find(function (s) { return s.id === id; });
+          if (!entry) {
+            var available = SEEDS.map(function (s) { return s.id; });
+            console.error('[seed-registry] Unknown id: "' + id + '". Available:', available);
+            return;
+          }
+          fetch(base + 'seeds/' + id + '.js')
+            .then(function (r) {
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              return r.text();
+            })
+            // eslint-disable-next-line no-eval
+            .then(function (code) { eval(code); })
+            .catch(function (err) {
+              console.error('[seed-registry] Failed to load seed "' + id + '":', err);
+            });
+        };
+
+        console.log(
+          '[seed-registry] window.loadSeed ready. Seeds:',
+          SEEDS.map(function (s) { return s.id; })
+        );
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
