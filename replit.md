@@ -1064,17 +1064,21 @@ OR `version === 9` so saved v8 files still open (migrate runs on load).
 - `public/seeds/windmill.js`: updated version 8→9 and
   `materialId: "default"` → `"aluminium-6061"` for both parts.
 
-**Verification**: `pnpm --filter @workspace/kineticad run typecheck` —
-clean (zero errors). End-to-end test requires WebGPU; deploy to
-`.replit.app` and open in Chrome:
-1. Load the orrery seed — all 13 parts render with aluminium colouring.
-2. Select a part, open PartInspector — material picker shows
-   "Aluminium 6061 / 2.70 g/cm³"; volume + mass tiles populate after
-   ~1–2 s.
-3. Change material to "Steel 1018" — mesh colour updates immediately;
+**Verification**: ✅ Verified on deployed `.replit.app` (Chrome, M-series Mac).
+`pnpm --filter @workspace/kineticad run typecheck` — clean (zero errors).
+1. ✅ Load the orrery seed — all 13 parts render with aluminium colouring.
+2. ✅ Select a part, open PartInspector — material picker shows
+   "Aluminium 6061 / 2.70 g/cm³"; volume + mass tiles populate.
+3. ✅ Change material to "Steel 1018" — mesh colour updates immediately;
    mass readout refreshes with ~2.9× higher mass.
-4. Save model → reload → confirm v9 file loads without version error.
-5. Load a v8 file → confirm it opens (migration promotes materialId).
+4. ✅ Save model → reload → v9 file loads without version error.
+5. ✅ Windmill canary (v8 file) opens; migration promotes materialId; π
+   joint holds under simulation.
+
+**Note**: the simulation's physics mass was still using hardcoded aluminium
+density at Phase 10 ship — the inspector readout was correct but Play was not.
+Fixed in the post-Phase-10 patch below; the full material-library correctness
+story is only complete with both entries.
 
 ---
 
@@ -1117,7 +1121,10 @@ changes → same hash → cache hit.
 the same in-memory lifecycle as `featureCache.ts`. `part.volumeCm3` / `massKg`
 in the store remain non-persisted (stripped by `partialize`).
 
-**Typecheck**: `pnpm --filter @workspace/kineticad run typecheck` — clean.
+**Verification**: ✅ Verified on deployed `.replit.app`. Orrery (13 parts,
+all aluminium) plays correctly; changing a part to Steel 1018 and pressing
+Play produces ~2.9× higher simulated mass. Windmill canary holds π joint
+under simulation with correct density. Typecheck clean.
 
 ---
 
