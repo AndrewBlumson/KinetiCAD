@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { DesktopLanding } from "./components/DesktopLanding";
 import { MobileHolding } from "./components/MobileHolding";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/not-found";
+
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  return null;
+}
 
 function detectMobile(): boolean {
   const touchDevice =
@@ -26,11 +34,14 @@ function Home() {
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/terms" component={TermsPage} />
-      <Route path="/privacy" component={PrivacyPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/terms" component={TermsPage} />
+        <Route path="/privacy" component={PrivacyPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
