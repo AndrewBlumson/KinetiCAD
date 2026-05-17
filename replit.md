@@ -1170,17 +1170,27 @@ regression: Vite dev serves public files at the root path, not at the base-prefi
 path, so `<script src="%BASE_URL%seed-registry.js">` produced a 404 at `/app`
 even though the attribute substitution gave `/app/seed-registry.js`.
 
-**serve.mjs BASE_PATH strip (18/05/2026):** `window.loadSeed` was failing with
-`SyntaxError: Unexpected token '<'` on `spock.replit.dev` (the production URL
-served by `serve.mjs`) but not in the workspace dev preview (served by the Vite
-dev server). The cause: the reverse proxy forwards the full path unchanged, so
-`serve.mjs` received `/app/seeds/windmill.js` and did `join(DIST, urlPath)` →
-`dist/public/app/seeds/windmill.js`, which does not exist (Vite build copies
-public files to `dist/public/seeds/…`, no base prefix). The stat failure triggered
-the SPA catch-all, returning `index.html` as HTTP 200. Fix: `serve.mjs` now reads
-`BASE_PATH` from env, strips the prefix via `stripBase()` before joining with DIST,
-and uses the stripped path for the `isHashedAsset` check too. The traversal guard
-is unchanged (still validates the resolved path stays inside DIST).
+**serve.mjs BASE_PATH strip (18/05/2026):** `serve.mjs` now reads `BASE_PATH`
+from env and strips the prefix via `stripBase()` before joining with DIST (so
+`/app/index.html` → `dist/public/index.html`, `/app/assets/…` → `dist/public/assets/…`).
+This was a valid defensive fix but it was *not* the root cause of the seed error.
+
+**Seed URL missing-slash bug — real root cause (18/05/2026):** the actual
+production failure was a malformed fetch URL: `/appseeds/windmill.js` instead of
+`/app/seeds/windmill.js`. Confirmed from a real production request log.
+
+Cause: `%BASE_URL%` in a `data-*` HTML attribute is substituted by Vite without a
+trailing slash (`"/app"`, not `"/app/"`). The old join was `base + 'seeds/' + id`
+which produced `"/app" + "seeds/…"` = `"/appseeds/…"`. The missing slash meant
+serve.mjs could not find the file and fell through to index.html (HTTP 200, HTML
+body), which `eval()` rejected with `SyntaxError: Unexpected token '<'`.
+
+Fix (in `index.html` only): strip any trailing slash from `rawBase` then join with
+an explicit leading slash — `base + '/seeds/' + id + '.js'`. Handles all cases:
+- `"/app"` → `"/app/seeds/windmill.js"` ✓
+- `"/app/"` → strip → `"/app"` → `"/app/seeds/windmill.js"` ✓
+- `"/"` → strip → `""` → `"/seeds/windmill.js"` ✓
+`window.__seedBase` is set to the normalised (no trailing slash) value.
 
 ---
 

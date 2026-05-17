@@ -16,15 +16,19 @@
     <div id="root"></div>
     <!--
       Seed registry — inlined so it is never fetched as a separate file.
-      Base path is read from the data-base attribute (set via Vite's reliable
-      %BASE_URL% attribute substitution) into a local variable at the top of
-      the IIFE, before any async code runs, so the fetch URL is correct in
-      both dev (/app/seeds/…) and the production build.
+      %BASE_URL% is substituted by Vite at build time.  In production with
+      BASE_PATH=/app the substituted value is "/app" (no trailing slash in
+      data-* attributes).  In dev Vite may supply "/app/" (with slash).
+      We normalise by stripping any trailing slash from base, then joining
+      with an explicit leading slash: base + '/seeds/' + id + '.js'.
+      This guarantees exactly one slash between the base and "seeds" in all
+      cases:  "/app" → "/app/seeds/…", "/app/" → "/app/seeds/…", "/" → "/seeds/…"
       public/seed-registry.js is kept as a reference/comment copy only.
     -->
     <script data-base="%BASE_URL%">
       (function () {
-        var base = (document.currentScript && document.currentScript.dataset.base) || '/';
+        var rawBase = (document.currentScript && document.currentScript.dataset.base) || '/';
+        var base = rawBase.replace(/\/+$/, '');
         window.__seedBase = base;
 
         var SEEDS = [
@@ -47,7 +51,7 @@
             console.error('[seed-registry] Unknown id: "' + id + '". Available:', available);
             return;
           }
-          fetch(base + 'seeds/' + id + '.js')
+          fetch(base + '/seeds/' + id + '.js')
             .then(function (r) {
               if (!r.ok) throw new Error('HTTP ' + r.status);
               return r.text();
