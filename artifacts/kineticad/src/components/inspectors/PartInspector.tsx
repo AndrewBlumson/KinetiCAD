@@ -136,8 +136,10 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
             </option>
           ))}
         </select>
-        {/* Density hint */}
-        <span className="absolute right-6 top-1/2 -translate-y-1/2 font-technical text-[10px] text-muted-foreground pointer-events-none">
+      </div>
+      {/* Density on its own line so it never overlaps the material name */}
+      <div className="flex justify-end">
+        <span className="font-technical text-[10px] text-muted-foreground">
           {currentMaterial.densityGcm3.toFixed(2)} g/cm³
         </span>
       </div>
