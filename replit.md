@@ -867,3 +867,140 @@ cylinder pin + offset bar). Mate that result part to the motor
 shaft and the rotation becomes visible. The cadWorker
 `booleanOp({ inputs: [...] })` path is what `assemblyRegen.ts`
 already calls into, so no new feature work is needed for Phase 9.5.
+
+### XCAF naming investigation (post STEP import) ✅ — concluded impossible
+
+After STEP import worked, attempted to extract real part names from the
+XCAF document tree (PRODUCT names from the STEP header) rather than
+using file-stem fallbacks. Four commits of investigation:
+
+- `STEPCAFControl_Reader_1` (not the base class) is required to populate
+  the XCAF label tree — base class silently produces no labels.
+- Eight candidate paths to read `TDataStd_Name` attribute all failed:
+  `Handle_TDataStd_Name.DownCast` not present in binding;
+  `TDataStd_Name.Get_1/Get_2` static methods not present;
+  `FindAttribute_1` only accepts `Handle_TDF_Attribute` base (typed
+  subclass handle rejected by embind); `TDF_Attribute.get()` doesn't
+  expose `Get()`.
+- **Conclusion**: XCAF label name extraction is structurally impossible
+  in this `opencascade.js@2.0.0-beta.94e2944` binding. `extractLabelName`
+  stubbed out to `return ''` with a comment block recording all 8 failed
+  paths. File-stem fallback is now the documented silent behaviour.
+  `STEP_NAME_DEBUG` permanently flipped to `false`.
+
+### Worker→main-thread console log bridge ✅
+
+`cadWorker.ts` and `physicsWorker.ts` now patch `console.log/info/debug/
+warn/error` at module scope to also `postMessage({ __log: true, level,
+args })`. A `try/catch` in the forwarder swallows `DataCloneError` so
+non-cloneable OCCT handles never crash the worker. `cadClient.ts` and
+`physicsClient.ts` add a `message` listener before `Comlink.wrap`
+that intercepts `__log` envelopes and re-emits them via the matching
+`console` method prefixed with `[worker]`. Comlink ignores messages
+without its RPC `id` field so the bridge doesn't interfere with RPC.
+
+### Arc-pivot circleCenter omission fix ✅
+
+`topology.ts` was computing `curveInfo.circleCenter` for every
+circle/arc edge but never writing it into the emitted `EdgeMetadata`
+object, so `edge.circleCenter` was always `undefined` at runtime.
+Callers fell back to `polylineCenter()` — the arithmetic mean of arc
+sample points — which diverges from the true circle centre for partial
+arcs (a 90° arc of r=12mm gives centroid ≈ [−7.64, −7.64, 0] vs
+correct [0, 0, 0]). Fix: one-field addition `circleCenter:
+curveInfo.circleCenter` in `out.push()`. `EdgeMetadata` already
+declared `circleCenter?` optional — no type changes needed.
+Effect: revolute pivots now use the geometric circle centre, eliminating
+the ~10.5 mm lateral pivot offset that was preventing the motor from
+reaching π rad/s (`bodyBangvelMag` regression from ≈3.14118 to π ±5e-7).
+
+### Comlink incoming-message path trace ✅
+
+Both workers received a `message` listener before `Comlink.expose` that
+logs every incoming RPC message type to `console.debug('[comlink-in]
+<type>')`. Aids diagnosing silent-failure cases where a method call
+never reaches the worker.
+
+### Seed registry ✅
+
+`public/seed-registry.js` — plain-JS IIFE defining `window.loadSeed(id)`
+at page load. Loads `public/seeds/<id>.js` dynamically; the IIFE in
+each seed file writes the persist JSON to `localStorage["kineticad-state"]`
+and calls `location.reload()`. `public/seeds/windmill.js` is now the
+canonical windmill seed (former `seed-windmill.js` replaced with a
+3-line backward-compat shim). `index.html` loads `seed-registry.js`
+before `main.tsx`. How to add a seed: create `seeds/<id>.js` IIFE,
+match `version: N` to the current store persist version (currently 8),
+add one `SEEDS` array entry.
+
+### Orrery — full build ✅
+
+Orrery is a solar-system mechanical orrery: sun at centre, planets on
+tiered arms at Z=15–120mm, 3 moons (Earth, Mars, Saturn), asteroid
+ring at Z=7mm. Driven entirely by the existing physics + mate system.
+
+**Generator**: `scripts/src/generate-orrery-seed.ts` produces
+`public/seeds/orrery.js`. Run with `pnpm --filter @workspace/scripts
+run generate-orrery-seed`. The seed is a JSON blob in the persist
+`{ state, version: 8 }` format; `window.loadSeed('orrery')` installs it.
+
+**Assembly** (13 bodies, 12 revolute joints):
+- Hub cylinder (r=10mm, h=135mm) grounded at origin.
+- Sun sphere (r=12mm) at Z=135mm on hub top.
+- 8 planets (Mercury→Neptune) on arms at Z=15/30/45/60/75/90/105/120mm,
+  arm lengths 40–200mm, planet radii 5–20mm; each arm+planet pair is
+  one part with a revolute joint to the hub, motor RPM set to give
+  visually distinct orbital periods.
+- 3 moons: Earth (Z=45mm), Mars (Z=60mm), Saturn (Z=90mm) — each a
+  small sphere part joined revolute to its planet arm, higher RPM.
+- Asteroid ring: thin torus-approximated geometry at Z=7mm, very slow RPM.
+
+**Physics fixes required for the orrery**:
+- `physicsWorker.ts`: `setSolverGroups(0x00010000)` on all colliders —
+  disables inter-part contact forces so planets don't collide with each
+  other or the hub and fly off chaotically.
+- Gravity set to `[0, 0, 0]` in the orrery seed (mechanical orrery, no
+  gravitational collapse).
+- Sun represented as a zero-feature imported-shape part (a sphere mesh)
+  rather than an OCCT geometry part — avoids tessellation overhead.
+- `MOTOR_VELOCITY_GAIN = 10000` confirmed as the correct value for
+  mm-unit assemblies (see Phase 9.5 Follow-up #7). One temporary bump
+  to 40000 was reverted per user instruction; 10000 is the settled value.
+
+**Scene tweaks** (applied to main scene, affect all models):
+- Fog disabled: `scene.fog = null` in `sceneSetup.ts`.
+- Camera `far` bumped from default to 5000 in `sceneSetup.ts`.
+- `OrbitControls.maxDistance` bumped to 1500 in `Scene.tsx`.
+
+### Save / Load model buttons ✅
+
+Two buttons added to the Modeller toolbar after Export STEP, separated
+by a divider: **Save** (Download icon) and **Load** (Upload icon).
+
+**Save** (`handleSaveModel`): reads `localStorage.getItem('kineticad-state')`
+directly — the persist middleware writes this synchronously on every state
+change so it's always current — and downloads it as
+`kineticad-model-YYYYMMDD-HHMMSS.json`. The file is byte-for-byte
+identical to a seed file in `{ state, version }` format.
+
+**Load** (`handleLoadModel`): opens a `.json` file picker. Validates:
+(1) `version` and `state` keys present; (2) `version === 8`; (3)
+`state.assembly` present. Shows a toast error and leaves state untouched
+on any failure. On valid file: `localStorage.setItem('kineticad-state',
+text)` then `location.reload()` — the same mechanism as the seed loader,
+so workers and physics engine rebuild cleanly. `modelFileInputRef` +
+`onModelFileChange` follow the same pattern as the existing STEP import
+file input.
+
+### Social media sharing image ✅
+
+`artifacts/kineticad-intro` (the marketing/landing page): Open Graph /
+Twitter Card `<meta>` image updated to a new screenshot. No code changes
+to the CAD tool itself.
+
+---
+
+## Current persist version: 8
+## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
+## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
+## WebGPU testing: deploy to .replit.app and open in Chrome on M-series Mac
