@@ -1170,6 +1170,18 @@ regression: Vite dev serves public files at the root path, not at the base-prefi
 path, so `<script src="%BASE_URL%seed-registry.js">` produced a 404 at `/app`
 even though the attribute substitution gave `/app/seed-registry.js`.
 
+**serve.mjs BASE_PATH strip (18/05/2026):** `window.loadSeed` was failing with
+`SyntaxError: Unexpected token '<'` on `spock.replit.dev` (the production URL
+served by `serve.mjs`) but not in the workspace dev preview (served by the Vite
+dev server). The cause: the reverse proxy forwards the full path unchanged, so
+`serve.mjs` received `/app/seeds/windmill.js` and did `join(DIST, urlPath)` →
+`dist/public/app/seeds/windmill.js`, which does not exist (Vite build copies
+public files to `dist/public/seeds/…`, no base prefix). The stat failure triggered
+the SPA catch-all, returning `index.html` as HTTP 200. Fix: `serve.mjs` now reads
+`BASE_PATH` from env, strips the prefix via `stripBase()` before joining with DIST,
+and uses the stripped path for the `isHashedAsset` check too. The traversal guard
+is unchanged (still validates the resolved path stays inside DIST).
+
 ---
 
 ## Landing page legal routes (`artifacts/landing`)

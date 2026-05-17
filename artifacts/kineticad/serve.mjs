@@ -7,6 +7,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(join(__dirname, "dist/public"));
 const PORT = Number(process.env.PORT) || 3000;
 
+// BASE_PATH is injected by the artifact runner (e.g. "/app").
+// The reverse proxy forwards the full path, so a request for
+// /app/seeds/windmill.js arrives here as-is.  We must strip the
+// base prefix before resolving against DIST, because Vite build
+// copies public/ files to dist/public/ *without* the base prefix
+// (e.g. dist/public/seeds/windmill.js, not dist/public/app/seeds/…).
+const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, ""); // "/app" — no trailing slash
+
+function stripBase(urlPath) {
+  if (!BASE_PATH) return urlPath;
+  if (urlPath === BASE_PATH) return "/";
+  if (urlPath.startsWith(BASE_PATH + "/")) return urlPath.slice(BASE_PATH.length);
+  return urlPath;
+}
+
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
@@ -24,7 +39,8 @@ const MIME = {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
-  let urlPath = url.pathname;
+  const rawPath = url.pathname;
+  const urlPath = stripBase(rawPath); // e.g. "/app/seeds/windmill.js" → "/seeds/windmill.js"
 
   let filePath = resolve(join(DIST, urlPath));
   let isIndexFallback = false;
@@ -41,7 +57,6 @@ const server = createServer(async (req, res) => {
     if (s.isDirectory()) throw new Error("dir");
   } catch {
     filePath = join(DIST, "index.html");
-    urlPath = "/index.html";
     isIndexFallback = true;
   }
 
