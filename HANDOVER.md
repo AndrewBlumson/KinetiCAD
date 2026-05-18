@@ -5,7 +5,8 @@
 KinetiCAD is an open-source browser-based parametric CAD tool with B-rep geometry underneath, real-time physics simulation, and mate constraints. Built on Replit by Andrew Blumson (Adevious AI Ltd, UK Replit Ambassador), co-built with Kevin Blumson. MIT licence.
 
 - Repository: https://github.com/AndrewBlumson/KinetiCAD
-- Live: https://kineticad.replit.app
+- Live (CAD app): https://kineticad.co.uk/app
+- Landing: https://kineticad.co.uk — routes `/story` (product story), `/terms` (Terms of Service), `/privacy` (Privacy Policy); OG tags, JSON-LD schema, `sitemap.xml` and `robots.txt` in place.
 - Stack: React 19, Vite 8, TypeScript 6, Three.js r184 with WebGPURenderer, OpenCascade.js 2.0.0-beta.94e2944 (B-rep, WebAssembly, Web Worker, Comlink), Rapier3D 0.12.0 (physics, separate Web Worker), Zustand, Tailwind, Sonner toasts, Howler.js
 - Coordinate system: Z-up, millimetre units. UK English, GBP, DD/MM/YYYY.
 - Repository structure: pnpm monorepo at the root, with the main CAD app at `artifacts/kineticad/`.
@@ -14,7 +15,7 @@ This handover is the deep reference for anyone picking up the code. The phase-by
 
 ## Current status
 
-The build follows a 12-phase spec. Phases 0 to 9 are complete: app shell, WebGPU scene, sketching, Extrude and Revolve, topology picking, modifier features (Fillet, Chamfer, Hole), boolean operations, multi-part scene management, mate joints, Rapier3D physics integration, and motor actuation. Phases 10 to 12 are pending.
+The build follows a 12-phase spec. Phases 0 to 10 are complete. Phases 0 to 9 cover: app shell, WebGPU scene, sketching, Extrude and Revolve, topology picking, modifier features (Fillet, Chamfer, Hole), boolean operations, multi-part scene management, mate joints, Rapier3D physics integration, and motor actuation. Phase 10 (Material Library) is also complete: eight engineering material presets with density-driven mass properties, per-part material selection, and a mass/volume readout in the inspector. Phases 11 to 12 are pending.
 
 Post-phase work also complete: the Z-up convention switch, the STEP import fix session, the seed registry, the orrery showcase build, and the Save/Load model feature.
 
@@ -123,7 +124,12 @@ Boolean result meshes are not wired into the topology picker. They can be select
 |   |   |   `-- orrery-build-spec.md
 |   |   |-- serve.mjs              # Production Node server with cache headers
 |   |   `-- package.json
-|   `-- kineticad-intro/           # Intro and landing-page app
+|   `-- landing/                   # Landing page Vite app, serves at /
+|       |-- src/                   # React app: home, /story, /terms, /privacy
+|       `-- public/
+|           |-- sitemap.xml
+|           |-- robots.txt
+|           `-- opengraph.jpg      # OG image; index.html has OG, Twitter Card, JSON-LD
 |-- scripts/                       # Build and dev scripts, including the orrery seed generator
 |-- README.md
 |-- HANDOVER.md                    # This file

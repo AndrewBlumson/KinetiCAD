@@ -48,6 +48,8 @@ Browser-based parametric CAD tool with planned live physics simulation. Built pe
 - Phase 7 ✅ — Mate joints (Revolute/Prismatic/Spherical/Fixed/Planar): `MatePickerCoordinator`, `MateVisualizer`, motor params stored (not yet actuated). Ground-part persistence fixed: `groundPartId` promotes to `parts[0].id` on `createPart` if previously empty.
 - Phase 8 ✅ — Rapier3D rigid-body physics: `physicsWorker`, `SimulationLayer`, Play/Pause/Reset, speed multiplier (0.25×–2×), mass props via `BRepGProp.VolumeProperties_1`.
 - Phase 9 / 9.5 ✅ — Motor actuation wired to Rapier joint API; mate inspector end-to-end: pick-filter slice, OCCT classifier fixed (embind enum coercion), motor model tuned, WASM CDN deploy fix, diagnostic console bridge.
+- Phase 10 ✅ — Material Library: eight engineering materials, per-part picker, density-driven mass props, volume cache, v8→v9 migrate. (Full notes in the Phase 10 section below.)
+- Phases 11–12 ⏳ — Pending.
 
 **Deferred to Phase 12 polish** (per user, end of Phase 5):
 - 3D click-to-select on boolean result meshes (`BooleanResultLayer` rendered but not wired into `TopologyPicker`; selection only via sidebar).

@@ -6,9 +6,9 @@ Built during the Replit 10 Buildathon (May 2026) by Andrew Blumson (@AndrewBlums
 
 ## Live demo
 
-https://kineticad.replit.app
+https://kineticad.co.uk/app
 
-Landing page: https://kineticad.replit.app/ — Story at `/story`, Terms of Service at `/terms`, Privacy Policy at `/privacy`. Open Graph tags and `sitemap.xml` are in place.
+Landing page: https://kineticad.co.uk/ — Story at `/story`, Terms of Service at `/terms`, Privacy Policy at `/privacy`. Open Graph tags and `sitemap.xml` are in place.
 
 Two pre-built demo assemblies load from the browser console:
 
@@ -40,6 +40,7 @@ Modeller:
 - Edge and face picking for mate creation
 - Five mate types: Revolute, Prismatic, Spherical, Fixed, Planar
 - Motor configuration in RPM on Revolute and Prismatic mates
+- Material Library: eight engineering presets (aluminium, steel, brass, titanium, nylon, PLA, ABS, acrylic) with physically-based colours and density values; per-part material selection; mass and volume readout in the inspector
 - Save and Load: full assembly state to and from a JSON file
 
 Physics:
@@ -57,7 +58,7 @@ File interop:
 - Full STEP round-trip with geometry, hierarchy and relative positions preserved
 - Imported parts auto-grounded to the Z=0 plane
 
-The build follows a 12-phase spec; phases 0 to 9 are complete, with later post-phase work covering the seed registry, the orrery, and Save/Load. See `replit.md` at the repository root for the phase-by-phase log.
+The build follows a 12-phase spec; phases 0 to 10 are complete, with later post-phase work covering the seed registry, the orrery, and Save/Load. See `replit.md` at the repository root for the phase-by-phase log.
 
 ## Verified
 
