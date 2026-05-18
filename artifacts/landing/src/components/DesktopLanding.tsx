@@ -127,7 +127,7 @@ export function DesktopLanding() {
           alignItems: "center",
           justifyContent: "center",
           gap: "40px",
-          padding: "0 32px",
+          padding: "clamp(64px, 10vh, 96px) 32px",
           textAlign: "center",
         }}
       >
@@ -498,6 +498,16 @@ export function DesktopLanding() {
             }}
           >
             Adevious AI is a trading name of Adevious Ltd. Company No. 08550853, registered in England and Wales.
+          </span>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px",
+              color: "rgba(245,245,245,0.24)",
+              textAlign: "right",
+            }}
+          >
+            Registered Office: Rosedean House, 4 Argyle Road, Barnet, England, EN5 4DX
           </span>
         </div>
       </footer>
