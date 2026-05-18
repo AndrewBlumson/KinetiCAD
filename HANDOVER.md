@@ -114,7 +114,7 @@ Boolean result meshes are not wired into the topology picker. They can be select
 |   |   |   |-- views/             # Modeller, Simulator
 |   |   |   `-- sketch/            # Sketch plane definitions
 |   |   |-- public/
-|   |   |   |-- seed-registry.js   # Defines window.loadSeed(id)
+|   |   |   |-- seed-registry.js   # Reference copy only; not loaded. Active window.loadSeed is inlined into index.html as a script block
 |   |   |   |-- seeds/
 |   |   |   |   |-- windmill.js    # Canonical windmill seed
 |   |   |   |   `-- orrery.js      # Orrery seed (generated)

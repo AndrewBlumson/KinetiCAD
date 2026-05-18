@@ -154,7 +154,7 @@ cd artifacts/kineticad
 pnpm dev
 ```
 
-The dev server runs at http://localhost:5173. WebGPU is required: use Chrome on an M-series Mac. The Replit preview iframe does not support WebGPU and will show a "WebGPU required" message; test on the deployed URL instead.
+The dev server runs at http://localhost:5173. Outside Replit, `BASE_PATH` is not set so the app serves at `localhost:5173/` with base path `/`, not `/app/` as on the deployed site. WebGPU is required: use Chrome on an M-series Mac. The Replit preview iframe does not support WebGPU and will show a "WebGPU required" message; test on the deployed URL instead.
 
 Build for production with `pnpm build`.
 
