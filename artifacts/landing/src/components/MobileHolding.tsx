@@ -46,7 +46,7 @@ export function MobileHolding() {
             color: "#F5F5F5",
           }}
         >
-          KinetiCAD
+          KinetiCAD is a desktop application
         </h1>
         <p
           style={{
@@ -57,8 +57,10 @@ export function MobileHolding() {
             color: "rgba(245,245,245,0.62)",
           }}
         >
-          Browser-based parametric CAD with real B-rep geometry and live
-          physics simulation.
+          KinetiCAD is a parametric CAD tool with a real geometry kernel and
+          live physics. It is built for a large screen, a precise pointer, and
+          the kind of focused work that CAD needs, so it runs on desktop and
+          laptop computers, not mobile devices.
         </p>
         <p
           style={{
@@ -69,25 +71,9 @@ export function MobileHolding() {
             color: "rgba(245,245,245,0.40)",
           }}
         >
-          KinetiCAD requires a desktop computer with a recent version of
-          Chrome. WebGPU is not available on mobile.
+          Visit kineticad.co.uk on a desktop computer using a recent version
+          of Chrome to launch it.
         </p>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: "12px",
-          textTransform: "uppercase",
-          letterSpacing: "0.12em",
-        }}
-      >
-        <span style={{ color: "rgba(245,245,245,0.30)" }}>Visit</span>
-        <span style={{ color: "#FF6B1A" }}>kineticad.co.uk</span>
-        <span style={{ color: "rgba(245,245,245,0.30)" }}>on desktop</span>
       </div>
     </div>
   );
