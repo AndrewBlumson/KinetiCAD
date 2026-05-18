@@ -319,17 +319,19 @@ export function DesktopLanding() {
                 background: "rgba(15,20,37,0.70)",
               }}
             >
-              <span
+              <h2
                 style={{
+                  margin: 0,
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: "11px",
+                  fontWeight: 400,
                   textTransform: "uppercase",
                   letterSpacing: "0.28em",
                   color: "#FF6B1A",
                 }}
               >
                 {col.label}
-              </span>
+              </h2>
               <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
                 {col.items.map((item, i) => (
                   <li

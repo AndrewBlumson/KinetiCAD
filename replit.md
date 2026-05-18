@@ -1018,6 +1018,29 @@ showcase animation) has been deleted from the repository. It served at
 `/kineticad-intro/` and had no cross-dependencies with any other artifact.
 The workflow and the stale task files were removed at the same time.
 
+### Landing page SEO + /story page (18/05/2026)
+
+New `/story` page added to `artifacts/landing` at route `/story`
+(`StoryPage.tsx`), linked from the footer of all pages in orange.
+Contains the verbatim KinetiCAD origin story (three sections, no
+numbered items).
+
+Hero spacing: `padding: "0 32px"` → `clamp(64px, 10vh, 96px) 32px`
+so the logo is not flush to the browser edge.
+
+SEO pass on `artifacts/landing`:
+- `index.html`: canonical tag, Open Graph (og:type/url/title/
+  description/image), Twitter Card (summary_large_image), and a
+  `SoftwareApplication` JSON-LD schema block.
+- `public/sitemap.xml` (new): four URLs — /, /story, /terms, /privacy.
+- `public/robots.txt`: `Sitemap:` directive added.
+- `DesktopLanding.tsx`: four feature-column labels promoted from
+  `<span>` to `<h2>` (same visual style, correct semantic hierarchy).
+- `not-found.tsx`: replaced developer copy ("Did you forget to add
+  the page to the router?") with a user-facing 404 message + back link.
+- `LegalPage.tsx` footer: registered office address added (already
+  present in `DesktopLanding.tsx` and `StoryPage.tsx`).
+
 ---
 
 ## Phase 10 — Material Library (2026-05-17)

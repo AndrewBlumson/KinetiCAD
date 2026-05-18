@@ -253,6 +253,16 @@ export function LegalPage({ title, lastUpdated, sections }: LegalPageProps) {
           >
             Adevious AI is a trading name of Adevious Ltd. Company No. 08550853, registered in England and Wales.
           </span>
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px",
+              color: "rgba(245,245,245,0.24)",
+              textAlign: "right",
+            }}
+          >
+            Registered Office: Rosedean House, 4 Argyle Road, Barnet, England, EN5 4DX
+          </span>
         </div>
       </footer>
     </div>

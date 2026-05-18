@@ -8,7 +8,7 @@ Built during the Replit 10 Buildathon (May 2026) by Andrew Blumson (@AndrewBlums
 
 https://kineticad.replit.app
 
-Landing page: https://kineticad.replit.app/ — Terms of Service at `/terms`, Privacy Policy at `/privacy`.
+Landing page: https://kineticad.replit.app/ — Story at `/story`, Terms of Service at `/terms`, Privacy Policy at `/privacy`. Open Graph tags and `sitemap.xml` are in place.
 
 Two pre-built demo assemblies load from the browser console:
 
