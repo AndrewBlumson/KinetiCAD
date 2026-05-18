@@ -354,6 +354,8 @@ SEO pass:
 
 ---
 
+## attached_assets/ cleared 18/05/2026 — all 7 orphaned files deleted (~28 MB); directory is gitignored so this note is the only git-level record.
+
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
 ## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
