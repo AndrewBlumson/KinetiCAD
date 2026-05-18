@@ -1008,9 +1008,15 @@ file input.
 
 ### Social media sharing image ✅
 
-`artifacts/kineticad-intro` (the marketing/landing page): Open Graph /
-Twitter Card `<meta>` image updated to a new screenshot. No code changes
-to the CAD tool itself.
+Open Graph / Twitter Card `<meta>` image updated to a new screenshot.
+No code changes to the CAD tool itself.
+
+### kineticad-intro artifact removed (18/05/2026)
+
+`artifacts/kineticad-intro` (the standalone GSAP/Three.js buildathon
+showcase animation) has been deleted from the repository. It served at
+`/kineticad-intro/` and had no cross-dependencies with any other artifact.
+The workflow and the stale task files were removed at the same time.
 
 ---
 

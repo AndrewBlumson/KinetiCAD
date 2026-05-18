@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 
-const LOGO = `${import.meta.env.BASE_URL}logo.webp`;
+const LOGO   = `${import.meta.env.BASE_URL}logo.webp`;
+const VIDEO  = `${import.meta.env.BASE_URL}orrery.mp4`;
+const POSTER = `${import.meta.env.BASE_URL}opengraph.jpg`;
 
 const FEATURE_COLS = [
   {
@@ -179,6 +181,27 @@ export function DesktopLanding() {
           >
             No install&nbsp;&nbsp;·&nbsp;&nbsp;No licence&nbsp;&nbsp;·&nbsp;&nbsp;No CAD seat
           </p>
+        </div>
+
+        {/* ── Product demo video ── */}
+        <div style={{ width: "100%", maxWidth: "860px" }}>
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={POSTER}
+            style={{
+              display: "block",
+              width: "100%",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,107,26,0.22)",
+              boxShadow:
+                "0 0 0 1px rgba(255,107,26,0.10), 0 16px 48px rgba(0,0,0,0.70)",
+            }}
+          >
+            <source src={VIDEO} type="video/mp4" />
+          </video>
         </div>
 
         <a
