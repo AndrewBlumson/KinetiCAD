@@ -458,6 +458,17 @@ export function DesktopLanding() {
               kineticad.co.uk
             </a>
             <Link
+              href="/story"
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "13px",
+                color: "rgba(255,107,26,0.70)",
+                textDecoration: "none",
+              }}
+            >
+              Story
+            </Link>
+            <Link
               href="/terms"
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
