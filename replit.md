@@ -97,6 +97,13 @@ worker: { format: "es" }
 
 **Unit convention**: all values in the physics layer are mm, s, kg. Gravity: `[0, 0, -9810]` mm/s² (Z-up). A 20×20×10mm aluminium cube → 4000 mm³, 0.0108 kg. Rapier is unit-agnostic; mass properties and gravity must agree.
 
+**Applied force**: `BuildWorldArgs.appliedForces` carries one constant
+world-space force vector in newtons per dynamic target. The worker multiplies
+by 1,000 and adds it once at the centre of mass; re-adding a persistent force
+each step would accidentally create a force ramp. Duplicate, missing, fixed
+or invalid force targets fail the build. This is separate from velocity-motor
+force/torque limits, which remain unsupported.
+
 **Motor settings** (in `physicsWorker.ts`):
 - `setCanSleep(false)` on every dynamic body — a sleeping body ignores motor impulses and appears frozen.
 - `MotorModel.AccelerationBased` — velocity servo with finite gain and solver tracking error. Acceptance depends on the measured residuals and thresholds in `docs/demo-physics-results.json`; the configured target is not evidence of exact tracking.
@@ -170,11 +177,20 @@ Orrery generator: `pnpm --filter @workspace/scripts run generate-orrery-seed` �
 
 ---
 
-## Current source — Demo gallery and physics corrections
+## Current source — Six demos, force measurements and physics corrections
+
+The six-demo actual-CAD physics report, material-force experiment and Stewart
+closed-joint lift pass. Exact B-rep pair checks find no overlap at the initial
+and measured final material/Stewart poses. The post-arc-fix production build
+and local Chrome Stewart run pass, as do all 79 tests in serialized runs.
+The final local windmill browser canary passes its unchanged tolerance;
+public deployment acceptance remains pending. Current bundle identifiers and measured
+results are separate from the earlier five-demo evidence in
+`docs/PHYSICS-VERIFICATION.md`.
 
 ### Editable demo workspaces
 
-`components/demos/DemoGallery.tsx` presents five authored SVG illustrations
+`components/demos/DemoGallery.tsx` presents six authored SVG illustrations
 inside an accessible, scrollable Radix dialog. These are illustrations, not
 captured CAD screenshots. Opening focuses the title without scrolling and
 starts the grid at the top. `DemoWorkspace.tsx` supplies the toolbar entry,
@@ -189,12 +205,18 @@ empty-workspace chooser, loading/errors, reset and return controls.
 | `orrery` | Solar-system orrery | 13 / 12 | Original nested orbital-arm mechanism; illustrative speeds |
 | `gyroscope` | Three-axis driven gimbal | 4 / 3 | Powered intersecting axes, bored housings, shafts and steel flywheel |
 | `kinetic-mobile` | Kinetic mobile | 8 / 7 | Crown, two branches and four separately driven medallions |
-| `material-studio` | Material studio | 9 / 8 | Eight bored-boss material samples with fixed mounts |
+| `material-studio` | Material force lab | 9 / 8 | Equal force on eight identical samples with different masses, on unpowered straight guides |
+| `stewart-platform` | Stewart platform | 14 / 18 | Six telescopic actuators drive a six-second symmetric vertical lift through a closed joint network |
 
 The gimbal/mobile use zero gravity and independently commanded motors. Do not
 describe the gimbal as verified passive-gyroscope dynamics or its shaft geometry
-as a simulated bearing contact. Material studio's fixed joints intentionally
-keep the samples static.
+as a simulated bearing contact. Material force lab replaces the earlier static
+fixed-mount example. The Stewart source is defined in
+`scripts/src/stewart-platform-demo.mjs` and included by the common generator;
+each leg contains a lower spherical joint, a motorised prismatic joint and an
+upper spherical joint. Six 2 mm/s drives extend together for six seconds.
+Do not describe this as arbitrary six-axis inverse kinematics, a payload rating
+or a guarantee against singularities throughout a general workspace.
 
 `demos/demoDocument.ts` validates files and normalizes base-path asset URLs.
 `demoSession.ts` retains the original state and temporarily isolates persistence
@@ -203,6 +225,35 @@ live STEP shape IDs, without reloading the workers. Save exports demo edits;
 reset reloads its bundled document. This is session protection, not durable STEP
 storage: page refresh still clears imported B-rep memory. File operations and
 unfinished feature/sketch/mate edits block workspace switching.
+
+`Modeller.tsx` keeps short labels visible for Import STEP, Export STEP, Export
+STL, Save project and Load project. Radix tooltips explain each format and
+operation. Disabled file actions retain keyboard focus and guard activation,
+so the reason that Load project is unavailable inside a demo is discoverable.
+The Save tooltip states that imported STEP B-reps are not embedded in JSON.
+
+### Equal-force material experiment
+
+`simulation.forceExperiment` identifies eight targets, the constant force,
+world direction and duration. Material force lab uses +Y, 0.001 N by default,
+and 2,000 ms; the interface also offers 0.0005 N. Eight identical bored-boss
+solids have volume 10,050.283064729765 mm³ and different density-derived masses.
+They slide between drawn rails on ideal unpowered prismatic joints. Gravity,
+friction and contact response are off; the rails do not produce contact forces.
+
+`forceMeasurements.ts` stores transient readouts outside persisted CAD state.
+Expected acceleration is `1,000 × forceN / CAD massKg`; measured acceleration
+is the change in actual worker COM velocity divided by actual elapsed seconds.
+The force panel separates expected and measured values and shows displacement
+from the starting pose. A completed run holds its final pose; Run again builds
+a fresh world. This demonstrates mass-dependent acceleration, not material
+deformation, strength or unequal free-fall acceleration.
+
+The independent real-CAD force check passes full force at 60/120 Hz and half
+force at 60 Hz. See `docs/MATERIAL-FORCE-VERIFICATION.md`,
+`docs/material-force-results.json` and `docs/material-clearance-results.json`.
+The clearance report has 72 exact initial/final B-rep pair checks with zero
+intersection volume and a conservative straight-motion lane-envelope check.
 
 ### Mass properties and time integration
 
@@ -222,6 +273,13 @@ while an RPC is outstanding, guards superseded builds and holds an in-flight
 result across Pause until Resume. Reset destroys the world and clears pending
 time. This describes the source implementation; acceptance measurements belong
 in the verification report rather than being inferred from the code.
+
+An optional `durationMs` caps a run at the final whole configured step within
+the requested interval. The worker returns `simulatedTimeMs`, `completed` and
+actual body measurements for force targets; after completion, further step
+requests advance zero time. The two-second force and six-second Stewart
+windows divide exactly at their configured timesteps. Pause holds late results;
+the displayed clock and measurements advance together on publication.
 
 Mode changes deliberately stop/reset simulation to its design pose and zero
 clock. Footer clicks reset immediately, and the route effect also handles
@@ -252,7 +310,8 @@ reuse; browser verification must still inspect the displayed result.
   deformation, stress analysis or material failure is modelled.
 - Part-to-part contact response is disabled through collider solver groups.
   Parts can interpenetrate. No collision/friction validation, gear/cam contact,
-  bearing resistance or clearance verification is provided.
+  bearing resistance or automatic clearance checker is provided. Separate
+  offline demo-specific B-rep checks do not enable contact physics.
 - Revolute motors command rad/s derived from RPM; prismatic motors command
   mm/s. They are velocity servos without enforced torque or force limits.
   Stored torque/force fields must not be presented as active load limits.
@@ -281,9 +340,12 @@ pnpm --filter @workspace/kineticad typecheck
 pnpm --filter @workspace/kineticad test:demos
 pnpm --filter @workspace/kineticad test:mass
 pnpm --filter @workspace/kineticad test:physics
+pnpm --filter @workspace/kineticad test:forces
 pnpm --filter @workspace/kineticad test:runner
 pnpm --filter @workspace/kineticad test:overlays
 pnpm --filter @workspace/kineticad test:regen
+pnpm --filter @workspace/kineticad test:stewart
+pnpm --filter @workspace/kineticad test:arcs
 ```
 
 Mass tests exercise actual OCCT shapes and Rapier torque response. Physics tests
@@ -292,6 +354,43 @@ mechanics from CAD generation and rendering. Overlay tests exercise Three.js
 scene-graph transforms without a GPU. Demo tests cover file validation and
 restoration of the original workspace. Regenerate fixtures with
 `node scripts/src/generate-demo-library.mjs` when source definitions change.
+
+The current inventory is 79 cases: demos 6, mass 8, worker 17, force/measurement
+9, runner 9, overlays 5, regeneration 13, Stewart geometry 5 and actual-OCCT
+arcs/profiles 7. All 79 passed in serialized runs, with mass/regeneration
+rerun after the arc correction. Retain actual command results. Stewart
+mathematical tests do not substitute for real CAD, solver or rendered acceptance.
+
+The Stewart turning profiles exposed a trimmed-arc construction bug: OCCT's
+circle frame did not explicitly match the sketch's UV axes. `sketchToWire`
+now supplies the UV normal and U direction for XY, XZ and YZ arcs. In
+particular XZ uses U=+X, V=+Z and UV normal=−Y; extrude directions and full
+circles are unchanged. Seven actual-OCCT tests check arc endpoints/intermediate
+points, sector volumes and centroids, sphere revolutions, and valid single-solid
+Stewart barrel/rod profiles with positive inertia.
+
+Run the heavier geometry commands sequentially, then the real-CAD worker checks:
+
+```sh
+node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs --export-descriptors
+node artifacts/kineticad/tests/verify-demo-physics.mjs /tmp/kineticad-demo-descriptors.json
+node artifacts/kineticad/tests/verify-material-force.mjs /tmp/kineticad-demo-descriptors.json
+node artifacts/kineticad/tests/verify-stewart-physics.mjs /tmp/kineticad-demo-descriptors.json
+node --import ./scripts/node_modules/tsx/dist/loader.mjs artifacts/kineticad/tests/verify-material-clearance.mjs
+node --import ./scripts/node_modules/tsx/dist/loader.mjs artifacts/kineticad/tests/verify-stewart-clearance.mjs
+```
+
+The descriptor exporter rebuilds 50 bodies across six fixtures. Result reports
+bind to fixture/source hashes: `demo-geometry-results.json`,
+`demo-physics-results.json`, `material-force-results.json`,
+`material-clearance-results.json`, `stewart-physics-results.json` and
+`stewart-clearance-results.json`, all under `docs/`. Check the relevant current
+reports and their scope: exact endpoint clearance is not continuous contact
+validation. The Stewart report uses the actual solver deck pose and records
+every-step heave, closure, travel and rotation errors plus sampled motor speed.
+The separate `force-stewart-browser-results.json` records actual Chrome
+readings, bundle identifiers and the distinction between intermediate and
+final-bundle checks. All recorded worker/fixture hashes match the current source.
 
 See [Physics verification](docs/PHYSICS-VERIFICATION.md) for current measured
 results, browser evidence and unresolved gates. Keep the original Windmill
@@ -523,6 +622,6 @@ SEO pass:
 
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
-## Current examples: in-app Demos gallery (five editable assemblies)
+## Current examples: in-app Demos gallery (six editable assemblies; public acceptance pending)
 ## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: top-level Chrome against local app or intended deployment

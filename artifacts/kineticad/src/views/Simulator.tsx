@@ -1,6 +1,9 @@
 import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 import { DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
+import { ForceExperimentControls, ForceExperimentMeasurements } from '@/components/demos/ForceExperimentPanel';
+import { useForceMeasurements } from '@/physics/forceMeasurements';
+import { StewartMeasurements } from '@/components/demos/StewartMeasurements';
 
 // Phase 8 — same Scene component as the Modeller. The simulation
 // subsystem is wired into Scene at mount; the Simulator view just
@@ -24,6 +27,11 @@ export default function Simulator() {
   const resetSimulation = useKinetiCADStore((s) => s.resetSimulation);
   const parts = useKinetiCADStore((s) => s.assembly.parts);
   const mates = useKinetiCADStore((s) => s.assembly.mates);
+  const forceCompleted = useForceMeasurements((s) => s.completed);
+  const forceExperiment = simulation.forceExperiment;
+  const duration = forceExperiment?.durationMs ?? simulation.durationMs;
+  const completed = forceCompleted || !!(duration && simulation.running && simulation.paused
+    && simulation.simulationTimeMs >= Math.floor((duration + 1e-7) / simulation.timeStepMs) * simulation.timeStepMs - 1e-7);
 
   const preparingGeometry = readyRevision !== revision;
   const canPlay = parts.some((part) => part.visible && part.features.length > 0) && !preparingGeometry;
@@ -32,6 +40,11 @@ export default function Simulator() {
 
   const onPlayPause = () => {
     if (!canPlay) return;
+    if (completed) {
+      resetSimulation();
+      setSimulationRunning(true);
+      return;
+    }
     if (!isRunning) {
       setSimulationRunning(true);
     } else {
@@ -58,12 +71,13 @@ export default function Simulator() {
 
         <div className="flex items-center gap-1">
           <PlaybackBtn
-            label={isRunning ? (isPaused ? 'Resume' : 'Pause') : 'Play'}
+            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Play'}
             active={isRunning && !isPaused}
             disabled={!canPlay}
             onClick={onPlayPause}
           >
             {isRunning && !isPaused ? '⏸' : '▶'}
+            {forceExperiment && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : 'Run experiment'}</span>}
           </PlaybackBtn>
           <PlaybackBtn label="Reset" onClick={onReset}>
             ⏹
@@ -81,12 +95,13 @@ export default function Simulator() {
 
         <DemoButton />
         {preparingGeometry && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
-        <SimStatus running={isRunning} paused={isPaused} />
+        <SimStatus running={isRunning} paused={isPaused} completed={completed} />
       </header>
       <DemoWorkspaceBar />
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden">
+        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
+          {forceExperiment ? <ForceExperimentMeasurements /> : <>
           <SidebarSection title="Rigid Bodies">
             {parts.length === 0 ? (
               <EmptyState text="No parts in assembly" />
@@ -109,6 +124,7 @@ export default function Simulator() {
               ))
             )}
           </SidebarSection>
+          </>}
         </aside>
 
         <main className="flex-1 relative overflow-hidden" style={{ background: '#0A0E1A' }}>
@@ -122,7 +138,9 @@ export default function Simulator() {
           />
         </main>
 
-        <aside className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-hidden">
+        <aside className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto">
+          {forceExperiment ? <ForceExperimentControls /> : <>
+          {activeDemo?.id === 'stewart-platform' && <StewartMeasurements />}
           <SidebarSection title="Gravity (mm/s²)">
             <div className="px-3 py-2 font-technical text-xs text-muted-foreground space-y-1">
               <KvRow label="X" value={simulation.gravity[0].toFixed(0)} />
@@ -130,6 +148,7 @@ export default function Simulator() {
               <KvRow label="Z" value={simulation.gravity[2].toFixed(0)} />
             </div>
           </SidebarSection>
+          {duration && <SidebarSection title="Experiment window"><p className="px-3 py-2 text-xs text-muted-foreground">Runs for {duration / 1000} seconds, then holds the final pose. Press Play to repeat.</p></SidebarSection>}
           <SidebarSection title="Time Step">
             <div className="px-3 py-2 font-technical text-xs text-muted-foreground">
               <KvRow label="dt" value={`${simulation.timeStepMs.toFixed(2)} ms`} />
@@ -142,6 +161,7 @@ export default function Simulator() {
               <p>Switching modes stops the simulation and returns it to the starting pose at 0 s.</p>
             </div>
           </SidebarSection>
+          </>}
         </aside>
       </div>
     </div>
@@ -164,10 +184,11 @@ function PlaybackBtn({
   return (
     <button
       title={label}
+      aria-label={label}
       onClick={onClick}
       disabled={disabled}
       className={[
-        'flex items-center justify-center w-7 h-7 rounded text-sm transition-colors',
+        'flex items-center justify-center min-w-7 px-2 h-7 rounded text-sm transition-colors',
         disabled
           ? 'opacity-30 cursor-not-allowed text-muted-foreground'
           : active
@@ -210,8 +231,8 @@ function SpeedSelector({
   );
 }
 
-function SimStatus({ running, paused }: { running: boolean; paused: boolean }) {
-  const text = !running ? 'Stopped' : paused ? 'Paused' : 'Simulating';
+function SimStatus({ running, paused, completed }: { running: boolean; paused: boolean; completed: boolean }) {
+  const text = completed ? 'Complete' : !running ? 'Stopped' : paused ? 'Paused' : 'Simulating';
   const color = !running
     ? 'bg-muted-foreground'
     : paused

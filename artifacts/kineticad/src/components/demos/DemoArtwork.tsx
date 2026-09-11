@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { StewartArtwork } from './StewartArtwork';
 
 type DemoArtworkProps = {
   id: string;
@@ -42,6 +43,7 @@ export function DemoArtwork({ id, accent }: DemoArtworkProps) {
       {id === 'gyroscope' && <Gyroscope metal={metal} gold={gold} accent={accent} />}
       {id === 'kinetic-mobile' && <Mobile metal={metal} gold={gold} accent={accent} />}
       {id === 'material-studio' && <Materials metal={metal} gold={gold} />}
+      {id === 'stewart-platform' && <StewartArtwork metal={metal} gold={gold} accent={accent} />}
     </svg>
   );
 }
@@ -140,17 +142,23 @@ function Materials({ metal, gold }: { metal: string; gold: string }) {
   const colours = [metal, '#A4B0BC', gold, '#8A8795', '#E4E5DB', '#E66F41', '#505769', '#8CCDCF'];
   return (
     <>
-      <path d="M45 124L169 75L357 113V139L233 187L45 150Z" fill="#17263A" stroke="#415570" />
-      <path d="M45 124L233 162L357 113M233 162V187" stroke="#526983" />
+      <path d="M28 173L105 50H371L294 173V183H28Z" fill="#17263A" stroke="#415570" />
+      <path d="M28 173H294L371 50M294 173V183" stroke="#526983" />
+      {Array.from({length: 9}, (_, i) => <path key={i} d={`M${34 + i * 32} 167L${104 + i * 32} 56`} stroke="#627A95" strokeWidth="2" />)}
       {colours.map((colour, i) => {
-        const x = 87 + (i % 4) * 56 + (i < 4 ? 54 : 0);
-        const y = 109 + (i % 4) * 11 - (i < 4 ? 27 : 0);
+        const travel = [33, 11, 10, 20, 78, 71, 85, 75][i];
+        const x = 50 + i * 32 + travel * .63;
+        const y = 158 - travel;
         return (
           <g key={i}>
+            <path d={`M${50 + i * 32} 159L${x} ${y}`} stroke="#F7A55E" strokeOpacity=".55" strokeDasharray="3 3" />
+            <g transform={`translate(${x} ${y}) scale(.57) translate(${-x} ${-y})`}>
+            <path d={`M${x-21} ${y-1}H${x+21}V${y+17}H${x-21}Z`} fill={colour} />
             <path d={`M${x - 17} ${y - 22}H${x + 17}V${y + 6}C${x + 17} ${y + 17} ${x - 17} ${y + 17} ${x - 17} ${y + 6}Z`} fill={colour} />
             <ellipse cx={x} cy={y - 22} rx="17" ry="8" fill={colour} stroke="#E7F1F4" strokeOpacity=".5" />
             <ellipse cx={x} cy={y - 22} rx="6" ry="3.5" fill="#17263A" stroke="#E7F1F4" strokeOpacity=".4" />
             <path d={`M${x + 11} ${y - 16}V${y + 6}`} stroke="#FFF" strokeOpacity=".15" />
+            </g>
           </g>
         );
       })}

@@ -16,6 +16,7 @@ import MateInspector from '@/components/inspectors/MateInspector';
 import PartsPanelItem from '@/components/PartsPanelItem';
 import MatesPanelItem from '@/components/MatesPanelItem';
 import NewPartButton from '@/components/NewPartButton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DemoButton, DemoWelcome, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import type { CardinalPlane } from '@/sketch/plane';
 import type {
@@ -357,7 +358,7 @@ export default function Modeller() {
         {sketchSession.active ? (
           <SketchToolbar />
         ) : (
-          <>
+          <TooltipProvider delayDuration={250}>
             <ToolbarGroup label="Sketch">
               <ToolbarBtn
                 icon="▭"
@@ -429,26 +430,14 @@ export default function Modeller() {
 
             <div className="w-px h-5 bg-border mx-1" />
 
-            <button
-              type="button"
-              title="Export STL"
-              disabled={exporting}
+            <FileToolbarButton
+              label="Export STL"
+              description="Download a triangle mesh (.stl) for 3D printing. CAD features and joints are not included."
+              icon={Download}
+              busy={exporting}
               onClick={handleExportStl}
-              data-testid="export-stl"
-              className={[
-                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
-                exporting
-                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
-                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
-              ].join(' ')}
-            >
-              {exporting ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <Download size={13} />
-              )}
-              <span className="hidden 2xl:inline">Export STL</span>
-            </button>
+              testId="export-stl"
+            />
 
             {/* Hidden file input — triggered by the Import STEP button */}
             <input
@@ -459,47 +448,23 @@ export default function Modeller() {
               onChange={onStepFileChange}
             />
 
-            <button
-              type="button"
-              title="Import STEP file"
-              disabled={importingStep}
+            <FileToolbarButton
+              label="Import STEP"
+              description="Add solid geometry from a STEP (.step or .stp) file to this assembly. Original CAD history and joints are not imported."
+              icon={Upload}
+              busy={importingStep}
               onClick={() => stepFileInputRef.current?.click()}
-              data-testid="import-step"
-              className={[
-                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
-                importingStep
-                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
-                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
-              ].join(' ')}
-            >
-              {importingStep ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <Upload size={13} />
-              )}
-              <span className="hidden 2xl:inline">Import STEP</span>
-            </button>
+              testId="import-step"
+            />
 
-            <button
-              type="button"
-              title="Export STEP file"
-              disabled={exportingStep}
+            <FileToolbarButton
+              label="Export STEP"
+              description="Download solid CAD geometry (.step) for other CAD tools. KinetiCAD feature history and joints are not included."
+              icon={Download}
+              busy={exportingStep}
               onClick={handleExportStep}
-              data-testid="export-step"
-              className={[
-                'flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors',
-                exportingStep
-                  ? 'text-muted-foreground opacity-40 cursor-not-allowed'
-                  : 'text-foreground hover:bg-secondary active:bg-secondary/80',
-              ].join(' ')}
-            >
-              {exportingStep ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <Download size={13} />
-              )}
-              <span className="hidden 2xl:inline">Export STEP</span>
-            </button>
+              testId="export-step"
+            />
 
             <div className="w-px h-5 bg-border mx-1" />
 
@@ -512,29 +477,25 @@ export default function Modeller() {
               onChange={onModelFileChange}
             />
 
-            <button
-              type="button"
-              title="Save model to file"
+            <FileToolbarButton
+              label="Save project"
+              description="Download an editable KinetiCAD project (.json), including sketches, features and joints. Imported STEP geometry is not embedded."
+              icon={Download}
               onClick={handleSaveModel}
-              data-testid="save-model"
-              className="flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors text-foreground hover:bg-secondary active:bg-secondary/80"
-            >
-              <Download size={13} />
-              <span className="hidden sm:inline">Save</span>
-            </button>
+              testId="save-model"
+            />
 
-            <button
-              type="button"
-              title={activeDemo ? 'Return to your model before loading a project' : 'Load model from file'}
+            <FileToolbarButton
+              label="Load project"
+              description={activeDemo
+                ? 'Return to your model before loading a project. Load opens an editable KinetiCAD .json file and replaces the current project.'
+                : 'Open a saved KinetiCAD project (.json), replacing the current project with its sketches, features and joints.'}
+              icon={Upload}
               disabled={!!activeDemo}
               onClick={() => modelFileInputRef.current?.click()}
-              data-testid="load-model"
-              className="flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors text-foreground hover:bg-secondary active:bg-secondary/80"
-            >
-              <Upload size={13} />
-              <span className="hidden sm:inline">Load</span>
-            </button>
-          </>
+              testId="load-model"
+            />
+          </TooltipProvider>
         )}
 
         <div className="flex-1" />
@@ -1113,6 +1074,46 @@ function ActiveSketchInspector({
 function planeLabel(plane: SketchPlane): string {
   if (typeof plane === 'string') return plane;
   return 'Custom';
+}
+
+function FileToolbarButton({
+  label, description, icon: Icon, onClick, testId, disabled = false, busy = false,
+}: {
+  label: string;
+  description: string;
+  icon: typeof Download;
+  onClick: () => void;
+  testId: string;
+  disabled?: boolean;
+  busy?: boolean;
+}) {
+  const unavailable = disabled || busy;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={label}
+          aria-disabled={unavailable}
+          aria-busy={busy || undefined}
+          onClick={() => { if (!unavailable) onClick(); }}
+          data-testid={testId}
+          className={[
+            'flex h-9 min-w-[58px] shrink-0 flex-col items-center justify-center gap-1 rounded px-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-orange-400',
+            unavailable
+              ? 'cursor-not-allowed text-muted-foreground opacity-50'
+              : 'text-foreground hover:bg-secondary active:bg-secondary/80',
+          ].join(' ')}
+        >
+          {busy ? <Loader2 size={13} className="animate-spin" aria-hidden="true" /> : <Icon size={13} aria-hidden="true" />}
+          <span className="whitespace-nowrap text-[10px] leading-[11px]">{label}</span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={7} className="max-w-64 border border-slate-600 bg-slate-900 text-xs leading-relaxed text-slate-100">
+        {description}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 function ToolbarGroup({ label, children }: { label: string; children: React.ReactNode }) {

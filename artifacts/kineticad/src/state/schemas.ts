@@ -245,6 +245,15 @@ export type Assembly = {
  * `paused`, `simulationTimeMs`) are zeroed on every boot via
  * `partialize` so nothing tries to resume a dead world.
  */
+export type ForceExperimentConfig = {
+  kind: 'equal-force';
+  partIds: string[];
+  /** Equal constant force on each sample, in newtons, at its centre of mass. */
+  forceN: number;
+  direction: [number, number, number];
+  durationMs: number;
+};
+
 export type SimulationState = {
   running: boolean;
   paused: boolean;
@@ -252,6 +261,10 @@ export type SimulationState = {
   gravity: [number, number, number];
   speedMultiplier: number;
   simulationTimeMs: number;
+  /** Saved experiment configuration; measured runtime results are not persisted. */
+  forceExperiment?: ForceExperimentConfig;
+  /** Optional finite experiment window; the final pose is held on completion. */
+  durationMs?: number;
 };
 
 export type AppMode = 'modeller' | 'simulator';

@@ -1,24 +1,26 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-11T21:25:58.517Z",
+  "generatedAt": "2026-09-11T22:35:40.318Z",
   "method": "Actual OCCT-rebuilt meshes, exact CAD mass tensors and principal frames, shipped physicsWorker.ts through Comlink and Rapier WASM. No analytic proxy geometry. Independent pose/anchor and relative angular-velocity reconstruction. Browser rendering is a separate acceptance step.",
-  "physicsWorkerSha256": "d2c57b9cfd8140a3e4526e4903e844a4cf99664e7db2e60fffa3d0200ccd0a78",
-  "durationSeconds": 15,
+  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "defaultMotorDurationSeconds": 15,
   "settledSampleWindowSeconds": [
     5,
     15
   ],
   "measurementCadence": {
     "angularVelocity": "Production diagnostics every 60 solver steps: 11 samples per motor at 1-second intervals from 5 through 15 seconds for these 60 Hz fixtures. Reported velocity maxima are sampled maxima, not all-step peaks.",
-    "anchorSeparation": "Every solver step, including startup: 900 samples per joint from the first step through 15 seconds.",
-    "fixedBodyDrift": "Every solver step: 900 samples per fixed body."
+    "anchorSeparation": "Every solver step, including startup; per-fixture duration and solverSteps are recorded below. Prismatic anchors are allowed to separate along their axis; their lateral error is checked.",
+    "fixedBodyDrift": "Every solver step for ground bodies and bodies fixed to ground."
   },
   "thresholds": {
     "windmillAngularSpeedErrorRadPerSec": 5e-7,
     "otherMotorAngularSpeedErrorRadPerSec": 0.02,
     "offAxisRelativeAngvelRadPerSec": 0.03,
     "jointAnchorSeparationMm": 0.1,
-    "fixedPositionDriftMm": 0.001
+    "fixedPositionDriftMm": 0.001,
+    "prismaticMotorTravelErrorMm": 0.1,
+    "prismaticMotorSpeedErrorMmPerSec": 0.05
   },
   "fixtures": {
     "windmill": {
@@ -31,13 +33,15 @@
       "solverSteps": 900,
       "maxFixedPositionDriftMm": 0,
       "maxFixedQuaternionDifference": 0,
+      "durationCapMs": null,
+      "completed": false,
       "solverIterations": 32,
       "nodePerformance": {
         "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
-        "elapsedWallMs": 207.28204200000005,
-        "meanStepRpcMs": 0.2079858833333319,
-        "p95StepRpcMs": 0.49062500000002274,
-        "maxStepRpcMs": 33.97666699999991
+        "elapsedWallMs": 201.056959,
+        "meanStepRpcMs": 0.20540826666666664,
+        "p95StepRpcMs": 0.5818329999999605,
+        "maxStepRpcMs": 32.52075000000002
       },
       "maxWindmillAbsoluteSpeedErrorRadPerSec": 8.74227827907248e-8,
       "joints": {
@@ -51,7 +55,9 @@
           "maxAnchorSeparationMm": 2.5437196195455494e-9,
           "maxDiagnosticReconstructionDifferenceRadPerSec": 0
         }
-      }
+      },
+      "prismaticJoints": {},
+      "sphericalJoints": {}
     },
     "orrery": {
       "fixturePath": "artifacts/kineticad/public/demos/orrery.json",
@@ -63,13 +69,15 @@
       "solverSteps": 900,
       "maxFixedPositionDriftMm": 0,
       "maxFixedQuaternionDifference": 0,
+      "durationCapMs": null,
+      "completed": false,
       "solverIterations": 32,
       "nodePerformance": {
         "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
-        "elapsedWallMs": 349.87420799999984,
-        "meanStepRpcMs": 0.35893735444444624,
-        "p95StepRpcMs": 0.6645409999999856,
-        "maxStepRpcMs": 8.698957999999948
+        "elapsedWallMs": 329.2029590000001,
+        "meanStepRpcMs": 0.33821737555555426,
+        "p95StepRpcMs": 0.5205410000000938,
+        "maxStepRpcMs": 9.462207999999919
       },
       "joints": {
         "mate-planet-1": {
@@ -192,7 +200,9 @@
           "maxAnchorSeparationMm": 1.5074005235058293e-7,
           "maxDiagnosticReconstructionDifferenceRadPerSec": 0
         }
-      }
+      },
+      "prismaticJoints": {},
+      "sphericalJoints": {}
     },
     "gyroscope": {
       "fixturePath": "artifacts/kineticad/public/demos/gyroscope.json",
@@ -204,13 +214,15 @@
       "solverSteps": 900,
       "maxFixedPositionDriftMm": 0,
       "maxFixedQuaternionDifference": 0,
+      "durationCapMs": null,
+      "completed": false,
       "solverIterations": 32,
       "nodePerformance": {
         "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
-        "elapsedWallMs": 141.491041,
-        "meanStepRpcMs": 0.14561259111110986,
-        "p95StepRpcMs": 0.24374999999986358,
-        "maxStepRpcMs": 1.3282500000000255
+        "elapsedWallMs": 148.2002910000001,
+        "meanStepRpcMs": 0.15301927222222503,
+        "p95StepRpcMs": 0.24883299999987685,
+        "maxStepRpcMs": 2.0077920000001086
       },
       "joints": {
         "gyro-yaw": {
@@ -243,7 +255,9 @@
           "maxAnchorSeparationMm": 5.268356063861754e-9,
           "maxDiagnosticReconstructionDifferenceRadPerSec": 0
         }
-      }
+      },
+      "prismaticJoints": {},
+      "sphericalJoints": {}
     },
     "kinetic-mobile": {
       "fixturePath": "artifacts/kineticad/public/demos/kinetic-mobile.json",
@@ -255,13 +269,15 @@
       "solverSteps": 900,
       "maxFixedPositionDriftMm": 0,
       "maxFixedQuaternionDifference": 0,
+      "durationCapMs": null,
+      "completed": false,
       "solverIterations": 32,
       "nodePerformance": {
         "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
-        "elapsedWallMs": 168.1577910000001,
-        "meanStepRpcMs": 0.17669366888888868,
-        "p95StepRpcMs": 0.25,
-        "maxStepRpcMs": 0.7317920000000413
+        "elapsedWallMs": 176.716459,
+        "meanStepRpcMs": 0.18567781000000247,
+        "p95StepRpcMs": 0.29420799999979863,
+        "maxStepRpcMs": 0.95637499999998
       },
       "joints": {
         "mobile-crown": {
@@ -334,27 +350,269 @@
           "maxAnchorSeparationMm": 0.00005013713978304001,
           "maxDiagnosticReconstructionDifferenceRadPerSec": 0
         }
-      }
+      },
+      "prismaticJoints": {},
+      "sphericalJoints": {}
     },
     "material-studio": {
       "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
-      "fixtureSha256": "6c63fc4b60d532bd6193ae252529c8842b510bc292896756746e0f32a7102fbd",
+      "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
       "bodyCount": 9,
       "jointCount": 8,
-      "meshVertices": 2664,
-      "actualTimeMs": 14999.999999999813,
-      "solverSteps": 900,
+      "meshVertices": 2952,
+      "actualTimeMs": 2000.0000000000034,
+      "solverSteps": 120,
       "maxFixedPositionDriftMm": 0,
       "maxFixedQuaternionDifference": 0,
+      "durationCapMs": 2000,
+      "completed": true,
+      "forceExperiment": {
+        "kind": "equal-force",
+        "partIds": [
+          "material-sample-1",
+          "material-sample-2",
+          "material-sample-3",
+          "material-sample-4",
+          "material-sample-5",
+          "material-sample-6",
+          "material-sample-7",
+          "material-sample-8"
+        ],
+        "forceN": 0.001,
+        "direction": [
+          0,
+          1,
+          0
+        ],
+        "durationMs": 2000,
+        "scope": "Force application, finite solver readouts and stop checked here; independent F/m and displacement gates are in material-force-results.json."
+      },
       "solverIterations": 32,
       "nodePerformance": {
         "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
-        "elapsedWallMs": 132.75074999999993,
-        "meanStepRpcMs": 0.13792191777778043,
-        "p95StepRpcMs": 0.1881660000001375,
-        "maxStepRpcMs": 0.5957499999999527
+        "elapsedWallMs": 29.819917000000032,
+        "meanStepRpcMs": 0.20147915000000768,
+        "p95StepRpcMs": 0.31616699999995035,
+        "maxStepRpcMs": 1.962582999999995
       },
-      "joints": {}
+      "joints": {},
+      "prismaticJoints": {
+        "material-guide-1": {
+          "name": "Aluminium 6061 · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 73.72072410583496,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-2": {
+          "name": "Steel 1018 · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 25.292190551757812,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-3": {
+          "name": "Brass C36000 · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 23.417579650878906,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-4": {
+          "name": "Titanium Grade 5 · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 44.93229675292969,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-5": {
+          "name": "Nylon 6 · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 174.60318756103516,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-6": {
+          "name": "PLA · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 159.24069213867188,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-7": {
+          "name": "ABS · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 191.39683532714844,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        },
+        "material-guide-8": {
+          "name": "Acrylic · frictionless guide",
+          "targetVelocityMmPerSec": null,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 168.6836166381836,
+          "maxLateralErrorMm": 0,
+          "maxTravelErrorMm": 0,
+          "maxMotorSpeedErrorMmPerSec": 0,
+          "motorSamples": 0
+        }
+      },
+      "sphericalJoints": {}
+    },
+    "stewart-platform": {
+      "fixturePath": "artifacts/kineticad/public/demos/stewart-platform.json",
+      "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+      "bodyCount": 14,
+      "jointCount": 18,
+      "meshVertices": 10248,
+      "actualTimeMs": 6000.00000000002,
+      "solverSteps": 360,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "durationCapMs": 6000,
+      "completed": true,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 512.5269999999998,
+        "meanStepRpcMs": 1.3779150416666672,
+        "p95StepRpcMs": 1.8109170000000177,
+        "maxStepRpcMs": 7.456749999999829
+      },
+      "joints": {},
+      "prismaticJoints": {
+        "stewart-slider-1": {
+          "name": "Leg 1 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.997861843738253,
+          "maxLateralErrorMm": 0.00003153837293806357,
+          "maxTravelErrorMm": 0.007836918487506672,
+          "maxMotorSpeedErrorMmPerSec": 0.005947108900281606,
+          "motorSamples": 6
+        },
+        "stewart-slider-2": {
+          "name": "Leg 2 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.994476689621239,
+          "maxLateralErrorMm": 0.000023780688870959495,
+          "maxTravelErrorMm": 0.011266861792258887,
+          "maxMotorSpeedErrorMmPerSec": 0.003778017313229576,
+          "motorSamples": 6
+        },
+        "stewart-slider-3": {
+          "name": "Leg 3 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.997261886750206,
+          "maxLateralErrorMm": 0.00003096158607975097,
+          "maxTravelErrorMm": 0.008403976697842985,
+          "maxMotorSpeedErrorMmPerSec": 0.009435669292773508,
+          "motorSamples": 6
+        },
+        "stewart-slider-4": {
+          "name": "Leg 4 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.994743438974917,
+          "maxLateralErrorMm": 0.000024202165653628472,
+          "maxTravelErrorMm": 0.011077618047652393,
+          "maxMotorSpeedErrorMmPerSec": 0.00991003137928459,
+          "motorSamples": 6
+        },
+        "stewart-slider-5": {
+          "name": "Leg 5 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.995996001997554,
+          "maxLateralErrorMm": 0.0000197007837495735,
+          "maxTravelErrorMm": 0.009710569942793512,
+          "maxMotorSpeedErrorMmPerSec": 0.010986400638905991,
+          "motorSamples": 6
+        },
+        "stewart-slider-6": {
+          "name": "Leg 6 · +2 mm/s extension",
+          "targetVelocityMmPerSec": 2,
+          "initialExtensionMm": 0,
+          "finalExtensionMm": 11.9962517614312,
+          "maxLateralErrorMm": 0.000029062034843674418,
+          "maxTravelErrorMm": 0.009492098818664196,
+          "maxMotorSpeedErrorMmPerSec": 0.010006650676855244,
+          "motorSamples": 6
+        }
+      },
+      "sphericalJoints": {
+        "stewart-base-ball-1": {
+          "name": "Leg 1 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.00001082484551345935
+        },
+        "stewart-deck-ball-1": {
+          "name": "Leg 1 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.000027374147486362288
+        },
+        "stewart-base-ball-2": {
+          "name": "Leg 2 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.000010675547474638785
+        },
+        "stewart-deck-ball-2": {
+          "name": "Leg 2 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.00003242382567369374
+        },
+        "stewart-base-ball-3": {
+          "name": "Leg 3 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.00001144412630674541
+        },
+        "stewart-deck-ball-3": {
+          "name": "Leg 3 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.000033556219908952256
+        },
+        "stewart-base-ball-4": {
+          "name": "Leg 4 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.000011444126335191715
+        },
+        "stewart-deck-ball-4": {
+          "name": "Leg 4 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.000031057592587294086
+        },
+        "stewart-base-ball-5": {
+          "name": "Leg 5 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.000010675547478428595
+        },
+        "stewart-deck-ball-5": {
+          "name": "Leg 5 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.000028565454496900176
+        },
+        "stewart-base-ball-6": {
+          "name": "Leg 6 · base spherical bearing",
+          "maxAnchorSeparationMm": 0.000010698074416769874
+        },
+        "stewart-deck-ball-6": {
+          "name": "Leg 6 · deck spherical bearing",
+          "maxAnchorSeparationMm": 0.00003229281758964175
+        }
+      }
     }
   },
   "rapierVersion": "0.12.0",

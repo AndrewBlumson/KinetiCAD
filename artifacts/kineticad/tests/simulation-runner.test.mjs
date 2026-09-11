@@ -21,6 +21,9 @@ const adapterModules = {
 };
 const hooks = registerHooks({
   resolve(specifier, context, nextResolve) {
+    if (['./forceMeasurements', './poseMeasurements'].includes(specifier) && context.parentURL?.includes('/src/physics/simulationRunner.ts')) {
+      return { url: new URL(`../src/physics/${specifier.slice(2)}.ts`, import.meta.url).href, shortCircuit: true };
+    }
     if (context.parentURL?.includes('/src/physics/simulationRunner.ts') && adapterModules[specifier]) {
       return { url: `data:text/javascript,${encodeURIComponent(adapterModules[specifier])}`, shortCircuit: true };
     }
@@ -110,6 +113,19 @@ test('runner permits one in-flight step, retains elapsed time, and counts actual
   await flush();
   assert.equal(harness.maxSimultaneousSteps, 1);
   assert.equal(harness.store.getState().simulation.simulationTimeMs, 30);
+});
+
+test('finite experiments hold the final solver pose and clock instead of resetting the model', async () => {
+  await runningStep();
+  harness.pending[0].resolve({ ...stepResult(10), simulatedTimeMs:10, completed:true });
+  await flush();
+  assert.equal(harness.store.getState().simulation.running,true);
+  assert.equal(harness.store.getState().simulation.paused,true);
+  assert.equal(harness.store.getState().simulation.simulationTimeMs,10);
+  assert.equal(harness.poses.length,1);
+  harness.frame(3000);
+  await flush();
+  assert.equal(harness.pending.length,1);
 });
 
 test('late RPC response cannot move the paused pose or clock; resume preserves its actual time', async () => {

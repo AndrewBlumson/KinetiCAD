@@ -1,0 +1,1567 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T22:36:00.605Z",
+  "method": "Every pair of the 14 actual OCCT B-rep solids is intersected at the initial fixture pose and at the measured six-second final physics pose. The final pose comes from the shipped Rapier worker, including its residual translations and rotations; no ideal pose is substituted.",
+  "limitations": "These 182 endpoint pair checks establish sampled geometric noninterference only, not continuous collision detection or contact forces. Separate stewart-geometry.test.mjs checks conservative leg capsules at 61 intermediate analytic poses. Spherical bearings and actuator drives are ideal joints; bearing retention, seals, friction, load ratings and manufacturing tolerances are not modeled.",
+  "fixturePath": "artifacts/kineticad/public/demos/stewart-platform.json",
+  "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+  "measurementPath": "docs/stewart-physics-results.json",
+  "measurementReportSha256": "6892bda7d977d10696d461f2bc8a871d9d9d17f7f4d0f4e64bad5714fd0c89fb",
+  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "geometrySourceSha256": {
+    "sketchToWire": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
+    "extrude": "246cd2b8a684788ec12571c6194e060655468d5f8d18d70eaf4896acb3cd2fe9",
+    "revolve": "7f88bc12ed3f805864ba865c972ef9c3d2dd96299759471213b24cc8ee2752ad",
+    "boolean": "d9a1bbe49028a173efeac5e45851974df6038a594ff79f482ca2285912dcf240"
+  },
+  "durationMs": 6000,
+  "overlapToleranceMm3": 0.00001,
+  "solids": [
+    {
+      "partId": "stewart-base",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 430734.9722742667
+    },
+    {
+      "partId": "stewart-platform",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 213050.2473958452
+    },
+    {
+      "partId": "stewart-barrel-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.1929402291125
+    },
+    {
+      "partId": "stewart-barrel-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "partId": "stewart-barrel-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.1929402291125
+    },
+    {
+      "partId": "stewart-barrel-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "partId": "stewart-barrel-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "partId": "stewart-barrel-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "partId": "stewart-rod-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    }
+  ],
+  "poses": [
+    {
+      "phase": "initial",
+      "transforms": [
+        {
+          "partId": "stewart-base",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationMatrix": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "stewart-platform",
+          "positionMm": [
+            0,
+            0,
+            160
+          ],
+          "rotationMatrix": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "stewart-barrel-1",
+          "positionMm": [
+            106.25184089179751,
+            28.470094961277283,
+            12
+          ],
+          "rotationMatrix": [
+            0.9424587282921225,
+            0,
+            -0.33432251713875805,
+            0.05473731052828943,
+            0.9865058414883673,
+            0.15430506001248967,
+            0.3298111160984796,
+            -0.16372606606563422,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-rod-1",
+          "positionMm": [
+            106.25184089179751,
+            28.470094961277283,
+            12
+          ],
+          "rotationMatrix": [
+            0.9424587282921225,
+            0,
+            -0.33432251713875805,
+            0.05473731052828943,
+            0.9865058414883673,
+            0.15430506001248967,
+            0.3298111160984796,
+            -0.16372606606563422,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-barrel-2",
+          "positionMm": [
+            -28.470094961277294,
+            106.25184089179751,
+            12
+          ],
+          "rotationMatrix": [
+            0.9536893384617204,
+            0,
+            0.30079336047267735,
+            0.06698436231169344,
+            0.9748887854000007,
+            -0.21237926289307799,
+            -0.293240073847593,
+            0.22269229017034098,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-rod-2",
+          "positionMm": [
+            -28.470094961277294,
+            106.25184089179751,
+            12
+          ],
+          "rotationMatrix": [
+            0.9536893384617204,
+            0,
+            0.30079336047267735,
+            0.06698436231169344,
+            0.9748887854000007,
+            -0.21237926289307799,
+            -0.293240073847593,
+            0.22269229017034098,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-barrel-3",
+          "positionMm": [
+            -77.78174593052022,
+            77.78174593052023,
+            12
+          ],
+          "rotationMatrix": [
+            0.999437739758341,
+            0,
+            0.03352915666608054,
+            0.012301532772485873,
+            0.9302640913346774,
+            -0.3666843229055675,
+            -0.031190970459189456,
+            0.3668906109091197,
+            0.9297410408218769
+          ]
+        },
+        {
+          "partId": "stewart-rod-3",
+          "positionMm": [
+            -77.78174593052022,
+            77.78174593052023,
+            12
+          ],
+          "rotationMatrix": [
+            0.999437739758341,
+            0,
+            0.03352915666608054,
+            0.012301532772485873,
+            0.9302640913346774,
+            -0.3666843229055675,
+            -0.031190970459189456,
+            0.3668906109091197,
+            0.9297410408218769
+          ]
+        },
+        {
+          "partId": "stewart-barrel-4",
+          "positionMm": [
+            -77.78174593052024,
+            -77.78174593052022,
+            12
+          ],
+          "rotationMatrix": [
+            0.999437739758341,
+            0,
+            0.033529156666080626,
+            -0.012301532772485912,
+            0.9302640913346772,
+            0.3666843229055678,
+            -0.03119097045918953,
+            -0.36689061090911995,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-rod-4",
+          "positionMm": [
+            -77.78174593052024,
+            -77.78174593052022,
+            12
+          ],
+          "rotationMatrix": [
+            0.999437739758341,
+            0,
+            0.033529156666080626,
+            -0.012301532772485912,
+            0.9302640913346772,
+            0.3666843229055678,
+            -0.03119097045918953,
+            -0.36689061090911995,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-barrel-5",
+          "positionMm": [
+            -28.47009496127727,
+            -106.25184089179751,
+            12
+          ],
+          "rotationMatrix": [
+            0.9536893384617204,
+            0,
+            0.30079336047267735,
+            -0.06698436231169344,
+            0.9748887854000007,
+            0.21237926289307799,
+            -0.293240073847593,
+            -0.22269229017034098,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-rod-5",
+          "positionMm": [
+            -28.47009496127727,
+            -106.25184089179751,
+            12
+          ],
+          "rotationMatrix": [
+            0.9536893384617204,
+            0,
+            0.30079336047267735,
+            -0.06698436231169344,
+            0.9748887854000007,
+            0.21237926289307799,
+            -0.293240073847593,
+            -0.22269229017034098,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-barrel-6",
+          "positionMm": [
+            106.25184089179751,
+            -28.470094961277276,
+            12
+          ],
+          "rotationMatrix": [
+            0.9424587282921225,
+            0,
+            -0.33432251713875805,
+            -0.05473731052828946,
+            0.9865058414883673,
+            -0.15430506001248975,
+            0.3298111160984796,
+            0.1637260660656343,
+            0.9297410408218768
+          ]
+        },
+        {
+          "partId": "stewart-rod-6",
+          "positionMm": [
+            106.25184089179751,
+            -28.470094961277276,
+            12
+          ],
+          "rotationMatrix": [
+            0.9424587282921225,
+            0,
+            -0.33432251713875805,
+            -0.05473731052828946,
+            0.9865058414883673,
+            -0.15430506001248975,
+            0.3298111160984796,
+            0.1637260660656343,
+            0.9297410408218768
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-platform",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-5",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-5",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-6",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        }
+      ]
+    },
+    {
+      "phase": "measured-final",
+      "transforms": [
+        {
+          "partId": "stewart-base",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationMatrix": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "stewart-platform",
+          "positionMm": [
+            -0.0030624293722212315,
+            -0.0009488214273005724,
+            172.8324737548828
+          ],
+          "rotationMatrix": [
+            0.9999999992215673,
+            -0.00003945689238474575,
+            -1.3780937338249733e-7,
+            0.00003945689240326317,
+            0.9999999992215678,
+            1.34369666453929e-7,
+            1.3780407146575303e-7,
+            -1.3437510387894898e-7,
+            0.9999999999999815
+          ]
+        },
+        {
+          "partId": "stewart-barrel-1",
+          "positionMm": [
+            106.25183868408203,
+            28.470096588134766,
+            12.000000953674316
+          ],
+          "rotationMatrix": [
+            0.9504276889319265,
+            -0.00396092609539174,
+            -0.310920438659127,
+            0.05106205513873621,
+            0.9883326077570749,
+            0.14349676989085391,
+            0.3067244278444835,
+            -0.15225953995913316,
+            0.9395409293133042
+          ]
+        },
+        {
+          "partId": "stewart-rod-1",
+          "positionMm": [
+            102.5214614868164,
+            30.19174575805664,
+            23.272485733032227
+          ],
+          "rotationMatrix": [
+            0.950427655965608,
+            -0.003960911297089701,
+            -0.31092053961971794,
+            0.051062054021424,
+            0.9883326090346152,
+            0.14349676148939258,
+            0.30672453018112716,
+            -0.15225953205145162,
+            0.939540897185769
+          ]
+        },
+        {
+          "partId": "stewart-barrel-2",
+          "positionMm": [
+            -28.4700927734375,
+            106.25183868408203,
+            12
+          ],
+          "rotationMatrix": [
+            0.9600803801439872,
+            -0.004850768956176893,
+            0.27968220126263077,
+            0.06247651747537113,
+            0.9783102149664876,
+            -0.19749888115220926,
+            -0.2726579329979719,
+            0.20708837082936027,
+            0.9395595022352309
+          ]
+        },
+        {
+          "partId": "stewart-rod-2",
+          "positionMm": [
+            -25.115449905395508,
+            103.88294982910156,
+            23.2695255279541
+          ],
+          "rotationMatrix": [
+            0.9600803801309384,
+            -0.00485076632289886,
+            0.2796822013530954,
+            0.0624765557367662,
+            0.9783101840537883,
+            -0.19749902217457585,
+            -0.2726579242767455,
+            0.20708851692627353,
+            0.939559472564868
+          ]
+        },
+        {
+          "partId": "stewart-barrel-3",
+          "positionMm": [
+            -77.78174591064453,
+            77.78174591064453,
+            12
+          ],
+          "rotationMatrix": [
+            0.99951411447528,
+            -0.000880776542684575,
+            0.031157008800246407,
+            0.011458263809403447,
+            0.9399907300257219,
+            -0.3410075302045171,
+            -0.028986948014078518,
+            0.3411988448081153,
+            0.9395440943066147
+          ]
+        },
+        {
+          "partId": "stewart-rod-3",
+          "positionMm": [
+            -77.40795135498047,
+            73.69058227539062,
+            23.271953582763672
+          ],
+          "rotationMatrix": [
+            0.9995141155021458,
+            -0.000880772807343012,
+            0.0311569759640626,
+            0.011458245092651429,
+            0.939990777163799,
+            -0.3410074008968043,
+            -0.028986920004720387,
+            0.34119871495399706,
+            0.9395441423277466
+          ]
+        },
+        {
+          "partId": "stewart-barrel-4",
+          "positionMm": [
+            -77.78174591064453,
+            -77.78174591064453,
+            11.999999046325684
+          ],
+          "rotationMatrix": [
+            0.9995138090451087,
+            0.0008949332346566393,
+            0.031166402144672367,
+            -0.011473567850655127,
+            0.9400048585164832,
+            0.3409680677221592,
+            -0.02899142578270935,
+            -0.34115988196139363,
+            0.9395581047339082
+          ]
+        },
+        {
+          "partId": "stewart-rod-4",
+          "positionMm": [
+            -77.40789031982422,
+            -73.69192504882812,
+            23.269758224487305
+          ],
+          "rotationMatrix": [
+            0.9995138168391671,
+            0.0008949774327420505,
+            0.031166150917217368,
+            -0.01147352028762302,
+            0.9400048983423603,
+            0.34096795952783937,
+            -0.02899117589559605,
+            -0.3411597721123692,
+            0.9395581523314174
+          ]
+        },
+        {
+          "partId": "stewart-barrel-5",
+          "positionMm": [
+            -28.4700927734375,
+            -106.25183868408203,
+            12.000000953674316
+          ],
+          "rotationMatrix": [
+            0.9600713564377247,
+            0.004855883035624356,
+            0.27971308683680096,
+            -0.062487536217910145,
+            0.978310296760778,
+            0.19749498998519915,
+            -0.2726871804196941,
+            -0.20708786456908307,
+            0.9395511257951716
+          ]
+        },
+        {
+          "partId": "stewart-rod-5",
+          "positionMm": [
+            -25.114662170410156,
+            -103.88268280029297,
+            23.27085304260254
+          ],
+          "rotationMatrix": [
+            0.9600713366805961,
+            0.004855975899992912,
+            0.2797131530378796,
+            -0.06248764074717163,
+            0.9783102935397137,
+            0.19749497286789758,
+            -0.2726872260267905,
+            -0.20708787760827013,
+            0.9395511096845749
+          ]
+        },
+        {
+          "partId": "stewart-barrel-6",
+          "positionMm": [
+            106.25183868408203,
+            -28.470096588134766,
+            12
+          ],
+          "rotationMatrix": [
+            0.9504346785333192,
+            0.003969814298198489,
+            -0.31089895853107,
+            -0.051063736843407724,
+            0.9883342737061253,
+            -0.1434846967358302,
+            0.30670248877512124,
+            0.15224849421988967,
+            0.939549881265983
+          ]
+        },
+        {
+          "partId": "stewart-rod-6",
+          "positionMm": [
+            102.52222442626953,
+            -30.19137191772461,
+            23.271080017089844
+          ],
+          "rotationMatrix": [
+            0.950434671767832,
+            0.0039697261573098,
+            -0.3108989803389669,
+            -0.05106366687179259,
+            0.9883342693119186,
+            -0.14348475190515048,
+            0.3067025213903204,
+            0.15224852504346953,
+            0.9395498656244425
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-platform",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-base",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-platform",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-1",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-2",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-3",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-barrel-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-4",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-rod-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-5",
+          "partB": "stewart-barrel-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-rod-5",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "stewart-barrel-6",
+          "partB": "stewart-rod-6",
+          "intersectionVolumeMm3": 0
+        }
+      ]
+    }
+  ],
+  "totalPairChecks": 182,
+  "maxIntersectionVolumeMm3": 0,
+  "failures": [],
+  "passed": true
+}

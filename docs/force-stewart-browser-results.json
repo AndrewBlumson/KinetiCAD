@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-11",
+  "route": "http://localhost:5184/app/simulator",
+  "browser": "Chrome",
+  "viewportCssPx": [
+    1470,
+    685
+  ],
+  "bundles": {
+    "cad": "cadWorker-vhcso9P8.js",
+    "physics": "physicsWorker-CaLcPm-G.js",
+    "scene": "Scene-C4W79P0P.js",
+    "simulator": "Simulator-Clia6CnL.js"
+  },
+  "sourceHashes": {
+    "artifacts/kineticad/src/physics/physicsWorker.ts": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+    "artifacts/kineticad/src/physics/simulationRunner.ts": "862defabed08752be2fbfb80d3d3a6be644dc0bb55255f9333ce3584441cc040",
+    "artifacts/kineticad/src/cad/operations/sketchToWire.ts": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
+    "artifacts/kineticad/public/demos/material-studio.json": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+    "artifacts/kineticad/public/demos/stewart-platform.json": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4"
+  },
+  "method": "Actual gallery, modeller and simulator controls exercised in Chrome. Rendered viewport inspected alongside visible readouts and worker DevTools logs. Browser samples are distinct from every-step independent worker reports.",
+  "gallery": {
+    "cards": 6,
+    "desktopColumns": 3,
+    "rows": 2,
+    "illustrationsInspected": true
+  },
+  "fileControls": {
+    "visibleLabels": [
+      "Export STL",
+      "Import STEP",
+      "Export STEP",
+      "Save project",
+      "Load project"
+    ],
+    "keyboardTooltipsVerified": true,
+    "disabledLoadExplanationViaTabVerified": true,
+    "note": "This update checks labels and tooltips; original STEP/STL/save/load functional evidence is retained separately as historical baseline."
+  },
+  "material": {
+    "shapeCount": 8,
+    "guideCount": 8,
+    "allEightReadoutsVisible": true,
+    "durationSeconds": 2,
+    "forceNewtons": [
+      0.001,
+      0.0005
+    ],
+    "finalDisplacementMmAt1mN": [
+      73.72,
+      25.29,
+      23.42,
+      44.93,
+      174.6,
+      159.24,
+      191.4,
+      168.68
+    ],
+    "finalDisplacementMmAtHalfmN": [
+      36.86,
+      12.65,
+      11.71,
+      22.47,
+      87.3,
+      79.62,
+      95.7,
+      84.34
+    ],
+    "measuredAccelerationMmPerSec2AtHalfmN": [
+      18.43,
+      6.32,
+      5.85,
+      11.23,
+      43.64,
+      39.8,
+      47.84,
+      42.16
+    ],
+    "pauseHeldAtSeconds": 1.82,
+    "resumeVerified": true,
+    "forceChangeResetsReadings": true,
+    "replayVerified": true,
+    "finalPoseHeld": true,
+    "note": "Rounded UI readings. Full and half force plus pause first checked on Scene-B0o527pg.js using the identical physics worker; final half-force run and eight-row fit repeated on Scene-C4W79P0P.js."
+  },
+  "stewart": {
+    "bodies": 14,
+    "joints": 18,
+    "durationSeconds": 6,
+    "initialAndMovingAndFinalViewportInspected": true,
+    "finalDisplay": {
+      "heightMm": 172.832,
+      "riseMm": 12.832,
+      "sidewaysDriftMm": 0.003,
+      "tiltDeg": 0.0
+    },
+    "calculatedFinalHeightMm": 172.83662094518425,
+    "sliderSpeedsAt6SecondsMmPerSec": [
+      2.0055236241673984,
+      2.00230886587853,
+      2.0004351457260876,
+      2.003405857195724,
+      1.9987543583040608,
+      1.9965977846512928
+    ],
+    "replayResetAndFinalHoldVerified": true,
+    "note": "Deck display uses actual solver pose and rounds to three decimals. Zero displayed tilt does not mean exact zero; independent report records nonzero angular residual."
+  },
+  "windmill": {
+    "settledSamples": 22,
+    "intervalSimulatedSeconds": [
+      5,
+      26
+    ],
+    "measuredMagnitudeRadPerSec": 3.1415927410125732,
+    "maximumMagnitudeErrorRadPerSec": 8.742279122841978e-08,
+    "unchangedAcceptanceErrorRadPerSec": 5e-07,
+    "passed": true,
+    "rotationVisuallyObserved": true
+  },
+  "limits": [
+    "Local production build only; Replit republish and public route verification remain outstanding.",
+    "Rigid solids, ideal joints, prescribed motor targets; no contacts, friction, deformation or torque ratings.",
+    "No claim of arbitrary six-axis Stewart trajectory control or manufactured bearing retention."
+  ]
+}

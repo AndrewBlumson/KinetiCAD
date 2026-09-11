@@ -1,0 +1,2547 @@
+{
+  "version": 9,
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "asm-stewart-platform",
+      "name": "Stewart platform · six-actuator parallel mechanism",
+      "groundPartId": "stewart-base",
+      "booleanFeatures": [],
+      "parts": [
+        {
+          "id": "stewart-base",
+          "name": "Steel base · six spherical bearing seats",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-base-1",
+              "name": "Machined annular plate stock",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 130,
+                  "centre": [
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-2",
+              "name": "Central access aperture",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 72,
+                  "centre": [
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-3",
+              "name": "Spherical-end seat 1 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    106.25184089179751,
+                    28.470094961277283
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-4",
+              "name": "Mounting hole 1 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    119.77480245984447,
+                    32.093561592712575
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-5",
+              "name": "Spherical-end seat 2 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -28.470094961277294,
+                    106.25184089179751
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-6",
+              "name": "Mounting hole 2 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -32.09356159271261,
+                    119.77480245984445
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-7",
+              "name": "Spherical-end seat 3 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -77.78174593052022,
+                    77.78174593052023
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-8",
+              "name": "Mounting hole 3 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -87.68124086713189,
+                    87.6812408671319
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-9",
+              "name": "Spherical-end seat 4 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -77.78174593052024,
+                    -77.78174593052022
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-10",
+              "name": "Mounting hole 4 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -87.68124086713189,
+                    -87.6812408671319
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-11",
+              "name": "Spherical-end seat 5 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -28.47009496127727,
+                    -106.25184089179751
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-12",
+              "name": "Mounting hole 5 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -32.09356159271256,
+                    -119.77480245984447
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-13",
+              "name": "Spherical-end seat 6 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    106.25184089179751,
+                    -28.470094961277276
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-base-14",
+              "name": "Mounting hole 6 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    119.77480245984447,
+                    -32.09356159271257
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-base-1",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-1",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-stewart-base-2",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-2",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-3",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-3",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-4",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-4",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-5",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-5",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-6",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-6",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-7",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-7",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-8",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-8",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-9",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-9",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-10",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-10",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-11",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-11",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-12",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-12",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-13",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-13",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-base-14",
+              "type": "extrude",
+              "sketchId": "sk-stewart-base-14",
+              "depthMm": 14,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "stewart-platform",
+          "name": "Moving aluminium payload deck",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              160
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-platform-1",
+              "name": "Machined annular plate stock",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 94,
+                  "centre": [
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-2",
+              "name": "Central access aperture",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 42,
+                  "centre": [
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-3",
+              "name": "Spherical-end seat 1 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    53.033008588991066,
+                    53.03300858899106
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-4",
+              "name": "Mounting hole 1 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    61.51828996322964,
+                    61.51828996322963
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-5",
+              "name": "Spherical-end seat 2 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    19.411428382689056,
+                    72.44443697168012
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-6",
+              "name": "Mounting hole 2 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    22.517256923919305,
+                    84.03554688714894
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-7",
+              "name": "Spherical-end seat 3 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -72.44443697168012,
+                    19.411428382689078
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-8",
+              "name": "Mounting hole 3 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -84.03554688714894,
+                    22.51725692391933
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-9",
+              "name": "Spherical-end seat 4 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    -72.44443697168013,
+                    -19.411428382689028
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-10",
+              "name": "Mounting hole 4 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    -84.03554688714894,
+                    -22.51725692391929
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-11",
+              "name": "Spherical-end seat 5 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    19.411428382689085,
+                    -72.44443697168012
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-12",
+              "name": "Mounting hole 5 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    22.517256923919344,
+                    -84.03554688714894
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-13",
+              "name": "Spherical-end seat 6 · 0.6 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 6.6,
+                  "centre": [
+                    53.03300858899105,
+                    -53.03300858899107
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sk-stewart-platform-14",
+              "name": "Mounting hole 6 · Ø4.4 mm",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "radius": 2.2,
+                  "centre": [
+                    61.51828996322962,
+                    -61.51828996322965
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-platform-1",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-1",
+              "depthMm": 10,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-stewart-platform-2",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-2",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-3",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-3",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-4",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-4",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-5",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-5",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-6",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-6",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-7",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-7",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-8",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-8",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-9",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-9",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-10",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-10",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-11",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-11",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-12",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-12",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-13",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-13",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-stewart-platform-14",
+              "type": "extrude",
+              "sketchId": "sk-stewart-platform-14",
+              "depthMm": 12,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-1",
+          "name": "Actuator 1 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "brass-c36000",
+          "transform": {
+            "positionMm": [
+              106.25184089179751,
+              28.470094961277283,
+              12
+            ],
+            "rotationDeg": [
+              -9.423237054118236,
+              -19.53134583571483,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-1-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-1-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-1-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-1",
+          "name": "Actuator 1 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              106.25184089179751,
+              28.470094961277283,
+              12
+            ],
+            "rotationDeg": [
+              -9.423237054118236,
+              -19.53134583571483,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-1-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.71197392270386
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770343
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770343
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-1-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-1-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-2",
+          "name": "Actuator 2 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              -28.470094961277294,
+              106.25184089179751,
+              12
+            ],
+            "rotationDeg": [
+              12.867213534908581,
+              17.505260414589696,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-2-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-2-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-2-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-2",
+          "name": "Actuator 2 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              -28.470094961277294,
+              106.25184089179751,
+              12
+            ],
+            "rotationDeg": [
+              12.867213534908581,
+              17.505260414589696,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-2-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.7119739227039
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770346
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770346
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-2-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-2-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-3",
+          "name": "Actuator 3 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "brass-c36000",
+          "transform": {
+            "positionMm": [
+              -77.78174593052022,
+              77.78174593052023,
+              12
+            ],
+            "rotationDeg": [
+              21.523980534189796,
+              1.9214392974076557,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-3-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-3-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-3-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-3",
+          "name": "Actuator 3 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              -77.78174593052022,
+              77.78174593052023,
+              12
+            ],
+            "rotationDeg": [
+              21.523980534189796,
+              1.9214392974076557,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-3-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.71197392270386
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770343
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770343
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-3-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-3-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-4",
+          "name": "Actuator 4 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              -77.78174593052024,
+              -77.78174593052022,
+              12
+            ],
+            "rotationDeg": [
+              -21.523980534189814,
+              1.9214392974076606,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-4-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-4-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-4-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-4",
+          "name": "Actuator 4 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              -77.78174593052024,
+              -77.78174593052022,
+              12
+            ],
+            "rotationDeg": [
+              -21.523980534189814,
+              1.9214392974076606,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-4-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.7119739227039
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770346
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770346
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-4-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-4-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-5",
+          "name": "Actuator 5 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "brass-c36000",
+          "transform": {
+            "positionMm": [
+              -28.47009496127727,
+              -106.25184089179751,
+              12
+            ],
+            "rotationDeg": [
+              -12.867213534908581,
+              17.505260414589696,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-5-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-5-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-5-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-5",
+          "name": "Actuator 5 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              -28.47009496127727,
+              -106.25184089179751,
+              12
+            ],
+            "rotationDeg": [
+              -12.867213534908581,
+              17.505260414589696,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-5-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.7119739227039
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770346
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770346
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-5-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-5-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-barrel-6",
+          "name": "Actuator 6 · bored barrel and lower ball",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              106.25184089179751,
+              -28.470094961277276,
+              12
+            ],
+            "rotationDeg": [
+              9.42323705411824,
+              -19.53134583571483,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-barrel-6-turning",
+              "name": "Turned hollow barrel, guide collar and spherical lower end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6,
+                  "startAngle": -1.5707963267948966,
+                  "endAngle": 0.8410686705679303
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    4.47213595499958
+                  ],
+                  "end": [
+                    4,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    10
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    10
+                  ],
+                  "end": [
+                    8,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    8,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    90
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    90
+                  ],
+                  "end": [
+                    9,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    9,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    96
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    96
+                  ],
+                  "end": [
+                    4.5,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4.5,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    16
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    16
+                  ],
+                  "end": [
+                    0,
+                    -6
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-barrel-6-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-barrel-6-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        },
+        {
+          "id": "stewart-rod-6",
+          "name": "Actuator 6 · steel piston rod and upper ball",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              106.25184089179751,
+              -28.470094961277276,
+              12
+            ],
+            "rotationDeg": [
+              9.42323705411824,
+              -19.53134583571483,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-stewart-rod-6-turning",
+              "name": "Piston rod and integral spherical upper end",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    64
+                  ]
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    4,
+                    64
+                  ],
+                  "end": [
+                    4,
+                    154.7119739227039
+                  ]
+                },
+                {
+                  "type": "arc",
+                  "centre": [
+                    0,
+                    159.18410987770346
+                  ],
+                  "radius": 6,
+                  "startAngle": -0.8410686705679303,
+                  "endAngle": 1.5707963267948966
+                },
+                {
+                  "type": "line",
+                  "start": [
+                    0,
+                    165.18410987770346
+                  ],
+                  "end": [
+                    0,
+                    64
+                  ]
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-stewart-rod-6-turning",
+              "type": "revolve",
+              "sketchId": "sk-stewart-rod-6-turning",
+              "axis": "Z",
+              "angleDeg": 360
+            }
+          ]
+        }
+      ],
+      "mates": [
+        {
+          "id": "stewart-base-ball-1",
+          "name": "Leg 1 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-1",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-1-a",
+            "localPoint": [
+              106.25184089179751,
+              28.470094961277283,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-1-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-1",
+          "name": "Leg 1 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-1",
+          "partB": "stewart-rod-1",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-1-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-1-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-1",
+          "name": "Leg 1 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-1",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-1-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770343
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-1-b",
+            "localPoint": [
+              53.033008588991066,
+              53.03300858899106,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-base-ball-2",
+          "name": "Leg 2 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-2",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-2-a",
+            "localPoint": [
+              -28.470094961277294,
+              106.25184089179751,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-2-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-2",
+          "name": "Leg 2 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-2",
+          "partB": "stewart-rod-2",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-2-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-2-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-2",
+          "name": "Leg 2 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-2",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-2-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770346
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-2-b",
+            "localPoint": [
+              19.411428382689056,
+              72.44443697168012,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-base-ball-3",
+          "name": "Leg 3 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-3",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-3-a",
+            "localPoint": [
+              -77.78174593052022,
+              77.78174593052023,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-3-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-3",
+          "name": "Leg 3 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-3",
+          "partB": "stewart-rod-3",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-3-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-3-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-3",
+          "name": "Leg 3 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-3",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-3-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770343
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-3-b",
+            "localPoint": [
+              -72.44443697168012,
+              19.411428382689078,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-base-ball-4",
+          "name": "Leg 4 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-4",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-4-a",
+            "localPoint": [
+              -77.78174593052024,
+              -77.78174593052022,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-4-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-4",
+          "name": "Leg 4 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-4",
+          "partB": "stewart-rod-4",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-4-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-4-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-4",
+          "name": "Leg 4 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-4",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-4-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770346
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-4-b",
+            "localPoint": [
+              -72.44443697168013,
+              -19.411428382689028,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-base-ball-5",
+          "name": "Leg 5 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-5",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-5-a",
+            "localPoint": [
+              -28.47009496127727,
+              -106.25184089179751,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-5-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-5",
+          "name": "Leg 5 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-5",
+          "partB": "stewart-rod-5",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-5-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-5-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-5",
+          "name": "Leg 5 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-5",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-5-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770346
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-5-b",
+            "localPoint": [
+              19.411428382689085,
+              -72.44443697168012,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-base-ball-6",
+          "name": "Leg 6 · base spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-base",
+          "partB": "stewart-barrel-6",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-6-a",
+            "localPoint": [
+              106.25184089179751,
+              -28.470094961277276,
+              12
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-base-ball-6-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "id": "stewart-slider-6",
+          "name": "Leg 6 · +2 mm/s extension",
+          "type": "prismatic",
+          "partA": "stewart-barrel-6",
+          "partB": "stewart-rod-6",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-6-a",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-slider-6-b",
+            "localPoint": [
+              0,
+              0,
+              96
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorVelocityMmPerSec": 2
+        },
+        {
+          "id": "stewart-deck-ball-6",
+          "name": "Leg 6 · deck spherical bearing",
+          "type": "spherical",
+          "partA": "stewart-rod-6",
+          "partB": "stewart-platform",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-6-a",
+            "localPoint": [
+              0,
+              0,
+              159.18410987770346
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "stewart-deck-ball-6-b",
+            "localPoint": [
+              53.03300858899105,
+              -53.03300858899107,
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "simulationTimeMs": 0,
+      "timeStepMs": 16.666666666666668,
+      "gravity": [
+        0,
+        0,
+        0
+      ],
+      "speedMultiplier": 1,
+      "durationMs": 6000
+    }
+  }
+}

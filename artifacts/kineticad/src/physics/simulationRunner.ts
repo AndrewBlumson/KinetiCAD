@@ -30,6 +30,8 @@ import { getPartMeshLayer } from "@/three/partMeshLayerRef";
 import { getSimulationLayer } from "@/three/simulationLayerRef";
 import { getPhysicsKernel } from "./physicsClient";
 import type { PartDescriptor, StepResult, BuildWorldResult, UpdateJointMotorResult } from "./types";
+import { beginForceMeasurements, clearForceMeasurements, publishForceMeasurements } from './forceMeasurements';
+import { clearPoseMeasurements, publishPoseMeasurements } from './poseMeasurements';
 
 /**
  * Walk a part's feature chain and return the tip hash — the same key that
@@ -98,6 +100,10 @@ export function startSimulationRunner(): RunnerHandle {
     if (!ownedSimLayer) return;
     for (const pose of result.transforms) ownedSimLayer.setTransform(pose.partId, pose.positionMm, pose.rotationQuat);
     if (result.dtMs > 0) useKinetiCADStore.getState().tickSimulationTime(result.dtMs);
+    publishForceMeasurements(result);
+    publishPoseMeasurements(result);
+    // Preserve the final measured pose for comparison; Reset explicitly tears it down.
+    if (result.completed) useKinetiCADStore.getState().setSimulationPaused(true);
   };
 
   const tearDownWorld = async () => {
@@ -105,6 +111,8 @@ export function startSimulationRunner(): RunnerHandle {
     worldReady = false;
     pendingTimeMs = 0;
     pausedResult = null;
+    clearForceMeasurements();
+    clearPoseMeasurements();
     if (rafId !== null) {
       cancelAnimationFrame(rafId);
       rafId = null;
@@ -270,15 +278,25 @@ export function startSimulationRunner(): RunnerHandle {
     if (!isCurrent(myToken)) return;
 
     let dispatchedMates: Mate[] = [];
+    let dispatchedExperiment = state.simulation.forceExperiment;
     const result = await queuePhysics<BuildWorldResult | null>((physics) => {
       if (!isCurrent(myToken)) return Promise.resolve(null);
       const latest = useKinetiCADStore.getState();
       dispatchedMates = latest.assembly.mates;
+      dispatchedExperiment = latest.simulation.forceExperiment;
+      if (dispatchedExperiment && latest.simulation.gravity.some((g) => g !== 0)) {
+        throw new Error('The equal-force comparison requires zero gravity. Reset the demo to restore its experiment settings.');
+      }
       return physics.buildWorld({
         parts: descriptors,
         mates: latest.assembly.mates,
         gravity: latest.simulation.gravity,
         timeStepMs: latest.simulation.timeStepMs,
+        ...(dispatchedExperiment ? {
+          appliedForces: dispatchedExperiment.partIds.map((partId) => ({ partId,
+            forceN: dispatchedExperiment!.direction.map((v) => v * dispatchedExperiment!.forceN) as [number, number, number] })),
+          durationMs: dispatchedExperiment.durationMs,
+        } : latest.simulation.durationMs ? { durationMs: latest.simulation.durationMs } : {}),
       });
     });
 
@@ -302,6 +320,7 @@ export function startSimulationRunner(): RunnerHandle {
     );
 
     worldReady = true;
+    beginForceMeasurements(dispatchedExperiment, descriptors);
     // Edits arriving during the build RPC had no ready world to update.
     // Replay that delta before any RAF step can enter the worker FIFO.
     pushChangedMotorUpdates(useKinetiCADStore.getState().assembly.mates, dispatchedMates);

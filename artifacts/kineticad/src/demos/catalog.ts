@@ -81,19 +81,35 @@ export const DEMOS: DemoDefinition[] = [
   },
   {
     "id": "material-studio",
-    "title": "Material studio",
-    "subtitle": "One shape, eight materials",
-    "category": "Materials",
+    "title": "Material force lab",
+    "subtitle": "Same force, different mass",
+    "category": "Physics",
     "accent": "#c5cf93",
-    "description": "Compare eight engineering materials on the same bored-boss shape. Inspect the sketches, additive features and through cuts.",
+    "description": "Give eight identical shapes the same force for two seconds. Watch lighter materials accelerate faster and compare measured results with F = ma.",
     "highlights": [
       "8 materials",
-      "Editable feature chains",
-      "Add and subtract"
+      "Measured acceleration",
+      "Two-second experiment"
     ],
-    "learningTip": "Select a sample to compare its material and mass. Expand its features to edit the boss or bore. Display mounts are fixed.",
+    "learningTip": "Try simulation, choose 0.5 or 1 millinewton, then press Run experiment. The result holds after two seconds. Ideal guides; gravity and friction are off.",
     "partCount": 9,
     "jointCount": 8
+  },
+  {
+    "id": "stewart-platform",
+    "title": "Stewart platform",
+    "subtitle": "Six actuators. One moving deck.",
+    "category": "Engineering",
+    "accent": "#ecab76",
+    "description": "Six telescopic actuators close a network of 18 joints around one payload deck. Inspect the bored barrels, turned rods and spherical ends, then run a coordinated lift.",
+    "highlights": [
+      "14 rigid bodies",
+      "18 coupled joints",
+      "Closed-loop mechanism"
+    ],
+    "learningTip": "Six linear motors extend at 2 mm/s for six seconds, then hold. The lift is checked against leg-length geometry. Ideal bearings and drives; this demo does not command all six axes.",
+    "partCount": 14,
+    "jointCount": 18
   }
 ];
 

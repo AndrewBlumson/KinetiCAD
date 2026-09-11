@@ -55,10 +55,25 @@ export type StepTransform = {
   rotationQuat: [number, number, number, number];
 };
 
+/** Actual Rapier readouts for bodies targeted by the constant-force experiment. */
+export type BodyMeasurement = {
+  partId: string;
+  massKg: number;
+  /** Body origin in world coordinates; velocity below is at its centre of mass. */
+  positionMm: [number, number, number];
+  linearVelocityMmPerSec: [number, number, number];
+};
+
 export type StepResult = {
   transforms: StepTransform[];
   /** Physics-time advanced by this step, in milliseconds. */
   dtMs: number;
+  /** Total fixed-step time since buildWorld. Returned by the current worker. */
+  simulatedTimeMs?: number;
+  /** True once the optional duration cap has been reached. */
+  completed?: boolean;
+  /** Measured values, never values synthesized from F/m. */
+  bodyMeasurements?: BodyMeasurement[];
 };
 
 export type BuildWorldArgs = {
@@ -68,6 +83,12 @@ export type BuildWorldArgs = {
   gravity: [number, number, number];
   /** Physics fixed timestep in milliseconds. Default 1000/60 ≈ 16.67. */
   timeStepMs: number;
+  /** Constant world-space forces at each target's centre of mass, in newtons.
+   * One entry per dynamic body; missing, fixed or duplicate targets fail. */
+  appliedForces?: Array<{ partId: string; forceN: [number, number, number] }>;
+  /** Optional positive run cap. Completes at the final whole configured step
+   * that fits within this duration; must permit at least one fixed step. */
+  durationMs?: number;
 };
 
 export type BuildWorldResult =
@@ -85,8 +106,8 @@ export type PhysicsInitResult = {
  * mate ID and reconfigures its Rapier motor without rebuilding the
  * world. `motorSpeedRpm` is for revolute joints (converted to rad/s
  * inside the worker); `motorVelocityMmPerSec` is for prismatic joints
- * and forwarded as-is. Passing 0 (or null/undefined) disables the
- * motor by setting target velocity to zero.
+ * and forwarded as-is. Passing 0 or null releases the motor while retaining
+ * the joint. An omitted field leaves that motor unchanged.
  */
 export type UpdateJointMotorArgs = {
   mateId: string;

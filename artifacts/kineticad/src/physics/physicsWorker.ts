@@ -29,6 +29,7 @@ import RAPIER from "@dimforge/rapier3d-compat";
 import type {
   BuildWorldArgs,
   BuildWorldResult,
+  BodyMeasurement,
   PartDescriptor,
   PhysicsApi,
   PhysicsInitResult,
@@ -59,6 +60,9 @@ let initPromise: Promise<PhysicsInitResult> | null = null;
 let world: RAPIER.World | null = null;
 let timeStepMs = 1000 / 60;
 let accumulatedTimeMs = 0;
+let durationMs: number | null = null;
+let maximumSolverSteps = Infinity;
+const forcedPartIds = new Set<string>();
 // Bound a single worker task while retaining excess time for subsequent calls.
 const MAX_SUBSTEPS_PER_CALL = 120;
 
@@ -680,6 +684,9 @@ function destroyWorld(): void {
   mateById.clear();
   stepCount = 0;
   accumulatedTimeMs = 0;
+  durationMs = null;
+  maximumSolverSteps = Infinity;
+  forcedPartIds.clear();
 }
 
 /** Preserve the existing DevTools diagnostic, sampled by solver steps. */
@@ -761,6 +768,15 @@ const api: PhysicsApi = {
       world.integrationParameters.numSolverIterations = 32;
       timeStepMs = Number.isFinite(args.timeStepMs) && args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
       world.timestep = timeStepMs / 1000; // Rapier uses seconds.
+      if (args.durationMs !== undefined) {
+        const stepLimit = Math.floor(args.durationMs / timeStepMs + 1e-9);
+        if (!Number.isFinite(args.durationMs) || args.durationMs <= 0
+          || !Number.isSafeInteger(stepLimit) || stepLimit < 1) {
+          throw new Error('Simulation duration must be finite, positive and permit at least one fixed step.');
+        }
+        durationMs = args.durationMs;
+        maximumSolverSteps = stepLimit;
+      }
 
       const warnings: string[] = [];
       let bodyCount = 0;
@@ -787,6 +803,20 @@ const api: PhysicsApi = {
         if (warning) warnings.push(warning);
       }
 
+      for (const applied of args.appliedForces ?? []) {
+        if (!Array.isArray(applied.forceN) || applied.forceN.length !== 3
+          || applied.forceN.some((value) => !Number.isFinite(value) || !Number.isFinite(Math.fround(value * 1000)))) {
+          throw new Error(`${applied.partId}: force must contain three finite newton values representable by the solver.`);
+        }
+        const body = partIdToBody.get(applied.partId);
+        if (!body || body.isFixed()) throw new Error(`${applied.partId}: force target must be an existing dynamic body.`);
+        if (forcedPartIds.has(applied.partId)) throw new Error(`${applied.partId}: duplicate applied-force target.`);
+        forcedPartIds.add(applied.partId);
+        // Rapier retains user force between steps. Add it once, at the COM,
+        // without adding torque. 1 N = 1000 kg·mm/s² in this mm/kg/s world.
+        body.addForce({ x: applied.forceN[0] * 1000, y: applied.forceN[1] * 1000, z: applied.forceN[2] * 1000 }, true);
+      }
+
       return { ok: true, bodyCount, jointCount, warnings };
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -799,15 +829,17 @@ const api: PhysicsApi = {
 
   async step(scaledDtMs?: number): Promise<StepResult> {
     if (!world) {
-      return { transforms: [], dtMs: 0 };
+      return { transforms: [], dtMs: 0, simulatedTimeMs: 0, completed: false, bodyMeasurements: [] };
     }
     const requestedMs = scaledDtMs === undefined ? timeStepMs : scaledDtMs;
     if (!Number.isFinite(requestedMs) || requestedMs < 0) {
       throw new Error('Physics step duration must be finite and non-negative.');
     }
-    accumulatedTimeMs += requestedMs;
+    const remainingSteps = Math.max(0, maximumSolverSteps - stepCount);
+    if (remainingSteps > 0) accumulatedTimeMs += requestedMs;
     const steps = requestedMs === 0 ? 0 : Math.min(
       MAX_SUBSTEPS_PER_CALL,
+      remainingSteps,
       Math.floor((accumulatedTimeMs + timeStepMs * 1e-9) / timeStepMs),
     );
     // Every solver step uses the configured dt, independent of render rate,
@@ -818,7 +850,10 @@ const api: PhysicsApi = {
       if (stepCount % 60 === 0) logStepDiagnostics();
     }
     accumulatedTimeMs = Math.max(0, accumulatedTimeMs - steps * timeStepMs);
+    const completed = stepCount >= maximumSolverSteps;
+    if (completed) accumulatedTimeMs = 0;
     const transforms: StepTransform[] = [];
+    const bodyMeasurements: BodyMeasurement[] = [];
     partIdToBody.forEach((body, partId) => {
       const t = body.translation();
       const r = body.rotation();
@@ -827,9 +862,17 @@ const api: PhysicsApi = {
         positionMm: [t.x, t.y, t.z],
         rotationQuat: [r.x, r.y, r.z, r.w],
       });
+      if (forcedPartIds.has(partId)) {
+        const velocity = body.linvel();
+        bodyMeasurements.push({ partId, massKg: body.mass(), positionMm: [t.x, t.y, t.z], linearVelocityMmPerSec: [velocity.x, velocity.y, velocity.z] });
+      }
     });
 
-    return { transforms, dtMs: steps * timeStepMs };
+    return {
+      transforms, dtMs: steps * timeStepMs,
+      simulatedTimeMs: Math.min(stepCount * timeStepMs, durationMs ?? Infinity),
+      completed, bodyMeasurements,
+    };
   },
 
   async updateJointMotor(

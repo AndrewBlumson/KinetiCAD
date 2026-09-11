@@ -86,6 +86,7 @@ import { setPartMeshLayer } from "./partMeshLayerRef";
 import { createSimulationLayer, type SimulationLayer } from "./SimulationLayer";
 import { setSimulationLayer } from "./simulationLayerRef";
 import { startSimulationRunner } from "@/physics/simulationRunner";
+import { createForceSampleLabels } from './ForceSampleLabels';
 import type { FaceMetadata } from "@/cad/types";
 
 type Status =
@@ -124,6 +125,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
     if (!container) return;
 
     let cancelled = false;
+    const forceLabels = createForceSampleLabels(container);
     let renderer: WebGPURenderer | null = null;
     let controls: OrbitControls | null = null;
     let resizeObserver: ResizeObserver | null = null;
@@ -405,9 +407,12 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
                 const radius = bounds.getSize(new THREE.Vector3()).length() * 0.5;
                 const vertical = THREE.MathUtils.degToRad(camera.fov) * 0.5;
                 const horizontal = Math.atan(Math.tan(vertical) * camera.aspect);
-                const distance = Math.max(45, radius / Math.sin(Math.min(vertical, horizontal)) * 1.2);
+                const distance = Math.max(45, radius / Math.sin(Math.min(vertical, horizontal))
+                  * (useKinetiCADStore.getState().simulation.forceExperiment ? 1 : 1.2));
                 controls.target.copy(centre);
-                camera.position.copy(centre).add(new THREE.Vector3(1, -1.45, 0.85).normalize().multiplyScalar(distance));
+                const viewDirection = useKinetiCADStore.getState().simulation.forceExperiment
+                  ? new THREE.Vector3(0, -1, 1.2) : new THREE.Vector3(1, -1.45, 0.85);
+                camera.position.copy(centre).add(viewDirection.normalize().multiplyScalar(distance));
                 camera.far = Math.max(5000, distance * 5);
                 camera.updateProjectionMatrix();
                 controls.update();
@@ -453,6 +458,8 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             controls?.update();
           }
 
+          forceLabels.update(useKinetiCADStore.getState().simulation.forceExperiment?.partIds ?? [], camera,
+            (id) => simulationLayer?.group.visible ? simulationLayer.group.getObjectByName(`sim:${id}`) ?? null : partMeshLayer?.getPartMesh(id) ?? null);
           renderer.render(scene, camera);
           frameCounter += 1;
         };
@@ -1378,6 +1385,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
 
     return () => {
       cancelled = true;
+      forceLabels.dispose();
       if (previewDebounce) clearTimeout(previewDebounce);
       if (booleanPreviewDebounce) clearTimeout(booleanPreviewDebounce);
       perFrameTopologyCheck = null;

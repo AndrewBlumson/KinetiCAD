@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { buildStewartPlatformDemo } from './stewart-platform-demo.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const outputDirectory = path.join(root, "artifacts/kineticad/public/demos");
@@ -156,20 +157,32 @@ function kineticMobile() {
 }
 
 function materialStudio() {
-  const plinth = part("material-plinth", "Steel display plinth", "steel-1018");
-  extrude(plinth, "Display footprint", "XY", rectangle(184, 110), 6);
+  const plinth = part("material-plinth", "Steel test bed and guide rails", "steel-1018");
+  extrude(plinth, "Test bed · 328 × 264 mm", "XY", rectangle(328, 264), 6);
+  // Integral rails keep the guided path visible. Samples have 4 mm lateral
+  // clearance; Rapier's ideal prismatic joint supplies the guide reaction.
+  for (let i = 0; i < 9; i++) {
+    extrude(plinth, `Guide rail ${i + 1}`, "XY", rectangle(4, 252, [-162 + i * 40, -126]), 8);
+  }
   const parts = [plinth];
   const mates = [];
   const names = ["Aluminium 6061", "Steel 1018", "Brass C36000", "Titanium Grade 5", "Nylon 6", "PLA", "ABS", "Acrylic"];
   materials.forEach((material, i) => {
-    const sample = part(`material-sample-${i + 1}`, `${names[i]} · bored boss`, material, [-66 + (i % 4) * 44, i < 4 ? 25 : -25, 6]);
+    const sample = part(`material-sample-${i + 1}`, `${names[i]} · test sample`, material, [-140 + i * 40, -96, 6]);
     extrude(sample, "Square base", "XY", rectangle(28, 28), 11);
     extrude(sample, "Raised circular boss", "XY", circle(11), 21);
     extrude(sample, "Through bore", "XY", circle(6), 24, "subtract");
     parts.push(sample);
-    mates.push({ id: `material-fixed-${i + 1}`, type: "fixed", name: `${names[i]} display mount`, partA: plinth.id, partB: sample.id });
+    const id = `material-guide-${i + 1}`;
+    mates.push({ id, type: "prismatic", name: `${names[i]} · frictionless guide`, partA: plinth.id, partB: sample.id,
+      pivotA: { kind: "edge", edgeId: `${id}-a`, localPoint: [...sample.transform.positionMm] },
+      pivotB: { kind: "edge", edgeId: `${id}-b`, localPoint: [0, 0, 0] },
+      axisLocal: [0, 1, 0] });
   });
-  return envelope("material-studio", "Material studio", parts, mates);
+  const result = envelope("material-studio", "Material force lab", parts, mates);
+  result.state.simulation.forceExperiment = { kind: "equal-force", partIds: parts.slice(1).map((p) => p.id),
+    forceN: 0.001, direction: [0, 1, 0], durationMs: 2000 };
+  return result;
 }
 
 // XYZ Euler convention matches THREE.Euler('XYZ') and physicsWorker.ts.
@@ -196,25 +209,30 @@ function validate(id, value, legacy = false) {
   for (const p of assembly.parts) {
     assert(materials.includes(p.materialId), `${id}: unknown material`);
     assert([...p.transform.positionMm, ...p.transform.rotationDeg].every(Number.isFinite));
-    if (!legacy) assert.deepEqual(p.transform.rotationDeg, [0, 0, 0], `${id}: unexpected rotated frame`);
+    if (!legacy && id !== 'stewart-platform') assert.deepEqual(p.transform.rotationDeg, [0, 0, 0], `${id}: unexpected rotated frame`);
     const sketchIds = new Set(p.sketches.map((s) => s.id));
     assert.equal(sketchIds.size, p.sketches.length);
     const featureIds = new Set(p.features.map((f) => f.id));
     assert.equal(featureIds.size, p.features.length);
     for (const sketch of p.sketches) {
       assert(["XY", "XZ", "YZ"].includes(sketch.plane));
-      assert.equal(sketch.primitives.length, 1, `${id}: unsupported multi-loop sketch`);
-      const primitive = sketch.primitives[0];
-      assert(["circle", "rectangle"].includes(primitive.type));
-      if (primitive.type === "circle") assert(Number.isFinite(primitive.radius) && primitive.radius > 0);
-      else assert(primitive.width > 0 && primitive.height > 0);
+      assert(sketch.primitives.length > 0);
+      for (const primitive of sketch.primitives) {
+        assert(["circle", "rectangle", "line", "arc"].includes(primitive.type));
+        if (primitive.type === "circle" || primitive.type === "arc") assert(Number.isFinite(primitive.radius) && primitive.radius > 0);
+        if (primitive.type === "rectangle") assert(primitive.width > 0 && primitive.height > 0);
+        if (primitive.type === "line") assert([...primitive.start, ...primitive.end].every(Number.isFinite));
+        if (primitive.type === "arc") assert([primitive.startAngle, primitive.endAngle, ...primitive.centre].every(Number.isFinite));
+      }
     }
     for (const feature of p.features) {
-      assert.equal(feature.type, "extrude");
+      assert(['extrude', 'revolve'].includes(feature.type));
       assert(sketchIds.has(feature.sketchId), `${id}: broken sketch reference`);
-      assert(Number.isFinite(feature.depthMm) && feature.depthMm > 0);
-      assert(["forward", "backward", "symmetric"].includes(feature.direction));
-      assert(["new-body", "add", "subtract"].includes(feature.extrudeMode));
+      if (feature.type === 'extrude') {
+        assert(Number.isFinite(feature.depthMm) && feature.depthMm > 0);
+        assert(["forward", "backward", "symmetric"].includes(feature.direction));
+        assert(["new-body", "add", "subtract"].includes(feature.extrudeMode));
+      } else assert(feature.axis === 'Z' && feature.angleDeg === 360, `${id}: unexpected turned feature`);
     }
   }
   assert.equal(new Set(assembly.mates.map((m) => m.id)).size, assembly.mates.length);
@@ -223,10 +241,10 @@ function validate(id, value, legacy = false) {
   for (const mate of assembly.mates) {
     assert(ids.has(mate.partA) && ids.has(mate.partB), `${id}: missing mate body`);
     assert.notEqual(mate.partA, mate.partB);
-    assert(["fixed", "revolute"].includes(mate.type));
-    if (mate.type !== "revolute") continue;
-    assert(Number.isFinite(mate.motorSpeedRpm) && mate.motorSpeedRpm !== 0, `${id}: unspecified drive`);
-    assert(Math.abs(Math.hypot(...mate.axisLocal) - 1) < 1e-9, `${id}: non-unit axis`);
+    assert(["fixed", "revolute", "prismatic", "spherical"].includes(mate.type));
+    if (mate.type === "fixed") continue;
+    if (mate.type === "revolute") assert(Number.isFinite(mate.motorSpeedRpm) && mate.motorSpeedRpm !== 0, `${id}: unspecified drive`);
+    if (mate.type !== 'spherical') assert(Math.abs(Math.hypot(...mate.axisLocal) - 1) < 1e-9, `${id}: non-unit axis`);
     const a = worldPoint(partsById.get(mate.partA), mate.pivotA.localPoint);
     const b = worldPoint(partsById.get(mate.partB), mate.pivotB.localPoint);
     const error = Math.hypot(...a.map((v, i) => v - b[i]));
@@ -246,6 +264,7 @@ function validate(id, value, legacy = false) {
 const fixtures = new Map([
   ["windmill", legacySeed("windmill")], ["orrery", legacySeed("orrery")],
   ["gyroscope", gyroscope()], ["kinetic-mobile", kineticMobile()], ["material-studio", materialStudio()],
+  ['stewart-platform', buildStewartPlatformDemo()],
 ]);
 
 const descriptions = [
@@ -265,10 +284,14 @@ const descriptions = [
     description: "A brass crown carries two turning branches and four medallions. Different motor speeds create a layered moving sculpture.",
     highlights: ["7 driven joints", "Branching assembly", "Counter-rotation"],
     learningTip: "Watch the crown, branches and medallions turn at different rates. Each joint is motor-driven; gravity is off." },
-  { id: "material-studio", title: "Material studio", subtitle: "One shape, eight materials", category: "Materials", accent: "#c5cf93",
-    description: "Compare eight engineering materials on the same bored-boss shape. Inspect the sketches, additive features and through cuts.",
-    highlights: ["8 materials", "Editable feature chains", "Add and subtract"],
-    learningTip: "Select a sample to compare its material and mass. Expand its features to edit the boss or bore. Display mounts are fixed." },
+  { id: "material-studio", title: "Material force lab", subtitle: "Same force, different mass", category: "Physics", accent: "#c5cf93",
+    description: "Give eight identical shapes the same force for two seconds. Watch lighter materials accelerate faster and compare measured results with F = ma.",
+    highlights: ["8 materials", "Measured acceleration", "Two-second experiment"],
+    learningTip: "Try simulation, choose 0.5 or 1 millinewton, then press Run experiment. The result holds after two seconds. Ideal guides; gravity and friction are off." },
+  { id: 'stewart-platform', title: 'Stewart platform', subtitle: 'Six actuators. One moving deck.', category: 'Engineering', accent: '#ecab76',
+    description: 'Six telescopic actuators close a network of 18 joints around one payload deck. Inspect the bored barrels, turned rods and spherical ends, then run a coordinated lift.',
+    highlights: ['14 rigid bodies', '18 coupled joints', 'Closed-loop mechanism'],
+    learningTip: 'Six linear motors extend at 2 mm/s for six seconds, then hold. The lift is checked against leg-length geometry. Ideal bearings and drives; this demo does not command all six axes.' },
 ];
 
 function emit(filename, contents) {

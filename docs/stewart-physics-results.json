@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T22:35:41.488Z",
+  "fixturePath": "artifacts/kineticad/public/demos/stewart-platform.json",
+  "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "method": "Actual OCCT meshes and mass tensors in the shipped Comlink/Rapier worker. Every fixed-step pose independently reconstructs slider travel, both spherical closures and each platform-to-base leg length. Symmetric heave is derived from initial pivot coordinates and commanded extension using Pythagoras; no pose is assigned to the platform.",
+  "scope": "Six-second equal-extension, zero-gravity closed-loop test. No arbitrary six-axis inverse kinematics, contact/friction, payload rating or singularity guarantee.",
+  "durationMs": 6000,
+  "timeStepMs": 16.666666666666668,
+  "thresholds": {
+    "sphericalClosureMm": 0.1,
+    "sliderLateralErrorMm": 0.1,
+    "sliderTravelErrorMm": 0.1,
+    "legLengthResidualMm": 0.1,
+    "platformHeaveErrorMm": 0.1,
+    "platformLateralDriftMm": 0.1,
+    "platformRotationRad": 0.002,
+    "settledSliderSpeedErrorMmPerSec": 0.05
+  },
+  "bodyCount": 14,
+  "jointCount": 18,
+  "solverIterations": 32,
+  "actualTimeMs": 6000.00000000002,
+  "steps": 360,
+  "maxima": {
+    "sphericalClosureMm": 0.000033556219908952256,
+    "sliderLateralErrorMm": 0.00003153837293806357,
+    "sliderTravelErrorMm": 0.011266861792270433,
+    "legLengthResidualMm": 0.011268118031580343,
+    "platformHeaveErrorMm": 0.010286731121027515,
+    "platformLateralDriftMm": 0.003391442525736621,
+    "platformRotationRad": 0.000039457351949571183,
+    "settledSliderSpeedErrorMmPerSec": 0.010986400638905991
+  },
+  "initialLegLengthMm": 159.18410987770343,
+  "horizontalSpanMm": 58.61382804046126,
+  "legs": {
+    "1": {
+      "initialLengthMm": 159.18410987770343,
+      "finalExtensionMm": 11.997861843738253,
+      "maxBottomClosureMm": 0.00001082484551345935,
+      "maxTopClosureMm": 0.000027374147486362288,
+      "maxLengthResidualMm": 0.00782774939480646,
+      "maxTravelErrorMm": 0.007836918487519995,
+      "motorSamples": 6
+    },
+    "2": {
+      "initialLengthMm": 159.18410987770346,
+      "finalExtensionMm": 11.994476689621239,
+      "maxBottomClosureMm": 0.000010675547474638785,
+      "maxTopClosureMm": 0.00003242382567369374,
+      "maxLengthResidualMm": 0.011268118031580343,
+      "maxTravelErrorMm": 0.011266861792270433,
+      "motorSamples": 6
+    },
+    "3": {
+      "initialLengthMm": 159.18410987770343,
+      "finalExtensionMm": 11.997261886750206,
+      "maxBottomClosureMm": 0.00001144412630674541,
+      "maxTopClosureMm": 0.000033556219908952256,
+      "maxLengthResidualMm": 0.008389196607254235,
+      "maxTravelErrorMm": 0.008403976697856308,
+      "motorSamples": 6
+    },
+    "4": {
+      "initialLengthMm": 159.18410987770346,
+      "finalExtensionMm": 11.994743438974917,
+      "maxBottomClosureMm": 0.000011444126335191715,
+      "maxTopClosureMm": 0.000031057592587294086,
+      "maxLengthResidualMm": 0.011070899539674883,
+      "maxTravelErrorMm": 0.011077618047665716,
+      "motorSamples": 6
+    },
+    "5": {
+      "initialLengthMm": 159.18410987770346,
+      "finalExtensionMm": 11.995996001997554,
+      "maxBottomClosureMm": 0.000010675547478428595,
+      "maxTopClosureMm": 0.000028565454496900176,
+      "maxLengthResidualMm": 0.009698922184412595,
+      "maxTravelErrorMm": 0.009710569942807723,
+      "motorSamples": 6
+    },
+    "6": {
+      "initialLengthMm": 159.18410987770346,
+      "finalExtensionMm": 11.9962517614312,
+      "maxBottomClosureMm": 0.000010698074416769874,
+      "maxTopClosureMm": 0.00003229281758964175,
+      "maxLengthResidualMm": 0.009480468498225036,
+      "maxTravelErrorMm": 0.00949209881867663,
+      "motorSamples": 6
+    }
+  },
+  "trace": [
+    {
+      "simulatedTimeMs": 1000.0000000000001,
+      "platformPositionMm": [
+        -0.0015051292721182108,
+        -0.00035187863977625966,
+        162.1436309814453
+      ],
+      "expectedPlatformZMm": 162.14904741459668
+    },
+    {
+      "simulatedTimeMs": 2000.0000000000002,
+      "platformPositionMm": [
+        -0.0028472398407757282,
+        -0.0006534447311423719,
+        164.28616333007812
+      ],
+      "expectedPlatformZMm": 164.29403428572516
+    },
+    {
+      "simulatedTimeMs": 3000,
+      "platformPositionMm": [
+        -0.0029960316605865955,
+        -0.0010255813831463456,
+        166.4248809814453
+      ],
+      "expectedPlatformZMm": 166.43512980708903
+    },
+    {
+      "simulatedTimeMs": 4000.0000000000005,
+      "platformPositionMm": [
+        -0.0031337065156549215,
+        -0.0008443515980616212,
+        168.5635223388672
+      ],
+      "expectedPlatformZMm": 168.57249361890888
+    },
+    {
+      "simulatedTimeMs": 5000,
+      "platformPositionMm": [
+        -0.0032487991265952587,
+        -0.0008781097712926567,
+        170.70005798339844
+      ],
+      "expectedPlatformZMm": 170.7062764907364
+    },
+    {
+      "simulatedTimeMs": 6000,
+      "platformPositionMm": [
+        -0.0030624293722212315,
+        -0.0009488214273005724,
+        172.8324737548828
+      ],
+      "expectedPlatformZMm": 172.83662094518422
+    }
+  ],
+  "failures": [],
+  "rapierVersion": "0.12.0",
+  "finalTransforms": [
+    {
+      "partId": "stewart-base",
+      "positionMm": [
+        0,
+        0,
+        0
+      ],
+      "rotationQuat": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "partId": "stewart-platform",
+      "positionMm": [
+        -0.0030624293722212315,
+        -0.0009488214273005724,
+        172.8324737548828
+      ],
+      "rotationQuat": [
+        -6.718619260936975e-8,
+        -6.890336123888119e-8,
+        0.00001972844620468095,
+        1
+      ]
+    },
+    {
+      "partId": "stewart-barrel-1",
+      "positionMm": [
+        106.25183868408203,
+        28.470096588134766,
+        12.000000953674316
+      ],
+      "rotationQuat": [
+        -0.0750901997089386,
+        -0.15681517124176025,
+        0.013969901949167252,
+        0.9846701622009277
+      ]
+    },
+    {
+      "partId": "stewart-rod-1",
+      "positionMm": [
+        102.5214614868164,
+        30.19174575805664,
+        23.272485733032227
+      ],
+      "rotationQuat": [
+        -0.075090192258358,
+        -0.15681521594524384,
+        0.013969897292554379,
+        0.984670102596283
+      ]
+    },
+    {
+      "partId": "stewart-barrel-2",
+      "positionMm": [
+        -28.4700927734375,
+        106.25183868408203,
+        12
+      ],
+      "rotationQuat": [
+        0.10272616893053055,
+        0.14024116098880768,
+        0.01709464192390442,
+        0.9846255779266357
+      ]
+    },
+    {
+      "partId": "stewart-rod-2",
+      "positionMm": [
+        -25.115449905395508,
+        103.88294982910156,
+        23.2695255279541
+      ],
+      "rotationQuat": [
+        0.10272624343633652,
+        0.14024116098880768,
+        0.017094651237130165,
+        0.9846255779266357
+      ]
+    },
+    {
+      "partId": "stewart-barrel-3",
+      "positionMm": [
+        -77.78174591064453,
+        77.78174591064453,
+        12
+      ],
+      "rotationQuat": [
+        0.1731901317834854,
+        0.015268605202436447,
+        0.003132483223453164,
+        0.9847650527954102
+      ]
+    },
+    {
+      "partId": "stewart-rod-3",
+      "positionMm": [
+        -77.40795135498047,
+        73.69058227539062,
+        23.271953582763672
+      ],
+      "rotationQuat": [
+        0.17319007217884064,
+        0.015268590301275253,
+        0.0031324776355177164,
+        0.9847651124000549
+      ]
+    },
+    {
+      "partId": "stewart-barrel-4",
+      "positionMm": [
+        -77.78174591064453,
+        -77.78174591064453,
+        11.999999046325684
+      ],
+      "rotationQuat": [
+        -0.1731695979833603,
+        0.015272071585059166,
+        -0.0031399510335177183,
+        0.9847685694694519
+      ]
+    },
+    {
+      "partId": "stewart-rod-4",
+      "positionMm": [
+        -77.40789031982422,
+        -73.69192504882812,
+        23.269758224487305
+      ],
+      "rotationQuat": [
+        -0.17316953837871552,
+        0.015271943993866444,
+        -0.0031399501021951437,
+        0.9847685694694519
+      ]
+    },
+    {
+      "partId": "stewart-barrel-5",
+      "positionMm": [
+        -28.4700927734375,
+        -106.25183868408203,
+        12.000000953674316
+      ],
+      "rotationQuat": [
+        -0.10272527486085892,
+        0.14025673270225525,
+        -0.017098775133490562,
+        0.9846233129501343
+      ]
+    },
+    {
+      "partId": "stewart-rod-5",
+      "positionMm": [
+        -25.114662170410156,
+        -103.88268280029297,
+        23.27085304260254
+      ],
+      "rotationQuat": [
+        -0.10272527486085892,
+        0.14025676250457764,
+        -0.01709882542490959,
+        0.9846233129501343
+      ]
+    },
+    {
+      "partId": "stewart-barrel-6",
+      "positionMm": [
+        106.25183868408203,
+        -28.470096588134766,
+        12
+      ],
+      "rotationQuat": [
+        0.0750841572880745,
+        -0.15680378675460815,
+        -0.013972553424537182,
+        0.9846723675727844
+      ]
+    },
+    {
+      "partId": "stewart-rod-6",
+      "positionMm": [
+        102.52222442626953,
+        -30.19137191772461,
+        23.271080017089844
+      ],
+      "rotationQuat": [
+        0.07508417963981628,
+        -0.15680380165576935,
+        -0.013972513377666473,
+        0.9846723675727844
+      ]
+    }
+  ],
+  "completed": true,
+  "passed": true
+}

@@ -6,6 +6,154 @@ does not establish physical accuracy. Results apply to the tested cases and
 the model assumptions below; they are not a claim that every possible CAD
 assembly has been validated.
 
+## Current six-demo extension: acceptance status
+
+The current source replaces the static material display with Material force
+lab and adds a 14-body, 18-joint Stewart platform. File actions also have
+persistent labels and explanatory tooltips. Evidence for the earlier five-demo
+production bundle is preserved below and is not fresh acceptance of these changes.
+
+| Gate | Current status |
+| --- | --- |
+| Actual-CAD material force, timestep and scaling checks | Passed; [force results](material-force-results.json) |
+| Material rails, samples and bounded travel clearance | Passed; [clearance results](material-clearance-results.json) |
+| Current unit suites | Passed: 79 cases in serialized runs, including post-arc mass/regeneration reruns |
+| Six-demo CAD validity and general physics report | Passed: 50 actual CAD bodies and 49 joints; [geometry](demo-geometry-results.json), [physics](demo-physics-results.json) |
+| Stewart actual-CAD solver/closure/heave acceptance | Passed; [Stewart physics](stewart-physics-results.json) |
+| Stewart initial/final exact B-rep clearance | Passed: 182 pairs, zero overlap; [Stewart clearance](stewart-clearance-results.json) |
+| Current production build and Chrome force/Stewart/windmill checks | Passed; [current Chrome record](force-stewart-browser-results.json) records exact bundle scope |
+| Republished public route | Pending |
+
+All **79 cases** passed across nine suites: demos 6, mass/inertia 8, worker 17,
+force/measurement 9, runner 9, overlays 5, regeneration 13, Stewart geometry 5
+and actual-OCCT arcs/profiles 7. Mass and regeneration were rerun after the
+arc fix; runner was rerun after the solver-pose readout was added. Heavy OCCT
+suites ran sequentially. Full workspace typecheck and the production build pass.
+
+The Stewart turning profiles exposed an XZ trimmed-arc UV-frame defect.
+The correction supplies an explicit OCCT circle frame matching each sketch's
+UV axes; XZ uses U=+X, V=+Z and normal=−Y. Seven actual-OCCT regressions cover
+arc endpoints and intermediate points, sector volumes/centroids, sphere
+revolutions in all three planes and valid connected Stewart barrel/rod
+profiles with positive inertia. Full-circle and extrude directions are unchanged.
+
+The six-demo geometry report contains 50 valid B-reps: 48 single solids and
+two unchanged legacy compounds. All 35 bodies in the four new demos are single
+solids. Its provenance identifies the unchanged five-fixture geometry checks
+and the 14 Stewart solids rebuilt after the arc correction. The current
+physics report uses the actual exported CAD meshes and exact mass tensors for
+all six fixtures. The original windmill maximum error remains
+**8.7422783e-8 rad/s**, below the unchanged ±5e-7 limit.
+
+### Current local Chrome evidence
+
+The post-arc-fix production route at `http://localhost:5184/app/` used
+`Scene-C4W79P0P.js`, `cadWorker-vhcso9P8.js` and
+`physicsWorker-CaLcPm-G.js`. Chrome displayed six cards in two full rows and
+all five file-button tooltips were reachable by keyboard focus. At 1470 × 685,
+all eight force readouts fit. Full and half-force runs plus pause/resume were
+first checked on the intermediate `Scene-B0o527pg.js` bundle with the identical
+physics worker; the half-force two-second completion and eight-row fit were
+repeated on the final bundle. The [current Chrome record](force-stewart-browser-results.json)
+preserves rounded readings, exact bundle scope and source hashes.
+
+The actual Stewart assembly rendered all 14 solids without failed-part logs
+and held at **6.00 s**. Its solver readout showed height **172.832 mm**, rise
+**12.832 mm**, sideways drift **0.003 mm** and tilt **0.000°** at display
+precision. Rounded zero tilt is not a claim of mathematically zero rotation.
+Replay and Reset clear/restart the readings. The six live slider speeds at
+completion were **2.005524, 2.002309, 2.000435, 2.003406, 1.998754 and
+1.996598 mm/s**, against the commanded 2 mm/s. The readout uses the same
+actual solver poses as the viewport, holds on Pause and clears on teardown.
+It does not substitute the expected trajectory.
+
+The final local windmill browser canary passes: **22 samples from five to 26
+simulated seconds** measured **3.1415927410125732 rad/s**, with maximum
+absolute error **8.7422791e-8 rad/s** against π. The original **±5e-7 rad/s**
+acceptance limit is unchanged. Rotation was visibly observed. Public Replit
+republish and verification at the public route remain outstanding.
+
+### Material force lab: current numerical evidence
+
+The eight samples have identical CAD meshes and volume
+**10,050.283064729765 mm³**. Each receives 0.001 N along world +Y at its
+centre of mass for two simulated seconds, with ideal unpowered prismatic
+guides and zero gravity. Forces are converted from N to kg·mm/s² by multiplying
+by 1,000. The independent prediction is `a = 1,000F/m`, `v = at`, and
+`s = ½at²`, using the exported CAD mass.
+
+The real-CAD script passes three runs: 0.001 N at 60 and 120 Hz, and 0.0005 N
+at 60 Hz. Maximum whole-run `v/t` relative error over the returned steps is
+**0.004769%** at 60 Hz and **0.009568%** at 120 Hz, below its stated 0.01%
+limit. Maximum displacement error decreases from **0.05129 mm** to
+**0.03356 mm** with the finer timestep; every sample's final displacement
+error decreases and remains within the derived integration bound. Measured
+lateral displacement/velocity and rotation drift are zero. Halving the force
+halves measured velocity, with displacement ratios within 8.2e-7 of one-half.
+The exact two-second completion, zero-duration pause and post-completion hold
+checks pass. The UI's acceleration readout separately uses successive solver
+velocity changes divided by actual elapsed time; its reducer has its own tests.
+
+The [derivation and complete readings](MATERIAL-FORCE-VERIFICATION.md) state
+the analytical error bound and the distinction between measurements and
+predictions. This demonstrates inertia from density, not elasticity, strength,
+friction or unequal acceleration in free fall.
+
+Material clearance uses the actual OCCT solids: **72 pair intersections**,
+covering every pair initially and at the measured two-second pose, have
+**0 mm³** overlap. A conservative straight-Y travel envelope retains about
+4 mm lateral rail clearance, 15.06 mm rail-end margin and 12 mm between sample
+lanes. This interval argument relies on the measured absence of rotation and
+off-axis movement plus the specified straight rails. It is a scoped geometric
+check, not collision-force validation or a general assembly clearance tool.
+
+### Stewart platform: measured closed-joint lift
+
+The supplied programme extends all six telescopic actuators at 2 mm/s for six
+seconds. The platform is a dynamic body closed through 12 spherical joints
+and six prismatic drives; the simulation assigns no prescribed deck pose.
+Its independent symmetric-heave reference follows from
+initial anchor geometry:
+
+```text
+z(t) = z_base_anchor + sqrt((initial_leg_length + 2t)^2 - horizontal_span^2)
+```
+
+`test:stewart` covers fixture geometry, stroke constraints and the initial
+six-by-six length Jacobian. The actual-CAD acceptance script separately checks
+every-step spherical closure, slider travel and lateral error, reconstructed
+leg length, deck heave, lateral drift and rotation, plus sampled drive speed
+and the six-second cap. The actual run passes **360 steps over six seconds**
+at 32 solver iterations. Its declared tolerances are 0.1 mm for position/closure
+quantities, 0.002 rad deck rotation and 0.05 mm/s settled slider-speed error.
+
+| Quantity | Maximum measured error |
+| --- | ---: |
+| Spherical anchor closure | 0.00003356 mm |
+| Slider lateral error | 0.00003154 mm |
+| Slider travel | 0.011267 mm |
+| Reconstructed leg length | 0.011268 mm |
+| Deck heave | 0.010287 mm |
+| Deck sideways drift | 0.003391 mm |
+| Deck rotation | 0.00003946 rad |
+| Settled slider speed | 0.010986 mm/s |
+
+Pose residuals are checked at every fixed step. Motor speeds are sampled
+at the worker's one-second diagnostic cadence. Final deck Z is
+**172.832474 mm**, versus **172.836621 mm** from the independent reference;
+post-completion requests leave time and poses unchanged.
+
+All 14 actual OCCT bodies are valid single solids. The separate clearance
+script checks **182 exact B-rep pairs**, every pair initially and at the
+measured six-second transforms, with **0 mm³** intersection volume. The final
+pose includes solver residual translations and rotations. This establishes
+endpoint noninterference only; it is not continuous collision detection.
+The separate 61-pose analytic capsule test concerns intermediate leg spacing,
+not all intermediate solid surfaces. Ideal bearings do not validate retention,
+seals, friction, manufacturing tolerances or load ratings.
+This programme is not arbitrary six-axis control, a payload rating or a
+guarantee against singularities elsewhere in the workspace.
+
 ## Physical model
 
 - Length: millimetres; time: seconds; mass: kilograms. Standard gravity is
@@ -17,11 +165,17 @@ assembly has been validated.
   forces, bearing friction, motor torque limits, deformation and fracture
   are not modelled. A driven gimbal is not a passive gyroscopic-precession
   validation case.
+- The material experiment additionally applies real constant centre-of-mass
+  forces to unpowered guides. Stored motor force/torque fields are still not
+  enforced load limits. The two concepts must remain distinct.
 - Fixed simulation increments; display frame timing controls the number of
   increments requested, not their duration. The clock counts time actually
   advanced by the solver. Pause and model changes invalidate stale responses.
 - Unsupported planar joints and incompatible initial joint frames fail the
   world build. They must not be silently omitted from a running simulation.
+- Optional duration limits hold the final whole configured step; further
+  requests after completion advance no time. Bundled experiment durations
+  divide exactly into their configured steps.
 
 The original seed documents are preserved exactly. Their orrery rates are
 illustrative, not astronomical. Disconnected solids contained in one legacy
@@ -38,11 +192,18 @@ node scripts/src/generate-demo-library.mjs --check
 pnpm --filter @workspace/kineticad run test:demos
 pnpm --filter @workspace/kineticad run test:mass
 pnpm --filter @workspace/kineticad run test:physics
+pnpm --filter @workspace/kineticad run test:forces
 pnpm --filter @workspace/kineticad run test:runner
 pnpm --filter @workspace/kineticad run test:overlays
 pnpm --filter @workspace/kineticad run test:regen
+pnpm --filter @workspace/kineticad run test:stewart
+pnpm --filter @workspace/kineticad run test:arcs
 node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs --export-descriptors
 node artifacts/kineticad/tests/verify-demo-physics.mjs /tmp/kineticad-demo-descriptors.json
+node artifacts/kineticad/tests/verify-material-force.mjs /tmp/kineticad-demo-descriptors.json
+node artifacts/kineticad/tests/verify-stewart-physics.mjs /tmp/kineticad-demo-descriptors.json
+node --import ./scripts/node_modules/tsx/dist/loader.mjs artifacts/kineticad/tests/verify-material-clearance.mjs
+node --import ./scripts/node_modules/tsx/dist/loader.mjs artifacts/kineticad/tests/verify-stewart-clearance.mjs
 PORT=5184 BASE_PATH=/app pnpm run build
 ```
 
@@ -61,12 +222,22 @@ PORT=5184 BASE_PATH=/app pnpm run build
 | Timing | Equivalent elapsed-time partitions produce the same fixed-step result |
 | Display overlays | Stored anchors transformed into the actual rendered body pose; selection does not move anchors |
 | Gimbal geometry | Valid connected solids and sampled B-rep intersection volumes |
+| Equal-force materials | Actual CAD mass; F/m, at and ½at²; force scaling and timestep convergence |
+| Material clearance | Exact initial/final B-rep intersections plus bounded straight-Y travel envelopes |
+| Stewart platform | Leg-length-derived symmetric heave and independently reconstructed closed-joint residuals |
+| Stewart clearance | Every B-rep pair at initial and measured final poses; endpoint scope only |
+| Trimmed arcs and turned profiles | Actual OCCT endpoints, intermediate points, analytical volumes/centroids and valid connected revolved solids |
 
 The tests contain their tolerances and measured results. The geometry sweep
 is a deterministic sampled regression, not an exhaustive proof for all
 possible joint angles or user edits.
 
-## Local numerical evidence — 11 September 2026
+## Earlier five-demo numerical evidence — 11 September 2026
+
+This section records the earlier gallery revision, when Material studio was
+static. Its counts, geometry totals and reports must not be read as acceptance
+of the later force/Stewart extension. JSON reports may be regenerated for newer
+fixtures; inspect their recorded hashes and case lists before citing them.
 
 The installed OpenCascade/Rapier mass suite passed all eight cases. For the
 20 × 30 × 40 mm aluminium cuboid, the analytical mass is 0.0648 kg and the
@@ -74,7 +245,7 @@ principal moments are 7.02, 10.8 and 13.5 kg·mm². Tests compare the calculated
 tensor with analytical values to a relative tolerance of 1e-9 (absolute floor
 1e-9); the actual Rapier angular-impulse response uses a 3e-6 tolerance.
 
-[Geometry results](demo-geometry-results.json) record the fixture SHA-256 hashes
+The earlier [geometry report](demo-geometry-results.json) recorded fixture SHA-256 hashes
 and measured volumes for all 36 parts. Every generated B-rep was valid. All
 new-demo parts were single connected solids. The gimbal passed 96 pair checks
 across 16 orientations with maximum intersection volume **0 mm³**, plus two
@@ -95,11 +266,11 @@ live motor release/reactivation. Zero or blank motor commands now remove the
 drive while retaining the joint; they do not apply a brake. Missing bodies
 referenced by a mate reject the whole world rather than dropping the joint.
 
-[Actual-demo physics results](demo-physics-results.json) rebuild and test all
-five fixtures with their real CAD meshes and exact mass tensors. Each runs
-for 15 simulated seconds; motor velocities are sampled from 5–15 seconds and
-anchor separation is checked every configured step. Fixture and worker hashes
-bind the evidence to the tested source.
+The earlier [actual-demo physics run](demo-physics-results.json) tested all
+five fixtures with real CAD meshes and exact mass tensors. Each ran
+for 15 simulated seconds; motor velocities were sampled from 5–15 seconds and
+anchor separation was checked every configured step. Fixture and worker hashes
+bind each generated report to its tested source.
 
 | Actual CAD assembly | Maximum motor-speed error (rad/s) | Maximum joint-anchor separation (mm) |
 | --- | ---: | ---: |
@@ -110,8 +281,8 @@ bind the evidence to the tested source.
 
 The original windmill magnitude gate remains **5e-7 rad/s**. Other driven
 assemblies use explicit limits of 0.02 rad/s motor error, 0.03 rad/s forbidden
-relative angular velocity and 0.1 mm anchor separation. Material studio has
-no motors and passes its fixed-pose drift checks. These are numerical
+relative angular velocity and 0.1 mm anchor separation. At that revision,
+Material studio had no motors and passed fixed-pose drift checks. These are numerical
 acceptance tolerances, not a promise of exact real-world behaviour.
 
 The initial four-iteration solver failed the orrery and mobile checks.
@@ -120,7 +291,7 @@ Sixteen iterations still failed the mobile's 0.1 mm anchor limit. The selected
 The report records worker/Comlink step timings; those exclude CAD generation
 and browser rendering and are not a browser frame-rate measurement.
 
-The six test suites contain **56 passing cases** in total: five demo-document
+At that revision, six test suites passed **56 cases** in total: five demo-document
 and workspace tests, eight mass/inertia tests, 17 worker tests, eight runner
 tests, five overlay tests and 13 CAD-regeneration tests. The last
 suite protects a loading fix found in Chrome: repeated state updates and
@@ -132,9 +303,13 @@ meshes are generated only when requested by the diagnostic/preview path.
 Full-history cache entries have a separate namespace so a preview cannot stand
 in for successful evaluation of the complete history.
 
-## Browser and publication gate
+## Earlier five-demo browser evidence — 11 September 2026
 
-### Final build
+These observations apply to the listed earlier production bundles. They do
+not cover the new material experiment, Stewart platform or labelled file
+controls. Current six-demo observations are recorded separately above.
+
+### Earlier five-demo final build
 
 Chrome exercised all five demos at `http://localhost:5184/app/` with the final
 `Scene-BW8mnfhS.js`, `cadWorker-DuilWpZn.js` and
@@ -166,7 +341,7 @@ report; it is not part of the browser motor diagnostics.
 aggregates, intervals and bundle identifiers. The following earlier-build
 checks additionally cover controls, rejected input and the complete file flow.
 
-### Controls and file workflow
+### Earlier controls and file workflow
 
 Local production build: `PORT=5184 BASE_PATH=/app pnpm run build` passed on
 11 September 2026. Chrome loaded `Scene-veCIWWmK.js` and
@@ -207,6 +382,8 @@ The downloaded STEP was independently reopened in OpenCascade:
 one valid solid, with volume 3717.256661176908 mm³ (analytical error
 1.0459e-11 mm³) and 20 × 20 × 10 mm bounds within the kernel's tolerance.
 
+## Current browser and publication acceptance checklist
+
 Use the actual production build in Chrome with WebGPU. The embedded Replit
 preview is not the final graphics acceptance environment.
 
@@ -224,7 +401,15 @@ preview is not the final graphics acceptance environment.
 5. Import `artifacts/kineticad/tests/fixtures/recovery-block.step`, explore
    demos, return to the imported model and export STEP successfully. Demo
    switching must retain its in-memory CAD solid without a page reload.
-6. Repeat the motor gate and the relevant rendered flows at the republished
+6. Run Material force lab with both force options. Compare the visible measured
+   acceleration and distance with the independent report, confirm each sample
+   remains in its lane, and exercise pause/resume, the two-second hold, reset
+   and Run again. Verify the file controls' visible labels and hover/focus tooltips.
+7. Run Stewart platform for its six-second window. Inspect the actual deck,
+   telescopic rods and spherical connections. Compare measured slider speeds,
+   closed-joint residuals and heave with the analytical reference; a moving
+   picture alone does not pass this gate. Record current bundle identifiers.
+8. Repeat the motor gate and the relevant rendered flows at the republished
    public URL. Local verification does not establish deployment acceptance.
 
 The pre-existing limitation remains: imported STEP geometry does not survive

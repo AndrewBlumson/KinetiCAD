@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { parseDemoDocument, demoAssetUrl } from '../src/demos/demoDocument.ts';
 import { createDemoSession } from '../src/demos/demoSession.ts';
 
-const ids = ['windmill', 'orrery', 'gyroscope', 'kinetic-mobile', 'material-studio'];
+const ids = ['windmill', 'orrery', 'gyroscope', 'kinetic-mobile', 'material-studio', 'stewart-platform'];
 const fixture = (id) => JSON.parse(readFileSync(new URL(`../public/demos/${id}.json`, import.meta.url), 'utf8'));
 
 test('all bundled examples load and reference existing parts', () => {
@@ -17,6 +17,13 @@ test('asset paths work at the Replit /app base and a local root', () => {
   assert.equal(demoAssetUrl('windmill', '/app'), '/app/demos/windmill.json');
   assert.equal(demoAssetUrl('windmill', '/app/'), '/app/demos/windmill.json');
   assert.equal(demoAssetUrl('windmill', '/'), '/demos/windmill.json');
+});
+
+test('force experiment survives document parsing and rejects invalid target references', () => {
+  const value = fixture('material-studio');
+  assert.deepEqual(parseDemoDocument(value).state.simulation.forceExperiment, value.state.simulation.forceExperiment);
+  value.state.simulation.forceExperiment.partIds.push('missing');
+  assert.throws(() => parseDemoDocument(value), /invalid force experiment/);
 });
 
 test('invalid and unsupported documents fail before entering a workspace', () => {

@@ -25,6 +25,12 @@ const documentSchema = z.object({
     simulation: z.object({
       running: z.boolean(), paused: z.boolean(), timeStepMs: z.number().positive().finite(),
       gravity: vec3, speedMultiplier: z.number().positive().finite(), simulationTimeMs: z.number().finite(),
+      durationMs: z.number().finite().positive().optional(),
+      forceExperiment: z.object({
+        kind: z.literal('equal-force'), partIds: z.array(z.string().min(1)).min(1),
+        forceN: z.number().finite().positive(), direction: vec3,
+        durationMs: z.number().finite().positive(),
+      }).optional(),
     }),
   }),
 });
@@ -41,6 +47,12 @@ export function parseDemoDocument(value: unknown): DemoDocument {
     if (!ids.has(mate.partA) || !ids.has(mate.partB) || mate.partA === mate.partB) {
       throw new Error('This demo has an invalid joint.');
     }
+  }
+  const experiment = parsed.state.simulation.forceExperiment;
+  if (experiment && (new Set(experiment.partIds).size !== experiment.partIds.length
+    || experiment.partIds.some((id) => !ids.has(id) || id === assembly.groundPartId)
+    || Math.abs(Math.hypot(...experiment.direction) - 1) > 1e-9)) {
+    throw new Error('This demo has invalid force experiment targets or direction.');
   }
   // The JSON is generated from typed/validated fixture builders, not user input.
   return parsed as unknown as DemoDocument;

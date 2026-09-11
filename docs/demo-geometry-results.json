@@ -6,7 +6,8 @@
     "orrery": "0b545aa00269d7c5d4b7dda7700875a5aef469dda57d33ea0a02f0acd45647e9",
     "gyroscope": "c9b0a7404200e23edc55aed44117a182ef487a7989221db75ce9ca46c1e0f652",
     "kinetic-mobile": "2c53a0d18d97be89066054f4907d53c9eb56ca6a94cf9c1b55e3fd1eb0aa68dd",
-    "material-studio": "6c63fc4b60d532bd6193ae252529c8842b510bc292896756746e0f32a7102fbd"
+    "material-studio": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+    "stewart-platform": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4"
   },
   "solids": [
     {
@@ -203,7 +204,7 @@
       "part": "material-plinth",
       "valid": true,
       "solids": 1,
-      "volumeMm3": 121440
+      "volumeMm3": 537696
     },
     {
       "demo": "material-studio",
@@ -260,6 +261,104 @@
       "valid": true,
       "solids": 1,
       "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-base",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 430734.9722742667
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-platform",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 213050.2473958452
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.1929402291125
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.1929402291125
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-barrel-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 13664.760876727965
+    },
+    {
+      "demo": "stewart-platform",
+      "part": "stewart-rod-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5424.192940229114
     }
   ],
   "gimbal": {
@@ -285,5 +384,66 @@
     "poses": 1,
     "pairChecks": 28,
     "maxIntersectionMm3": 0
+  },
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T22:38:11.990Z",
+  "provenance": {
+    "aggregation": "Serial OCCT runs combined by current fixture SHA-256. Solid records and existing gimbal/mobile intersection results are preserved, not recomputed or inferred.",
+    "priorFiveDemoAggregateSha256": "e9b6d800ab5a76aa7e22aacc56cccc86b66dc1fe9efa704eae91b6d6abadc2bb",
+    "priorFiveArcEntityCount": 0,
+    "priorFiveReuseReason": "The only subsequent geometric kernel change was the trimmed-arc coordinate frame. The five retained fixtures contain no arc entities; all five fixture hashes were verified unchanged.",
+    "stewart": {
+      "command": "node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs stewart-platform --export-descriptors --descriptors-only",
+      "resultSha256": "5e31ad3d4e13df15a8a5c98580cb44cc4034ac942e4987171db4838bea13750e",
+      "sketchToWireSha256": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
+      "scope": "All 14 final B-reps rebuilt from current feature chains, checked valid and one solid. Separate exact clearance checks use the initial fixture pose and the actual measured final solver pose."
+    },
+    "material": {
+      "report": "docs/material-clearance-results.json",
+      "reportSha256": "c699cd1d67c8e3564a20770b01696452b13a462e208d2a5060875a5033a23ea9",
+      "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+      "scope": "Exact OCCT B-rep intersection volumes for every pair at the initial pose and the measured 1 mN, 2 s final pose. Separate interval containment verifies the bounded straight-Y travel corridor between these poses. This is geometric interference verification; contact forces are disabled in the simulation."
+    },
+    "stewartClearance": {
+      "report": "docs/stewart-clearance-results.json",
+      "reportSha256": "677e5abdce609a62785b2599c2cbbbef5341be00f765cb1a2c518b4e0b89ed1d",
+      "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+      "measurementReport": "docs/stewart-physics-results.json",
+      "measurementReportSha256": "6892bda7d977d10696d461f2bc8a871d9d9d17f7f4d0f4e64bad5714fd0c89fb",
+      "scope": "Every pair of the 14 actual OCCT B-rep solids is intersected at the initial fixture pose and at the measured six-second final physics pose. The final pose comes from the shipped Rapier worker, including its residual translations and rotations; no ideal pose is substituted."
+    }
+  },
+  "material": {
+    "poses": 2,
+    "pairChecks": 72,
+    "maxIntersectionMm3": 0,
+    "minimumSampleLaneSeparationMm": 11.999999799999998,
+    "sourceReport": "docs/material-clearance-results.json"
+  },
+  "summary": {
+    "fixtureCount": 6,
+    "partCount": 50,
+    "validPartCount": 50,
+    "singleSolidPartCount": 48,
+    "newDemoSingleSolidPartCount": 35,
+    "preservedLegacyCompounds": [
+      {
+        "demo": "windmill",
+        "part": "part-rotor",
+        "solidCount": 5
+      },
+      {
+        "demo": "orrery",
+        "part": "part-ring",
+        "solidCount": 24
+      }
+    ]
+  },
+  "stewart": {
+    "poses": 2,
+    "pairChecks": 182,
+    "maxIntersectionMm3": 0,
+    "sourceReport": "docs/stewart-clearance-results.json",
+    "limitations": "These 182 endpoint pair checks establish sampled geometric noninterference only, not continuous collision detection or contact forces. Separate stewart-geometry.test.mjs checks conservative leg capsules at 61 intermediate analytic poses. Spherical bearings and actuator drives are ideal joints; bearing retention, seals, friction, load ratings and manufacturing tolerances are not modeled."
   }
 }

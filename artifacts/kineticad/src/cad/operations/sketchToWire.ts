@@ -165,7 +165,13 @@ function expandPrimitive(
       const start = planeToWorld3D(plane, startUV);
       const end = planeToWorld3D(plane, endUV);
       const centre = planeToWorld3D(plane, prim.centre);
-      const normal = planeNormal(plane);
+      // A trimmed circle's angular parameters must use the sketch's exact
+      // U/V basis. OCCT's two-argument Ax2 chooses its own in-plane X axis;
+      // that can put an arc's real endpoints elsewhere than start/end above.
+      // Keep extrusion's existing normal convention separate: XZ sketch
+      // U=+X, V=+Z requires U×V=-Y for this parameterisation.
+      const normal: Vec3 = plane === "XZ" ? [0, -1, 0] : planeNormal(plane);
+      const uDirection: Vec3 = plane === "YZ" ? [0, 1, 0] : [1, 0, 0];
       return [
         {
           closed: false,
@@ -174,7 +180,8 @@ function expandPrimitive(
           build: () => {
             const c = makePnt(oc, centre);
             const dir = new oc.gp_Dir_4(normal[0], normal[1], normal[2]);
-            const ax2 = new oc.gp_Ax2_3(c, dir);
+            const uDir = new oc.gp_Dir_4(...uDirection);
+            const ax2 = new oc.gp_Ax2_2(c, dir, uDir);
             const circ = new oc.gp_Circ_2(ax2, prim.radius);
             try {
               const builder = new oc.BRepBuilderAPI_MakeEdge_9(
@@ -188,6 +195,7 @@ function expandPrimitive(
             } finally {
               circ.delete();
               ax2.delete();
+              uDir.delete();
               dir.delete();
               c.delete();
             }

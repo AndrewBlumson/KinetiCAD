@@ -97,7 +97,7 @@ export function intersectionVolume(oc, a, b) {
 }
 
 async function main() {
-  const available=['windmill','orrery','gyroscope','kinetic-mobile','material-studio'];
+  const available=['windmill','orrery','gyroscope','kinetic-mobile','material-studio','stewart-platform'];
   const options=process.argv.slice(2);
   const exportDescriptors=options.includes('--export-descriptors');
   const descriptorsOnly=options.includes('--descriptors-only');

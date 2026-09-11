@@ -1,0 +1,936 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T22:22:10.448Z",
+  "method": "Exact OCCT B-rep intersection volumes for every pair at the initial pose and the measured 1 mN, 2 s final pose. Separate interval containment verifies the bounded straight-Y travel corridor between these poses. This is geometric interference verification; contact forces are disabled in the simulation.",
+  "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
+  "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+  "forceMeasurementReportSha256": "ef5ceb9a2074de609de1c750ed5efada1b228fa9ca5ce351b73c6df52c8bfefe",
+  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "overlapToleranceMm3": 0.00001,
+  "coordinateToleranceMm": 0.00001,
+  "bed": {
+    "minX": -164,
+    "maxX": 164,
+    "minY": -132,
+    "maxY": 132,
+    "surfaceZ": 6
+  },
+  "rails": [
+    {
+      "minX": -162,
+      "maxX": -158,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": -122,
+      "maxX": -118,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": -82,
+      "maxX": -78,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": -42,
+      "maxX": -38,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": -2,
+      "maxX": 2,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": 38,
+      "maxX": 42,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": 78,
+      "maxX": 82,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": 118,
+      "maxX": 122,
+      "minY": -126,
+      "maxY": 126
+    },
+    {
+      "minX": 158,
+      "maxX": 162,
+      "minY": -126,
+      "maxY": 126
+    }
+  ],
+  "finalPoseSource": "Initial fixture transform plus measured Y displacement from configured-force-60Hz. The force report verifies zero off-axis translation and rotation at every solver step.",
+  "solids": [
+    {
+      "partId": "material-plinth",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 537696,
+      "localBoundsMm": {
+        "min": [
+          -164.00000015,
+          -132.00000015,
+          -1.5e-7
+        ],
+        "max": [
+          164.00000015,
+          132.00000015,
+          8.00000015
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-7",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    },
+    {
+      "partId": "material-sample-8",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765,
+      "localBoundsMm": {
+        "min": [
+          -14.0000001,
+          -14.0000001,
+          -1.0000000000000002e-7
+        ],
+        "max": [
+          14.0000001,
+          14.0000001,
+          21.0000001
+        ]
+      }
+    }
+  ],
+  "poses": [
+    {
+      "phase": "initial",
+      "positions": {
+        "material-plinth": [
+          0,
+          0,
+          0
+        ],
+        "material-sample-1": [
+          -140,
+          -96,
+          6
+        ],
+        "material-sample-2": [
+          -100,
+          -96,
+          6
+        ],
+        "material-sample-3": [
+          -60,
+          -96,
+          6
+        ],
+        "material-sample-4": [
+          -20,
+          -96,
+          6
+        ],
+        "material-sample-5": [
+          20,
+          -96,
+          6
+        ],
+        "material-sample-6": [
+          60,
+          -96,
+          6
+        ],
+        "material-sample-7": [
+          100,
+          -96,
+          6
+        ],
+        "material-sample-8": [
+          140,
+          -96,
+          6
+        ]
+      },
+      "checks": [
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-6",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-6",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-7",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        }
+      ]
+    },
+    {
+      "phase": "measured-final",
+      "positions": {
+        "material-plinth": [
+          0,
+          0,
+          0
+        ],
+        "material-sample-1": [
+          -140,
+          -22.27927589416504,
+          6
+        ],
+        "material-sample-2": [
+          -100,
+          -70.70780944824219,
+          6
+        ],
+        "material-sample-3": [
+          -60,
+          -72.5824203491211,
+          6
+        ],
+        "material-sample-4": [
+          -20,
+          -51.06770324707031,
+          6
+        ],
+        "material-sample-5": [
+          20,
+          78.60318756103516,
+          6
+        ],
+        "material-sample-6": [
+          60,
+          63.240692138671875,
+          6
+        ],
+        "material-sample-7": [
+          100,
+          95.39683532714844,
+          6
+        ],
+        "material-sample-8": [
+          140,
+          72.6836166381836,
+          6
+        ]
+      },
+      "checks": [
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-1",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-plinth",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-2",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-1",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-3",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-2",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-4",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-3",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-5",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-4",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-6",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-5",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-6",
+          "partB": "material-sample-7",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-6",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        },
+        {
+          "partA": "material-sample-7",
+          "partB": "material-sample-8",
+          "intersectionVolumeMm3": 0
+        }
+      ]
+    }
+  ],
+  "travelCorridors": [
+    {
+      "partId": "material-sample-1",
+      "maximumTravelMm": 74.31966602356854,
+      "measuredFinalTravelMm": 73.72072410583496,
+      "conservativeEnvelopeMm": {
+        "min": [
+          -154.0000001,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          -125.9999999,
+          -7.680333876431456,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999900000006,
+        "rightRailMm": 3.999999900000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 133.68033387643146,
+        "bedLeftMm": 9.999999900000006,
+        "bedRightMm": 289.99999990000003,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 139.68033387643146,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-2",
+      "maximumTravelMm": 25.49853091024588,
+      "measuredFinalTravelMm": 25.292190551757812,
+      "conservativeEnvelopeMm": {
+        "min": [
+          -114.0000001,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          -85.9999999,
+          -56.50146898975412,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999900000006,
+        "rightRailMm": 3.999999900000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 182.50146898975413,
+        "bedLeftMm": 49.999999900000006,
+        "bedRightMm": 249.9999999,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 188.50146898975413,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-3",
+      "maximumTravelMm": 23.60878803101589,
+      "measuredFinalTravelMm": 23.417579650878906,
+      "conservativeEnvelopeMm": {
+        "min": [
+          -74.0000001,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          -45.9999999,
+          -58.39121186898411,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999900000006,
+        "rightRailMm": 3.999999899999999,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 184.3912118689841,
+        "bedLeftMm": 89.9999999,
+        "bedRightMm": 209.9999999,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 190.3912118689841,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-4",
+      "maximumTravelMm": 45.2971914816332,
+      "measuredFinalTravelMm": 44.93229675292969,
+      "conservativeEnvelopeMm": {
+        "min": [
+          -34.0000001,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          -5.999999900000001,
+          -36.7028084183668,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999899999999,
+        "rightRailMm": 3.9999999000000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 162.7028084183668,
+        "bedLeftMm": 129.9999999,
+        "bedRightMm": 169.9999999,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 168.7028084183668,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-5",
+      "maximumTravelMm": 176.01752479266236,
+      "measuredFinalTravelMm": 174.60318756103516,
+      "conservativeEnvelopeMm": {
+        "min": [
+          5.999999900000001,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          34.0000001,
+          94.01752489266235,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.9999999000000006,
+        "rightRailMm": 3.999999899999999,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 31.98247510733765,
+        "bedLeftMm": 169.9999999,
+        "bedRightMm": 129.9999999,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 37.98247510733765,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-6",
+      "maximumTravelMm": 160.52815861090806,
+      "measuredFinalTravelMm": 159.24069213867188,
+      "conservativeEnvelopeMm": {
+        "min": [
+          45.9999999,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          74.0000001,
+          78.52815871090806,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999899999999,
+        "rightRailMm": 3.999999900000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 47.47184128909194,
+        "bedLeftMm": 209.9999999,
+        "bedRightMm": 89.9999999,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 53.47184128909194,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-7",
+      "maximumTravelMm": 192.9420944842645,
+      "measuredFinalTravelMm": 191.39683532714844,
+      "conservativeEnvelopeMm": {
+        "min": [
+          85.9999999,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          114.0000001,
+          110.94209458426448,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999900000006,
+        "rightRailMm": 3.999999900000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 15.057905415735519,
+        "bedLeftMm": 249.9999999,
+        "bedRightMm": 49.999999900000006,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 21.05790541573552,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    },
+    {
+      "partId": "material-sample-8",
+      "maximumTravelMm": 170.05089683358906,
+      "measuredFinalTravelMm": 168.6836166381836,
+      "conservativeEnvelopeMm": {
+        "min": [
+          125.9999999,
+          -110.0000001,
+          5.9999999
+        ],
+        "max": [
+          154.0000001,
+          88.05089693358906,
+          27.0000001
+        ]
+      },
+      "clearances": {
+        "leftRailMm": 3.999999900000006,
+        "rightRailMm": 3.999999900000006,
+        "railStartMm": 15.999999900000006,
+        "railEndMm": 37.94910306641094,
+        "bedLeftMm": 289.99999990000003,
+        "bedRightMm": 9.999999900000006,
+        "bedStartMm": 21.999999900000006,
+        "bedEndMm": 43.94910306641094,
+        "bedSurfaceMm": -1.0000000028043132e-7
+      }
+    }
+  ],
+  "totalPairChecks": 72,
+  "maxIntersectionVolumeMm3": 0,
+  "minimumSampleLaneSeparationMm": 11.999999799999998,
+  "failures": [],
+  "passed": true
+}

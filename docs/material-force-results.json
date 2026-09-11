@@ -1,0 +1,1396 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T22:15:08.606Z",
+  "method": "Real OCCT-rebuilt equal-volume samples and exact CAD mass tensors; shipped Comlink/Rapier worker. Forces at each centre of mass, ideal unpowered Y guides, zero gravity. Readouts are measured worker positions and COM velocities; analytical predictions are computed independently from exported CAD mass.",
+  "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
+  "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "massPropertiesSha256": "dafa18c949651652dc7cef7de0879023d00fa0605a59bde3d88a6f3e8fc6834d",
+  "equalSampleVolumeMm3": 10050.283064729765,
+  "experiment": {
+    "kind": "equal-force",
+    "partIds": [
+      "material-sample-1",
+      "material-sample-2",
+      "material-sample-3",
+      "material-sample-4",
+      "material-sample-5",
+      "material-sample-6",
+      "material-sample-7",
+      "material-sample-8"
+    ],
+    "forceN": 0.001,
+    "direction": [
+      0,
+      1,
+      0
+    ],
+    "durationMs": 2000
+  },
+  "tolerances": {
+    "velocityAndAccelerationRelative": 0.0001,
+    "positionRoundoffMm": 0.002,
+    "offAxisPositionMm": 0.001,
+    "offAxisVelocityMmPerSec": 0.001,
+    "quaternionDifference": 0.00001,
+    "clockMs": 0.000001
+  },
+  "analyticalReference": {
+    "accelerationMmPerSec2": "1000 * forceN / CAD_massKg",
+    "velocityMmPerSec": "acceleration * simulatedTimeSeconds",
+    "displacementMm": "0.5 * acceleration * simulatedTimeSeconds^2",
+    "firstOrderPositionErrorBoundMm": "0.5 * acceleration * simulatedTimeSeconds * configuredStepSeconds + positionRoundoffMm",
+    "note": "The first-order bound uses the outer configured step and is conservative for Rapier internal solver substeps. A separate tighter observed convergence comparison is reported."
+  },
+  "runs": [
+    {
+      "name": "configured-force-60Hz",
+      "forceN": 0.001,
+      "timeStepMs": 16.666666666666668,
+      "actualDurationMs": 2000,
+      "solverSteps": 120,
+      "checkedZeroDurationPause": true,
+      "checkedCompletedRunHoldsState": true,
+      "maxGroundPositionDriftMm": 0,
+      "samples": {
+        "material-sample-1": {
+          "partId": "material-sample-1",
+          "material": "Aluminium 6061",
+          "cadMassKg": 0.027135764274770366,
+          "expectedAccelerationMmPerSec2": 36.85173521829845,
+          "maxVelocityRelativeError": 0.00004768924892296491,
+          "maxPositionErrorMm": 0.017253669238058933,
+          "maxPositionBoundRatio": 0.031164002827778235,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 18.425899505615234,
+              "measuredAccelerationMmPerSec2": 36.85179901123046,
+              "expectedVelocityMmPerSec": 18.42586760914923,
+              "measuredDisplacementMm": 4.611289978027344,
+              "expectedDisplacementMm": 4.606466902287308,
+              "positionErrorBoundMm": 0.15554889674291025
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 36.851322174072266,
+              "measuredAccelerationMmPerSec2": 36.85132217407226,
+              "expectedVelocityMmPerSec": 36.85173521829846,
+              "measuredDisplacementMm": 18.435470581054688,
+              "expectedDisplacementMm": 18.425867609149233,
+              "positionErrorBoundMm": 0.3090977934858205
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 55.275394439697266,
+              "measuredAccelerationMmPerSec2": 36.85026295979818,
+              "expectedVelocityMmPerSec": 55.27760282744768,
+              "measuredDisplacementMm": 41.47195816040039,
+              "expectedDisplacementMm": 41.45820212058576,
+              "positionErrorBoundMm": 0.4626466902287307
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 73.7013931274414,
+              "measuredAccelerationMmPerSec2": 36.8506965637207,
+              "expectedVelocityMmPerSec": 73.7034704365969,
+              "measuredDisplacementMm": 73.72072410583496,
+              "expectedDisplacementMm": 73.7034704365969,
+              "positionErrorBoundMm": 0.6161955869716409
+            }
+          ]
+        },
+        "material-sample-2": {
+          "partId": "material-sample-2",
+          "material": "Steel 1018",
+          "cadMassKg": 0.07909572771942325,
+          "expectedAccelerationMmPerSec2": 12.642907889378122,
+          "maxVelocityRelativeError": 0.000029175647590134967,
+          "maxPositionErrorMm": 0.006374773001567746,
+          "maxPositionBoundRatio": 0.030883851057100193,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 6.321396350860596,
+              "measuredAccelerationMmPerSec2": 12.642792701721188,
+              "expectedVelocityMmPerSec": 6.321453944689063,
+              "measuredDisplacementMm": 1.582000732421875,
+              "expectedDisplacementMm": 1.5803634861722662,
+              "positionErrorBoundMm": 0.05467878287240886
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 12.642991065979004,
+              "measuredAccelerationMmPerSec2": 12.642991065979,
+              "expectedVelocityMmPerSec": 12.642907889378126,
+              "measuredDisplacementMm": 6.32470703125,
+              "expectedDisplacementMm": 6.321453944689065,
+              "positionErrorBoundMm": 0.10735756574481772
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 18.964277267456055,
+              "measuredAccelerationMmPerSec2": 12.64285151163737,
+              "expectedVelocityMmPerSec": 18.964361834067184,
+              "measuredDisplacementMm": 14.22821044921875,
+              "expectedDisplacementMm": 14.223271375550388,
+              "positionErrorBoundMm": 0.16003634861722654
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 25.285078048706055,
+              "measuredAccelerationMmPerSec2": 12.642539024353027,
+              "expectedVelocityMmPerSec": 25.285815778756245,
+              "measuredDisplacementMm": 25.292190551757812,
+              "expectedDisplacementMm": 25.285815778756245,
+              "positionErrorBoundMm": 0.2127151314896354
+            }
+          ]
+        },
+        "material-sample-3": {
+          "partId": "material-sample-3",
+          "material": "Brass C36000",
+          "cadMassKg": 0.085427406050203,
+          "expectedAccelerationMmPerSec2": 11.705845304635979,
+          "maxVelocityRelativeError": 0.00004248217804815904,
+          "maxPositionErrorMm": 0.005889041606948808,
+          "maxPositionBoundRatio": 0.031290777902619624,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 5.852956771850586,
+              "measuredAccelerationMmPerSec2": 11.70591354370117,
+              "expectedVelocityMmPerSec": 5.85292265231799,
+              "measuredDisplacementMm": 1.464752197265625,
+              "expectedDisplacementMm": 1.4632306630794978,
+              "positionErrorBoundMm": 0.05077435543598326
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 11.705923080444336,
+              "measuredAccelerationMmPerSec2": 11.705923080444334,
+              "expectedVelocityMmPerSec": 11.70584530463598,
+              "measuredDisplacementMm": 5.855987548828125,
+              "expectedDisplacementMm": 5.852922652317991,
+              "positionErrorBoundMm": 0.09954871087196651
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 17.558645248413086,
+              "measuredAccelerationMmPerSec2": 11.705763498942057,
+              "expectedVelocityMmPerSec": 17.558767956953968,
+              "measuredDisplacementMm": 13.173713684082031,
+              "expectedDisplacementMm": 13.169075967715475,
+              "positionErrorBoundMm": 0.14832306630794975
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 23.410696029663086,
+              "measuredAccelerationMmPerSec2": 11.705348014831543,
+              "expectedVelocityMmPerSec": 23.411690609271957,
+              "measuredDisplacementMm": 23.417579650878906,
+              "expectedDisplacementMm": 23.411690609271957,
+              "positionErrorBoundMm": 0.197097421743933
+            }
+          ]
+        },
+        "material-sample-4": {
+          "partId": "material-sample-4",
+          "material": "Titanium Grade 5",
+          "cadMassKg": 0.04452275397675286,
+          "expectedAccelerationMmPerSec2": 22.460425528082578,
+          "maxVelocityRelativeError": 0.00002219995682492087,
+          "maxPositionErrorMm": 0.011445696764532443,
+          "maxPositionBoundRatio": 0.03098105411589482,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 11.230164527893066,
+              "measuredAccelerationMmPerSec2": 22.46032905578613,
+              "expectedVelocityMmPerSec": 11.23021276404129,
+              "measuredDisplacementMm": 2.8105010986328125,
+              "expectedDisplacementMm": 2.807553191010323,
+              "positionErrorBoundMm": 0.09558510636701077
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 22.460023880004883,
+              "measuredAccelerationMmPerSec2": 22.46002388000488,
+              "expectedVelocityMmPerSec": 22.46042552808258,
+              "measuredDisplacementMm": 11.235977172851562,
+              "expectedDisplacementMm": 11.230212764041292,
+              "positionErrorBoundMm": 0.18917021273402154
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 33.69015884399414,
+              "measuredAccelerationMmPerSec2": 22.460105895996094,
+              "expectedVelocityMmPerSec": 33.690638292123865,
+              "measuredDisplacementMm": 25.276390075683594,
+              "expectedDisplacementMm": 25.2679787190929,
+              "positionErrorBoundMm": 0.28275531910103224
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 44.92184829711914,
+              "measuredAccelerationMmPerSec2": 22.46092414855957,
+              "expectedVelocityMmPerSec": 44.920851056165155,
+              "measuredDisplacementMm": 44.93229675292969,
+              "expectedDisplacementMm": 44.920851056165155,
+              "positionErrorBoundMm": 0.376340425468043
+            }
+          ]
+        },
+        "material-sample-5": {
+          "partId": "material-sample-5",
+          "material": "Nylon 6",
+          "cadMassKg": 0.01145732269379193,
+          "expectedAccelerationMmPerSec2": 87.28042551702265,
+          "maxVelocityRelativeError": 0.00003277383862760363,
+          "maxPositionErrorMm": 0.04233652698985679,
+          "maxPositionBoundRatio": 0.031362414422658566,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 43.64033126831055,
+              "measuredAccelerationMmPerSec2": 87.28066253662108,
+              "expectedVelocityMmPerSec": 43.64021275851133,
+              "measuredDisplacementMm": 10.921409606933594,
+              "expectedDisplacementMm": 10.910053189627835,
+              "positionErrorBoundMm": 0.36566843965426116
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 87.27973175048828,
+              "measuredAccelerationMmPerSec2": 87.27973175048827,
+              "expectedVelocityMmPerSec": 87.28042551702266,
+              "measuredDisplacementMm": 43.66302490234375,
+              "expectedDisplacementMm": 43.64021275851134,
+              "positionErrorBoundMm": 0.7293368793085223
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 130.9174346923828,
+              "measuredAccelerationMmPerSec2": 87.27828979492188,
+              "expectedVelocityMmPerSec": 130.92063827553397,
+              "measuredDisplacementMm": 98.22367238998413,
+              "expectedDisplacementMm": 98.19047870665048,
+              "positionErrorBoundMm": 1.093005318962783
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 174.5551300048828,
+              "measuredAccelerationMmPerSec2": 87.2775650024414,
+              "expectedVelocityMmPerSec": 174.5608510340453,
+              "measuredDisplacementMm": 174.60318756103516,
+              "expectedDisplacementMm": 174.5608510340453,
+              "positionErrorBoundMm": 1.4566737586170444
+            }
+          ]
+        },
+        "material-sample-6": {
+          "partId": "material-sample-6",
+          "material": "PLA",
+          "cadMassKg": 0.012562853830912206,
+          "expectedAccelerationMmPerSec2": 79.59974807152466,
+          "maxVelocityRelativeError": 0.0000016825198110285033,
+          "maxPositionErrorMm": 0.04119599562255871,
+          "maxPositionBoundRatio": 0.031060288386652573,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 39.79981231689453,
+              "measuredAccelerationMmPerSec2": 79.59962463378905,
+              "expectedVelocityMmPerSec": 39.799874035762336,
+              "measuredDisplacementMm": 9.960319519042969,
+              "expectedDisplacementMm": 9.949968508940586,
+              "positionErrorBoundMm": 0.33366561696468616
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 79.59961700439453,
+              "measuredAccelerationMmPerSec2": 79.59961700439452,
+              "expectedVelocityMmPerSec": 79.59974807152467,
+              "measuredDisplacementMm": 39.820533752441406,
+              "expectedDisplacementMm": 39.79987403576234,
+              "positionErrorBoundMm": 0.6653312339293723
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 119.39942169189453,
+              "measuredAccelerationMmPerSec2": 79.59961446126302,
+              "expectedVelocityMmPerSec": 119.39962210728699,
+              "measuredDisplacementMm": 89.58066320419312,
+              "expectedDisplacementMm": 89.54971658046524,
+              "positionErrorBoundMm": 0.9969968508940583
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 159.19923400878906,
+              "measuredAccelerationMmPerSec2": 79.59961700439453,
+              "expectedVelocityMmPerSec": 159.19949614304932,
+              "measuredDisplacementMm": 159.24069213867188,
+              "expectedDisplacementMm": 159.19949614304932,
+              "positionErrorBoundMm": 1.3286624678587444
+            }
+          ]
+        },
+        "material-sample-7": {
+          "partId": "material-sample-7",
+          "material": "ABS",
+          "cadMassKg": 0.010452294387318956,
+          "expectedAccelerationMmPerSec2": 95.67277412442867,
+          "maxVelocityRelativeError": 0.000029916212856056145,
+          "maxPositionErrorMm": 0.05128707829109658,
+          "maxPositionBoundRatio": 0.03212376638626915,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 47.8369140625,
+              "measuredAccelerationMmPerSec2": 95.67382812499999,
+              "expectedVelocityMmPerSec": 47.83638706221434,
+              "measuredDisplacementMm": 11.971572875976562,
+              "expectedDisplacementMm": 11.959096765553587,
+              "positionErrorBoundMm": 0.40063655885178623
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 95.67262268066406,
+              "measuredAccelerationMmPerSec2": 95.67262268066405,
+              "expectedVelocityMmPerSec": 95.67277412442868,
+              "measuredDisplacementMm": 47.86160659790039,
+              "expectedDisplacementMm": 47.83638706221435,
+              "positionErrorBoundMm": 0.7992731177035725
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 143.5094757080078,
+              "measuredAccelerationMmPerSec2": 95.67298380533855,
+              "expectedVelocityMmPerSec": 143.509161186643,
+              "measuredDisplacementMm": 107.669189453125,
+              "expectedDisplacementMm": 107.63187088998225,
+              "positionErrorBoundMm": 1.1979096765553585
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 191.3512725830078,
+              "measuredAccelerationMmPerSec2": 95.6756362915039,
+              "expectedVelocityMmPerSec": 191.34554824885734,
+              "measuredDisplacementMm": 191.39683532714844,
+              "expectedDisplacementMm": 191.34554824885734,
+              "positionErrorBoundMm": 1.5965462354071447
+            }
+          ]
+        },
+        "material-sample-8": {
+          "partId": "material-sample-8",
+          "material": "Acrylic",
+          "cadMassKg": 0.011859334016381121,
+          "expectedAccelerationMmPerSec2": 84.32176702492019,
+          "maxVelocityRelativeError": 0.00003679327709089287,
+          "maxPositionErrorMm": 0.040082588343210546,
+          "maxPositionBoundRatio": 0.03556107423750741,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 42.16082000732422,
+              "measuredAccelerationMmPerSec2": 84.32164001464842,
+              "expectedVelocityMmPerSec": 42.1608835124601,
+              "measuredDisplacementMm": 10.551200866699219,
+              "expectedDisplacementMm": 10.540220878115028,
+              "positionErrorBoundMm": 0.35334069593716755
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 84.3209228515625,
+              "measuredAccelerationMmPerSec2": 84.32092285156249,
+              "expectedVelocityMmPerSec": 84.3217670249202,
+              "measuredDisplacementMm": 42.18286895751953,
+              "expectedDisplacementMm": 42.16088351246011,
+              "positionErrorBoundMm": 0.7046813918743351
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 126.4791259765625,
+              "measuredAccelerationMmPerSec2": 84.31941731770833,
+              "expectedVelocityMmPerSec": 126.4826505373803,
+              "measuredDisplacementMm": 94.89380133152008,
+              "expectedDisplacementMm": 94.86198790303521,
+              "positionErrorBoundMm": 1.0560220878115025
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 168.6373291015625,
+              "measuredAccelerationMmPerSec2": 84.31866455078125,
+              "expectedVelocityMmPerSec": 168.64353404984038,
+              "measuredDisplacementMm": 168.6836166381836,
+              "expectedDisplacementMm": 168.64353404984038,
+              "positionErrorBoundMm": 1.40736278374867
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "configured-force-120Hz",
+      "forceN": 0.001,
+      "timeStepMs": 8.333333333333334,
+      "actualDurationMs": 2000,
+      "solverSteps": 240,
+      "checkedZeroDurationPause": true,
+      "checkedCompletedRunHoldsState": true,
+      "maxGroundPositionDriftMm": 0,
+      "samples": {
+        "material-sample-1": {
+          "partId": "material-sample-1",
+          "material": "Aluminium 6061",
+          "cadMassKg": 0.027135764274770366,
+          "expectedAccelerationMmPerSec2": 36.85173521829845,
+          "maxVelocityRelativeError": 0.00004768924892296491,
+          "maxPositionErrorMm": 0.009952338671652683,
+          "maxPositionBoundRatio": 0.032198025613240866,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 18.425661087036133,
+              "measuredAccelerationMmPerSec2": 36.85132217407226,
+              "expectedVelocityMmPerSec": 18.42586760914923,
+              "measuredDisplacementMm": 4.608856201171875,
+              "expectedDisplacementMm": 4.606466902287308,
+              "positionErrorBoundMm": 0.07877444837145513
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 36.8506965637207,
+              "measuredAccelerationMmPerSec2": 36.850696563720696,
+              "expectedVelocityMmPerSec": 36.85173521829846,
+              "measuredDisplacementMm": 18.430198669433594,
+              "expectedDisplacementMm": 18.425867609149233,
+              "positionErrorBoundMm": 0.15554889674291025
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 55.2784309387207,
+              "measuredAccelerationMmPerSec2": 36.85228729248047,
+              "expectedVelocityMmPerSec": 55.27760282744768,
+              "measuredDisplacementMm": 41.46486282348633,
+              "expectedDisplacementMm": 41.45820212058576,
+              "positionErrorBoundMm": 0.23232334511436534
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 73.70616149902344,
+              "measuredAccelerationMmPerSec2": 36.85308074951172,
+              "expectedVelocityMmPerSec": 73.7034704365969,
+              "measuredDisplacementMm": 73.71342277526855,
+              "expectedDisplacementMm": 73.7034704365969,
+              "positionErrorBoundMm": 0.30909779348582045
+            }
+          ]
+        },
+        "material-sample-2": {
+          "partId": "material-sample-2",
+          "material": "Steel 1018",
+          "cadMassKg": 0.07909572771942325,
+          "expectedAccelerationMmPerSec2": 12.642907889378122,
+          "maxVelocityRelativeError": 0.00006621254554530161,
+          "maxPositionErrorMm": 0.002232011771098996,
+          "maxPositionBoundRatio": 0.02996415356959598,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 6.321495532989502,
+              "measuredAccelerationMmPerSec2": 12.642991065979,
+              "expectedVelocityMmPerSec": 6.321453944689063,
+              "measuredDisplacementMm": 1.5811843872070312,
+              "expectedDisplacementMm": 1.5803634861722662,
+              "positionErrorBoundMm": 0.028339391436204432
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 12.642539024353027,
+              "measuredAccelerationMmPerSec2": 12.642539024353024,
+              "expectedVelocityMmPerSec": 12.642907889378126,
+              "measuredDisplacementMm": 6.323051452636719,
+              "expectedDisplacementMm": 6.321453944689065,
+              "positionErrorBoundMm": 0.05467878287240886
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 18.963340759277344,
+              "measuredAccelerationMmPerSec2": 12.642227172851562,
+              "expectedVelocityMmPerSec": 18.964361834067184,
+              "measuredDisplacementMm": 14.225341796875,
+              "expectedDisplacementMm": 14.223271375550388,
+              "positionErrorBoundMm": 0.08101817430861327
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 25.284141540527344,
+              "measuredAccelerationMmPerSec2": 12.642070770263672,
+              "expectedVelocityMmPerSec": 25.285815778756245,
+              "measuredDisplacementMm": 25.288047790527344,
+              "expectedDisplacementMm": 25.285815778756245,
+              "positionErrorBoundMm": 0.1073575657448177
+            }
+          ]
+        },
+        "material-sample-3": {
+          "partId": "material-sample-3",
+          "material": "Brass C36000",
+          "cadMassKg": 0.085427406050203,
+          "expectedAccelerationMmPerSec2": 11.705845304635979,
+          "maxVelocityRelativeError": 0.00009568203781109712,
+          "maxPositionErrorMm": 0.0017755505237353475,
+          "maxPositionBoundRatio": 0.03005874878941578,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 5.852961540222168,
+              "measuredAccelerationMmPerSec2": 11.705923080444334,
+              "expectedVelocityMmPerSec": 5.85292265231799,
+              "measuredDisplacementMm": 1.4639968872070312,
+              "expectedDisplacementMm": 1.4632306630794978,
+              "positionErrorBoundMm": 0.02638717771799163
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 11.705348014831543,
+              "measuredAccelerationMmPerSec2": 11.705348014831541,
+              "expectedVelocityMmPerSec": 11.70584530463598,
+              "measuredDisplacementMm": 5.8543853759765625,
+              "expectedDisplacementMm": 5.852922652317991,
+              "positionErrorBoundMm": 0.05077435543598326
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 17.55739974975586,
+              "measuredAccelerationMmPerSec2": 11.704933166503906,
+              "expectedVelocityMmPerSec": 17.558767956953968,
+              "measuredDisplacementMm": 13.17083740234375,
+              "expectedDisplacementMm": 13.169075967715475,
+              "positionErrorBoundMm": 0.07516153315397488
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 23.40945053100586,
+              "measuredAccelerationMmPerSec2": 11.70472526550293,
+              "expectedVelocityMmPerSec": 23.411690609271957,
+              "measuredDisplacementMm": 23.41332244873047,
+              "expectedDisplacementMm": 23.411690609271957,
+              "positionErrorBoundMm": 0.0995487108719665
+            }
+          ]
+        },
+        "material-sample-4": {
+          "partId": "material-sample-4",
+          "material": "Titanium Grade 5",
+          "cadMassKg": 0.04452275397675286,
+          "expectedAccelerationMmPerSec2": 22.460425528082578,
+          "maxVelocityRelativeError": 0.000054736394013339214,
+          "maxPositionErrorMm": 0.0065857724481261926,
+          "maxPositionBoundRatio": 0.035759753908816506,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 11.230011940002441,
+              "measuredAccelerationMmPerSec2": 22.46002388000488,
+              "expectedVelocityMmPerSec": 11.23021276404129,
+              "measuredDisplacementMm": 2.8090591430664062,
+              "expectedDisplacementMm": 2.807553191010323,
+              "positionErrorBoundMm": 0.04879255318350539
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 22.46092414855957,
+              "measuredAccelerationMmPerSec2": 22.460924148559567,
+              "expectedVelocityMmPerSec": 22.46042552808258,
+              "measuredDisplacementMm": 11.233123779296875,
+              "expectedDisplacementMm": 11.230212764041292,
+              "positionErrorBoundMm": 0.09558510636701077
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 33.69206237792969,
+              "measuredAccelerationMmPerSec2": 22.461374918619793,
+              "expectedVelocityMmPerSec": 33.690638292123865,
+              "measuredDisplacementMm": 25.272911071777344,
+              "expectedDisplacementMm": 25.2679787190929,
+              "positionErrorBoundMm": 0.14237765955051612
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 44.92008972167969,
+              "measuredAccelerationMmPerSec2": 22.460044860839844,
+              "expectedVelocityMmPerSec": 44.920851056165155,
+              "measuredDisplacementMm": 44.92743682861328,
+              "expectedDisplacementMm": 44.920851056165155,
+              "positionErrorBoundMm": 0.18917021273402151
+            }
+          ]
+        },
+        "material-sample-5": {
+          "partId": "material-sample-5",
+          "material": "Nylon 6",
+          "cadMassKg": 0.01145732269379193,
+          "expectedAccelerationMmPerSec2": 87.28042551702265,
+          "maxVelocityRelativeError": 0.00004432392913305069,
+          "maxPositionErrorMm": 0.020730081677356793,
+          "maxPositionBoundRatio": 0.0310416413223888,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 43.63986587524414,
+              "measuredAccelerationMmPerSec2": 87.27973175048827,
+              "expectedVelocityMmPerSec": 43.64021275851133,
+              "measuredDisplacementMm": 10.915748596191406,
+              "expectedDisplacementMm": 10.910053189627835,
+              "positionErrorBoundMm": 0.18383421982713058
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 87.2775650024414,
+              "measuredAccelerationMmPerSec2": 87.27756500244139,
+              "expectedVelocityMmPerSec": 87.28042551702266,
+              "measuredDisplacementMm": 43.65079116821289,
+              "expectedDisplacementMm": 43.64021275851134,
+              "positionErrorBoundMm": 0.36566843965426116
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 130.91624450683594,
+              "measuredAccelerationMmPerSec2": 87.27749633789062,
+              "expectedVelocityMmPerSec": 130.92063827553397,
+              "measuredDisplacementMm": 98.20470356941223,
+              "expectedDisplacementMm": 98.19047870665048,
+              "positionErrorBoundMm": 0.5475026594813915
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 174.56858825683594,
+              "measuredAccelerationMmPerSec2": 87.28429412841797,
+              "expectedVelocityMmPerSec": 174.5608510340453,
+              "measuredDisplacementMm": 174.58158111572266,
+              "expectedDisplacementMm": 174.5608510340453,
+              "positionErrorBoundMm": 0.7293368793085222
+            }
+          ]
+        },
+        "material-sample-6": {
+          "partId": "material-sample-6",
+          "material": "PLA",
+          "cadMassKg": 0.012562853830912206,
+          "expectedAccelerationMmPerSec2": 79.59974807152466,
+          "maxVelocityRelativeError": 0.00007043034297464862,
+          "maxPositionErrorMm": 0.022725231462402462,
+          "maxPositionBoundRatio": 0.034156267289887736,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 39.799808502197266,
+              "measuredAccelerationMmPerSec2": 79.59961700439452,
+              "expectedVelocityMmPerSec": 39.799874035762336,
+              "measuredDisplacementMm": 9.95513916015625,
+              "expectedDisplacementMm": 9.949968508940586,
+              "positionErrorBoundMm": 0.16783280848234308
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 79.59961700439453,
+              "measuredAccelerationMmPerSec2": 79.59961700439452,
+              "expectedVelocityMmPerSec": 79.59974807152467,
+              "measuredDisplacementMm": 39.81018829345703,
+              "expectedDisplacementMm": 39.79987403576234,
+              "positionErrorBoundMm": 0.33366561696468616
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 119.39942169189453,
+              "measuredAccelerationMmPerSec2": 79.59961446126302,
+              "expectedVelocityMmPerSec": 119.39962210728699,
+              "measuredDisplacementMm": 89.56512260437012,
+              "expectedDisplacementMm": 89.54971658046524,
+              "positionErrorBoundMm": 0.49949842544702916
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 159.21070861816406,
+              "measuredAccelerationMmPerSec2": 79.60535430908203,
+              "expectedVelocityMmPerSec": 159.19949614304932,
+              "measuredDisplacementMm": 159.22222137451172,
+              "expectedDisplacementMm": 159.19949614304932,
+              "positionErrorBoundMm": 0.6653312339293722
+            }
+          ]
+        },
+        "material-sample-7": {
+          "partId": "material-sample-7",
+          "material": "ABS",
+          "cadMassKg": 0.010452294387318956,
+          "expectedAccelerationMmPerSec2": 95.67277412442867,
+          "maxVelocityRelativeError": 0.00007146318990525945,
+          "maxPositionErrorMm": 0.03356399479500283,
+          "maxPositionBoundRatio": 0.04199314858910438,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 47.83631134033203,
+              "measuredAccelerationMmPerSec2": 95.67262268066405,
+              "expectedVelocityMmPerSec": 47.83638706221434,
+              "measuredDisplacementMm": 11.965400695800781,
+              "expectedDisplacementMm": 11.959096765553587,
+              "positionErrorBoundMm": 0.20131827942589312
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 95.6756362915039,
+              "measuredAccelerationMmPerSec2": 95.67563629150389,
+              "expectedVelocityMmPerSec": 95.67277412442868,
+              "measuredDisplacementMm": 47.849212646484375,
+              "expectedDisplacementMm": 47.83638706221435,
+              "positionErrorBoundMm": 0.40063655885178623
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 143.51742553710938,
+              "measuredAccelerationMmPerSec2": 95.67828369140625,
+              "expectedVelocityMmPerSec": 143.509161186643,
+              "measuredDisplacementMm": 107.65371036529541,
+              "expectedDisplacementMm": 107.63187088998225,
+              "positionErrorBoundMm": 0.5999548382776793
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 191.35922241210938,
+              "measuredAccelerationMmPerSec2": 95.67961120605469,
+              "expectedVelocityMmPerSec": 191.34554824885734,
+              "measuredDisplacementMm": 191.37911224365234,
+              "expectedDisplacementMm": 191.34554824885734,
+              "positionErrorBoundMm": 0.7992731177035723
+            }
+          ]
+        },
+        "material-sample-8": {
+          "partId": "material-sample-8",
+          "material": "Acrylic",
+          "cadMassKg": 0.011859334016381121,
+          "expectedAccelerationMmPerSec2": 84.32176702492019,
+          "maxVelocityRelativeError": 0.000050184248728041967,
+          "maxPositionErrorMm": 0.015157356409616796,
+          "maxPositionBoundRatio": 0.03072863868541827,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 42.16046142578125,
+              "measuredAccelerationMmPerSec2": 84.32092285156249,
+              "expectedVelocityMmPerSec": 42.1608835124601,
+              "measuredDisplacementMm": 10.54559326171875,
+              "expectedDisplacementMm": 10.540220878115028,
+              "positionErrorBoundMm": 0.17767034796858377
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 84.31866455078125,
+              "measuredAccelerationMmPerSec2": 84.31866455078124,
+              "expectedVelocityMmPerSec": 84.3217670249202,
+              "measuredDisplacementMm": 42.170867919921875,
+              "expectedDisplacementMm": 42.16088351246011,
+              "positionErrorBoundMm": 0.35334069593716755
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 126.47686767578125,
+              "measuredAccelerationMmPerSec2": 84.31791178385417,
+              "expectedVelocityMmPerSec": 126.4826505373803,
+              "measuredDisplacementMm": 94.87517964839935,
+              "expectedDisplacementMm": 94.86198790303521,
+              "positionErrorBoundMm": 0.5290110439057513
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 168.63507080078125,
+              "measuredAccelerationMmPerSec2": 84.31753540039062,
+              "expectedVelocityMmPerSec": 168.64353404984038,
+              "measuredDisplacementMm": 168.65869140625,
+              "expectedDisplacementMm": 168.64353404984038,
+              "positionErrorBoundMm": 0.704681391874335
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "half-force-60Hz",
+      "forceN": 0.0005,
+      "timeStepMs": 16.666666666666668,
+      "actualDurationMs": 2000,
+      "solverSteps": 120,
+      "checkedZeroDurationPause": true,
+      "checkedCompletedRunHoldsState": true,
+      "maxGroundPositionDriftMm": 0,
+      "samples": {
+        "material-sample-1": {
+          "partId": "material-sample-1",
+          "material": "Aluminium 6061",
+          "cadMassKg": 0.027135764274770366,
+          "expectedAccelerationMmPerSec2": 18.425867609149226,
+          "maxVelocityRelativeError": 0.00004768924892296491,
+          "maxPositionErrorMm": 0.008631602990611498,
+          "maxPositionBoundRatio": 0.031130289932970946,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 9.212949752807617,
+              "measuredAccelerationMmPerSec2": 18.42589950561523,
+              "expectedVelocityMmPerSec": 9.212933804574615,
+              "measuredDisplacementMm": 2.3056411743164062,
+              "expectedDisplacementMm": 2.303233451143654,
+              "positionErrorBoundMm": 0.07877444837145513
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 18.425661087036133,
+              "measuredAccelerationMmPerSec2": 18.42566108703613,
+              "expectedVelocityMmPerSec": 18.42586760914923,
+              "measuredDisplacementMm": 9.217758178710938,
+              "expectedDisplacementMm": 9.212933804574616,
+              "positionErrorBoundMm": 0.15554889674291025
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 27.637697219848633,
+              "measuredAccelerationMmPerSec2": 18.42513147989909,
+              "expectedVelocityMmPerSec": 27.63880141372384,
+              "measuredDisplacementMm": 20.735992431640625,
+              "expectedDisplacementMm": 20.72910106029288,
+              "positionErrorBoundMm": 0.23232334511436534
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 36.8506965637207,
+              "measuredAccelerationMmPerSec2": 18.42534828186035,
+              "expectedVelocityMmPerSec": 36.85173521829845,
+              "measuredDisplacementMm": 36.86036682128906,
+              "expectedDisplacementMm": 36.85173521829845,
+              "positionErrorBoundMm": 0.30909779348582045
+            }
+          ]
+        },
+        "material-sample-2": {
+          "partId": "material-sample-2",
+          "material": "Steel 1018",
+          "cadMassKg": 0.07909572771942325,
+          "expectedAccelerationMmPerSec2": 6.321453944689061,
+          "maxVelocityRelativeError": 0.000029175647590134967,
+          "maxPositionErrorMm": 0.003202645289846373,
+          "maxPositionBoundRatio": 0.030725884876992262,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 3.160698175430298,
+              "measuredAccelerationMmPerSec2": 6.321396350860594,
+              "expectedVelocityMmPerSec": 3.1607269723445315,
+              "measuredDisplacementMm": 0.7909927368164062,
+              "expectedDisplacementMm": 0.7901817430861331,
+              "positionErrorBoundMm": 0.028339391436204432
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 6.321495532989502,
+              "measuredAccelerationMmPerSec2": 6.3214955329895,
+              "expectedVelocityMmPerSec": 6.321453944689063,
+              "measuredDisplacementMm": 3.1623611450195312,
+              "expectedDisplacementMm": 3.1607269723445324,
+              "positionErrorBoundMm": 0.05467878287240886
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 9.482138633728027,
+              "measuredAccelerationMmPerSec2": 6.321425755818685,
+              "expectedVelocityMmPerSec": 9.482180917033592,
+              "measuredDisplacementMm": 7.1141204833984375,
+              "expectedDisplacementMm": 7.111635687775194,
+              "positionErrorBoundMm": 0.08101817430861327
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 12.642539024353027,
+              "measuredAccelerationMmPerSec2": 6.321269512176514,
+              "expectedVelocityMmPerSec": 12.642907889378122,
+              "measuredDisplacementMm": 12.646110534667969,
+              "expectedDisplacementMm": 12.642907889378122,
+              "positionErrorBoundMm": 0.1073575657448177
+            }
+          ]
+        },
+        "material-sample-3": {
+          "partId": "material-sample-3",
+          "material": "Brass C36000",
+          "cadMassKg": 0.085427406050203,
+          "expectedAccelerationMmPerSec2": 5.852922652317989,
+          "maxVelocityRelativeError": 0.00004248217804815904,
+          "maxPositionErrorMm": 0.002925447317146279,
+          "maxPositionBoundRatio": 0.030797009200380247,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 2.926478385925293,
+              "measuredAccelerationMmPerSec2": 5.852956771850585,
+              "expectedVelocityMmPerSec": 2.926461326158995,
+              "measuredDisplacementMm": 0.7323760986328125,
+              "expectedDisplacementMm": 0.7316153315397489,
+              "positionErrorBoundMm": 0.02638717771799163
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 5.852961540222168,
+              "measuredAccelerationMmPerSec2": 5.852961540222167,
+              "expectedVelocityMmPerSec": 5.85292265231799,
+              "measuredDisplacementMm": 2.9279937744140625,
+              "expectedDisplacementMm": 2.9264613261589956,
+              "positionErrorBoundMm": 0.05077435543598326
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 8.779322624206543,
+              "measuredAccelerationMmPerSec2": 5.852881749471028,
+              "expectedVelocityMmPerSec": 8.779383978476984,
+              "measuredDisplacementMm": 6.586845397949219,
+              "expectedDisplacementMm": 6.584537983857738,
+              "positionErrorBoundMm": 0.07516153315397488
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 11.705348014831543,
+              "measuredAccelerationMmPerSec2": 5.8526740074157715,
+              "expectedVelocityMmPerSec": 11.705845304635979,
+              "measuredDisplacementMm": 11.708770751953125,
+              "expectedDisplacementMm": 11.705845304635979,
+              "positionErrorBoundMm": 0.0995487108719665
+            }
+          ]
+        },
+        "material-sample-4": {
+          "partId": "material-sample-4",
+          "material": "Titanium Grade 5",
+          "cadMassKg": 0.04452275397675286,
+          "expectedAccelerationMmPerSec2": 11.230212764041289,
+          "maxVelocityRelativeError": 0.00002219995682492087,
+          "maxPositionErrorMm": 0.005745736565859971,
+          "maxPositionBoundRatio": 0.031117296544902983,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 5.615082263946533,
+              "measuredAccelerationMmPerSec2": 11.230164527893065,
+              "expectedVelocityMmPerSec": 5.615106382020645,
+              "measuredDisplacementMm": 1.4052734375,
+              "expectedDisplacementMm": 1.4037765955051615,
+              "positionErrorBoundMm": 0.04879255318350539
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 11.230011940002441,
+              "measuredAccelerationMmPerSec2": 11.23001194000244,
+              "expectedVelocityMmPerSec": 11.23021276404129,
+              "measuredDisplacementMm": 5.617988586425781,
+              "expectedDisplacementMm": 5.615106382020646,
+              "positionErrorBoundMm": 0.09558510636701077
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 16.84507942199707,
+              "measuredAccelerationMmPerSec2": 11.230052947998047,
+              "expectedVelocityMmPerSec": 16.845319146061932,
+              "measuredDisplacementMm": 12.638198852539062,
+              "expectedDisplacementMm": 12.63398935954645,
+              "positionErrorBoundMm": 0.14237765955051612
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 22.46092414855957,
+              "measuredAccelerationMmPerSec2": 11.230462074279785,
+              "expectedVelocityMmPerSec": 22.460425528082578,
+              "measuredDisplacementMm": 22.466171264648438,
+              "expectedDisplacementMm": 22.460425528082578,
+              "positionErrorBoundMm": 0.18917021273402151
+            }
+          ]
+        },
+        "material-sample-5": {
+          "partId": "material-sample-5",
+          "material": "Nylon 6",
+          "cadMassKg": 0.01145732269379193,
+          "expectedAccelerationMmPerSec2": 43.640212758511325,
+          "maxVelocityRelativeError": 0.00003277383862760363,
+          "maxPositionErrorMm": 0.021173985540826834,
+          "maxPositionBoundRatio": 0.031281575706630094,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 21.820165634155273,
+              "measuredAccelerationMmPerSec2": 43.64033126831054,
+              "expectedVelocityMmPerSec": 21.820106379255666,
+              "measuredDisplacementMm": 5.460700988769531,
+              "expectedDisplacementMm": 5.455026594813917,
+              "positionErrorBoundMm": 0.18383421982713058
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 43.63986587524414,
+              "measuredAccelerationMmPerSec2": 43.63986587524413,
+              "expectedVelocityMmPerSec": 43.64021275851133,
+              "measuredDisplacementMm": 21.831512451171875,
+              "expectedDisplacementMm": 21.82010637925567,
+              "positionErrorBoundMm": 0.36566843965426116
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 65.4587173461914,
+              "measuredAccelerationMmPerSec2": 43.63914489746094,
+              "expectedVelocityMmPerSec": 65.46031913776699,
+              "measuredDisplacementMm": 49.111839294433594,
+              "expectedDisplacementMm": 49.09523935332524,
+              "positionErrorBoundMm": 0.5475026594813915
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 87.2775650024414,
+              "measuredAccelerationMmPerSec2": 43.6387825012207,
+              "expectedVelocityMmPerSec": 87.28042551702265,
+              "measuredDisplacementMm": 87.30159950256348,
+              "expectedDisplacementMm": 87.28042551702265,
+              "positionErrorBoundMm": 0.7293368793085222
+            }
+          ]
+        },
+        "material-sample-6": {
+          "partId": "material-sample-6",
+          "material": "PLA",
+          "cadMassKg": 0.012562853830912206,
+          "expectedAccelerationMmPerSec2": 39.79987403576233,
+          "maxVelocityRelativeError": 0.0000016825198110285033,
+          "maxPositionErrorMm": 0.02058655371948248,
+          "maxPositionBoundRatio": 0.03097014649217148,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 19.899906158447266,
+              "measuredAccelerationMmPerSec2": 39.799812316894524,
+              "expectedVelocityMmPerSec": 19.899937017881168,
+              "measuredDisplacementMm": 4.980125427246094,
+              "expectedDisplacementMm": 4.974984254470293,
+              "positionErrorBoundMm": 0.16783280848234308
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 39.799808502197266,
+              "measuredAccelerationMmPerSec2": 39.79980850219726,
+              "expectedVelocityMmPerSec": 39.799874035762336,
+              "measuredDisplacementMm": 19.91027069091797,
+              "expectedDisplacementMm": 19.89993701788117,
+              "positionErrorBoundMm": 0.33366561696468616
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 59.699710845947266,
+              "measuredAccelerationMmPerSec2": 39.79980723063151,
+              "expectedVelocityMmPerSec": 59.699811053643494,
+              "measuredDisplacementMm": 44.79032516479492,
+              "expectedDisplacementMm": 44.77485829023262,
+              "positionErrorBoundMm": 0.49949842544702916
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 79.59961700439453,
+              "measuredAccelerationMmPerSec2": 39.799808502197266,
+              "expectedVelocityMmPerSec": 79.59974807152466,
+              "measuredDisplacementMm": 79.62033462524414,
+              "expectedDisplacementMm": 79.59974807152466,
+              "positionErrorBoundMm": 0.6653312339293722
+            }
+          ]
+        },
+        "material-sample-7": {
+          "partId": "material-sample-7",
+          "material": "ABS",
+          "cadMassKg": 0.010452294387318956,
+          "expectedAccelerationMmPerSec2": 47.836387062214335,
+          "maxVelocityRelativeError": 0.000029916212856056145,
+          "maxPositionErrorMm": 0.025677483990747874,
+          "maxPositionBoundRatio": 0.032126044804963554,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 23.91845703125,
+              "measuredAccelerationMmPerSec2": 47.83691406249999,
+              "expectedVelocityMmPerSec": 23.91819353110717,
+              "measuredDisplacementMm": 5.985809326171875,
+              "expectedDisplacementMm": 5.979548382776794,
+              "positionErrorBoundMm": 0.20131827942589312
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 47.83631134033203,
+              "measuredAccelerationMmPerSec2": 47.836311340332024,
+              "expectedVelocityMmPerSec": 47.83638706221434,
+              "measuredDisplacementMm": 23.93083953857422,
+              "expectedDisplacementMm": 23.918193531107175,
+              "positionErrorBoundMm": 0.40063655885178623
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 71.7547378540039,
+              "measuredAccelerationMmPerSec2": 47.83649190266927,
+              "expectedVelocityMmPerSec": 71.7545805933215,
+              "measuredDisplacementMm": 53.83462142944336,
+              "expectedDisplacementMm": 53.815935444991126,
+              "positionErrorBoundMm": 0.5999548382776793
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 95.6756362915039,
+              "measuredAccelerationMmPerSec2": 47.83781814575195,
+              "expectedVelocityMmPerSec": 95.67277412442867,
+              "measuredDisplacementMm": 95.69845160841942,
+              "expectedDisplacementMm": 95.67277412442867,
+              "positionErrorBoundMm": 0.7992731177035723
+            }
+          ]
+        },
+        "material-sample-8": {
+          "partId": "material-sample-8",
+          "material": "Acrylic",
+          "cadMassKg": 0.011859334016381121,
+          "expectedAccelerationMmPerSec2": 42.160883512460096,
+          "maxVelocityRelativeError": 0.00003679327709089287,
+          "maxPositionErrorMm": 0.019907779767308398,
+          "maxPositionBoundRatio": 0.030963002464408602,
+          "maxOffAxisPositionMm": 0,
+          "maxOffAxisVelocityMmPerSec": 0,
+          "maxQuaternionDifference": 0,
+          "snapshots": [
+            {
+              "timeMs": 500.00000000000006,
+              "measuredVelocityMmPerSec": 21.08041000366211,
+              "measuredAccelerationMmPerSec2": 42.16082000732421,
+              "expectedVelocityMmPerSec": 21.08044175623005,
+              "measuredDisplacementMm": 5.2754364013671875,
+              "expectedDisplacementMm": 5.270110439057514,
+              "positionErrorBoundMm": 0.17767034796858377
+            },
+            {
+              "timeMs": 1000.0000000000001,
+              "measuredVelocityMmPerSec": 42.16046142578125,
+              "measuredAccelerationMmPerSec2": 42.16046142578124,
+              "expectedVelocityMmPerSec": 42.1608835124601,
+              "measuredDisplacementMm": 21.09119415283203,
+              "expectedDisplacementMm": 21.080441756230055,
+              "positionErrorBoundMm": 0.35334069593716755
+            },
+            {
+              "timeMs": 1500,
+              "measuredVelocityMmPerSec": 63.23956298828125,
+              "measuredAccelerationMmPerSec2": 42.159708658854164,
+              "expectedVelocityMmPerSec": 63.24132526869015,
+              "measuredDisplacementMm": 47.446624755859375,
+              "expectedDisplacementMm": 47.43099395151761,
+              "positionErrorBoundMm": 0.5290110439057513
+            },
+            {
+              "timeMs": 2000,
+              "measuredVelocityMmPerSec": 84.31866455078125,
+              "measuredAccelerationMmPerSec2": 42.159332275390625,
+              "expectedVelocityMmPerSec": 84.32176702492019,
+              "measuredDisplacementMm": 84.3416748046875,
+              "expectedDisplacementMm": 84.32176702492019,
+              "positionErrorBoundMm": 0.704681391874335
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "rapierVersion": "0.12.0",
+  "forceScaling": [
+    {
+      "partId": "material-sample-1",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.5000000646815619
+    },
+    {
+      "partId": "material-sample-2",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.5000006033004153
+    },
+    {
+      "partId": "material-sample-3",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.4999991855056495
+    },
+    {
+      "partId": "material-sample-4",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.5000005093926918
+    },
+    {
+      "partId": "material-sample-5",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.500000032771715
+    },
+    {
+      "partId": "material-sample-6",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.4999999281333707
+    },
+    {
+      "partId": "material-sample-7",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.5000001773532208
+    },
+    {
+      "partId": "material-sample-8",
+      "halfForceVelocityRatio": 0.5,
+      "halfForceDisplacementRatio": 0.49999920849216445
+    }
+  ],
+  "timestepConvergence": [
+    {
+      "partId": "material-sample-1",
+      "coarsePositionErrorMm": 0.017253669238058933,
+      "finePositionErrorMm": 0.009952338671652683,
+      "fineToCoarseErrorRatio": 0.5768244733531439,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-2",
+      "coarsePositionErrorMm": 0.006374773001567746,
+      "finePositionErrorMm": 0.002232011771098996,
+      "fineToCoarseErrorRatio": 0.35013196086355985,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-3",
+      "coarsePositionErrorMm": 0.005889041606948808,
+      "finePositionErrorMm": 0.0016318394585113083,
+      "fineToCoarseErrorRatio": 0.2770976276659024,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-4",
+      "coarsePositionErrorMm": 0.011445696764532443,
+      "finePositionErrorMm": 0.0065857724481261926,
+      "fineToCoarseErrorRatio": 0.5753928820247949,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-5",
+      "coarsePositionErrorMm": 0.04233652698985679,
+      "finePositionErrorMm": 0.020730081677356793,
+      "fineToCoarseErrorRatio": 0.48965002921291617,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-6",
+      "coarsePositionErrorMm": 0.04119599562255871,
+      "finePositionErrorMm": 0.022725231462402462,
+      "fineToCoarseErrorRatio": 0.5516369035139485,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-7",
+      "coarsePositionErrorMm": 0.05128707829109658,
+      "finePositionErrorMm": 0.03356399479500283,
+      "fineToCoarseErrorRatio": 0.654433746537469,
+      "allowedFloat32RoundoffMm": 0.002
+    },
+    {
+      "partId": "material-sample-8",
+      "coarsePositionErrorMm": 0.040082588343210546,
+      "finePositionErrorMm": 0.015157356409616796,
+      "fineToCoarseErrorRatio": 0.3781531342195432,
+      "allowedFloat32RoundoffMm": 0.002
+    }
+  ],
+  "measuredAccelerationOrderFastestFirst": [
+    "material-sample-7",
+    "material-sample-5",
+    "material-sample-8",
+    "material-sample-6",
+    "material-sample-1",
+    "material-sample-4",
+    "material-sample-2",
+    "material-sample-3"
+  ],
+  "failures": [],
+  "passed": true
+}

@@ -3,13 +3,13 @@
     "mode": "modeller",
     "assembly": {
       "id": "asm-material-studio",
-      "name": "Material studio",
+      "name": "Material force lab",
       "groundPartId": "material-plinth",
       "booleanFeatures": [],
       "parts": [
         {
           "id": "material-plinth",
-          "name": "Steel display plinth",
+          "name": "Steel test bed and guide rails",
           "visible": true,
           "materialId": "steel-1018",
           "transform": {
@@ -27,17 +27,161 @@
           "sketches": [
             {
               "id": "sk-material-plinth-1",
-              "name": "Display footprint",
+              "name": "Test bed · 328 × 264 mm",
               "plane": "XY",
               "primitives": [
                 {
                   "type": "rectangle",
                   "corner": [
-                    -92,
-                    -55
+                    -164,
+                    -132
                   ],
-                  "width": 184,
-                  "height": 110
+                  "width": 328,
+                  "height": 264
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-2",
+              "name": "Guide rail 1",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -162,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-3",
+              "name": "Guide rail 2",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -122,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-4",
+              "name": "Guide rail 3",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -82,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-5",
+              "name": "Guide rail 4",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -42,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-6",
+              "name": "Guide rail 5",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -2,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-7",
+              "name": "Guide rail 6",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    38,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-8",
+              "name": "Guide rail 7",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    78,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-9",
+              "name": "Guide rail 8",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    118,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
+                }
+              ]
+            },
+            {
+              "id": "sk-material-plinth-10",
+              "name": "Guide rail 9",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    158,
+                    -126
+                  ],
+                  "width": 4,
+                  "height": 252
                 }
               ]
             }
@@ -50,18 +194,90 @@
               "depthMm": 6,
               "direction": "forward",
               "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-plinth-2",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-2",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-3",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-3",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-4",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-4",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-5",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-5",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-6",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-6",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-7",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-7",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-8",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-8",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-9",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-9",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-plinth-10",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-10",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
             }
           ]
         },
         {
           "id": "material-sample-1",
-          "name": "Aluminium 6061 · bored boss",
+          "name": "Aluminium 6061 · test sample",
           "visible": true,
           "materialId": "aluminium-6061",
           "transform": {
             "positionMm": [
-              -66,
-              25,
+              -140,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -147,13 +363,13 @@
         },
         {
           "id": "material-sample-2",
-          "name": "Steel 1018 · bored boss",
+          "name": "Steel 1018 · test sample",
           "visible": true,
           "materialId": "steel-1018",
           "transform": {
             "positionMm": [
-              -22,
-              25,
+              -100,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -239,13 +455,13 @@
         },
         {
           "id": "material-sample-3",
-          "name": "Brass C36000 · bored boss",
+          "name": "Brass C36000 · test sample",
           "visible": true,
           "materialId": "brass-c36000",
           "transform": {
             "positionMm": [
-              22,
-              25,
+              -60,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -331,13 +547,13 @@
         },
         {
           "id": "material-sample-4",
-          "name": "Titanium Grade 5 · bored boss",
+          "name": "Titanium Grade 5 · test sample",
           "visible": true,
           "materialId": "titanium-grade5",
           "transform": {
             "positionMm": [
-              66,
-              25,
+              -20,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -423,13 +639,13 @@
         },
         {
           "id": "material-sample-5",
-          "name": "Nylon 6 · bored boss",
+          "name": "Nylon 6 · test sample",
           "visible": true,
           "materialId": "nylon-6",
           "transform": {
             "positionMm": [
-              -66,
-              -25,
+              20,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -515,13 +731,13 @@
         },
         {
           "id": "material-sample-6",
-          "name": "PLA · bored boss",
+          "name": "PLA · test sample",
           "visible": true,
           "materialId": "pla",
           "transform": {
             "positionMm": [
-              -22,
-              -25,
+              60,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -607,13 +823,13 @@
         },
         {
           "id": "material-sample-7",
-          "name": "ABS · bored boss",
+          "name": "ABS · test sample",
           "visible": true,
           "materialId": "abs",
           "transform": {
             "positionMm": [
-              22,
-              -25,
+              100,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -699,13 +915,13 @@
         },
         {
           "id": "material-sample-8",
-          "name": "Acrylic · bored boss",
+          "name": "Acrylic · test sample",
           "visible": true,
           "materialId": "acrylic",
           "transform": {
             "positionMm": [
-              66,
-              -25,
+              140,
+              -96,
               6
             ],
             "rotationDeg": [
@@ -792,60 +1008,244 @@
       ],
       "mates": [
         {
-          "id": "material-fixed-1",
-          "type": "fixed",
-          "name": "Aluminium 6061 display mount",
+          "id": "material-guide-1",
+          "type": "prismatic",
+          "name": "Aluminium 6061 · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-1"
+          "partB": "material-sample-1",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-1-a",
+            "localPoint": [
+              -140,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-1-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-2",
-          "type": "fixed",
-          "name": "Steel 1018 display mount",
+          "id": "material-guide-2",
+          "type": "prismatic",
+          "name": "Steel 1018 · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-2"
+          "partB": "material-sample-2",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-2-a",
+            "localPoint": [
+              -100,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-2-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-3",
-          "type": "fixed",
-          "name": "Brass C36000 display mount",
+          "id": "material-guide-3",
+          "type": "prismatic",
+          "name": "Brass C36000 · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-3"
+          "partB": "material-sample-3",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-3-a",
+            "localPoint": [
+              -60,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-3-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-4",
-          "type": "fixed",
-          "name": "Titanium Grade 5 display mount",
+          "id": "material-guide-4",
+          "type": "prismatic",
+          "name": "Titanium Grade 5 · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-4"
+          "partB": "material-sample-4",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-4-a",
+            "localPoint": [
+              -20,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-4-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-5",
-          "type": "fixed",
-          "name": "Nylon 6 display mount",
+          "id": "material-guide-5",
+          "type": "prismatic",
+          "name": "Nylon 6 · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-5"
+          "partB": "material-sample-5",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-5-a",
+            "localPoint": [
+              20,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-5-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-6",
-          "type": "fixed",
-          "name": "PLA display mount",
+          "id": "material-guide-6",
+          "type": "prismatic",
+          "name": "PLA · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-6"
+          "partB": "material-sample-6",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-6-a",
+            "localPoint": [
+              60,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-6-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-7",
-          "type": "fixed",
-          "name": "ABS display mount",
+          "id": "material-guide-7",
+          "type": "prismatic",
+          "name": "ABS · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-7"
+          "partB": "material-sample-7",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-7-a",
+            "localPoint": [
+              100,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-7-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         },
         {
-          "id": "material-fixed-8",
-          "type": "fixed",
-          "name": "Acrylic display mount",
+          "id": "material-guide-8",
+          "type": "prismatic",
+          "name": "Acrylic · frictionless guide",
           "partA": "material-plinth",
-          "partB": "material-sample-8"
+          "partB": "material-sample-8",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "material-guide-8-a",
+            "localPoint": [
+              140,
+              -96,
+              6
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "material-guide-8-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ]
         }
       ]
     },
@@ -859,7 +1259,27 @@
         0
       ],
       "speedMultiplier": 1,
-      "simulationTimeMs": 0
+      "simulationTimeMs": 0,
+      "forceExperiment": {
+        "kind": "equal-force",
+        "partIds": [
+          "material-sample-1",
+          "material-sample-2",
+          "material-sample-3",
+          "material-sample-4",
+          "material-sample-5",
+          "material-sample-6",
+          "material-sample-7",
+          "material-sample-8"
+        ],
+        "forceN": 0.001,
+        "direction": [
+          0,
+          1,
+          0
+        ],
+        "durationMs": 2000
+      }
     }
   },
   "version": 9
