@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import { Download, Loader2, Upload } from 'lucide-react';
 import { setImportedShapeMesh } from '@/cad/importedShapeCache';
 import { getCadKernel } from '@/cad/cadClient';
-import { Toaster } from '@/components/ui/sonner';
 import { useKinetiCADStore } from '@/state/store';
 import type { MateType } from '@/state/store';
 import PlanePicker from '@/components/PlanePicker';
@@ -17,6 +16,7 @@ import MateInspector from '@/components/inspectors/MateInspector';
 import PartsPanelItem from '@/components/PartsPanelItem';
 import MatesPanelItem from '@/components/MatesPanelItem';
 import NewPartButton from '@/components/NewPartButton';
+import { DemoButton, DemoWelcome, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import type { CardinalPlane } from '@/sketch/plane';
 import type {
   BooleanFeature,
@@ -30,6 +30,7 @@ import type {
 const Scene = lazy(() => import('@/three/Scene'));
 
 export default function Modeller() {
+  const { activeDemo, revision, setFileBusy } = useDemoWorkspace();
   const assembly = useKinetiCADStore((s) => s.assembly);
   const sketchSession = useKinetiCADStore((s) => s.sketchSession);
   const beginSketch = useKinetiCADStore((s) => s.beginSketch);
@@ -109,6 +110,7 @@ export default function Modeller() {
     }
   };
   const handleImportStep = async (file: File) => {
+    setFileBusy(true);
     setImportingStep(true);
     const t0 = performance.now();
     try {
@@ -155,6 +157,7 @@ export default function Modeller() {
       toast.error('Import failed. Check the console for details.');
     } finally {
       setImportingStep(false);
+      setFileBusy(false);
     }
   };
 
@@ -169,7 +172,11 @@ export default function Modeller() {
     // Read directly from localStorage — the persist middleware writes the
     // exact { state, version } format the seed system uses, so no
     // re-serialisation is needed.
-    const raw = localStorage.getItem('kineticad-state');
+    const options = useKinetiCADStore.persist.getOptions();
+    const raw = JSON.stringify({
+      state: options.partialize?.(useKinetiCADStore.getState()),
+      version: options.version,
+    });
     if (!raw) {
       toast.error('Nothing to save — no model state found.');
       return;
@@ -191,7 +198,10 @@ export default function Modeller() {
   };
 
   const handleLoadModel = (file: File) => {
+    if (activeDemo) return;
+    setFileBusy(true);
     const reader = new FileReader();
+    reader.onloadend = () => setFileBusy(false);
     reader.onload = (e) => {
       const text = e.target?.result as string;
       try {
@@ -337,10 +347,11 @@ export default function Modeller() {
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
       {/* Top Toolbar */}
-      <header className="flex items-center gap-2 px-3 h-11 border-b border-border bg-card shrink-0 select-none">
+      <header className="flex items-center gap-2 px-3 h-11 overflow-x-auto border-b border-border bg-card shrink-0 select-none">
         <span className="font-technical text-xs font-semibold tracking-widest uppercase text-[#FF6B1A]">
           KinetiCAD
         </span>
+        <DemoButton />
         <div className="w-px h-5 bg-border mx-1" />
 
         {sketchSession.active ? (
@@ -436,7 +447,7 @@ export default function Modeller() {
               ) : (
                 <Download size={13} />
               )}
-              <span className="hidden sm:inline">Export STL</span>
+              <span className="hidden 2xl:inline">Export STL</span>
             </button>
 
             {/* Hidden file input — triggered by the Import STEP button */}
@@ -466,7 +477,7 @@ export default function Modeller() {
               ) : (
                 <Upload size={13} />
               )}
-              <span className="hidden sm:inline">Import STEP</span>
+              <span className="hidden 2xl:inline">Import STEP</span>
             </button>
 
             <button
@@ -487,7 +498,7 @@ export default function Modeller() {
               ) : (
                 <Download size={13} />
               )}
-              <span className="hidden sm:inline">Export STEP</span>
+              <span className="hidden 2xl:inline">Export STEP</span>
             </button>
 
             <div className="w-px h-5 bg-border mx-1" />
@@ -514,7 +525,8 @@ export default function Modeller() {
 
             <button
               type="button"
-              title="Load model from file"
+              title={activeDemo ? 'Return to your model before loading a project' : 'Load model from file'}
+              disabled={!!activeDemo}
               onClick={() => modelFileInputRef.current?.click()}
               data-testid="load-model"
               className="flex items-center gap-1.5 px-2 h-7 rounded text-xs font-technical transition-colors text-foreground hover:bg-secondary active:bg-secondary/80"
@@ -527,10 +539,11 @@ export default function Modeller() {
 
         <div className="flex-1" />
 
-        <span className="font-technical text-xs text-muted-foreground">
+        <span className="hidden 2xl:inline font-technical text-xs text-muted-foreground">
           {assembly.name}
         </span>
       </header>
+      <DemoWorkspaceBar />
 
       {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
@@ -610,8 +623,9 @@ export default function Modeller() {
           data-kineticad-canvas-host="true"
         >
           <Suspense fallback={null}>
-            <Scene />
+            <Scene key={revision} frameOnLoad={!!activeDemo} />
           </Suspense>
+          {assembly.parts.length === 0 && !sketchSession.active && !planePickerOpen && <DemoWelcome onNewSketch={() => setPlanePickerOpen(true)} />}
           <PlanePicker
             open={planePickerOpen}
             onPick={handlePlanePicked}
@@ -661,7 +675,6 @@ export default function Modeller() {
           </SidebarSection>
         </aside>
       </div>
-      <Toaster position="bottom-right" />
     </div>
   );
 }

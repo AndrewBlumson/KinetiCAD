@@ -1,0 +1,156 @@
+import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
+import { ArrowLeft, ArrowUpRight, Boxes, Loader2, RotateCcw } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { useKinetiCADStore } from '@/state/store';
+import { DEMOS } from '@/demos/catalog';
+import { demoAssetUrl, parseDemoDocument } from '@/demos/demoDocument';
+import { createDemoSession } from '@/demos/demoSession';
+import { DemoGallery } from './DemoGallery';
+
+type Demo = (typeof DEMOS)[number];
+type WorkspaceContext = {
+  activeDemo: Demo | null;
+  revision: number;
+  openGallery: () => void;
+  loadingId: string | null;
+  setFileBusy: (busy: boolean) => void;
+  editing: boolean;
+  leaveDemo: () => void;
+  resetDemo: () => void;
+};
+const DemoContext = createContext<WorkspaceContext | null>(null);
+export function useDemoWorkspace() {
+  const value = useContext(DemoContext);
+  if (!value) throw new Error('Demo workspace is unavailable.');
+  return value;
+}
+
+export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
+  const [location, navigate] = useLocation();
+  const [open, setOpen] = useState(false);
+  const [activeDemo, setActiveDemo] = useState<Demo | null>(null);
+  const [revision, setRevision] = useState(0);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pendingFiles, setPendingFiles] = useState(0);
+  const pendingFilesRef = useRef(0);
+  const requestId = useRef(0);
+  const originalRoute = useRef('/');
+  const activeRef = useRef<Demo | null>(null);
+  const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open);
+  const editing = blocked || pendingFiles > 0;
+  const setFileBusy = (busy: boolean) => {
+    pendingFilesRef.current = Math.max(0, pendingFilesRef.current + (busy ? 1 : -1));
+    setPendingFiles(pendingFilesRef.current);
+  };
+  const session = useRef(createDemoSession({
+    read: useKinetiCADStore.getState,
+    initial: useKinetiCADStore.getInitialState,
+    write: (state) => useKinetiCADStore.setState(state),
+    isolatePersistence: () => {
+      const storage = useKinetiCADStore.persist.getOptions().storage;
+      useKinetiCADStore.persist.setOptions({ storage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } });
+      return () => useKinetiCADStore.persist.setOptions({ storage });
+    },
+  }));
+
+  async function openDemo(id: string) {
+    if (editing) return;
+    const demo = DEMOS.find((item) => item.id === id);
+    if (!demo) return;
+    const token = ++requestId.current;
+    setLoadingId(id);
+    setError(null);
+    try {
+      const response = await fetch(demoAssetUrl(id, import.meta.env.BASE_URL));
+      if (!response.ok) throw new Error('The demo could not be downloaded. Please try again.');
+      const document = parseDemoDocument(await response.json());
+      if (token !== requestId.current) return;
+      const current = useKinetiCADStore.getState();
+      if (pendingFilesRef.current > 0 || current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+        throw new Error('Finish your current edit or file operation before opening the demo.');
+      }
+      if (!activeRef.current) originalRoute.current = location;
+      session.current.enter(document);
+      activeRef.current = demo;
+      setActiveDemo(demo);
+      setRevision((n) => n + 1);
+      setOpen(false);
+      navigate('/');
+    } catch (err) {
+      if (token === requestId.current) {
+        setError(err instanceof Error && !('issues' in err) ? err.message : 'This demo could not be opened. Your model has not changed.');
+        setOpen(true);
+      }
+    } finally {
+      if (token === requestId.current) setLoadingId(null);
+    }
+  }
+
+  function leaveDemo() {
+    if (editing) return;
+    ++requestId.current;
+    setLoadingId(null);
+    session.current.leave();
+    activeRef.current = null;
+    setActiveDemo(null);
+    setRevision((n) => n + 1);
+    navigate(originalRoute.current);
+  }
+
+  return (
+    <DemoContext.Provider value={{
+      activeDemo, revision, loadingId, editing, setFileBusy,
+      openGallery: () => { if (!editing) { setError(null); setOpen(true); } },
+      leaveDemo, resetDemo: () => { if (activeDemo) void openDemo(activeDemo.id); },
+    }}>
+      {children}
+      <DemoGallery open={open} onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) { ++requestId.current; setLoadingId(null); }
+      }} onSelect={(id) => void openDemo(id)} loadingId={loadingId} error={error} />
+    </DemoContext.Provider>
+  );
+}
+
+export function DemoButton() {
+  const { openGallery, editing, loadingId } = useDemoWorkspace();
+  return <button type="button" onClick={openGallery} disabled={editing || !!loadingId}
+    title={editing ? 'Finish the current edit or file operation to explore demos' : 'Explore editable demo assemblies'}
+    className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-orange-400/30 bg-orange-400/10 px-3 text-xs font-medium text-orange-300 transition hover:bg-orange-400/20 disabled:opacity-40">
+    <Boxes size={15} /> Demos
+  </button>;
+}
+
+export function DemoWorkspaceBar() {
+  const { activeDemo, leaveDemo, resetDemo, editing, loadingId } = useDemoWorkspace();
+  const [location, navigate] = useLocation();
+  if (!activeDemo) return null;
+  return <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-orange-400/15 bg-[#191b29] px-4 py-2.5 text-xs">
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="rounded border border-orange-400/30 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-orange-300">Demo</span>
+      <div><p className="font-medium text-slate-100">{activeDemo.title}</p><p className="mt-0.5 text-slate-400">Your model is kept open. Save to download any demo edits.</p></div>
+    </div>
+    <div className="flex items-center gap-2">
+      <button type="button" disabled={editing || !!loadingId} onClick={resetDemo} className="inline-flex items-center gap-1.5 rounded px-2 py-1.5 text-slate-400 hover:bg-white/5 hover:text-white disabled:opacity-40" title="Restore this demo's original dimensions and joints">
+        {loadingId ? <Loader2 size={13} className="animate-spin" /> : <RotateCcw size={13} />} Reset demo
+      </button>
+      {activeDemo.jointCount > 0 && !location.startsWith('/simulator') && <button type="button" disabled={editing} onClick={() => { useKinetiCADStore.getState().setMode('simulator'); navigate('/simulator'); }} className="inline-flex items-center gap-1 rounded px-2 py-1.5 text-orange-300 hover:bg-orange-400/10 disabled:opacity-40">Try simulation <ArrowUpRight size={14} /></button>}
+      <button type="button" disabled={editing} onClick={leaveDemo} className="inline-flex items-center gap-1.5 rounded-md border border-slate-600 px-3 py-1.5 text-slate-100 hover:bg-white/5 disabled:opacity-40"><ArrowLeft size={13} /> Return to my model</button>
+    </div>
+  </div>;
+}
+
+export function DemoWelcome({ onNewSketch }: { onNewSketch: () => void }) {
+  const { openGallery } = useDemoWorkspace();
+  return <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
+    <div className="pointer-events-auto w-full max-w-md rounded-2xl border border-slate-700/70 bg-[#101525]/95 p-7 shadow-2xl backdrop-blur-xl">
+      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-orange-400/25 bg-orange-400/10 text-orange-300"><Boxes size={23} /></div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-300">Your ideas, in motion</p>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Start with something<br />that moves.</h1>
+      <p className="mt-3 text-sm leading-relaxed text-slate-400">Explore a working assembly, change a dimension, or see how its joints move. Every demo is yours to edit.</p>
+      <button type="button" onClick={openGallery} className="mt-6 flex w-full items-center justify-between rounded-lg bg-[#ff6b1a] px-4 py-3 text-sm font-semibold text-white hover:bg-[#ff7c36]">Explore the demos <ArrowUpRight size={18} /></button>
+      <button type="button" onClick={onNewSketch} className="mt-3 w-full rounded-lg py-2 text-sm text-slate-400 hover:bg-white/5 hover:text-white">Or start a new sketch</button>
+    </div>
+  </div>;
+}

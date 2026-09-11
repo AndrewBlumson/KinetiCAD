@@ -115,7 +115,7 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-export default function Scene() {
+export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketches = true }: { frameOnLoad?: boolean; onAssemblyReady?: (ready: boolean) => void; showSketches?: boolean }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "checking-webgpu" });
 
@@ -132,6 +132,8 @@ export default function Scene() {
     let fpsTimer: ReturnType<typeof setInterval> | null = null;
     let frameCounter = 0;
     let cameraTween: CameraTween | null = null;
+    let needsInitialFrame = frameOnLoad;
+    let reportedAssemblyReady: boolean | null = null;
     let sketchOverlay: SketchOverlay | null = null;
     let unsubscribeStore: (() => void) | null = null;
     let sketchSessionHandle: SketchSessionHandle | null = null;
@@ -277,10 +279,14 @@ export default function Scene() {
           heightPx: canvasResH,
         });
         scene.add(finishedLayer.group);
-        finishedLayer.sync(useKinetiCADStore.getState().assembly);
-        unsubscribeAssembly = useKinetiCADStore.subscribe((state) => {
-          finishedLayer?.sync(state.assembly);
-        });
+        const syncFinishedSketches = (state: ReturnType<typeof useKinetiCADStore.getState>) => {
+          if (!finishedLayer) return;
+          finishedLayer.group.visible = showSketches && !state.simulation.running;
+          const selectedSketch = state.selection?.kind === 'sketch' ? state.selection : null;
+          finishedLayer.sync(state.assembly, selectedSketch);
+        };
+        syncFinishedSketches(useKinetiCADStore.getState());
+        unsubscribeAssembly = useKinetiCADStore.subscribe(syncFinishedSketches);
 
         // Sketch session sync: reconcile the current sketch state with the
         // camera, overlay, orbit controls, and the active SketchSession.
@@ -366,9 +372,57 @@ export default function Scene() {
         // Render loop. WebGPU requires setAnimationLoop, not rAF.
         const renderLoop = () => {
           if (!renderer) return;
+          // A remount can inherit Running, and Play may be pressed while the
+          // scene is still loading. The runner immediately builds in either
+          // case, so attach it only once every visible solid has its mesh and
+          // topology. An empty workspace is ready too: its runner must observe
+          // later Play requests after the user creates geometry.
+          if (partMeshLayer && simulationLayer) {
+            const visibleSolids = useKinetiCADStore.getState().assembly.parts
+              .filter((part) => part.visible && part.features.length > 0);
+            const ready = visibleSolids.every((part) =>
+              partMeshLayer!.getPartMesh(part.id) && partMeshLayer!.getPartTopology(part.id));
+            if (reportedAssemblyReady !== ready) {
+              reportedAssemblyReady = ready;
+              onAssemblyReady?.(ready);
+            }
+            if (!simulationRunnerHandle && ready) {
+              simulationRunnerHandle = startSimulationRunner();
+            }
+          }
+          // Demo assemblies vary greatly in size. Frame only after every solid
+          // has regenerated; default modelling camera behaviour is unchanged.
+          if (needsInitialFrame && reportedAssemblyReady && partMeshLayer && controls) {
+            const parts = useKinetiCADStore.getState().assembly.parts.filter((p) => p.visible && p.features.length > 0);
+            if (parts.length) {
+              const bounds = new THREE.Box3();
+              for (const part of parts) {
+                const mesh = partMeshLayer.getPartMesh(part.id);
+                if (mesh) { mesh.updateWorldMatrix(true, false); bounds.expandByObject(mesh); }
+              }
+              if (!bounds.isEmpty()) {
+                const centre = bounds.getCenter(new THREE.Vector3());
+                const radius = bounds.getSize(new THREE.Vector3()).length() * 0.5;
+                const vertical = THREE.MathUtils.degToRad(camera.fov) * 0.5;
+                const horizontal = Math.atan(Math.tan(vertical) * camera.aspect);
+                const distance = Math.max(45, radius / Math.sin(Math.min(vertical, horizontal)) * 1.2);
+                controls.target.copy(centre);
+                camera.position.copy(centre).add(new THREE.Vector3(1, -1.45, 0.85).normalize().multiplyScalar(distance));
+                camera.far = Math.max(5000, distance * 5);
+                camera.updateProjectionMatrix();
+                controls.update();
+                needsInitialFrame = false;
+              }
+            }
+          }
           // Topology-picker bookkeeping: clears stale highlight geometry
           // after part regen completions. No-op until set in step 3.
           perFrameTopologyCheck?.();
+          // Mate glyphs follow exactly the body poses drawn this frame. The
+          // assembly retains the design pose while simulation meshes move.
+          mateVisualizer?.updatePoses((partId) => simulationLayer?.group.visible
+            ? simulationLayer.group.getObjectByName(`sim:${partId}`) ?? null
+            : partMeshLayer?.getPartMesh(partId) ?? null);
 
           if (cameraTween && controls) {
             const t = Math.min(
@@ -466,7 +520,6 @@ export default function Scene() {
         simulationLayer = createSimulationLayer();
         scene.add(simulationLayer.group);
         setSimulationLayer(simulationLayer);
-        simulationRunnerHandle = startSimulationRunner();
         scene.add(edgeHighlightLayer.group);
         scene.add(faceHighlightLayer.group);
         scene.add(mateVisualizer.group);
@@ -474,6 +527,8 @@ export default function Scene() {
         // React inspectors (mate inspectors, etc.) can read per-part topology
         // without coupling to the WebGPU scene context.
         setPartMeshLayer(partMeshLayer);
+        // The render loop starts the runner after the first solid meshes are
+        // ready. Both refs are published before the runner captures ownership.
         edgeHighlightLayer.setResolution(canvasResW, canvasResH);
         faceHighlightLayer.setResolution(canvasResW, canvasResH);
 

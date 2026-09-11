@@ -230,19 +230,18 @@ export type MassPropertiesArgs = {
  * - `principalInertiaKgMm2` are the three principal moments of inertia
  *   in kg·mm². Rapier consumes these directly as the diagonal of the
  *   inertia tensor; the off-diagonal terms are zero in the principal
- *   axis frame, so we omit them.
+ *   axis frame. `principalInertiaLocalFrame` rotates that frame into
+ *   the part's local frame, preserving all off-diagonal tensor terms.
  *
- * Edge case: if the upstream chain produces a non-solid (e.g. a sheet
- * body) or an empty shape, `volumeMm3` will be 0 and `massKg` will be
- * clamped to a small positive value (1e-6 kg) so Rapier doesn't blow
- * up with NaN inertias. The caller should treat zero-volume parts as
- * static decoration.
+ * Empty, non-positive or invalid physical properties fail explicitly.
+ * There is no equivalent-sphere approximation or fictitious mass floor.
  */
 export type MassPropertiesResult = {
   volumeMm3: number;
   massKg: number;
   comLocal: [number, number, number];
   principalInertiaKgMm2: [number, number, number];
+  principalInertiaLocalFrame: [number, number, number, number];
 };
 
 /**
@@ -268,6 +267,12 @@ export type ImportedPart = {
 export type CadKernelApi = {
   init: () => Promise<KernelInitResult>;
   createTestCube: (sizeMm: number) => Promise<TessellatedMesh>;
+  /** Evaluate a chain once; mesh and unit-density mass data share its final solid. */
+  buildPartMesh: (args: { features: Feature[]; sketches: Sketch[] }) => Promise<{
+    mesh: TessellatedMesh;
+    /** Density 1 g/cm³. Missing only when mass integration failed independently. */
+    unitDensityMassProperties?: MassPropertiesResult;
+  }>;
   /**
    * Build a closed wire from the given sketch, extrude into a 3D solid, and
    * return its tessellated mesh. Throws (rejects) with a descriptive message

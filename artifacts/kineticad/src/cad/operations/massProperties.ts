@@ -1,129 +1,145 @@
-// Mass properties extraction from an OCCT TopoDS_Shape.
-//
-// Phase 8 — feeds the Rapier physics worker realistic per-part mass /
-// centre-of-mass / inertia values. Without these, Rapier would default
-// to a unit cube around the body's bounding box, which produces wrong
-// dynamics for slender bars, asymmetric parts, or hollow holed bodies.
-//
-// Strategy:
-// - Run `BRepGProp.VolumeProperties_1(shape, props)` to populate a
-//   `GProp_GProps` with volume + centre-of-mass + inertia matrix
-//   (computed in absolute world coordinates).
-// - Call `props.PrincipalProperties()` to diagonalise the inertia
-//   matrix; we only consume the principal moments (the diagonal of the
-//   inertia tensor in its principal frame). Off-diagonal terms are
-//   handled by Rapier when we hand it the principal-axis quaternion.
-// - Convert OCCT's mm³ volume + g/cm³ density to a kg mass:
-//   `massKg = volumeMm3 × density × 1e-6` (since 1 cm³ = 1000 mm³ and
-//   1 g = 1e-3 kg → 1 mm³ × 1 g/cm³ = 1e-3 g = 1e-6 kg).
-// - For the principal inertia we *would* like to call OCCT's
-//   `GProp_GProps::PrincipalProperties()` and read three principal
-//   moments off the resulting `GProp_PrincipalProps`, but that method
-//   (`void Moments(Real&, Real&, Real&)` in C++) is exposed in
-//   opencascade.js as a strict 3-output-arg embind binding and throws
-//   `BindingError: function GProp_PrincipalProps.Moments called with
-//   0 arguments, expected 3 args` on every call (we don't have a
-//   reliable way to allocate `Standard_Real` reference boxes from JS
-//   in this build of opencascade.js). Demo-grade workaround: skip the
-//   diagonalisation entirely and approximate the part as a sphere of
-//   equivalent volume — gives a non-zero, isotropic, well-conditioned
-//   inertia diagonal that Rapier accepts. Accurate enough for a
-//   spinning-arm / four-bar demo (where rotational inertia matters
-//   only through orders of magnitude); a future phase can revisit
-//   with `BRepGProp.MatrixOfInertia` + a JS-side eigensolve, or upgrade
-//   the OCCT binding to one that exposes the output-args wrapped.
-//
-// Cleanup: every transient OCCT wrapper (`GProp_GProps`, `gp_Pnt`)
-// is `.delete()`-d in a finally block. The caller is responsible for
-// the input shape's lifetime.
+import type { MassPropertiesResult } from "../types";
+
+type Matrix3 = [[number, number, number], [number, number, number], [number, number, number]];
 
 /**
- * Compute the mass properties of `shape` under the given `density`
- * (g/cm³). Returns kg-scale mass + centre-of-mass + principal inertia
- * (kg·mm²). Returns null only if OCCT outright refuses to compute on
- * the shape (e.g. empty compound) — the caller should treat that as a
- * massless static body.
- *
- * `density` is required: the caller must look up the material via
- * `getMaterial(part.materialId).densityGcm3` before calling.
+ * Diagonalise a symmetric physical inertia tensor. Eigenvectors are columns
+ * of the returned principal-frame rotation: I_local = R diag(moments) R^T.
+ * Scaling before Jacobi rotations keeps the convergence tolerance independent
+ * of CAD units and part size. No equivalent-shape approximation is permitted.
  */
-export function computeMassProperties(
-  oc: unknown,
-  shape: unknown,
-  density: number,
-): {
-  volumeMm3: number;
-  massKg: number;
-  comLocal: [number, number, number];
-  principalInertiaKgMm2: [number, number, number];
-} | null {
+export function principalInertia(tensor: Matrix3): {
+  moments: [number, number, number];
+  frame: [number, number, number, number];
+} {
+  if (tensor.length !== 3 || tensor.some((row) => row.length !== 3 || row.some((n) => !Number.isFinite(n)))) {
+    throw new Error("Inertia tensor must contain nine finite values.");
+  }
+  const scale = Math.max(...tensor.flat().map(Math.abs));
+  if (!(scale > 0)) throw new Error("Inertia tensor must be positive definite.");
+  const a = tensor.map((row) => row.map((v) => v / scale));
+  for (let i = 0; i < 3; i++) {
+    for (let j = i + 1; j < 3; j++) {
+      if (Math.abs(a[i][j] - a[j][i]) > 1e-10) throw new Error("Inertia tensor is not symmetric.");
+      a[i][j] = a[j][i] = (a[i][j] + a[j][i]) / 2;
+    }
+  }
+  const vectors = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let iteration = 0; iteration < 64; iteration++) {
+    let p = 0, q = 1;
+    for (const [i, j] of [[0, 2], [1, 2]]) {
+      if (Math.abs(a[i][j]) > Math.abs(a[p][q])) { p = i; q = j; }
+    }
+    if (Math.abs(a[p][q]) <= 1e-14) break;
+    const tau = (a[q][q] - a[p][p]) / (2 * a[p][q]);
+    const t = (tau < 0 ? -1 : 1) / (Math.abs(tau) + Math.hypot(1, tau));
+    const c = 1 / Math.hypot(1, t);
+    const s = t * c;
+    const off = a[p][q];
+    a[p][p] -= t * off;
+    a[q][q] += t * off;
+    a[p][q] = a[q][p] = 0;
+    for (let k = 0; k < 3; k++) {
+      if (k !== p && k !== q) {
+        const kp = a[k][p], kq = a[k][q];
+        a[k][p] = a[p][k] = c * kp - s * kq;
+        a[k][q] = a[q][k] = s * kp + c * kq;
+      }
+      const vp = vectors[k][p], vq = vectors[k][q];
+      vectors[k][p] = c * vp - s * vq;
+      vectors[k][q] = s * vp + c * vq;
+    }
+  }
+  const order = [0, 1, 2].sort((i, j) => a[i][i] - a[j][j]);
+  const moments = order.map((i) => a[i][i] * scale) as [number, number, number];
+  if (moments.some((v) => !Number.isFinite(v) || v <= 0)) throw new Error("Inertia tensor must be positive definite.");
+  if (moments[2] > (moments[0] + moments[1]) * (1 + 1e-9)) {
+    throw new Error("Inertia moments violate the physical triangle inequality.");
+  }
+  const r = vectors.map((row) => order.map((i) => row[i]));
+  const determinant = r[0][0] * (r[1][1] * r[2][2] - r[1][2] * r[2][1])
+    - r[0][1] * (r[1][0] * r[2][2] - r[1][2] * r[2][0])
+    + r[0][2] * (r[1][0] * r[2][1] - r[1][1] * r[2][0]);
+  // Sorting can produce a reflection; flipping one eigenvector preserves I.
+  if (determinant < 0) for (let i = 0; i < 3; i++) r[i][2] *= -1;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      const reconstructed = moments.reduce((sum, inertia, k) => sum + r[i][k] * inertia * r[j][k], 0);
+      if (Math.abs(reconstructed - tensor[i][j]) > scale * 1e-10) {
+        throw new Error("Inertia eigensolver did not converge.");
+      }
+    }
+  }
+
+  const trace = r[0][0] + r[1][1] + r[2][2];
+  let x: number, y: number, z: number, w: number;
+  if (trace > 0) {
+    const s = 2 * Math.sqrt(trace + 1);
+    w = s / 4; x = (r[2][1] - r[1][2]) / s; y = (r[0][2] - r[2][0]) / s; z = (r[1][0] - r[0][1]) / s;
+  } else if (r[0][0] > r[1][1] && r[0][0] > r[2][2]) {
+    const s = 2 * Math.sqrt(1 + r[0][0] - r[1][1] - r[2][2]);
+    w = (r[2][1] - r[1][2]) / s; x = s / 4; y = (r[0][1] + r[1][0]) / s; z = (r[0][2] + r[2][0]) / s;
+  } else if (r[1][1] > r[2][2]) {
+    const s = 2 * Math.sqrt(1 + r[1][1] - r[0][0] - r[2][2]);
+    w = (r[0][2] - r[2][0]) / s; x = (r[0][1] + r[1][0]) / s; y = s / 4; z = (r[1][2] + r[2][1]) / s;
+  } else {
+    const s = 2 * Math.sqrt(1 + r[2][2] - r[0][0] - r[1][1]);
+    w = (r[1][0] - r[0][1]) / s; x = (r[0][2] + r[2][0]) / s; y = (r[1][2] + r[2][1]) / s; z = s / 4;
+  }
+  const norm = Math.hypot(x, y, z, w) * (w < 0 ? -1 : 1);
+  return { moments, frame: [x / norm, y / norm, z / norm, w / norm] };
+}
+
+/**
+ * Integrate the B-rep volume, centre of mass and full inertia tensor in OCCT.
+ * MatrixOfInertia() is about the centre of mass, with axes parallel to the
+ * shape's local axes. Its scalar Value(i,j) binding avoids the unsupported
+ * output-reference arguments of GProp_PrincipalProps.Moments().
+ *
+ * Geometry is in mm; density is g/cm³. OCCT's geometric inertia (mm⁵) is
+ * multiplied by density × 1e-6 to obtain kg·mm². Invalid/empty geometry fails
+ * explicitly; it must never become a small sphere or a fictitious mass.
+ */
+export function computeMassProperties(oc: unknown, shape: unknown, density: number): MassPropertiesResult {
+  if (!Number.isFinite(density) || density <= 0) throw new Error("Material density must be finite and positive.");
   const ocAny = oc as any;
-  const shapeAny = shape as any;
-
-  let props: any = null;
-  let com: any = null;
-
+  let props: any = null, com: any = null, matrix: any = null;
   try {
-    // GProp_GProps_1() builds an empty inertia struct centred at the
-    // origin; BRepGProp.VolumeProperties then populates it from the
-    // shape. The 1e-3 tolerance is OCCT's default — finer values cost
-    // more iterations of the adaptive Gauss-Legendre integration.
+    const solids = new ocAny.TopExp_Explorer_2(shape, ocAny.TopAbs_ShapeEnum.TopAbs_SOLID, ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE);
+    try {
+      if (!solids.More()) throw new Error("A positive closed-solid volume is required for physical mass properties.");
+      while (solids.More()) {
+        const solid = solids.Current();
+        let check: any = null;
+        try {
+          check = new ocAny.BRepCheck_Analyzer(solid, true, false);
+          if (!check.IsValid_2()) throw new Error("Invalid solid topology cannot provide trustworthy physical mass properties.");
+        } finally {
+          check?.delete?.();
+          solid.delete?.();
+        }
+        solids.Next();
+      }
+    } finally { solids.delete(); }
     props = new ocAny.GProp_GProps_1();
-    ocAny.BRepGProp.VolumeProperties_1(shapeAny, props, 1e-3, false, false);
-
+    ocAny.BRepGProp.VolumeProperties_1(shape, props, 1e-6, true, false);
     const volumeMm3 = props.Mass();
     if (!Number.isFinite(volumeMm3) || volumeMm3 <= 0) {
-      // Zero-volume shape (sheet body, empty compound). Treat as a
-      // tiny static-ish particle so Rapier doesn't divide by zero.
-      return {
-        volumeMm3: 0,
-        massKg: 1e-6,
-        comLocal: [0, 0, 0],
-        principalInertiaKgMm2: [1e-6, 1e-6, 1e-6],
-      };
+      throw new Error("A positive closed-solid volume is required for physical mass properties.");
     }
-
     com = props.CentreOfMass();
-    const cx = com.X();
-    const cy = com.Y();
-    const cz = com.Z();
-
-    // Mass = volume × density × 1e-6  (mm³ · g/cm³ → kg).
-    const massKg = Math.max(volumeMm3 * density * 1e-6, 1e-6);
-
-    // Sphere-equivalent isotropic inertia. See file header for why we
-    // bypass the principal-moments path. r_eq = (3V / 4π)^(1/3),
-    // I_sphere = (2/5) m r².  For a 50 mm cube (V=125 000 mm³,
-    // m≈0.34 kg) this gives r_eq≈31 mm and I≈131 kg·mm² — same order
-    // of magnitude as the true principal moments (~70–110 kg·mm²),
-    // sufficient for non-FEA dynamics demos.
-    const rEqMm = Math.cbrt((3 * volumeMm3) / (4 * Math.PI));
-    const isoInertia = Math.max((2 / 5) * massKg * rEqMm * rEqMm, 1e-6);
-
-    return {
-      volumeMm3,
-      massKg,
-      comLocal: [cx, cy, cz],
-      principalInertiaKgMm2: [isoInertia, isoInertia, isoInertia],
-    };
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("[MASS-PROPS] computeMassProperties failed:", err);
-    return null;
+    const comLocal: [number, number, number] = [com.X(), com.Y(), com.Z()];
+    if (comLocal.some((v) => !Number.isFinite(v))) throw new Error("Centre of mass is not finite.");
+    matrix = props.MatrixOfInertia();
+    const densityKgPerMm3 = density * 1e-6;
+    const tensor = [1, 2, 3].map((i) => [1, 2, 3].map((j) => matrix.Value(i, j) * densityKgPerMm3)) as Matrix3;
+    const { moments, frame } = principalInertia(tensor);
+    const massKg = volumeMm3 * densityKgPerMm3;
+    if (!Number.isFinite(massKg) || massKg <= 0) throw new Error("Physical mass is not finite and positive.");
+    return { volumeMm3, massKg, comLocal, principalInertiaKgMm2: moments, principalInertiaLocalFrame: frame };
   } finally {
-    if (com) {
-      try {
-        com.delete?.();
-      } catch {
-        // ignore
-      }
-    }
-    if (props) {
-      try {
-        props.delete?.();
-      } catch {
-        // ignore
-      }
+    for (const object of [matrix, com, props]) {
+      try { object?.delete?.(); } catch { /* preserve the original integration error */ }
     }
   }
 }

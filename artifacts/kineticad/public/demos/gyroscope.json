@@ -1,0 +1,744 @@
+{
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "asm-gyroscope",
+      "name": "Three-axis driven gimbal",
+      "groundPartId": "gyro-pedestal",
+      "booleanFeatures": [],
+      "parts": [
+        {
+          "id": "gyro-pedestal",
+          "name": "Steel pedestal",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-gyro-pedestal-1",
+              "name": "Circular foot",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 36
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-pedestal-2",
+              "name": "Yaw bearing housing",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 9
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-pedestal-3",
+              "name": "Yaw bearing bore · 0.3 mm radial clearance",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 3.3
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-gyro-pedestal-1",
+              "type": "extrude",
+              "sketchId": "sk-gyro-pedestal-1",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-gyro-pedestal-2",
+              "type": "extrude",
+              "sketchId": "sk-gyro-pedestal-2",
+              "depthMm": 39.5,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-pedestal-3",
+              "type": "extrude",
+              "sketchId": "sk-gyro-pedestal-3",
+              "depthMm": 40,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "gyro-outer",
+          "name": "Aluminium yaw ring and bearings",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              110
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-gyro-outer-1",
+              "name": "Ring outer profile",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 70
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-2",
+              "name": "Open ring centre",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 64
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-3",
+              "name": "Yaw spindle stock",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 3
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-4",
+              "name": "Clear the centre of the spindle",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 4
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-5",
+              "name": "Remove unused upper spindle",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -4,
+                    70
+                  ],
+                  "width": 8,
+                  "height": 8
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-6",
+              "name": "Roll bearing housing",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -73,
+                    -7
+                  ],
+                  "width": 12,
+                  "height": 14
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-7",
+              "name": "Roll bearing housing",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    61,
+                    -7
+                  ],
+                  "width": 12,
+                  "height": 14
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-outer-8",
+              "name": "Roll bearing bores · 0.3 mm radial clearance",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 3.3
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-gyro-outer-1",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-1",
+              "depthMm": 6,
+              "direction": "symmetric",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-gyro-outer-2",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-2",
+              "depthMm": 8,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-outer-3",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-3",
+              "depthMm": 152,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-outer-4",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-4",
+              "depthMm": 128,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-outer-5",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-5",
+              "depthMm": 16,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-outer-6",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-6",
+              "depthMm": 14,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-outer-7",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-7",
+              "depthMm": 14,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-outer-8",
+              "type": "extrude",
+              "sketchId": "sk-gyro-outer-8",
+              "depthMm": 150,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "gyro-middle",
+          "name": "Brass roll ring and trunnions",
+          "visible": true,
+          "materialId": "brass-c36000",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              110
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-gyro-middle-1",
+              "name": "Ring outer profile",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 54
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-2",
+              "name": "Open ring centre",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 48
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-3",
+              "name": "Opposed roll trunnion stock",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 3
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-4",
+              "name": "Open space between roll trunnions",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 4
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-5",
+              "name": "Flywheel bearing housing",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -58,
+                    -6
+                  ],
+                  "width": 14,
+                  "height": 12
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-6",
+              "name": "Flywheel bearing housing",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    44,
+                    -6
+                  ],
+                  "width": 14,
+                  "height": 12
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-middle-7",
+              "name": "Flywheel bearing bores · 0.3 mm radial clearance",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.3
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-gyro-middle-1",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-1",
+              "depthMm": 6,
+              "direction": "symmetric",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-gyro-middle-2",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-2",
+              "depthMm": 8,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-middle-3",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-3",
+              "depthMm": 140,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-middle-4",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-4",
+              "depthMm": 104,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-middle-5",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-5",
+              "depthMm": 12,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-middle-6",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-6",
+              "depthMm": 12,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-middle-7",
+              "type": "extrude",
+              "sketchId": "sk-gyro-middle-7",
+              "depthMm": 120,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "gyro-rotor",
+          "name": "Steel flywheel and axle",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              110
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-gyro-rotor-1",
+              "name": "Ring outer profile",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 38
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-rotor-2",
+              "name": "Open ring centre",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 29
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-rotor-3",
+              "name": "Flywheel spoke",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -36,
+                    -3
+                  ],
+                  "width": 72,
+                  "height": 6
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-rotor-4",
+              "name": "Central hub",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 9
+                }
+              ]
+            },
+            {
+              "id": "sk-gyro-rotor-5",
+              "name": "Flywheel shaft through both bearings",
+              "plane": "XZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-gyro-rotor-1",
+              "type": "extrude",
+              "sketchId": "sk-gyro-rotor-1",
+              "depthMm": 6,
+              "direction": "symmetric",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-gyro-rotor-2",
+              "type": "extrude",
+              "sketchId": "sk-gyro-rotor-2",
+              "depthMm": 8,
+              "direction": "symmetric",
+              "extrudeMode": "subtract"
+            },
+            {
+              "id": "feat-gyro-rotor-3",
+              "type": "extrude",
+              "sketchId": "sk-gyro-rotor-3",
+              "depthMm": 6,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-rotor-4",
+              "type": "extrude",
+              "sketchId": "sk-gyro-rotor-4",
+              "depthMm": 16,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-gyro-rotor-5",
+              "type": "extrude",
+              "sketchId": "sk-gyro-rotor-5",
+              "depthMm": 112,
+              "direction": "symmetric",
+              "extrudeMode": "add"
+            }
+          ]
+        }
+      ],
+      "mates": [
+        {
+          "id": "gyro-yaw",
+          "type": "revolute",
+          "name": "Yaw · 5 RPM",
+          "partA": "gyro-pedestal",
+          "partB": "gyro-outer",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "gyro-yaw-anchor-a",
+            "localPoint": [
+              0,
+              0,
+              110
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "gyro-yaw-anchor-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 5
+        },
+        {
+          "id": "gyro-roll",
+          "type": "revolute",
+          "name": "Roll · 8 RPM",
+          "partA": "gyro-outer",
+          "partB": "gyro-middle",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "gyro-roll-anchor-a",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "gyro-roll-anchor-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            1,
+            0,
+            0
+          ],
+          "motorSpeedRpm": 8
+        },
+        {
+          "id": "gyro-pitch",
+          "type": "revolute",
+          "name": "Flywheel spin · 16 RPM",
+          "partA": "gyro-middle",
+          "partB": "gyro-rotor",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "gyro-pitch-anchor-a",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "gyro-pitch-anchor-b",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            1,
+            0
+          ],
+          "motorSpeedRpm": 16
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "timeStepMs": 16.666666666666668,
+      "gravity": [
+        0,
+        0,
+        0
+      ],
+      "speedMultiplier": 1,
+      "simulationTimeMs": 0
+    }
+  },
+  "version": 9
+}

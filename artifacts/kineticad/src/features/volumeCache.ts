@@ -1,6 +1,6 @@
 // Per-part volume cache, keyed by tip-feature hash.
 //
-// Volume (mm³) and centre-of-mass are purely geometric — they depend only
+// Volume (mm³), inertia (mm⁵) and centre-of-mass are purely geometric — they depend only
 // on the part's shape, not on the material or density assigned to it. Mass
 // is just volume × density × unit-conversion, which is arithmetic.
 //
@@ -18,6 +18,8 @@
 // Lifecycle: module-level Map, same as featureCache. Cleared on page reload.
 // No persistence, no schema implications.
 
+import type { MassPropertiesResult } from "../cad/types";
+
 export type VolumeData = {
   /** Geometric volume in mm³, independent of material. */
   volumeMm3: number;
@@ -26,7 +28,39 @@ export type VolumeData = {
    * Depends only on shape, not density.
    */
   comLocal: [number, number, number];
+  /** Geometric principal moments at unit density, independent of material. */
+  principalInertiaMm5: [number, number, number];
+  principalInertiaLocalFrame: [number, number, number, number];
 };
+
+/** Strip material density while retaining the actual B-rep inertia. */
+export function volumeDataFromMassProperties(props: MassPropertiesResult, densityGcm3: number): VolumeData {
+  const scale = densityGcm3 * 1e-6;
+  if (!Number.isFinite(scale) || scale <= 0) throw new Error("Material density must be finite and positive.");
+  return {
+    volumeMm3: props.volumeMm3,
+    comLocal: [...props.comLocal],
+    principalInertiaMm5: props.principalInertiaKgMm2.map((v) => v / scale) as [number, number, number],
+    principalInertiaLocalFrame: [...props.principalInertiaLocalFrame],
+  };
+}
+
+/** Reapply material density without losing shape-dependent rotational inertia. */
+export function massPropertiesForMaterial(data: VolumeData, densityGcm3: number): MassPropertiesResult {
+  const scale = densityGcm3 * 1e-6;
+  if (!Number.isFinite(scale) || scale <= 0) throw new Error("Material density must be finite and positive.");
+  if (!(data.volumeMm3 > 0) || !Number.isFinite(data.volumeMm3)
+    || data.principalInertiaMm5.some((v) => !Number.isFinite(v) || v <= 0)) {
+    throw new Error("Cached physical mass properties are invalid.");
+  }
+  return {
+    volumeMm3: data.volumeMm3,
+    massKg: data.volumeMm3 * scale,
+    comLocal: [...data.comLocal],
+    principalInertiaKgMm2: data.principalInertiaMm5.map((v) => v * scale) as [number, number, number],
+    principalInertiaLocalFrame: [...data.principalInertiaLocalFrame],
+  };
+}
 
 const cache = new Map<string, VolumeData>();
 

@@ -1,7 +1,7 @@
 // Persistent overlay for sketches that have been finished and pushed into
 // the assembly. Renders each Sketch in `assembly.parts[].sketches` as a thin
-// orange overlay (linewidth 1.5, opacity 0.6) visible from any camera angle,
-// per the Phase 2 spec.
+// orange overlay. Sketch geometry is local to its part, just like CAD meshes.
+// Consumed profiles stay hidden unless selected; unused sketches remain visible.
 //
 // Rebuilds whenever the assembly changes. This naturally covers:
 // - finishing a sketch in this session
@@ -32,7 +32,7 @@ type SketchEntry = {
 
 export type FinishedSketchesLayer = {
   group: THREE.Group;
-  sync: (assembly: Assembly) => void;
+  sync: (assembly: Assembly, selectedSketch?: { partId: string; sketchId: string } | null) => void;
   setResolution: (widthPx: number, heightPx: number) => void;
   dispose: () => void;
 };
@@ -48,30 +48,38 @@ export function createFinishedSketchesLayer(
   let widthPx = Math.max(1, initialResolution.widthPx);
   let heightPx = Math.max(1, initialResolution.heightPx);
 
-  const sync = (assembly: Assembly): void => {
+  const sync: FinishedSketchesLayer['sync'] = (assembly, selectedSketch) => {
     const seen = new Set<string>();
 
     for (const part of assembly.parts) {
+      const consumed = new Set(part.features.flatMap((feature) =>
+        feature.type === 'extrude' || feature.type === 'revolve' ? [feature.sketchId] : [],
+      ));
       for (const sketch of part.sketches) {
         if (!isCardinalPlane(sketch.plane)) continue; // skip custom planes (later phases)
-        seen.add(sketch.id);
+        const key = `${part.id}:${sketch.id}`;
+        seen.add(key);
 
         const sig = primitiveSig(sketch.primitives);
-        const existing = entries.get(sketch.id);
-        if (existing && existing.primitiveSig === sig) {
-          // Geometry unchanged — nothing to do.
-          continue;
+        let entry = entries.get(key);
+        if (entry && (entry.primitiveSig !== sig || entry.plane !== sketch.plane)) {
+          removeEntry(entry);
+          entries.delete(key);
+          entry = undefined;
         }
-
-        // Drop the stale entry (if any) and rebuild from scratch.
-        if (existing) removeEntry(existing);
-
-        const entry = buildSketchEntry(sketch, sketch.plane, {
-          widthPx,
-          heightPx,
-        });
-        entries.set(sketch.id, entry);
-        group.add(entry.group);
+        if (!entry) {
+          entry = buildSketchEntry(sketch, sketch.plane, { widthPx, heightPx });
+          entries.set(key, entry);
+          group.add(entry.group);
+        }
+        // Reconcile transforms even when primitive geometry is unchanged.
+        // Previously the cache fast path left translated/rotated sketches at
+        // the global origin, including the gyroscope's rings 98 mm below it.
+        entry.group.position.fromArray(part.transform.positionMm);
+        const [rx, ry, rz] = part.transform.rotationDeg.map(THREE.MathUtils.degToRad);
+        entry.group.rotation.set(rx, ry, rz, 'XYZ');
+        entry.group.visible = part.visible && (!consumed.has(sketch.id) ||
+          (selectedSketch?.partId === part.id && selectedSketch.sketchId === sketch.id));
       }
     }
 

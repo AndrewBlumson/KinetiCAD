@@ -14,6 +14,12 @@
 import type { TessellatedMesh } from "@/cad/types";
 
 const cache = new Map<string, TessellatedMesh>();
+let generation = 0;
+
+/** Distinguish work started before an explicit cache reset. */
+export function getCacheGeneration(): number {
+  return generation;
+}
 
 /** Look up a previously-tessellated mesh by its full parameter hash. */
 export function getCachedMesh(hash: string): TessellatedMesh | undefined {
@@ -27,6 +33,7 @@ export function setCachedMesh(hash: string, mesh: TessellatedMesh): void {
 
 /** Drop all cached entries. */
 export function clearCache(): void {
+  generation += 1;
   cache.clear();
 }
 

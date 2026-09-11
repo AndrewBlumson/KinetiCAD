@@ -310,6 +310,7 @@ function executeUpstreamChain(
   const ocAny = oc as any;
   let current: any = null;
 
+  try {
   for (const feat of features) {
     let nextShape: any = null;
 
@@ -317,10 +318,12 @@ function executeUpstreamChain(
       const sketch = sketches.find((s) => s.id === feat.sketchId);
       if (!sketch) {
         if (current) current.delete();
+        current = null;
         throw new Error(`Sketch ${feat.sketchId} not found in upstream chain.`);
       }
       if (!isCardinalPlane(sketch.plane)) {
         if (current) current.delete();
+        current = null;
         throw new Error("Upstream chain has a non-cardinal sketch plane.");
       }
       let wire: any = null;
@@ -448,6 +451,7 @@ function executeUpstreamChain(
       const stored = importedShapeRegistry.get(feat.shapeId);
       if (!stored) {
         if (current) current.delete();
+        current = null;
         throw new Error(
           `imported-step shape "${feat.shapeId}" is not in the worker registry. ` +
           'Re-import the STEP file to restore this part.',
@@ -474,7 +478,14 @@ function executeUpstreamChain(
   if (!current) {
     throw new Error("Upstream feature chain produced no shape.");
   }
-  return current;
+  const result = current;
+  current = null; // Ownership transfers to the caller only after a full build.
+  return result;
+  } finally {
+    // A later feature can throw before the caller receives its tip. Release
+    // the previously built solid here; imported registry originals are copies.
+    current?.delete?.();
+  }
 }
 
 const api: CadKernelApi = {
@@ -882,6 +893,34 @@ const api: CadKernelApi = {
     }
   },
 
+  async buildPartMesh(args) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("OC kernel not initialised.");
+    let tip: any = null;
+    try {
+      // Execute every feature, including new-body replacements, so errors in
+      // the history remain errors. Intermediate display meshes are unnecessary.
+      tip = executeUpstreamChain(ocInstance, args.features, args.sketches);
+      if (!tip) throw new Error("Cannot build a mesh for an empty part.");
+      const mesh = buildMesh(ocInstance, tip);
+      let unitDensityMassProperties: MassPropertiesResult | undefined;
+      try {
+        unitDensityMassProperties = computeMassProperties(ocInstance, tip, 1);
+      } catch (err) {
+        // Preserve display behavior: a mass failure does not discard geometry.
+        // Physics still requires valid properties and will report its failure.
+        console.error("[CAD WORKER] buildPartMesh mass properties failed:", err);
+      }
+      return Comlink.transfer({ mesh, unitDensityMassProperties }, collectTransferables(mesh));
+    } catch (err) {
+      console.error("[CAD WORKER] buildPartMesh failed:", err);
+      if (err instanceof Error) throw err;
+      throw new Error(`part-mesh-failed: ${String(err)}`);
+    } finally {
+      tip?.delete?.();
+    }
+  },
+
   async getMassProperties(
     args: MassPropertiesArgs,
   ): Promise<MassPropertiesResult> {
@@ -896,25 +935,9 @@ const api: CadKernelApi = {
     try {
       tip = executeUpstreamChain(oc, args.features, args.sketches);
       if (!tip) {
-        // No features → empty part. Return a zero-volume fallback so
-        // the physics layer can choose to skip the body.
-        return {
-          volumeMm3: 0,
-          massKg: 1e-6,
-          comLocal: [0, 0, 0],
-          principalInertiaKgMm2: [1e-6, 1e-6, 1e-6],
-        };
+        throw new Error("Cannot calculate physical mass properties for an empty part.");
       }
-      const props = computeMassProperties(oc, tip, args.density);
-      if (!props) {
-        return {
-          volumeMm3: 0,
-          massKg: 1e-6,
-          comLocal: [0, 0, 0],
-          principalInertiaKgMm2: [1e-6, 1e-6, 1e-6],
-        };
-      }
-      return props;
+      return computeMassProperties(oc, tip, args.density);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("[CAD WORKER] getMassProperties failed:", err);

@@ -19,9 +19,56 @@ import type {
   SketchPlane,
 } from "@/state/schemas";
 import { isCardinalPlane } from "@/sketch/plane";
-import { getCachedMesh, setCachedMesh } from "./featureCache";
+import { getCachedMesh, setCachedMesh, getCacheGeneration } from "./featureCache";
+import { setVolumeData, volumeDataFromMassProperties } from "./volumeCache";
 import { getImportedShapeMesh } from "@/cad/importedShapeCache";
 import type { Remote } from "comlink";
+
+// Scene remounts and mass-property updates can request the same cold feature
+// concurrently. Share only its pending worker operation, scoped to that worker
+// and cache generation. Settled entries are removed so failures can retry.
+const inFlight = new WeakMap<Remote<CadKernelApi>, Map<string, Promise<TessellatedMesh>>>();
+
+function runCachedOperation(
+  hash: string,
+  kernel: Remote<CadKernelApi>,
+  generation: number,
+  execute: () => Promise<TessellatedMesh>,
+): Promise<TessellatedMesh> {
+  if (generation === getCacheGeneration()) {
+    const cached = getCachedMesh(hash);
+    if (cached) return Promise.resolve(cached);
+  }
+  let pending = inFlight.get(kernel);
+  if (!pending) {
+    pending = new Map();
+    inFlight.set(kernel, pending);
+  }
+  const key = `${generation}:${hash}`;
+  const existing = pending.get(key);
+  if (existing) return existing;
+  const operation = execute()
+    .then((mesh) => {
+      // A late completion must not repopulate an explicitly cleared cache.
+      if (generation === getCacheGeneration()) setCachedMesh(hash, mesh);
+      return mesh;
+    })
+    .finally(() => { pending.delete(key); });
+  pending.set(key, operation);
+  return operation;
+}
+
+function runCachedFeature(
+  hash: string,
+  feature: Feature,
+  sketches: ReadonlyArray<Sketch>,
+  upstreamFeatures: ReadonlyArray<Feature>,
+  kernel: Remote<CadKernelApi>,
+  generation: number,
+): Promise<TessellatedMesh> {
+  return runCachedOperation(hash, kernel, generation,
+    () => runFeature(feature, sketches, upstreamFeatures, kernel));
+}
 
 /**
  * Stable JSON serialiser. Mirrors JSON.stringify but sorts object keys so
@@ -189,6 +236,39 @@ export type RegenResult = {
   >;
 };
 
+/** Display regeneration needs the final solid, without meshing every prefix. */
+export async function regeneratePartTip(
+  part: Part,
+  kernel: Remote<CadKernelApi>,
+): Promise<{ mesh: TessellatedMesh | null; hash: string | null; error: string | null }> {
+  const hashes: string[] = [];
+  for (const feature of part.features) {
+    hashes.push(computeFeatureHash(feature, part.sketches, hashes));
+  }
+  const hash = hashes.at(-1) ?? null;
+  if (!hash) return { mesh: null, hash: null, error: null };
+  const generation = getCacheGeneration();
+  try {
+    // Previewing a final new-body/revolve can skip earlier history. Its raw
+    // feature cache entry therefore cannot prove that the complete part built.
+    const mesh = await runCachedOperation(`part:${hash}`, kernel, generation, async () => {
+      // Imported meshes retain their existing live cache/worker identity.
+      // A modified import goes through the complete worker chain as usual.
+      if (part.features.length === 1 && part.features[0].type === 'imported-step') {
+        return runFeature(part.features[0], part.sketches, [], kernel);
+      }
+      const result = await kernel.buildPartMesh({ features: [...part.features], sketches: [...part.sketches] });
+      if (result.unitDensityMassProperties && generation === getCacheGeneration()) {
+        setVolumeData(hash, volumeDataFromMassProperties(result.unitDensityMassProperties, 1));
+      }
+      return result.mesh;
+    });
+    return { mesh, hash, error: null };
+  } catch (err) {
+    return { mesh: null, hash, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 /**
  * Walk `part.features`, returning the final mesh (or null if there are no
  * features). Each feature's mesh is cached by its hash; cache hits skip the
@@ -198,6 +278,7 @@ export async function regeneratePart(
   part: Part,
   kernel: Remote<CadKernelApi>,
 ): Promise<RegenResult> {
+  const generation = getCacheGeneration();
   const upstreamHashes: string[] = [];
   const upstreamFeatures: Feature[] = [];
   const perFeature: RegenResult["perFeature"] = [];
@@ -205,7 +286,7 @@ export async function regeneratePart(
 
   for (const feature of part.features) {
     const hash = computeFeatureHash(feature, part.sketches, upstreamHashes);
-    const cached = getCachedMesh(hash);
+    const cached = generation === getCacheGeneration() ? getCachedMesh(hash) : undefined;
     if (cached) {
       perFeature.push({ id: feature.id, ok: true, hash, mesh: cached });
       lastMesh = cached;
@@ -214,13 +295,14 @@ export async function regeneratePart(
       continue;
     }
     try {
-      const mesh = await runFeature(
+      const mesh = await runCachedFeature(
+        hash,
         feature,
         part.sketches,
         upstreamFeatures,
         kernel,
+        generation,
       );
-      setCachedMesh(hash, mesh);
       perFeature.push({ id: feature.id, ok: true, hash, mesh });
       lastMesh = mesh;
       upstreamHashes.push(hash);
@@ -255,13 +337,10 @@ export async function previewFeature(
 ): Promise<TessellatedMesh> {
   // Fold upstream feature hashes into the cache key so editing an upstream
   // feature (e.g. extrude depth) invalidates the modifier preview.
-  const upstreamHashes = upstreamFeatures.map((f) =>
-    computeFeatureHash(f, sketches, []),
-  );
+  const upstreamHashes: string[] = [];
+  for (const upstream of upstreamFeatures) {
+    upstreamHashes.push(computeFeatureHash(upstream, sketches, upstreamHashes));
+  }
   const hash = computeFeatureHash(feature, sketches, upstreamHashes);
-  const cached = getCachedMesh(hash);
-  if (cached) return cached;
-  const mesh = await runFeature(feature, sketches, upstreamFeatures, kernel);
-  setCachedMesh(hash, mesh);
-  return mesh;
+  return runCachedFeature(hash, feature, sketches, upstreamFeatures, kernel, getCacheGeneration());
 }

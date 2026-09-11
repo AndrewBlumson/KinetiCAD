@@ -1,0 +1,35 @@
+{
+  "input": "kineticad-export-20260911-223238.step",
+  "sourceSha256": "334fd1c5b206b59f79e0a149837c19c78e509f9b723912dd7da1b9e2b1472f16",
+  "bytes": 19030,
+  "roots": 1,
+  "solids": 1,
+  "valid": true,
+  "volumeMm3": 3717.256661176908,
+  "expectedVolumeMm3": 3717.2566611769184,
+  "volumeErrorMm3": 1.0459189070388675e-11,
+  "centroidMm": [
+    9.999999999999993,
+    10.000000000000002,
+    5.000000000000001
+  ],
+  "minimumMm": [
+    -1e-7,
+    -1e-7,
+    -1e-7
+  ],
+  "maximumMm": [
+    20.0000001,
+    20.0000001,
+    10.0000001
+  ],
+  "dimensionsMm": [
+    20.000000200000002,
+    20.000000200000002,
+    10.000000199999999
+  ],
+  "boundsToleranceMm": 0.00001,
+  "volumeToleranceMm3": 0.00001,
+  "browser": "Codex in-app browser",
+  "workflow": "Import reference STEP, open Material studio, Save demo JSON, Return to my model, Export STEP through visible UI"
+}

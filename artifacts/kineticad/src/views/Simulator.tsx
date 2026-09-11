@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
+import { DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 
 // Phase 8 — same Scene component as the Modeller. The simulation
 // subsystem is wired into Scene at mount; the Simulator view just
@@ -14,6 +15,8 @@ const SPEEDS: Array<{ label: string; value: number }> = [
 ];
 
 export default function Simulator() {
+  const { activeDemo, revision } = useDemoWorkspace();
+  const [readyRevision, setReadyRevision] = useState(-1);
   const simulation = useKinetiCADStore((s) => s.simulation);
   const setSimulationRunning = useKinetiCADStore((s) => s.setSimulationRunning);
   const setSimulationPaused = useKinetiCADStore((s) => s.setSimulationPaused);
@@ -22,7 +25,8 @@ export default function Simulator() {
   const parts = useKinetiCADStore((s) => s.assembly.parts);
   const mates = useKinetiCADStore((s) => s.assembly.mates);
 
-  const canPlay = parts.length > 0;
+  const preparingGeometry = readyRevision !== revision;
+  const canPlay = parts.some((part) => part.visible && part.features.length > 0) && !preparingGeometry;
   const isRunning = simulation.running;
   const isPaused = simulation.paused;
 
@@ -75,8 +79,11 @@ export default function Simulator() {
 
         <div className="flex-1" />
 
+        <DemoButton />
+        {preparingGeometry && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
         <SimStatus running={isRunning} paused={isPaused} />
       </header>
+      <DemoWorkspaceBar />
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-56 shrink-0 border-r border-border bg-sidebar flex flex-col overflow-hidden">
@@ -106,7 +113,7 @@ export default function Simulator() {
 
         <main className="flex-1 relative overflow-hidden" style={{ background: '#0A0E1A' }}>
           <Suspense fallback={<div className="absolute inset-0 grid place-items-center font-technical text-xs text-muted-foreground">Loading scene…</div>}>
-            <Scene />
+            <Scene key={revision} frameOnLoad={!!activeDemo} showSketches={false} onAssemblyReady={(ready) => setReadyRevision(ready ? revision : -1)} />
           </Suspense>
           <SimDashboard
             simulationTimeMs={simulation.simulationTimeMs}
@@ -126,6 +133,13 @@ export default function Simulator() {
           <SidebarSection title="Time Step">
             <div className="px-3 py-2 font-technical text-xs text-muted-foreground">
               <KvRow label="dt" value={`${simulation.timeStepMs.toFixed(2)} ms`} />
+            </div>
+          </SidebarSection>
+          <SidebarSection title="Physical model">
+            <div className="px-3 py-2 text-xs leading-relaxed text-muted-foreground space-y-2">
+              <p>Rigid solids with ideal joints and velocity-controlled motors.</p>
+              <p>Contact collisions, bearing friction and motor torque limits are not modelled.</p>
+              <p>Switching modes stops the simulation and returns it to the starting pose at 0 s.</p>
             </div>
           </SidebarSection>
         </aside>

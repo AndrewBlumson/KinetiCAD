@@ -1,0 +1,289 @@
+{
+  "description": "Actual generated B-rep validation and sampled geometric interference; this does not validate contact dynamics.",
+  "overlapToleranceMm3": 0.00001,
+  "fixtureSha256": {
+    "windmill": "4ad41d8a123f53655778421d1fd3a4288e9295298b36cf2b429520754f14d7d9",
+    "orrery": "0b545aa00269d7c5d4b7dda7700875a5aef469dda57d33ea0a02f0acd45647e9",
+    "gyroscope": "c9b0a7404200e23edc55aed44117a182ef487a7989221db75ce9ca46c1e0f652",
+    "kinetic-mobile": "2c53a0d18d97be89066054f4907d53c9eb56ca6a94cf9c1b55e3fd1eb0aa68dd",
+    "material-studio": "6c63fc4b60d532bd6193ae252529c8842b510bc292896756746e0f32a7102fbd"
+  },
+  "solids": [
+    {
+      "demo": "windmill",
+      "part": "part-post",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 11309.733552923255
+    },
+    {
+      "demo": "windmill",
+      "part": "part-rotor",
+      "valid": true,
+      "solids": 5,
+      "volumeMm3": 2532.849375055419
+    },
+    {
+      "demo": "orrery",
+      "part": "part-sun",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 265071.88014663884
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 4876.405216514195
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5701.04548790591
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 7812.905106203144
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 6264.325469048515
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10950.501012102344
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 8431.574527238514
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-7",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10442.851929557413
+    },
+    {
+      "demo": "orrery",
+      "part": "part-planet-8",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 9095.385494165399
+    },
+    {
+      "demo": "orrery",
+      "part": "part-moon-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 792.3227638626861
+    },
+    {
+      "demo": "orrery",
+      "part": "part-moon-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 767.1900222433435
+    },
+    {
+      "demo": "orrery",
+      "part": "part-moon-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 779.7563930344193
+    },
+    {
+      "demo": "orrery",
+      "part": "part-ring",
+      "valid": true,
+      "solids": 24,
+      "volumeMm3": 2846.6594549840984
+    },
+    {
+      "demo": "gyroscope",
+      "part": "gyro-pedestal",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 39236.4345001484
+    },
+    {
+      "demo": "gyroscope",
+      "part": "gyro-outer",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 18195.904097023336
+    },
+    {
+      "demo": "gyroscope",
+      "part": "gyro-middle",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 14794.698679828838
+    },
+    {
+      "demo": "gyroscope",
+      "part": "gyro-rotor",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 18092.63613425302
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-pedestal",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 29490.130239247403
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-main",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 5400.276986251449
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-left",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1731.884658537261
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-pendant-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1580.0012998752516
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-pendant-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1580.0012998752516
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-right",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1731.884658537261
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-pendant-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1580.0012998752516
+    },
+    {
+      "demo": "kinetic-mobile",
+      "part": "mobile-pendant-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 1580.0012998752516
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-plinth",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 121440
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-1",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-2",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-3",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-4",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-5",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-6",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-7",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    },
+    {
+      "demo": "material-studio",
+      "part": "material-sample-8",
+      "valid": true,
+      "solids": 1,
+      "volumeMm3": 10050.283064729765
+    }
+  ],
+  "gimbal": {
+    "poses": 16,
+    "pairChecks": 96,
+    "maxIntersectionMm3": 0,
+    "voidProbes": [
+      {
+        "part": "gyro-outer",
+        "radiusMm": 2.9,
+        "lengthMm": 100,
+        "intersectionMm3": 0
+      },
+      {
+        "part": "gyro-middle",
+        "radiusMm": 2.9,
+        "lengthMm": 80,
+        "intersectionMm3": 0
+      }
+    ]
+  },
+  "mobile": {
+    "poses": 1,
+    "pairChecks": 28,
+    "maxIntersectionMm3": 0
+  }
+}

@@ -189,13 +189,10 @@ export default function RevoluteMateInspector() {
         onChange={(v) => setParams({ ...editor.params, motorSpeedRpm: v })}
         testId="mate-motor-rpm"
       />
-      <NumericField
-        label="Torque"
-        unit="Nm"
-        value={editor.params.motorTorqueNm}
-        onChange={(v) => setParams({ ...editor.params, motorTorqueNm: v })}
-        testId="mate-motor-torque"
-      />
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Ideal velocity drive. Blank or 0 switches the motor off and leaves
+        the joint free to move. Torque limits are not modelled.
+      </p>
     </MateInspectorShell>
   );
 }

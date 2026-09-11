@@ -1,0 +1,1767 @@
+{
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "asm-orrery",
+      "name": "Orrery",
+      "groundPartId": "part-sun",
+      "booleanFeatures": [],
+      "parts": [
+        {
+          "id": "part-sun",
+          "name": "Sun",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-sun-1",
+              "name": "Sketch 1",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 25
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-sun-1",
+              "type": "extrude",
+              "sketchId": "sk-sun-1",
+              "depthMm": 135,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-1",
+          "name": "Planet 1",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              15
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-1-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-1-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    70,
+                    0
+                  ],
+                  "radius": 12
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-1-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-1-arm",
+              "depthMm": 70,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-1-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-1-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-2",
+          "name": "Planet 2",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              30
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              45
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-2-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-2-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    112,
+                    0
+                  ],
+                  "radius": 12
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-2-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-2-arm",
+              "depthMm": 112,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-2-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-2-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-3",
+          "name": "Planet 3",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              45
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              90
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-3-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-3-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    154,
+                    0
+                  ],
+                  "radius": 14
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-3-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-3-arm",
+              "depthMm": 154,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-3-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-3-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-4",
+          "name": "Planet 4",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              60
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              135
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-4-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-4-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    196,
+                    0
+                  ],
+                  "radius": 10
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-4-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-4-arm",
+              "depthMm": 196,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-4-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-4-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-5",
+          "name": "Planet 5",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              75
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              180
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-5-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-5-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    238,
+                    0
+                  ],
+                  "radius": 16
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-5-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-5-arm",
+              "depthMm": 238,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-5-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-5-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-6",
+          "name": "Planet 6",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              90
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              225
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-6-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-6-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    280,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-6-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-6-arm",
+              "depthMm": 280,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-6-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-6-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-7",
+          "name": "Planet 7",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              105
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              270
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-7-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-7-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    322,
+                    0
+                  ],
+                  "radius": 13
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-7-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-7-arm",
+              "depthMm": 322,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-7-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-7-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-planet-8",
+          "name": "Planet 8",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              120
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              315
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-planet-8-arm",
+              "name": "Arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2.5
+                }
+              ]
+            },
+            {
+              "id": "sk-part-planet-8-disc",
+              "name": "Planet disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    364,
+                    0
+                  ],
+                  "radius": 9
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-planet-8-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-8-arm",
+              "depthMm": 364,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-planet-8-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-planet-8-disc",
+              "depthMm": 8,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-moon-1",
+          "name": "Moon 1",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              79.196,
+              79.196,
+              38
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-moon-1-arm",
+              "name": "Moon arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2
+                }
+              ]
+            },
+            {
+              "id": "sk-part-moon-1-disc",
+              "name": "Moon disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    28,
+                    0
+                  ],
+                  "radius": 5
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-moon-1-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-1-arm",
+              "depthMm": 28,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-moon-1-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-1-disc",
+              "depthMm": 6,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-moon-2",
+          "name": "Moon 2",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              -138.5929,
+              138.5929,
+              68
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-moon-2-arm",
+              "name": "Moon arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2
+                }
+              ]
+            },
+            {
+              "id": "sk-part-moon-2-disc",
+              "name": "Moon disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    26,
+                    0
+                  ],
+                  "radius": 5
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-moon-2-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-2-arm",
+              "depthMm": 26,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-moon-2-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-2-disc",
+              "depthMm": 6,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-moon-3",
+          "name": "Moon 3",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              -197.9899,
+              -197.9899,
+              98
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-part-moon-3-arm",
+              "name": "Moon arm",
+              "plane": "YZ",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 2
+                }
+              ]
+            },
+            {
+              "id": "sk-part-moon-3-disc",
+              "name": "Moon disc",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    27,
+                    0
+                  ],
+                  "radius": 5
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-part-moon-3-arm",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-3-arm",
+              "depthMm": 27,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-part-moon-3-disc",
+              "type": "extrude",
+              "sketchId": "sk-part-moon-3-disc",
+              "depthMm": 6,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        },
+        {
+          "id": "part-ring",
+          "name": "Asteroid ring",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              7
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-ring-lump-0",
+              "name": "Ring lump 1",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    224,
+                    0
+                  ],
+                  "radius": 3
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-1",
+              "name": "Ring lump 2",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    216.3674,
+                    57.9755
+                  ],
+                  "radius": 3.9989
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-2",
+              "name": "Ring lump 3",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    193.9897,
+                    112
+                  ],
+                  "radius": 2.9057
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-3",
+              "name": "Ring lump 4",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    158.3919,
+                    158.3919
+                  ],
+                  "radius": 2.01
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-4",
+              "name": "Ring lump 5",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    112,
+                    193.9897
+                  ],
+                  "radius": 3.1877
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-5",
+              "name": "Ring lump 6",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    57.9755,
+                    216.3674
+                  ],
+                  "radius": 3.9723
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-6",
+              "name": "Ring lump 7",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    224
+                  ],
+                  "radius": 2.7205
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-7",
+              "name": "Ring lump 8",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -57.9755,
+                    216.3674
+                  ],
+                  "radius": 2.0541
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-8",
+              "name": "Ring lump 9",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -112,
+                    193.9897
+                  ],
+                  "radius": 3.3687
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-9",
+              "name": "Ring lump 10",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -158.3919,
+                    158.3919
+                  ],
+                  "radius": 3.9111
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-10",
+              "name": "Ring lump 11",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -193.9897,
+                    112
+                  ],
+                  "radius": 2.5453
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-11",
+              "name": "Ring lump 12",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -216.3674,
+                    57.9755
+                  ],
+                  "radius": 2.1318
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-12",
+              "name": "Ring lump 13",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -224,
+                    0
+                  ],
+                  "radius": 3.5366
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-13",
+              "name": "Ring lump 14",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -216.3674,
+                    -57.9755
+                  ],
+                  "radius": 3.8176
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-14",
+              "name": "Ring lump 15",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -193.9897,
+                    -112
+                  ],
+                  "radius": 2.3862
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-15",
+              "name": "Ring lump 16",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -158.3919,
+                    -158.3919
+                  ],
+                  "radius": 2.2404
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-16",
+              "name": "Ring lump 17",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -112,
+                    -193.9897
+                  ],
+                  "radius": 3.6855
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-17",
+              "name": "Ring lump 18",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    -57.9755,
+                    -216.3674
+                  ],
+                  "radius": 3.6949
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-18",
+              "name": "Ring lump 19",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    -224
+                  ],
+                  "radius": 2.2489
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-19",
+              "name": "Ring lump 20",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    57.9755,
+                    -216.3674
+                  ],
+                  "radius": 2.3759
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-20",
+              "name": "Ring lump 21",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    112,
+                    -193.9897
+                  ],
+                  "radius": 3.81
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-21",
+              "name": "Ring lump 22",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    158.3919,
+                    -158.3919
+                  ],
+                  "radius": 3.5476
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-22",
+              "name": "Ring lump 23",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    193.9897,
+                    -112
+                  ],
+                  "radius": 2.1384
+                }
+              ]
+            },
+            {
+              "id": "sk-ring-lump-23",
+              "name": "Ring lump 24",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    216.3674,
+                    -57.9755
+                  ],
+                  "radius": 2.5337
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-ring-lump-0",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-0",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-ring-lump-1",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-1",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-2",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-2",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-3",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-3",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-4",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-4",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-5",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-5",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-6",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-6",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-7",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-7",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-8",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-8",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-9",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-9",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-10",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-10",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-11",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-11",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-12",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-12",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-13",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-13",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-14",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-14",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-15",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-15",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-16",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-16",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-17",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-17",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-18",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-18",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-19",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-19",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-20",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-20",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-21",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-21",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-22",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-22",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-ring-lump-23",
+              "type": "extrude",
+              "sketchId": "sk-ring-lump-23",
+              "depthMm": 4,
+              "direction": "forward",
+              "extrudeMode": "add"
+            }
+          ]
+        }
+      ],
+      "mates": [
+        {
+          "id": "mate-planet-1",
+          "type": "revolute",
+          "name": "Planet 1",
+          "partA": "part-sun",
+          "partB": "part-planet-1",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              15
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-1-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 12
+        },
+        {
+          "id": "mate-planet-2",
+          "type": "revolute",
+          "name": "Planet 2",
+          "partA": "part-sun",
+          "partB": "part-planet-2",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              30
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-2-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 9.7674
+        },
+        {
+          "id": "mate-planet-3",
+          "type": "revolute",
+          "name": "Planet 3",
+          "partA": "part-sun",
+          "partB": "part-planet-3",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              45
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-3-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 8.2353
+        },
+        {
+          "id": "mate-planet-4",
+          "type": "revolute",
+          "name": "Planet 4",
+          "partA": "part-sun",
+          "partB": "part-planet-4",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              60
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-4-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 7.1186
+        },
+        {
+          "id": "mate-planet-5",
+          "type": "revolute",
+          "name": "Planet 5",
+          "partA": "part-sun",
+          "partB": "part-planet-5",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              75
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-5-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 6.2687
+        },
+        {
+          "id": "mate-planet-6",
+          "type": "revolute",
+          "name": "Planet 6",
+          "partA": "part-sun",
+          "partB": "part-planet-6",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              90
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-6-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 5.6
+        },
+        {
+          "id": "mate-planet-7",
+          "type": "revolute",
+          "name": "Planet 7",
+          "partA": "part-sun",
+          "partB": "part-planet-7",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              105
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-7-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 5.0602
+        },
+        {
+          "id": "mate-planet-8",
+          "type": "revolute",
+          "name": "Planet 8",
+          "partA": "part-sun",
+          "partB": "part-planet-8",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              120
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "planet-8-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 4.6154
+        },
+        {
+          "id": "mate-moon-1",
+          "type": "revolute",
+          "name": "Moon 1",
+          "partA": "part-planet-2",
+          "partB": "part-moon-1",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "planet-2-disc-center",
+            "localPoint": [
+              112,
+              0,
+              8
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "moon-1-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 24
+        },
+        {
+          "id": "mate-moon-2",
+          "type": "revolute",
+          "name": "Moon 2",
+          "partA": "part-planet-4",
+          "partB": "part-moon-2",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "planet-4-disc-center",
+            "localPoint": [
+              196,
+              0,
+              8
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "moon-2-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 24
+        },
+        {
+          "id": "mate-moon-3",
+          "type": "revolute",
+          "name": "Moon 3",
+          "partA": "part-planet-6",
+          "partB": "part-moon-3",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "planet-6-disc-center",
+            "localPoint": [
+              280,
+              0,
+              8
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "moon-3-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 24
+        },
+        {
+          "id": "mate-ring",
+          "type": "revolute",
+          "name": "Asteroid ring",
+          "partA": "part-sun",
+          "partB": "part-ring",
+          "pivotA": {
+            "kind": "edge",
+            "edgeId": "sun-center",
+            "localPoint": [
+              0,
+              0,
+              7
+            ]
+          },
+          "pivotB": {
+            "kind": "edge",
+            "edgeId": "ring-origin",
+            "localPoint": [
+              0,
+              0,
+              0
+            ]
+          },
+          "axisLocal": [
+            0,
+            0,
+            1
+          ],
+          "motorSpeedRpm": 3.3333
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "timeStepMs": 16.666666666666668,
+      "gravity": [
+        0,
+        0,
+        0
+      ],
+      "speedMultiplier": 1,
+      "simulationTimeMs": 0
+    }
+  },
+  "version": 9
+}

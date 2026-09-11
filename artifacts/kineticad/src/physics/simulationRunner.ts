@@ -20,15 +20,16 @@
 // `paused === true`.
 
 import { getCadKernel } from "@/cad/cadClient";
+import { toast } from "sonner";
 import { getMaterial } from "@/cad/materials";
 import type { Feature, Mate, Part, Sketch } from "@/state/schemas";
 import { useKinetiCADStore } from "@/state/store";
 import { computeFeatureHash } from "@/features/featureRegen";
-import { getVolumeData, setVolumeData } from "@/features/volumeCache";
+import { getVolumeData, setVolumeData, massPropertiesForMaterial, volumeDataFromMassProperties } from "@/features/volumeCache";
 import { getPartMeshLayer } from "@/three/partMeshLayerRef";
 import { getSimulationLayer } from "@/three/simulationLayerRef";
 import { getPhysicsKernel } from "./physicsClient";
-import type { PartDescriptor } from "./types";
+import type { PartDescriptor, StepResult, BuildWorldResult, UpdateJointMotorResult } from "./types";
 
 /**
  * Walk a part's feature chain and return the tip hash — the same key that
@@ -54,8 +55,15 @@ type RunnerHandle = {
 };
 
 let active: RunnerHandle | null = null;
-let rafId: number | null = null;
 let buildToken = 0;
+// Builds, steps, motor changes and destruction share a FIFO across Scene
+// instances. A late old-scene destroy can never overtake a newer build.
+let physicsOperations: Promise<unknown> = Promise.resolve();
+function queuePhysics<T>(operation: (physics: Awaited<ReturnType<typeof getPhysicsKernel>>) => Promise<T>): Promise<T> {
+  const next = physicsOperations.then(async () => operation(await getPhysicsKernel()));
+  physicsOperations = next.catch(() => {});
+  return next;
+}
 
 /**
  * Bootstrap the runner once at app start. Idempotent; subsequent calls
@@ -67,15 +75,42 @@ export function startSimulationRunner(): RunnerHandle {
   let lastRunning = false;
   let lastPaused = false;
   let lastFrameMs = 0;
+  let rafId: number | null = null;
+  let disposed = false;
+  let stepInFlight = false;
+  let worldReady = false;
+  let pendingTimeMs = 0;
+  let pausedResult: StepResult | null = null;
+  const ownedPartLayer = getPartMeshLayer();
+  const ownedSimLayer = getSimulationLayer();
+  const isCurrent = (token: number) => !disposed && token === buildToken
+    && getPartMeshLayer() === ownedPartLayer && getSimulationLayer() === ownedSimLayer
+    && useKinetiCADStore.getState().simulation.running;
+
+  const failRun = (error: unknown, token: number) => {
+    if (!isCurrent(token)) return;
+    console.error('[PHYSICS] simulation stopped:', error);
+    toast.error('Simulation stopped', { description: error instanceof Error ? error.message : 'The physics calculation could not be completed.' });
+    useKinetiCADStore.getState().setSimulationRunning(false);
+  };
+
+  const publishResult = (result: StepResult) => {
+    if (!ownedSimLayer) return;
+    for (const pose of result.transforms) ownedSimLayer.setTransform(pose.partId, pose.positionMm, pose.rotationQuat);
+    if (result.dtMs > 0) useKinetiCADStore.getState().tickSimulationTime(result.dtMs);
+  };
 
   const tearDownWorld = async () => {
     buildToken += 1;
+    worldReady = false;
+    pendingTimeMs = 0;
+    pausedResult = null;
     if (rafId !== null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
-    const simLayer = getSimulationLayer();
-    const partLayer = getPartMeshLayer();
+    const simLayer = getSimulationLayer() === ownedSimLayer ? ownedSimLayer : null;
+    const partLayer = getPartMeshLayer() === ownedPartLayer ? ownedPartLayer : null;
     if (simLayer) {
       simLayer.setVisible(false);
       simLayer.clear();
@@ -86,18 +121,17 @@ export function startSimulationRunner(): RunnerHandle {
       partLayer.group.visible = true;
     }
     try {
-      const physics = await getPhysicsKernel();
-      await physics.destroy();
+      await queuePhysics((physics) => physics.destroy());
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("[PHYSICS] destroy failed:", err);
     }
   };
 
-  const startRunLoop = (): void => {
+  const startRunLoop = (token: number): void => {
     const tick = (timestamp: number) => {
       const state = useKinetiCADStore.getState();
-      if (!state.simulation.running) {
+      if (!isCurrent(token)) {
         rafId = null;
         return;
       }
@@ -108,36 +142,37 @@ export function startSimulationRunner(): RunnerHandle {
       }
       const dtWallMs = lastFrameMs > 0 ? timestamp - lastFrameMs : 0;
       lastFrameMs = timestamp;
-      // Step the worker. We don't await before requesting the next
-      // frame — Comlink will queue, and worst case we drop a frame.
-      stepOnce(dtWallMs * state.simulation.speedMultiplier);
+      pendingTimeMs += Math.max(0, dtWallMs) * state.simulation.speedMultiplier;
+      if (!stepInFlight && pendingTimeMs > 0) void stepOnce(token);
     };
     lastFrameMs = 0;
     rafId = requestAnimationFrame(tick);
   };
 
-  const stepOnce = async (dtWallMs: number): Promise<void> => {
+  const stepOnce = async (token: number): Promise<void> => {
+    stepInFlight = true;
+    const requestedMs = pendingTimeMs;
+    pendingTimeMs = 0;
     try {
-      const physics = await getPhysicsKernel();
-      const result = await physics.step(dtWallMs > 0 ? dtWallMs : undefined);
-      const simLayer = getSimulationLayer();
-      if (!simLayer) return;
-      for (const t of result.transforms) {
-        simLayer.setTransform(t.partId, t.positionMm, t.rotationQuat);
-      }
-      // Use the wall-clock delta scaled by speedMultiplier as our
-      // physics-time accumulator. The fixed step inside the worker
-      // is constant; the multiplier shows up here as the apparent rate.
-      const tickDelta = dtWallMs > 0 ? dtWallMs : result.dtMs;
-      useKinetiCADStore.getState().tickSimulationTime(tickDelta);
+      const result = await queuePhysics((physics) => {
+        if (!isCurrent(token) || useKinetiCADStore.getState().simulation.paused) return Promise.resolve(null);
+        return physics.step(requestedMs);
+      });
+      if (!isCurrent(token)) return;
+      if (!result) { pendingTimeMs += requestedMs; return; }
+      // An RPC already executing at Pause may finish afterward. Hold that
+      // result until Resume so neither the visible pose nor its clock moves
+      // while paused, and retain the actual advanced duration.
+      if (useKinetiCADStore.getState().simulation.paused) pausedResult = result;
+      else publishResult(result);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("[PHYSICS] step failed:", err);
+      failRun(err, token);
+    } finally {
+      stepInFlight = false;
     }
   };
 
-  const buildAndStart = async (): Promise<void> => {
-    const myToken = ++buildToken;
+  const buildAndStart = async (myToken: number): Promise<void> => {
     const state = useKinetiCADStore.getState();
     const partLayer = getPartMeshLayer();
     const simLayer = getSimulationLayer();
@@ -146,20 +181,13 @@ export function startSimulationRunner(): RunnerHandle {
       console.warn(
         "[PHYSICS] cannot start sim — Scene layers not yet mounted",
       );
-      state.setSimulationRunning(false);
+      if (isCurrent(myToken)) state.setSimulationRunning(false);
       return;
     }
 
-    // Snapshot the SimulationLayer from the live PartMeshLayer.
-    simLayer.sync(partLayer);
-    // Hide modelling layers; show sim layer. Doing this before the
-    // build call keeps the canvas from briefly showing duplicate
-    // bodies if buildWorld takes >1 frame.
-    partLayer.group.visible = false;
-    simLayer.setVisible(true);
-
     // Gather mass properties + mesh data for every part with a mesh.
     const cad = await getCadKernel();
+    if (!isCurrent(myToken)) return;
     const descriptors: PartDescriptor[] = [];
     const groundId = state.assembly.groundPartId || state.assembly.parts[0]?.id;
 
@@ -181,6 +209,8 @@ export function startSimulationRunner(): RunnerHandle {
         indices: new Uint32Array(idxAttr.array as Uint32Array),
       });
     });
+    const missing = state.assembly.parts.filter((part) => part.visible && part.features.length > 0 && !meshSnapshots.has(part.id));
+    if (missing.length) throw new Error(`Geometry is not ready for: ${missing.map((part) => part.name).join(', ')}.`);
 
     for (const [partId, snap] of meshSnapshots) {
       const part = partsById.get(partId);
@@ -194,18 +224,16 @@ export function startSimulationRunner(): RunnerHandle {
         // Warm volume cache — derive all physics quantities on the main
         // thread. No OCCT worker call, no await. On the 13-part orrery
         // this keeps the entire loop synchronous once the cache is warm.
-        const { volumeMm3, comLocal } = cachedVol;
-        const massKg = Math.max(volumeMm3 * density * 1e-6, 1e-6);
-        const rEqMm = Math.cbrt((3 * volumeMm3) / (4 * Math.PI));
-        const isoInertia = Math.max((2 / 5) * massKg * rEqMm * rEqMm, 1e-6);
+        const props = massPropertiesForMaterial(cachedVol, density);
         descriptors.push({
           id: partId,
           transform: part.transform,
           meshPositions: snap.positions,
           meshIndices: snap.indices,
-          massKg,
-          comLocal,
-          principalInertiaKgMm2: [isoInertia, isoInertia, isoInertia],
+          massKg: props.massKg,
+          comLocal: props.comLocal,
+          principalInertiaKgMm2: props.principalInertiaKgMm2,
+          principalInertiaLocalFrame: props.principalInertiaLocalFrame,
           isGround: partId === groundId,
         });
       } else {
@@ -220,10 +248,7 @@ export function startSimulationRunner(): RunnerHandle {
             density,
           });
           if (tipHash !== null) {
-            setVolumeData(tipHash, {
-              volumeMm3: props.volumeMm3,
-              comLocal: props.comLocal,
-            });
+            setVolumeData(tipHash, volumeDataFromMassProperties(props, density));
           }
           descriptors.push({
             id: partId,
@@ -233,38 +258,36 @@ export function startSimulationRunner(): RunnerHandle {
             massKg: props.massKg,
             comLocal: props.comLocal,
             principalInertiaKgMm2: props.principalInertiaKgMm2,
+            principalInertiaLocalFrame: props.principalInertiaLocalFrame,
             isGround: partId === groundId,
           });
         } catch (err) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `[PHYSICS] mass-props failed for ${partId}, skipping body:`,
-            err,
-          );
+          throw new Error(`Cannot simulate ${part.name}: ${err instanceof Error ? err.message : 'Physical mass properties could not be calculated.'}`);
         }
       }
     }
 
-    if (myToken !== buildToken) return; // user toggled off mid-build
+    if (!isCurrent(myToken)) return;
 
-    const physics = await getPhysicsKernel();
-    const result = await physics.buildWorld({
-      parts: descriptors,
-      mates: state.assembly.mates,
-      gravity: state.simulation.gravity,
-      timeStepMs: state.simulation.timeStepMs,
+    let dispatchedMates: Mate[] = [];
+    const result = await queuePhysics<BuildWorldResult | null>((physics) => {
+      if (!isCurrent(myToken)) return Promise.resolve(null);
+      const latest = useKinetiCADStore.getState();
+      dispatchedMates = latest.assembly.mates;
+      return physics.buildWorld({
+        parts: descriptors,
+        mates: latest.assembly.mates,
+        gravity: latest.simulation.gravity,
+        timeStepMs: latest.simulation.timeStepMs,
+      });
     });
 
-    if (myToken !== buildToken) {
-      await physics.destroy();
-      return;
-    }
+    // Stopping/disposal already queued the appropriate destruction. Never
+    // enqueue another destroy from a stale reply: it could kill a new world.
+    if (!result || !isCurrent(myToken)) return;
 
     if (!result.ok) {
-      // eslint-disable-next-line no-console
-      console.error("[PHYSICS] buildWorld failed:", result.error);
-      useKinetiCADStore.getState().setSimulationRunning(false);
-      return;
+      throw new Error(result.error);
     }
     if (result.warnings.length > 0) {
       // eslint-disable-next-line no-console
@@ -278,7 +301,19 @@ export function startSimulationRunner(): RunnerHandle {
       `[PHYSICS] world ready — ${result.bodyCount} bodies, ${result.jointCount} joints`,
     );
 
-    startRunLoop();
+    worldReady = true;
+    // Edits arriving during the build RPC had no ready world to update.
+    // Replay that delta before any RAF step can enter the worker FIFO.
+    pushChangedMotorUpdates(useKinetiCADStore.getState().assembly.mates, dispatchedMates);
+    simLayer.sync(partLayer);
+    partLayer.group.visible = false;
+    simLayer.setVisible(true);
+    startRunLoop(myToken);
+  };
+
+  const launchBuild = () => {
+    const token = ++buildToken;
+    void buildAndStart(token).catch((error) => failRun(error, token));
   };
 
   const unsubscribe = useKinetiCADStore.subscribe((state) => {
@@ -288,7 +323,7 @@ export function startSimulationRunner(): RunnerHandle {
       lastRunning = running;
       lastPaused = paused;
       if (running) {
-        void buildAndStart();
+        launchBuild();
       } else {
         void tearDownWorld();
       }
@@ -296,7 +331,12 @@ export function startSimulationRunner(): RunnerHandle {
     }
     if (paused !== lastPaused) {
       lastPaused = paused;
-      // RAF tick handles pause/resume internally.
+      lastFrameMs = 0;
+      if (!paused && pausedResult) {
+        const result = pausedResult;
+        pausedResult = null;
+        publishResult(result);
+      }
     }
   });
 
@@ -311,43 +351,42 @@ export function startSimulationRunner(): RunnerHandle {
     if (mates === lastMates) return;
     const prev = lastMates;
     lastMates = mates;
-    if (!state.simulation.running) return;
+    // While mass/geometry is being gathered there is no motor to update.
+    // buildWorld reads the latest mate settings when it is actually dispatched.
+    if (!state.simulation.running || !worldReady) return;
 
-    const prevById = new Map(prev.map((m) => [m.id, m]));
-    for (const m of mates) {
-      const p = prevById.get(m.id);
-      if (!p) continue;
-      if (
-        m.type === "revolute" &&
-        p.type === "revolute" &&
-        m.motorSpeedRpm !== p.motorSpeedRpm
-      ) {
-        void pushMotorUpdate({
-          mateId: m.id,
-          motorSpeedRpm: m.motorSpeedRpm ?? 0,
-        });
-      } else if (
-        m.type === "prismatic" &&
-        p.type === "prismatic" &&
-        m.motorVelocityMmPerSec !== p.motorVelocityMmPerSec
-      ) {
-        void pushMotorUpdate({
-          mateId: m.id,
-          motorVelocityMmPerSec: m.motorVelocityMmPerSec ?? 0,
-        });
-      }
-    }
+    pushChangedMotorUpdates(mates, prev);
   });
 
   active = {
     dispose: () => {
+      if (disposed) return;
+      disposed = true;
       unsubscribe();
       unsubscribeMotors();
       void tearDownWorld();
       active = null;
     },
   };
+  // Scene changes can mount a new runner while the store still says Running.
+  if (useKinetiCADStore.getState().simulation.running) {
+    lastRunning = true;
+    lastPaused = useKinetiCADStore.getState().simulation.paused;
+    launchBuild();
+  }
   return active;
+}
+
+function pushChangedMotorUpdates(mates: Mate[], previous: Mate[]): void {
+  const prevById = new Map(previous.map((mate) => [mate.id, mate]));
+  for (const mate of mates) {
+    const prev = prevById.get(mate.id);
+    if (mate.type === "revolute" && prev?.type === "revolute" && mate.motorSpeedRpm !== prev.motorSpeedRpm) {
+      void pushMotorUpdate({ mateId: mate.id, motorSpeedRpm: mate.motorSpeedRpm ?? 0 });
+    } else if (mate.type === "prismatic" && prev?.type === "prismatic" && mate.motorVelocityMmPerSec !== prev.motorVelocityMmPerSec) {
+      void pushMotorUpdate({ mateId: mate.id, motorVelocityMmPerSec: mate.motorVelocityMmPerSec ?? 0 });
+    }
+  }
 }
 
 /**
@@ -360,10 +399,13 @@ async function pushMotorUpdate(args: {
   motorSpeedRpm?: number;
   motorVelocityMmPerSec?: number;
 }): Promise<void> {
+  const token = buildToken;
   try {
-    const physics = await getPhysicsKernel();
-    const result = await physics.updateJointMotor(args);
-    if (!result.ok && import.meta.env.DEV) {
+    const result = await queuePhysics<UpdateJointMotorResult | null>((physics) => {
+      if (token !== buildToken || !useKinetiCADStore.getState().simulation.running) return Promise.resolve(null);
+      return physics.updateJointMotor(args);
+    });
+    if (result && !result.ok && import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.warn(
         `[PHYSICS] live motor update for ${args.mateId} failed: ${result.error}`,

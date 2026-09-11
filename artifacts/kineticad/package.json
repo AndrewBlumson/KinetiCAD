@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:demos": "node --experimental-strip-types --test tests/demos.test.mjs",
+    "test:mass": "node --experimental-strip-types --test tests/mass-properties.test.mjs",
+    "test:physics": "node --experimental-strip-types --test tests/physics-worker.test.mjs",
+    "test:runner": "node --experimental-strip-types --test tests/simulation-runner.test.mjs",
+    "test:overlays": "node --import ../../scripts/node_modules/tsx/dist/loader.mjs --test tests/overlay-frames.test.mjs",
+    "test:regen": "node --import ../../scripts/node_modules/tsx/dist/loader.mjs --test tests/feature-regen.test.mjs",
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",

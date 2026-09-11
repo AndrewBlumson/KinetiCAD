@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Switch, Route, Router as WouterRouter, Link, useLocation } from 'wouter';
 import { useKinetiCADStore } from '@/state/store';
+import { DemoWorkspaceProvider } from '@/components/demos/DemoWorkspace';
+import { Toaster } from '@/components/ui/sonner';
 
 const Modeller = lazy(() => import('@/views/Modeller'));
 const Simulator = lazy(() => import('@/views/Simulator'));
@@ -18,6 +20,7 @@ function Loading() {
 function ModeToggle() {
   const [location] = useLocation();
   const setMode = useKinetiCADStore((s) => s.setMode);
+  const stopSimulation = useKinetiCADStore((s) => s.resetSimulation);
 
   const isModeller = !location.startsWith('/simulator');
 
@@ -34,7 +37,8 @@ function ModeToggle() {
     >
       <Link
         href="/"
-        onClick={() => setMode('modeller')}
+        onClick={() => { if (!isModeller) stopSimulation(); setMode('modeller'); }}
+        title="Switch to Modeller. Changing modes resets the simulation."
         className={[
           'px-4 py-1.5 rounded text-xs font-technical uppercase tracking-widest transition-colors',
           isModeller
@@ -46,7 +50,8 @@ function ModeToggle() {
       </Link>
       <Link
         href="/simulator"
-        onClick={() => setMode('simulator')}
+        onClick={() => { if (isModeller) stopSimulation(); setMode('simulator'); }}
+        title="Switch to Simulator. Changing modes resets the simulation."
         className={[
           'px-4 py-1.5 rounded text-xs font-technical uppercase tracking-widest transition-colors',
           !isModeller
@@ -61,6 +66,13 @@ function ModeToggle() {
 }
 
 function Router() {
+  const [location] = useLocation();
+  // History navigation bypasses the footer buttons. Each route owns a new
+  // scene, so its design pose must begin stopped with a matching zero clock.
+  useEffect(() => {
+    useKinetiCADStore.getState().resetSimulation();
+  }, [location]);
+
   return (
     <>
       <Suspense fallback={<Loading />}>
@@ -79,7 +91,8 @@ function App() {
   return (
     <div className="h-full bg-background text-foreground">
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <Router />
+        <DemoWorkspaceProvider><Router /></DemoWorkspaceProvider>
+        <Toaster position="bottom-right" />
       </WouterRouter>
     </div>
   );

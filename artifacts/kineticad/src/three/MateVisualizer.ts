@@ -14,9 +14,8 @@
 // mates render at 0.6 opacity. Lifecycle and disposal are owned by Scene.tsx
 // (sync on every assembly/selection change, dispose on unmount).
 //
-// Pivot resolution: we read PartMeshLayer's cached topology to look up the
-// face/edge centroid, then compose with the part's rigid-body transform so
-// the icon stays attached when the part moves.
+// Pivots use the same stored local anchors as the physics joints. Each glyph
+// lives in a part-local frame whose pose follows the rendered rigid body.
 
 import * as THREE from "three";
 // Use the WebGPU-native NodeMaterial variants. The classic
@@ -29,14 +28,8 @@ import {
   MeshBasicNodeMaterial,
   LineBasicNodeMaterial,
 } from "three/webgpu";
-import type { Assembly, Mate, Part } from "@/state/schemas";
+import type { Assembly, Mate } from "@/state/schemas";
 import type { PartMeshLayer } from "./PartMeshLayer";
-import {
-  getFaceCentroidWorld,
-  getEdgeAxisWorld,
-  localToWorldDir,
-  localToWorldPoint,
-} from "./MatePickerCoordinator";
 
 const ICON_COLOR = 0xff6b1a;
 const RENDER_ORDER = 999;
@@ -48,11 +41,18 @@ const UNSELECTED_OPACITY = 0.6;
  * One icon entry per mate. The `Object3D` is added to the visualizer's
  * group; geometry/material are owned by it and disposed on rebuild.
  */
-type IconEntry = {
+type IconGlyph = {
   object: THREE.Object3D;
   /** All materials we created — disposed on icon teardown. */
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
+};
+
+type IconEntry = {
+  glyph: IconGlyph;
+  frame: THREE.Group;
+  partId: string;
+  signature: string;
 };
 
 export type MateVisualizer = {
@@ -62,6 +62,8 @@ export type MateVisualizer = {
     selectedMateId: string | null,
     layer: PartMeshLayer,
   ) => void;
+  /** Follow the same world-space poses as the rendered modelling/simulation bodies. */
+  updatePoses: (getPartObject: (partId: string) => THREE.Object3D | null) => void;
   dispose: () => void;
 };
 
@@ -72,9 +74,9 @@ export function createMateVisualizer(): MateVisualizer {
   const entries = new Map<string, IconEntry>();
 
   const disposeEntry = (entry: IconEntry) => {
-    for (const m of entry.materials) m.dispose();
-    for (const g of entry.geometries) g.dispose();
-    entry.object.parent?.remove(entry.object);
+    for (const m of entry.glyph.materials) m.dispose();
+    for (const g of entry.glyph.geometries) g.dispose();
+    entry.frame.parent?.remove(entry.frame);
   };
 
   const sync = (
@@ -92,20 +94,46 @@ export function createMateVisualizer(): MateVisualizer {
       }
     }
 
-    // Rebuild every live mate on every sync — the geometry depends on
-    // part transforms which change frequently and the icons are cheap.
+    // Body motion only changes the parent frame. Reuse glyph geometry across
+    // simulation ticks instead of allocating/discarding GPU buffers every frame.
     for (const mate of assembly.mates) {
-      const existing = entries.get(mate.id);
-      if (existing) {
-        disposeEntry(existing);
+      const part = assembly.parts.find((p) => p.id === mate.partA);
+      if (!part) continue;
+      const signature = JSON.stringify(mate) + (mate.type === 'planar' ? layer.topologyVersion() : '');
+      let entry = entries.get(mate.id);
+      if (entry && entry.signature !== signature) {
+        disposeEntry(entry);
         entries.delete(mate.id);
+        entry = undefined;
       }
-      const built = buildIcon(mate, assembly, layer);
-      if (!built) continue;
-      const selected = mate.id === selectedMateId;
-      applySelectionStyle(built, selected);
-      group.add(built.object);
-      entries.set(mate.id, built);
+      if (!entry) {
+        const glyph = buildIcon(mate, layer);
+        if (!glyph) continue;
+        const frame = new THREE.Group();
+        frame.name = `mate:${mate.id}`;
+        frame.add(glyph.object);
+        entry = { glyph, frame, partId: part.id, signature };
+        group.add(frame);
+        entries.set(mate.id, entry);
+      }
+      entry.frame.visible = part.visible;
+      entry.frame.position.fromArray(part.transform.positionMm);
+      const [rx, ry, rz] = part.transform.rotationDeg.map(THREE.MathUtils.degToRad);
+      entry.frame.rotation.set(rx, ry, rz, 'XYZ');
+      applySelectionStyle(entry.glyph, mate.id === selectedMateId);
+    }
+  };
+
+  const updatePoses: MateVisualizer['updatePoses'] = (getPartObject) => {
+    for (const entry of entries.values()) {
+      const body = getPartObject(entry.partId);
+      if (!body) {
+        entry.frame.visible = false;
+        continue;
+      }
+      body.getWorldPosition(entry.frame.position);
+      body.getWorldQuaternion(entry.frame.quaternion);
+      entry.frame.visible = body.visible;
     }
   };
 
@@ -115,7 +143,7 @@ export function createMateVisualizer(): MateVisualizer {
     group.parent?.remove(group);
   };
 
-  return { group, sync, dispose };
+  return { group, sync, updatePoses, dispose };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -124,75 +152,32 @@ export function createMateVisualizer(): MateVisualizer {
 
 function buildIcon(
   mate: Mate,
-  assembly: Assembly,
   layer: PartMeshLayer,
-): IconEntry | null {
-  const partA = assembly.parts.find((p) => p.id === mate.partA);
-  if (!partA) return null;
+): IconGlyph | null {
   const topologyA = layer.getPartTopology(mate.partA);
 
   switch (mate.type) {
     case "revolute": {
-      if (!topologyA) return null;
-      const pivotWorld = resolvePivotWorld(partA, mate.pivotA, topologyA);
-      if (!pivotWorld) return null;
-      const axisWorld = localToWorldDir(mate.axisLocal, partA.transform);
-      return buildAxisCylinder(pivotWorld, axisWorld);
+      return buildAxisCylinder(mate.pivotA.localPoint, mate.axisLocal);
     }
     case "prismatic": {
-      if (!topologyA) return null;
-      const pivotWorld = resolvePivotWorld(partA, mate.pivotA, topologyA);
-      if (!pivotWorld) return null;
-      const axisWorld = localToWorldDir(mate.axisLocal, partA.transform);
-      return buildDoubleArrow(pivotWorld, axisWorld);
+      return buildDoubleArrow(mate.pivotA.localPoint, mate.axisLocal);
     }
     case "spherical": {
-      if (!topologyA) return null;
-      const pivotWorld = resolvePivotWorld(partA, mate.pivotA, topologyA);
-      if (!pivotWorld) return null;
-      return buildSphere(pivotWorld);
+      return buildSphere(mate.pivotA.localPoint);
     }
     case "fixed": {
       // Fixed mates have no pivot — anchor the icon to part-A's transform
       // origin (the part's local origin in world coords).
-      const center = localToWorldPoint([0, 0, 0], partA.transform);
-      return buildCube(center);
+      return buildCube([0, 0, 0]);
     }
     case "planar": {
       if (!topologyA) return null;
-      const centroidA = getFaceCentroidWorld(partA, mate.pivotA.faceId, topologyA);
       const face = topologyA.faces.find((f) => f.id === mate.pivotA.faceId);
-      if (!centroidA || !face) return null;
-      const normalWorld = localToWorldDir(face.normalAtCentroid, partA.transform);
-      return buildParallelBars(centroidA, normalWorld);
+      if (!face) return null;
+      return buildParallelBars(face.centroid, face.normalAtCentroid);
     }
   }
-}
-
-/**
- * Resolve a MatePivot to world-space coordinates by composing its
- * `localPoint` with the part's transform. For face pivots, the kernel-
- * supplied centroid is the natural anchor; for edge pivots, the midpoint.
- * This helper just transforms the stored `localPoint` (which captures
- * either of the above at pick time).
- */
-function resolvePivotWorld(
-  part: Part,
-  pivot:
-    | { kind: "face"; faceId: string; localPoint: [number, number, number] }
-    | { kind: "edge"; edgeId: string; localPoint: [number, number, number] },
-  topology: import("./PartMeshLayer").PartTopology,
-): [number, number, number] | null {
-  if (pivot.kind === "edge") {
-    // Re-derive from polyline if available so the icon tracks regen-driven
-    // edge geometry edits; fall back to stored localPoint otherwise.
-    const ax = getEdgeAxisWorld(part, pivot.edgeId, topology);
-    if (ax) return ax.centroid;
-  } else {
-    const c = getFaceCentroidWorld(part, pivot.faceId, topology);
-    if (c) return c;
-  }
-  return localToWorldPoint(pivot.localPoint, part.transform);
 }
 
 /* ---- Glyph builders ------------------------------------------------------ */
@@ -232,17 +217,17 @@ function setRenderOrder(obj: THREE.Object3D) {
 
 function buildAxisCylinder(
   pivot: [number, number, number],
-  axisWorld: [number, number, number],
-): IconEntry {
-  // Cylinder centred at pivot, oriented along axisWorld. THREE's cylinder
-  // defaults to a +Y axis; rotate the unit Y to axisWorld via quaternion.
+  axisLocal: [number, number, number],
+): IconGlyph {
+  // Both the pivot and axis are part-local. The entry frame supplies the
+  // body pose; orient THREE's +Y cylinder along the local joint axis here.
   const geom = new THREE.CylinderGeometry(1, 1, 3, 24, 1, false);
   const mat = makeMaterial();
   const mesh = new THREE.Mesh(geom, mat);
   mesh.position.set(pivot[0], pivot[1], pivot[2]);
   const q = new THREE.Quaternion().setFromUnitVectors(
     new THREE.Vector3(0, 1, 0),
-    new THREE.Vector3(axisWorld[0], axisWorld[1], axisWorld[2]).normalize(),
+    new THREE.Vector3(...axisLocal).normalize(),
   );
   mesh.quaternion.copy(q);
   setRenderOrder(mesh);
@@ -251,12 +236,12 @@ function buildAxisCylinder(
 
 function buildDoubleArrow(
   pivot: [number, number, number],
-  axisWorld: [number, number, number],
-): IconEntry {
+  axisLocal: [number, number, number],
+): IconGlyph {
   // Two cones tip-to-tip along axis. Each cone is 2mm tall, 1mm base
   // radius. Bases are 0.5mm apart so the silhouette reads as ↔.
   const grp = new THREE.Group();
-  const dir = new THREE.Vector3(axisWorld[0], axisWorld[1], axisWorld[2]).normalize();
+  const dir = new THREE.Vector3(...axisLocal).normalize();
   const q = new THREE.Quaternion().setFromUnitVectors(
     new THREE.Vector3(0, 1, 0),
     dir,
@@ -272,7 +257,6 @@ function buildDoubleArrow(
   coneA.position.set(0, 1.25, 0);
   const wrapA = new THREE.Group();
   wrapA.add(coneA);
-  wrapA.position.set(pivot[0], pivot[1], pivot[2]);
   wrapA.quaternion.copy(q);
 
   const coneB = new THREE.Mesh(geom, matB);
@@ -280,16 +264,16 @@ function buildDoubleArrow(
   coneB.position.set(0, -1.25, 0);
   const wrapB = new THREE.Group();
   wrapB.add(coneB);
-  wrapB.position.set(pivot[0], pivot[1], pivot[2]);
   wrapB.quaternion.copy(q);
 
   grp.add(wrapA);
   grp.add(wrapB);
+  grp.position.fromArray(pivot);
   setRenderOrder(grp);
   return { object: grp, materials: [matA, matB], geometries: [geom] };
 }
 
-function buildSphere(pivot: [number, number, number]): IconEntry {
+function buildSphere(pivot: [number, number, number]): IconGlyph {
   const geom = new THREE.SphereGeometry(1.5, 16, 12);
   const mat = makeMaterial();
   const mesh = new THREE.Mesh(geom, mat);
@@ -298,7 +282,7 @@ function buildSphere(pivot: [number, number, number]): IconEntry {
   return { object: mesh, materials: [mat], geometries: [geom] };
 }
 
-function buildCube(pivot: [number, number, number]): IconEntry {
+function buildCube(pivot: [number, number, number]): IconGlyph {
   const geom = new THREE.BoxGeometry(2.5, 2.5, 2.5);
   const mat = makeMaterial();
   const mesh = new THREE.Mesh(geom, mat);
@@ -309,16 +293,12 @@ function buildCube(pivot: [number, number, number]): IconEntry {
 
 function buildParallelBars(
   centroid: [number, number, number],
-  normalWorld: [number, number, number],
-): IconEntry {
+  normalLocal: [number, number, number],
+): IconGlyph {
   // Two short line segments parallel to one in-plane direction, separated
-  // by a 1mm gap perpendicular to it. The plane is defined by `normalWorld`.
-  const n = new THREE.Vector3(
-    normalWorld[0],
-    normalWorld[1],
-    normalWorld[2],
-  ).normalize();
-  // Pick any in-plane axis — start from world X, fall back to Y if X is
+  // by a 1mm gap perpendicular to it. All geometry is part-local.
+  const n = new THREE.Vector3(...normalLocal).normalize();
+  // Pick any in-plane axis — start from local X, fall back to Y if X is
   // nearly parallel to the normal.
   let inPlaneA = new THREE.Vector3(1, 0, 0);
   if (Math.abs(n.dot(inPlaneA)) > 0.9) inPlaneA.set(0, 1, 0);
@@ -327,7 +307,7 @@ function buildParallelBars(
 
   const halfLen = 1.5;
   const offset = 0.6;
-  const c = new THREE.Vector3(centroid[0], centroid[1], centroid[2]);
+  const c = new THREE.Vector3();
 
   const buildSegment = (sign: number): { line: THREE.Line; geom: THREE.BufferGeometry } => {
     const start = c
@@ -345,6 +325,7 @@ function buildParallelBars(
   const a = buildSegment(+1);
   const b = buildSegment(-1);
   const grp = new THREE.Group();
+  grp.position.fromArray(centroid);
   grp.add(a.line);
   grp.add(b.line);
   setRenderOrder(grp);
@@ -355,7 +336,7 @@ function buildParallelBars(
   };
 }
 
-function applySelectionStyle(entry: IconEntry, selected: boolean) {
+function applySelectionStyle(entry: IconGlyph, selected: boolean) {
   const opacity = selected ? SELECTED_OPACITY : UNSELECTED_OPACITY;
   for (const m of entry.materials) {
     (m as MeshBasicNodeMaterial | LineBasicNodeMaterial).opacity = opacity;

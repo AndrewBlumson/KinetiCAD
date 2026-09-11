@@ -6,7 +6,7 @@
 // the layer when the scene unmounts.
 //
 // Concurrency:
-// - `sync` is async because `regeneratePart` is async (worker round-trip).
+// - `sync` is async because `regeneratePartTip` is async (worker round-trip).
 // - Multiple sync calls may overlap if the user makes rapid changes. Each
 //   call carries an incrementing token; a stale call's results are dropped
 //   on completion so the most recent state wins.
@@ -37,8 +37,8 @@ import type {
   TessellatedMesh,
 } from "@/cad/types";
 import { getMaterial } from "@/cad/materials";
-import { regeneratePart } from "@/features/featureRegen";
-import { getVolumeData, setVolumeData } from "@/features/volumeCache";
+import { regeneratePartTip } from "@/features/featureRegen";
+import { getVolumeData, setVolumeData, volumeDataFromMassProperties } from "@/features/volumeCache";
 import { COLOURS } from "./sceneSetup";
 
 /**
@@ -77,7 +77,7 @@ export type PartMeshLayer = {
    * If a part id appears in both sets, `hiddenPartIds` wins (it's the
    * stronger constraint).
    *
-   * `kernel` is the remote CAD kernel used by `regeneratePart`.
+   * `kernel` is the remote CAD kernel used by `regeneratePartTip`.
    *
    * `onMassPropsUpdate` is called after each successful regen (or material
    * change) with the computed volume and mass. Scene.tsx dispatches these
@@ -270,7 +270,7 @@ export function createPartMeshLayer(): PartMeshLayer {
     token: number,
   ): Promise<void> => {
     try {
-      const result = await regeneratePart(part, kernel);
+      const result = await regeneratePartTip(part, kernel);
       // Drop stale results in three cases:
       //  1. The layer was disposed.
       //  2. The entry was removed (alive=false).
@@ -279,8 +279,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       if (!entry.alive) return;
       if (entry.inFlightToken !== token) return;
 
-      const last = result.perFeature[result.perFeature.length - 1];
-      if (!result.mesh || !last || !last.ok) {
+      if (!result.mesh || !result.hash || result.error) {
         entry.mesh.visible = false;
         entry.lastHash = null;
         entry.lastMaterialId = null;
@@ -289,7 +288,7 @@ export function createPartMeshLayer(): PartMeshLayer {
         return;
       }
 
-      const hashChanged = entry.lastHash !== last.hash;
+      const hashChanged = entry.lastHash !== result.hash;
       const materialChanged = part.materialId !== entry.lastMaterialId;
 
       // Skip geometry rebuild if the tip hash hasn't changed (cache hit).
@@ -301,7 +300,7 @@ export function createPartMeshLayer(): PartMeshLayer {
         entry.mesh.geometry = newGeom;
         oldGeom.dispose();
         entry.mesh.visible = true;
-        entry.lastHash = last.hash;
+        entry.lastHash = result.hash;
         // Build the triangle-to-face lookup.
         const triangleCount = result.mesh.indices.length / 3;
         entry.topology = {
@@ -316,21 +315,18 @@ export function createPartMeshLayer(): PartMeshLayer {
       }
 
       // Update mass properties when geometry changed or material changed.
-      // Volume + COM depend only on shape; mass = volume × density (arithmetic).
-      // We cache { volumeMm3, comLocal } by tip hash so a material-only change
+      // Volume + COM + geometric inertia depend only on shape.
+      // We cache the full geometric mass properties by tip hash so a material-only change
       // never needs an OCCT round-trip — just multiply by the new density.
       if ((hashChanged || materialChanged) && _onMassPropsUpdate) {
         entry.lastMaterialId = part.materialId;
         const cb = _onMassPropsUpdate;
         const mat = getMaterial(part.materialId);
-        const tipHash = last.hash;
+        const tipHash = result.hash;
         const cachedVol = getVolumeData(tipHash);
         if (cachedVol) {
           // Warm cache — pure arithmetic, no worker call.
-          const massKg = Math.max(
-            cachedVol.volumeMm3 * mat.densityGcm3 * 1e-6,
-            1e-6,
-          );
+          const massKg = cachedVol.volumeMm3 * mat.densityGcm3 * 1e-6;
           cb(part.id, cachedVol.volumeMm3 / 1000, massKg);
         } else {
           // Cold cache (first regen this session, or imported-step part).
@@ -345,10 +341,7 @@ export function createPartMeshLayer(): PartMeshLayer {
             // Re-check guards after the async round-trip.
             if (isDisposed || !entry.alive || entry.inFlightToken !== token)
               return;
-            setVolumeData(tipHash, {
-              volumeMm3: massResult.volumeMm3,
-              comLocal: massResult.comLocal,
-            });
+            setVolumeData(tipHash, volumeDataFromMassProperties(massResult, mat.densityGcm3));
             cb(part.id, massResult.volumeMm3 / 1000, massResult.massKg);
           } catch {
             // Mass-properties failure is non-fatal — geometry is still shown.

@@ -30,11 +30,13 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 
 ## KinetiCAD (`artifacts/kineticad`)
 
-Browser-based parametric CAD tool with planned live physics simulation. Built per a 12-phase spec; one phase at a time.
+Browser-based parametric CAD with B-rep modelling and joint-driven rigid-body
+simulation. The original 12-phase build history is retained below; the current
+gallery and physics corrections are documented in the current-source section.
 
 **Stack**: Vite + React 19 + TypeScript, Tailwind, Zustand store, Three.js r184 (WebGPURenderer), OpenCascade.js (Web Worker via Comlink).
 
-**Phase status**:
+**Original phase status (May 2026)**:
 - Phase 0 ✅ — App shell, dark navy theme (`#0A0E1A` bg, `#FF6B1A` orange), routes (`/` Modeller, `/simulator` Simulator), Zustand store + Zod schemas, sidebar/toolbar/inspector layout.
 - Phase 1 ✅ — WebGPU scene, grid/axes/orbit camera, OpenCascade.js worker, graceful "WebGPU required" fallback.
 - Phase 2 Split A ✅ — Sketch entry: PlanePicker (XY/XZ/YZ), 600ms easeInOutCubic camera tween, sketch overlay, `sketchSession` state machine, persist middleware.
@@ -97,14 +99,28 @@ worker: { format: "es" }
 
 **Motor settings** (in `physicsWorker.ts`):
 - `setCanSleep(false)` on every dynamic body — a sleeping body ignores motor impulses and appears frozen.
-- `MotorModel.AccelerationBased` (not `ForceBased`) — behaves as a true velocity servo; the constraint solver computes the impulse to reach target velocity each step and holds it. `ForceBased` is a P-controller with steady-state error.
+- `MotorModel.AccelerationBased` — velocity servo with finite gain and solver tracking error. Acceptance depends on the measured residuals and thresholds in `docs/demo-physics-results.json`; the configured target is not evidence of exact tracking.
 - `MOTOR_VELOCITY_GAIN = 10000` — mm-unit inertias (50–500 kg·mm²) are 3–6 orders of magnitude larger than SI tutorial values; the effective gain must scale accordingly. Progression history: 1.0 → 100 → 10000. Comment in `physicsWorker.ts` records this so future readers don't repeat the SI assumption.
 - `body.wakeUp()` must be called on both attached bodies after `updateJointMotor`, or a sleeping idle mechanism ignores the new motor settings.
 - RPM → rad/s: `rpm × 2π / 60`.
+- Current solver: 32 iterations at the configured fixed timestep. The actual
+  CAD orrery/mobile regression failed lower iteration counts; retain the
+  measured limits in `docs/demo-physics-results.json` when changing this.
+- Zero or blank commands release the motor, preserving its joint and current
+  body velocities. Rapier 0.12 keeps braking when a configured drive is merely
+  given zero gain, so release recreates only the unpowered impulse joint from
+  its validated local frames. Tests cover coasting, gravity and reactivation.
 
 **Fixed joint frame math** — `JointData.fixed` with identity anchors on both sides yanks body B's origin onto body A's under solver forces. Correct: at creation time sample `bodyA/bodyB.translation()/rotation()`, compute `frame2` in B's local frame as `T_B^{-1} · T_A` (translation = `q_B^{-1} ⊗ Δp ⊗ q_B`, orientation = `q_B^{-1} ⊗ q_A`). Frame1 stays identity in A. Helpers `quatMul` + `quatRotateVec` live in `physicsWorker.ts`.
 
-**Inertia approximation** — principal-moment extraction via `GProp_PrincipalProps.Moments()` requires 3 output-arg ref boxes that this JS binding cannot allocate reliably. Workaround: approximate each part as an equivalent-volume sphere (`r_eq = (3V/4π)^{1/3}`, `I = (2/5) m r²`) for an isotropic diagonal. Sufficient for non-FEA dynamics.
+**Inertia — current implementation**: `GProp_GProps.MatrixOfInertia()` provides
+the full centroidal tensor without the unusable output-reference arguments of
+`GProp_PrincipalProps.Moments()`. `cad/operations/massProperties.ts` diagonalizes
+the tensor, verifies the reconstruction and returns principal moments plus a
+part-local principal-frame quaternion. Rapier receives both the moments and
+frame, with material density applied in kg/mm³. Invalid mass properties fail
+explicitly. The previous equivalent-volume-sphere approximation is historical
+and must not be restored as a fallback.
 
 **HMR singleton** — `cadClient.ts` and `physicsClient.ts` must hoist their kernel singletons to `globalThis.__kineticadKernel__` / `__kineticadPhysics__`. Module-level `let` bindings are reset on every Vite HMR module replacement, re-spawning the WASM worker on every file save. The `globalThis` slot survives module replacement in dev and is set exactly once in production.
 
@@ -118,15 +134,27 @@ worker: { format: "es" }
 
 ### WebGPU / Three.js
 
-**WebGPU testing** — the Replit preview iframe does not support WebGPU; it is expected to show the "WebGPU required" message. All real testing must be done on the deployed `.replit.app` URL in Chrome on an M-series Mac.
+**WebGPU testing** — the Replit preview iframe may show the "WebGPU required"
+message. Use a top-level Chrome tab with a real WebGPU adapter, on an M-series
+Mac or equivalent supported desktop, against the local application or intended
+deployment. Test the real rendered CAD route as well as numerical worker code.
 
-**Windmill canary** — after any physics change, deploy to `.replit.app`, load `window.loadSeed('windmill')`, press Play, wait 5+ seconds, confirm `bodyBangvelMag ≈ π ±5e-7`. This is the regression signal for motor / inertia / joint regressions. A result outside that band means something in the physics pipeline broke.
+**Windmill canary** — after any physics change, open Windmill through the Demos
+gallery in the actual browser route, press Play, wait at least five seconds,
+and confirm `bodyBangvelMag = π ±5e-7` rad/s from worker diagnostics. Retain the
+original strict **5e-7 rad/s** threshold; do not widen it to accept a failing
+change. Use the legacy console seed only in a disposable workspace because it
+overwrites localStorage. Historical passing readings below do not certify a
+new build; record fresh evidence in `docs/PHYSICS-VERIFICATION.md`.
 
 **NodeMaterial rule** — every Three.js material in the WebGPU renderer must use the `three/webgpu` NodeMaterial variants (`MeshBasicNodeMaterial`, `MeshStandardNodeMaterial`, `Line2NodeMaterial`, `LineBasicNodeMaterial`). Classic `THREE.MeshBasicMaterial` etc. produce "Material X is not compatible with WebGPURenderer" warnings and may render invisible. Always force `blending: NormalBlending` on NodeMaterials that need transparency (they default to `NoBlending`).
 
 ---
 
 ### Seed registry
+
+This is the legacy development loader. The current in-app gallery below uses
+validated JSON documents and an isolated temporary workspace instead.
 
 `window.loadSeed(id)` IIFE is **inlined directly into `index.html`** as a `<script data-base="%BASE_URL%">` block. `public/seed-registry.js` is a readable reference copy only — not loaded.
 
@@ -139,6 +167,138 @@ Loads `public/seeds/<id>.js` dynamically; each seed IIFE writes the persist JSON
 Available seeds: `window.loadSeed('windmill')` | `window.loadSeed('orrery')`
 
 Orrery generator: `pnpm --filter @workspace/scripts run generate-orrery-seed` → writes `public/seeds/orrery.js`. Must set `PERSIST_VERSION = 9` and `materialId: "aluminium-6061"` (not `"default"`).
+
+---
+
+## Current source — Demo gallery and physics corrections
+
+### Editable demo workspaces
+
+`components/demos/DemoGallery.tsx` presents five authored SVG illustrations
+inside an accessible, scrollable Radix dialog. These are illustrations, not
+captured CAD screenshots. Opening focuses the title without scrolling and
+starts the grid at the top. `DemoWorkspace.tsx` supplies the toolbar entry,
+empty-workspace chooser, loading/errors, reset and return controls.
+
+`scripts/src/generate-demo-library.mjs` owns definitions and regenerates
+`public/demos/*.json` plus `src/demos/catalog.ts`:
+
+| ID | Current title | Parts / joints | Scope |
+|---|---|---|---|
+| `windmill` | Windmill | 2 / 1 | Original 30 RPM canary |
+| `orrery` | Solar-system orrery | 13 / 12 | Original nested orbital-arm mechanism; illustrative speeds |
+| `gyroscope` | Three-axis driven gimbal | 4 / 3 | Powered intersecting axes, bored housings, shafts and steel flywheel |
+| `kinetic-mobile` | Kinetic mobile | 8 / 7 | Crown, two branches and four separately driven medallions |
+| `material-studio` | Material studio | 9 / 8 | Eight bored-boss material samples with fixed mounts |
+
+The gimbal/mobile use zero gravity and independently commanded motors. Do not
+describe the gimbal as verified passive-gyroscope dynamics or its shaft geometry
+as a simulated bearing contact. Material studio's fixed joints intentionally
+keep the samples static.
+
+`demos/demoDocument.ts` validates files and normalizes base-path asset URLs.
+`demoSession.ts` retains the original state and temporarily isolates persistence
+while a demo is open. Returning restores original object references, including
+live STEP shape IDs, without reloading the workers. Save exports demo edits;
+reset reloads its bundled document. This is session protection, not durable STEP
+storage: page refresh still clears imported B-rep memory. File operations and
+unfinished feature/sketch/mate edits block workspace switching.
+
+### Mass properties and time integration
+
+The CAD worker now extracts the full OCCT centroidal inertia tensor. A symmetric
+eigensolve yields principal moments and a right-handed principal-axis frame;
+the frame quaternion travels through `MassPropertiesResult`, the volume cache,
+the simulation descriptor and Rapier's additional mass properties. The cache
+stores geometric moments in mm⁵ plus the frame; applying a different density
+rescales mass/inertia without replacing the tensor with an isotropic sphere.
+This is numerical B-rep integration, with finite kernel/solver precision.
+
+The fixed-timestep worker accumulates requested elapsed milliseconds and
+advances whole `timeStepMs` steps, retaining the remainder and any capped work.
+Each call performs at most 120 substeps. Playback speed scales requested time,
+not `world.timestep`. The runner serializes worker requests, accumulates time
+while an RPC is outstanding, guards superseded builds and holds an in-flight
+result across Pause until Resume. Reset destroys the world and clears pending
+time. This describes the source implementation; acceptance measurements belong
+in the verification report rather than being inferred from the code.
+
+Mode changes deliberately stop/reset simulation to its design pose and zero
+clock. Footer clicks reset immediately, and the route effect also handles
+browser history navigation. `Scene` registers both layer references and waits
+for visible solid meshes/topology before attaching the runner. Simulator's
+readiness gate applies to all assemblies, including imported STEP parts, not
+only demos. This lifecycle does not preserve a running world across modes.
+
+### Overlay coordinate corrections
+
+`finishedSketchesLayer.ts` now applies each part's full translation and XYZ
+rotation even when its cached profile geometry has not changed. Consumed
+profiles show only when selected; hidden parts' sketches remain hidden.
+`Scene` hides this modelling layer in Simulator and during a physics run.
+The old gyro screenshot's orange circles below the assembly were untransformed
+sketch profiles, not misplaced physical joints.
+
+`MateVisualizer.ts` uses the same stored local anchors as Rapier, without
+replacing a picked point with a freshly calculated face centroid. A parent frame
+tracks the live body's world position/quaternion on each render; glyph geometry
+is reused. Enlarging a selected prismatic or planar icon no longer scales its
+anchor away from the joint. Overlay tests measure points/directions and geometry
+reuse; browser verification must still inspect the displayed result.
+
+### Supported physics and rejected frames
+
+- Units: mm, seconds and kg. Rigid materials use a density; no elasticity,
+  deformation, stress analysis or material failure is modelled.
+- Part-to-part contact response is disabled through collider solver groups.
+  Parts can interpenetrate. No collision/friction validation, gear/cam contact,
+  bearing resistance or clearance verification is provided.
+- Revolute motors command rad/s derived from RPM; prismatic motors command
+  mm/s. They are velocity servos without enforced torque or force limits.
+  Stored torque/force fields must not be presented as active load limits.
+- The installed Rapier 0.12 JS `intoRaw()` consumes `frame1/frame2` only for
+  Fixed joints. Revolute, Prismatic and Generic constructors all use a single
+  local axis. Merely setting those descriptor fields does not fix two-frame
+  joint behaviour.
+- Revolute joints require their shared signed local axis to map to the same
+  world direction in both starting poses. Relative twist about that axis is
+  allowed. Prismatic joints also require identical full starting orientations.
+  `supportedJointAxis()` allows float32 roundoff, not visible frame corrections.
+- Fixed joints preserve the initial relative transform with separate frames.
+  Spherical joints accept distinct local anchors with no axis restriction.
+- Incompatible revolute/prismatic frames and Planar mates throw during
+  `buildJoint`; `buildWorld` destroys the incomplete world and returns `ok:false`.
+  Simulating the remaining bodies after dropping a constraint is not acceptable.
+- A mate referencing an absent body also fails the whole build, including
+  when a mated part was hidden and excluded from the simulation meshes.
+
+### Verification and evidence
+
+From repository root, after `pnpm install`, on Node 24 or newer:
+
+```sh
+pnpm --filter @workspace/kineticad typecheck
+pnpm --filter @workspace/kineticad test:demos
+pnpm --filter @workspace/kineticad test:mass
+pnpm --filter @workspace/kineticad test:physics
+pnpm --filter @workspace/kineticad test:runner
+pnpm --filter @workspace/kineticad test:overlays
+pnpm --filter @workspace/kineticad test:regen
+```
+
+Mass tests exercise actual OCCT shapes and Rapier torque response. Physics tests
+run the shipped worker through Comlink with analytical descriptors, separating
+mechanics from CAD generation and rendering. Overlay tests exercise Three.js
+scene-graph transforms without a GPU. Demo tests cover file validation and
+restoration of the original workspace. Regenerate fixtures with
+`node scripts/src/generate-demo-library.mjs` when source definitions change.
+
+See [Physics verification](docs/PHYSICS-VERIFICATION.md) for current measured
+results, browser evidence and unresolved gates. Keep the original Windmill
+`π ±5e-7 rad/s` criterion. Passing analytical descriptors alone does not confirm
+the full CAD/cache/worker/render path. The May 2026 observations below are
+historical, including the older isotropic-inertia implementation, and remain
+separate from new acceptance evidence.
 
 ---
 
@@ -225,6 +385,9 @@ story is only complete with both entries.
 ---
 
 ## Post-Phase-10 fix — Volume cache + simulation density correctness (2026-05-17)
+
+Historical implementation and verification record. The equivalent-sphere warm
+cache path described here is superseded by the full tensor cache above.
 
 Two bugs found by diagnosis of Play latency on the 13-part orrery.
 
@@ -360,5 +523,6 @@ SEO pass:
 
 ## Current persist version: 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
-## Seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
-## WebGPU testing: deploy to .replit.app and open in Chrome on M-series Mac
+## Current examples: in-app Demos gallery (five editable assemblies)
+## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
+## WebGPU testing: top-level Chrome against local app or intended deployment

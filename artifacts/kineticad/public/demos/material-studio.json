@@ -1,0 +1,866 @@
+{
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "asm-material-studio",
+      "name": "Material studio",
+      "groundPartId": "material-plinth",
+      "booleanFeatures": [],
+      "parts": [
+        {
+          "id": "material-plinth",
+          "name": "Steel display plinth",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-plinth-1",
+              "name": "Display footprint",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -92,
+                    -55
+                  ],
+                  "width": 184,
+                  "height": 110
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-plinth-1",
+              "type": "extrude",
+              "sketchId": "sk-material-plinth-1",
+              "depthMm": 6,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-1",
+          "name": "Aluminium 6061 · bored boss",
+          "visible": true,
+          "materialId": "aluminium-6061",
+          "transform": {
+            "positionMm": [
+              -66,
+              25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-1-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-1-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-1-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-1-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-1-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-1-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-1-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-1-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-1-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-2",
+          "name": "Steel 1018 · bored boss",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              -22,
+              25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-2-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-2-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-2-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-2-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-2-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-2-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-2-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-2-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-2-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-3",
+          "name": "Brass C36000 · bored boss",
+          "visible": true,
+          "materialId": "brass-c36000",
+          "transform": {
+            "positionMm": [
+              22,
+              25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-3-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-3-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-3-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-3-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-3-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-3-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-3-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-3-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-3-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-4",
+          "name": "Titanium Grade 5 · bored boss",
+          "visible": true,
+          "materialId": "titanium-grade5",
+          "transform": {
+            "positionMm": [
+              66,
+              25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-4-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-4-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-4-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-4-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-4-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-4-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-4-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-4-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-4-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-5",
+          "name": "Nylon 6 · bored boss",
+          "visible": true,
+          "materialId": "nylon-6",
+          "transform": {
+            "positionMm": [
+              -66,
+              -25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-5-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-5-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-5-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-5-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-5-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-5-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-5-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-5-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-5-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-6",
+          "name": "PLA · bored boss",
+          "visible": true,
+          "materialId": "pla",
+          "transform": {
+            "positionMm": [
+              -22,
+              -25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-6-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-6-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-6-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-6-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-6-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-6-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-6-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-6-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-6-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-7",
+          "name": "ABS · bored boss",
+          "visible": true,
+          "materialId": "abs",
+          "transform": {
+            "positionMm": [
+              22,
+              -25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-7-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-7-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-7-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-7-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-7-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-7-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-7-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-7-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-7-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        },
+        {
+          "id": "material-sample-8",
+          "name": "Acrylic · bored boss",
+          "visible": true,
+          "materialId": "acrylic",
+          "transform": {
+            "positionMm": [
+              66,
+              -25,
+              6
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "sk-material-sample-8-1",
+              "name": "Square base",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -14,
+                    -14
+                  ],
+                  "width": 28,
+                  "height": 28
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-8-2",
+              "name": "Raised circular boss",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 11
+                }
+              ]
+            },
+            {
+              "id": "sk-material-sample-8-3",
+              "name": "Through bore",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "circle",
+                  "centre": [
+                    0,
+                    0
+                  ],
+                  "radius": 6
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "feat-material-sample-8-1",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-8-1",
+              "depthMm": 11,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            },
+            {
+              "id": "feat-material-sample-8-2",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-8-2",
+              "depthMm": 21,
+              "direction": "forward",
+              "extrudeMode": "add"
+            },
+            {
+              "id": "feat-material-sample-8-3",
+              "type": "extrude",
+              "sketchId": "sk-material-sample-8-3",
+              "depthMm": 24,
+              "direction": "forward",
+              "extrudeMode": "subtract"
+            }
+          ]
+        }
+      ],
+      "mates": [
+        {
+          "id": "material-fixed-1",
+          "type": "fixed",
+          "name": "Aluminium 6061 display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-1"
+        },
+        {
+          "id": "material-fixed-2",
+          "type": "fixed",
+          "name": "Steel 1018 display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-2"
+        },
+        {
+          "id": "material-fixed-3",
+          "type": "fixed",
+          "name": "Brass C36000 display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-3"
+        },
+        {
+          "id": "material-fixed-4",
+          "type": "fixed",
+          "name": "Titanium Grade 5 display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-4"
+        },
+        {
+          "id": "material-fixed-5",
+          "type": "fixed",
+          "name": "Nylon 6 display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-5"
+        },
+        {
+          "id": "material-fixed-6",
+          "type": "fixed",
+          "name": "PLA display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-6"
+        },
+        {
+          "id": "material-fixed-7",
+          "type": "fixed",
+          "name": "ABS display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-7"
+        },
+        {
+          "id": "material-fixed-8",
+          "type": "fixed",
+          "name": "Acrylic display mount",
+          "partA": "material-plinth",
+          "partB": "material-sample-8"
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "timeStepMs": 16.666666666666668,
+      "gravity": [
+        0,
+        0,
+        0
+      ],
+      "speedMultiplier": 1,
+      "simulationTimeMs": 0
+    }
+  },
+  "version": 9
+}

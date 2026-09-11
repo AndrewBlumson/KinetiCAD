@@ -58,6 +58,9 @@ console.error = (...a: unknown[]) => { __origError(...a); __forward('error', a);
 let initPromise: Promise<PhysicsInitResult> | null = null;
 let world: RAPIER.World | null = null;
 let timeStepMs = 1000 / 60;
+let accumulatedTimeMs = 0;
+// Bound a single worker task while retaining excess time for subsequent calls.
+const MAX_SUBSTEPS_PER_CALL = 120;
 
 /**
  * Mapping from KinetiCAD partId → Rapier body handle. Required so the
@@ -170,6 +173,26 @@ function applyPrismaticMotor(
   const prismatic = joint as unknown as RAPIER.PrismaticImpulseJoint;
   prismatic.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
   prismatic.configureMotorVelocity(v, MOTOR_VELOCITY_GAIN);
+}
+
+/**
+ * Rapier 0.12 keeps its motor constraint active even with both gains zero.
+ * Recreate only the joint without a motor to release it; body poses, inertia
+ * and velocities remain untouched. Reuse its already validated local frames,
+ * which must not be reinterpreted from the bodies' current rotated poses.
+ */
+function releaseJointMotor(rapierWorld: RAPIER.World, joint: RAPIER.ImpulseJoint, mate: Extract<Mate, { type: 'revolute' | 'prismatic' }>): RAPIER.ImpulseJoint {
+  const bodyA = joint.body1();
+  const bodyB = joint.body2();
+  const length = Math.hypot(...mate.axisLocal);
+  const axis = { x: mate.axisLocal[0] / length, y: mate.axisLocal[1] / length, z: mate.axisLocal[2] / length };
+  const a = pivotPoint(mate.pivotA);
+  const b = pivotPoint(mate.pivotB);
+  const params = mate.type === 'revolute' ? RAPIER.JointData.revolute(a, b, axis) : RAPIER.JointData.prismatic(a, b, axis);
+  const replacement = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
+  rapierWorld.removeImpulseJoint(joint, true);
+  mateIdToJoint.set(mate.id, replacement);
+  return replacement;
 }
 
 async function ensureRapier(): Promise<PhysicsInitResult> {
@@ -295,6 +318,14 @@ function buildBody(
   rapierWorld: RAPIER.World,
   part: PartDescriptor,
 ): { body: RAPIER.RigidBody; warning: string | null } {
+  if (!Number.isFinite(part.massKg) || part.massKg <= 0
+    || part.comLocal.some((value) => !Number.isFinite(value))
+    || part.principalInertiaKgMm2.some((value) => !Number.isFinite(value) || value <= 0)
+    || !part.principalInertiaLocalFrame
+    || part.principalInertiaLocalFrame.some((value) => !Number.isFinite(value))
+    || Math.abs(Math.hypot(...part.principalInertiaLocalFrame) - 1) > 1e-6) {
+    throw new Error(`${part.id}: invalid physical mass properties; no approximate body was created`);
+  }
   const [px, py, pz] = part.transform.positionMm;
   const quat = eulerDegToQuat(part.transform.rotationDeg);
 
@@ -366,14 +397,7 @@ function buildBody(
       colliderDesc = RAPIER.ColliderDesc.trimesh(positions, indices);
       warning = `${part.id}: used trimesh collider (concave or hull failed)`;
     } catch (err) {
-      // Last resort — a 1mm sphere so the body still exists in the world.
-      // eslint-disable-next-line no-console
-      console.error(
-        `[PHYSICS] trimesh collider also failed for part ${part.id}:`,
-        err,
-      );
-      colliderDesc = RAPIER.ColliderDesc.ball(1.0);
-      warning = `${part.id}: collider build failed, using 1mm fallback sphere`;
+      throw new Error(`${part.id}: collider construction failed; no substitute geometry was created (${err instanceof Error ? err.message : String(err)})`);
     }
   }
 
@@ -408,12 +432,24 @@ function buildBody(
         y: part.principalInertiaKgMm2[1],
         z: part.principalInertiaKgMm2[2],
       },
-      // Identity quaternion — assume principal axes align with the
-      // part's local frame. Reasonable for most simple geometry; a
-      // future enhancement can request the rotation from OCCT.
-      { x: 0, y: 0, z: 0, w: 1 },
+      {
+        x: part.principalInertiaLocalFrame[0],
+        y: part.principalInertiaLocalFrame[1],
+        z: part.principalInertiaLocalFrame[2],
+        w: part.principalInertiaLocalFrame[3],
+      },
       true,
     );
+    body.recomputeMassPropertiesFromColliders();
+    console.info("[mass-properties]", JSON.stringify({
+      partId: part.id,
+      requestedMassKg: part.massKg,
+      massKg: body.mass(),
+      comLocalMm: part.comLocal,
+      requestedPrincipalInertiaKgMm2: part.principalInertiaKgMm2,
+      principalInertiaKgMm2: body.principalInertia(),
+      principalInertiaLocalFrame: body.principalInertiaLocalFrame(),
+    }));
   }
 
   // The proxy volume check: compare mesh volume to bounding-box volume
@@ -429,21 +465,56 @@ function buildBody(
 }
 
 /**
- * Build a single Rapier joint from a KinetiCAD mate. Returns the joint
- * handle (or null for unsupported mate types) plus a warning string for
- * the build report.
+ * Validate the frame representation before building a Rapier joint.
  *
  * Pivot-point convention: KinetiCAD stores `localPoint` in each part's
  * local frame (mm). Rapier's joint anchors are in the same local-frame
  * units, so we forward them directly.
  *
- * Axis convention: Phase 7's `axisLocal` is a unit vector in part A's
- * local frame. Rapier's revolute / prismatic joints accept the axis in
- * each body's local frame; we pass the same vector for both A and B
- * because at mate-creation time the two parts were aligned so their
- * mate axes coincide. If the user re-poses the parts before Play,
- * Rapier will solve for the resulting constraint slack itself.
+ * Axis convention: `axisLocal` belongs to part A. Rapier 0.12's JS
+ * binding uses one shared local axis for revolute/prismatic joints and
+ * ignores their frame1/frame2 fields. Reject incompatible frames before
+ * creating a joint instead of allowing the solver to rotate the assembly
+ * into a different mechanism. Throwing aborts the entire world build.
  */
+function supportedJointAxis(
+  mate: Extract<Mate, { type: 'revolute' | 'prismatic' }>,
+  bodyA: RAPIER.RigidBody,
+  bodyB: RAPIER.RigidBody,
+): { x: number; y: number; z: number } {
+  const length = Math.hypot(...mate.axisLocal);
+  if (!Number.isFinite(length) || length < 1e-9) {
+    throw new Error(`${mate.name ?? mate.id}: joint axis must be a finite non-zero vector.`);
+  }
+  const axis = { x: mate.axisLocal[0] / length, y: mate.axisLocal[1] / length, z: mate.axisLocal[2] / length };
+  const normalized = (q: { x: number; y: number; z: number; w: number }) => {
+    const n = Math.hypot(q.x, q.y, q.z, q.w);
+    return { x: q.x / n, y: q.y / n, z: q.z / n, w: q.w / n };
+  };
+  const qa = normalized(bodyA.rotation());
+  const qb = normalized(bodyB.rotation());
+  const axisA = quatRotateVec(qa, axis);
+  const axisB = quatRotateVec(qb, axis);
+  // Signed alignment matters: opposite axes invert the motor convention and
+  // are not interchangeable reference frames in Rapier's joint builder.
+  const axisDifference = Math.hypot(axisA.x - axisB.x, axisA.y - axisB.y, axisA.z - axisB.z);
+  const orientationDifference = Math.min(
+    Math.hypot(qa.x - qb.x, qa.y - qb.y, qa.z - qb.z, qa.w - qb.w),
+    Math.hypot(qa.x + qb.x, qa.y + qb.y, qa.z + qb.z, qa.w + qb.w),
+  );
+  // About 0.001 degrees: allows the binding's float32 pose roundoff, not a
+  // visible reorientation. Prismatic joints lock all rotation, including
+  // twist around their shared sliding axis, so their full frames must match.
+  if (axisDifference > 1e-5 || (mate.type === 'prismatic' && orientationDifference > 1e-5)) {
+    throw new Error(
+      `joint-frame-unsupported: ${mate.name ?? mate.id} requires separate local ` +
+      `${mate.type === 'revolute' ? 'axes' : 'orientation frames'} for its two parts. ` +
+      'The current physics engine binding cannot represent these frames; simulation was stopped.',
+    );
+  }
+  return axis;
+}
+
 function buildJoint(
   rapierWorld: RAPIER.World,
   mate: Mate,
@@ -453,39 +524,12 @@ function buildJoint(
   switch (mate.type) {
     case "revolute": {
       if (mate.pivotA.kind === undefined || mate.pivotB.kind === undefined) {
-        return { ok: false, warning: `${mate.id}: revolute missing pivots` };
+        throw new Error(`${mate.name ?? mate.id}: revolute joint is missing its pivots; simulation was stopped.`);
       }
       const a = pivotPoint(mate.pivotA);
       const b = pivotPoint(mate.pivotB);
-      const ax = mate.axisLocal;
-      // Compute axisLocalB to detect frame skew between the two bodies.
-      // Rapier 0.12 JointData.revolute applies ONE axis vector to BOTH
-      // bodies' local frames identically — correct only when A and B share
-      // the same world orientation.  For assemblies where they differ, the
-      // proper fix requires JointData.generic with explicit frame quaternions
-      // (which loses the RevoluteImpulseJoint motor API — deferred to a
-      // future phase).  Logged here so rotated-part cases surface in QA.
-      {
-        const qa      = bodyA.rotation();
-        const qb      = bodyB.rotation();
-        const qbi     = { x: -qb.x, y: -qb.y, z: -qb.z, w: qb.w };
-        const axisWorld  = quatRotateVec(qa, { x: ax[0], y: ax[1], z: ax[2] });
-        const axisLocalB = quatRotateVec(qbi, axisWorld);
-        const axisDrift  = Math.abs(
-          1 - Math.abs(
-            ax[0] * axisLocalB.x + ax[1] * axisLocalB.y + ax[2] * axisLocalB.z,
-          ),
-        );
-        if (axisDrift > 0.01) {
-          // eslint-disable-next-line no-console
-          console.warn("[joint-build] axis-frame skew detected", {
-            mateId: mate.id,
-            axisLocalA: ax,
-            axisLocalB,
-            axisDrift,
-          });
-        }
-      }
+      const axis = supportedJointAxis(mate, bodyA, bodyB);
+      const ax = [axis.x, axis.y, axis.z];
       // eslint-disable-next-line no-console
       console.log("[mate-read-pivot]", {
         mateId: mate.id,
@@ -522,7 +566,7 @@ function buildJoint(
       const params = RAPIER.JointData.revolute(
         a,
         b,
-        { x: ax[0], y: ax[1], z: ax[2] },
+        axis,
       );
       const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
       mateIdToJoint.set(mate.id, joint);
@@ -538,11 +582,11 @@ function buildJoint(
     case "prismatic": {
       const a = pivotPoint(mate.pivotA);
       const b = pivotPoint(mate.pivotB);
-      const ax = mate.axisLocal;
+      const axis = supportedJointAxis(mate, bodyA, bodyB);
       const params = RAPIER.JointData.prismatic(
         a,
         b,
-        { x: ax[0], y: ax[1], z: ax[2] },
+        axis,
       );
       const joint = rapierWorld.createImpulseJoint(params, bodyA, bodyB, true);
       mateIdToJoint.set(mate.id, joint);
@@ -597,13 +641,8 @@ function buildJoint(
     }
 
     case "planar": {
-      // Phase 12 polish — Rapier doesn't ship a native planar joint
-      // and the 6-DOF generic-joint API in v0.12 is awkward. Skip
-      // for now; the user gets a warning in the simulation status.
-      return {
-        ok: false,
-        warning: `${mate.id}: planar mates are not yet supported in simulation (Phase 12)`,
-      };
+      // Omitting this constraint would simulate a different assembly.
+      throw new Error(`${mate.name ?? mate.id}: planar mates are not supported by the current physics engine binding; simulation was stopped.`);
     }
   }
 }
@@ -640,6 +679,67 @@ function destroyWorld(): void {
   mateIdToJoint.clear();
   mateById.clear();
   stepCount = 0;
+  accumulatedTimeMs = 0;
+}
+
+/** Preserve the existing DevTools diagnostic, sampled by solver steps. */
+function logStepDiagnostics(): void {
+  mateIdToJoint.forEach((_joint, mateId) => {
+    const mate = mateById.get(mateId);
+    if (!mate || (mate.type !== 'revolute' && mate.type !== 'prismatic')) return;
+    const bodyA = partIdToBody.get(mate.partA);
+    const bodyB = partIdToBody.get(mate.partB);
+    if (!bodyA || !bodyB) return;
+    const angvel = bodyB.angvel();
+    const angularA = bodyA.angvel();
+    const relativeAngular = { x: angvel.x - angularA.x, y: angvel.y - angularA.y, z: angvel.z - angularA.z };
+    const axisLength = Math.hypot(...mate.axisLocal);
+    const axis = quatRotateVec(bodyA.rotation(), { x: mate.axisLocal[0] / axisLength, y: mate.axisLocal[1] / axisLength, z: mate.axisLocal[2] / axisLength });
+    const relativeAngularSpeedRadPerSec = relativeAngular.x * axis.x + relativeAngular.y * axis.y + relativeAngular.z * axis.z;
+    const anchorWorld = (body: RAPIER.RigidBody, localPoint: [number, number, number]) => {
+      const local = quatRotateVec(body.rotation(), { x: localPoint[0], y: localPoint[1], z: localPoint[2] });
+      const position = body.translation();
+      return { x: position.x + local.x, y: position.y + local.y, z: position.z + local.z };
+    };
+    const anchorA = anchorWorld(bodyA, mate.pivotA.localPoint);
+    const anchorB = anchorWorld(bodyB, mate.pivotB.localPoint);
+    // Rapier linvel is the COM velocity. Joint-point velocity additionally
+    // includes omega cross (anchor - COM), essential for moving parents.
+    const pointVelocity = (body: RAPIER.RigidBody, anchor: { x: number; y: number; z: number }) => {
+      const v = body.linvel();
+      const w = body.angvel();
+      const com = body.worldCom();
+      const r = { x: anchor.x - com.x, y: anchor.y - com.y, z: anchor.z - com.z };
+      return { x: v.x + w.y * r.z - w.z * r.y, y: v.y + w.z * r.x - w.x * r.z, z: v.z + w.x * r.y - w.y * r.x };
+    };
+    const linearA = pointVelocity(bodyA, anchorA);
+    const linearB = pointVelocity(bodyB, anchorB);
+    const relativeLinearSpeedMmPerSec = (linearB.x - linearA.x) * axis.x + (linearB.y - linearA.y) * axis.y + (linearB.z - linearA.z) * axis.z;
+    const motorEnabled = (mate.type === 'revolute' ? mate.motorSpeedRpm : mate.motorVelocityMmPerSec) != null
+      && (mate.type === 'revolute' ? mate.motorSpeedRpm : mate.motorVelocityMmPerSec) !== 0;
+    const measurement = {
+      stepCount,
+      simulatedTimeMs: stepCount * timeStepMs,
+      solverTimeStepMs: timeStepMs,
+      solverIterations: world!.integrationParameters.numSolverIterations,
+      mateId,
+      mateType: mate.type,
+      bodyBangvel: angvel,
+      bodyBangvelMag: Math.hypot(angvel.x, angvel.y, angvel.z),
+      bodyBSleeping: bodyB.isSleeping(),
+      motorRpm: mate.type === "revolute" ? mate.motorSpeedRpm : mate.type === "prismatic" ? mate.motorVelocityMmPerSec : null,
+      motorEnabled,
+      jointAxisWorld: axis,
+      relativeAngularSpeedRadPerSec,
+      targetAngularSpeedRadPerSec: mate.type === 'revolute' && motorEnabled ? rpmToRadPerSec(mate.motorSpeedRpm!) : null,
+      offAxisRelativeAngvelMag: Math.hypot(relativeAngular.x - axis.x * relativeAngularSpeedRadPerSec, relativeAngular.y - axis.y * relativeAngularSpeedRadPerSec, relativeAngular.z - axis.z * relativeAngularSpeedRadPerSec),
+      anchorSeparationMm: Math.hypot(anchorB.x - anchorA.x, anchorB.y - anchorA.y, anchorB.z - anchorA.z),
+      relativeLinearSpeedMmPerSec: mate.type === 'prismatic' ? relativeLinearSpeedMmPerSec : null,
+      targetLinearSpeedMmPerSec: mate.type === 'prismatic' && motorEnabled ? mate.motorVelocityMmPerSec : null,
+    };
+    console.log("[step-diag]", measurement);
+    console.log('[physics-measurement] ' + JSON.stringify(measurement));
+  });
 }
 
 const api: PhysicsApi = {
@@ -656,7 +756,10 @@ const api: PhysicsApi = {
         z: args.gravity[2],
       };
       world = new RAPIER.World(gravity);
-      timeStepMs = args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
+      // Coupled CAD mechanisms need more convergence than Rapier's default
+      // four iterations: validated against every demo's exact OCCT inertia.
+      world.integrationParameters.numSolverIterations = 32;
+      timeStepMs = Number.isFinite(args.timeStepMs) && args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
       world.timestep = timeStepMs / 1000; // Rapier uses seconds.
 
       const warnings: string[] = [];
@@ -674,10 +777,10 @@ const api: PhysicsApi = {
         const a = partIdToBody.get(mate.partA);
         const b = partIdToBody.get(mate.partB);
         if (!a || !b) {
-          warnings.push(
-            `${mate.id}: mate references missing part(s); skipped`,
+          throw new Error(
+            `${mate.name ?? mate.id}: cannot simulate a mate with missing part geometry (${[!a ? mate.partA : null, !b ? mate.partB : null].filter(Boolean).join(', ')}). ` +
+            'Show both mated parts and wait for their geometry to finish loading.',
           );
-          continue;
         }
         const { ok, warning } = buildJoint(world, mate, a, b);
         if (ok) jointCount += 1;
@@ -698,10 +801,23 @@ const api: PhysicsApi = {
     if (!world) {
       return { transforms: [], dtMs: 0 };
     }
-    if (scaledDtMs != null && scaledDtMs > 0) {
-      world.timestep = scaledDtMs / 1000;
+    const requestedMs = scaledDtMs === undefined ? timeStepMs : scaledDtMs;
+    if (!Number.isFinite(requestedMs) || requestedMs < 0) {
+      throw new Error('Physics step duration must be finite and non-negative.');
     }
-    world.step();
+    accumulatedTimeMs += requestedMs;
+    const steps = requestedMs === 0 ? 0 : Math.min(
+      MAX_SUBSTEPS_PER_CALL,
+      Math.floor((accumulatedTimeMs + timeStepMs * 1e-9) / timeStepMs),
+    );
+    // Every solver step uses the configured dt, independent of render rate,
+    // playback speed, and the partitioning of worker messages.
+    for (let i = 0; i < steps; i++) {
+      world.step();
+      stepCount += 1;
+      if (stepCount % 60 === 0) logStepDiagnostics();
+    }
+    accumulatedTimeMs = Math.max(0, accumulatedTimeMs - steps * timeStepMs);
     const transforms: StepTransform[] = [];
     partIdToBody.forEach((body, partId) => {
       const t = body.translation();
@@ -713,48 +829,7 @@ const api: PhysicsApi = {
       });
     });
 
-    // Phase 9.5 diagnostic — once a second, dump bodyB's angular
-    // velocity + sleep status for each motorised joint. If angvel
-    // stays at zero with motorRpm non-zero, the motor is not firing
-    // (constraint, axis, or model bug). If angvel ramps but the mesh
-    // doesn't visibly rotate, it's a render-side bug.
-    stepCount += 1;
-    if (stepCount % 60 === 0) {
-      mateIdToJoint.forEach((_joint, mateId) => {
-        const mate = mateById.get(mateId);
-        if (!mate) return;
-        const bodyB = partIdToBody.get(mate.partB);
-        if (!bodyB) return;
-        const angvel = (
-          bodyB as unknown as {
-            angvel: () => { x: number; y: number; z: number };
-          }
-        ).angvel();
-        const sleeping = (
-          bodyB as unknown as { isSleeping?: () => boolean }
-        ).isSleeping?.();
-        const motorRpm =
-          mate.type === "revolute"
-            ? mate.motorSpeedRpm
-            : mate.type === "prismatic"
-              ? mate.motorVelocityMmPerSec
-              : null;
-        // eslint-disable-next-line no-console
-        console.log("[step-diag]", {
-          stepCount,
-          mateId,
-          mateType: mate.type,
-          bodyBangvel: angvel,
-          bodyBangvelMag: Math.sqrt(
-            angvel.x ** 2 + angvel.y ** 2 + angvel.z ** 2,
-          ),
-          bodyBSleeping: sleeping,
-          motorRpm,
-        });
-      });
-    }
-
-    return { transforms, dtMs: timeStepMs };
+    return { transforms, dtMs: steps * timeStepMs };
   },
 
   async updateJointMotor(
@@ -763,16 +838,22 @@ const api: PhysicsApi = {
     if (!world) {
       return { ok: false, error: "no active world" };
     }
-    const joint = mateIdToJoint.get(args.mateId);
+    let joint = mateIdToJoint.get(args.mateId);
     if (!joint) {
       return { ok: false, error: `joint not found for mate ${args.mateId}` };
     }
     try {
-      if (args.motorSpeedRpm !== undefined) {
-        applyRevoluteMotor(joint, args.motorSpeedRpm);
-      }
-      if (args.motorVelocityMmPerSec !== undefined) {
-        applyPrismaticMotor(joint, args.motorVelocityMmPerSec);
+      const mate = mateById.get(args.mateId);
+      if (mate?.type === 'revolute' && args.motorSpeedRpm !== undefined) {
+        if ((args.motorSpeedRpm ?? 0) === 0) joint = releaseJointMotor(world, joint, mate);
+        else applyRevoluteMotor(joint, args.motorSpeedRpm);
+        mateById.set(mate.id, { ...mate, motorSpeedRpm: args.motorSpeedRpm ?? undefined });
+      } else if (mate?.type === 'prismatic' && args.motorVelocityMmPerSec !== undefined) {
+        if ((args.motorVelocityMmPerSec ?? 0) === 0) joint = releaseJointMotor(world, joint, mate);
+        else applyPrismaticMotor(joint, args.motorVelocityMmPerSec);
+        mateById.set(mate.id, { ...mate, motorVelocityMmPerSec: args.motorVelocityMmPerSec ?? undefined });
+      } else {
+        return { ok: false, error: `Motor command does not match joint ${args.mateId}.` };
       }
       // Wake both attached bodies — Rapier puts dynamic bodies to sleep
       // when they idle, and a freshly-applied motor on a sleeping body
@@ -797,7 +878,7 @@ const api: PhysicsApi = {
 // path that triggers the Array.reduce TypeError can be identified at runtime.
 // Set COMLINK_TRACE to false once the offending call site is found.
 // Added 16/05/2026.
-const COMLINK_TRACE = true;
+const COMLINK_TRACE = false;
 if (COMLINK_TRACE) {
   self.addEventListener('message', (msg) => {
     const d = (msg as MessageEvent).data;

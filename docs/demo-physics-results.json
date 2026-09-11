@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-11T21:25:58.517Z",
+  "method": "Actual OCCT-rebuilt meshes, exact CAD mass tensors and principal frames, shipped physicsWorker.ts through Comlink and Rapier WASM. No analytic proxy geometry. Independent pose/anchor and relative angular-velocity reconstruction. Browser rendering is a separate acceptance step.",
+  "physicsWorkerSha256": "d2c57b9cfd8140a3e4526e4903e844a4cf99664e7db2e60fffa3d0200ccd0a78",
+  "durationSeconds": 15,
+  "settledSampleWindowSeconds": [
+    5,
+    15
+  ],
+  "measurementCadence": {
+    "angularVelocity": "Production diagnostics every 60 solver steps: 11 samples per motor at 1-second intervals from 5 through 15 seconds for these 60 Hz fixtures. Reported velocity maxima are sampled maxima, not all-step peaks.",
+    "anchorSeparation": "Every solver step, including startup: 900 samples per joint from the first step through 15 seconds.",
+    "fixedBodyDrift": "Every solver step: 900 samples per fixed body."
+  },
+  "thresholds": {
+    "windmillAngularSpeedErrorRadPerSec": 5e-7,
+    "otherMotorAngularSpeedErrorRadPerSec": 0.02,
+    "offAxisRelativeAngvelRadPerSec": 0.03,
+    "jointAnchorSeparationMm": 0.1,
+    "fixedPositionDriftMm": 0.001
+  },
+  "fixtures": {
+    "windmill": {
+      "fixturePath": "artifacts/kineticad/public/demos/windmill.json",
+      "fixtureSha256": "4ad41d8a123f53655778421d1fd3a4288e9295298b36cf2b429520754f14d7d9",
+      "bodyCount": 2,
+      "jointCount": 1,
+      "meshVertices": 484,
+      "actualTimeMs": 14999.999999999813,
+      "solverSteps": 900,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 207.28204200000005,
+        "meanStepRpcMs": 0.2079858833333319,
+        "p95StepRpcMs": 0.49062500000002274,
+        "maxStepRpcMs": 33.97666699999991
+      },
+      "maxWindmillAbsoluteSpeedErrorRadPerSec": 8.74227827907248e-8,
+      "joints": {
+        "mate-rev-1": {
+          "name": "Revolute 1",
+          "targetRpm": 30,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 8.742278057027875e-8,
+          "maxRelativeRpmError": 8.34826059995878e-7,
+          "maxOffAxisRelativeAngvelRadPerSec": 1.3241346719753423e-7,
+          "maxAnchorSeparationMm": 2.5437196195455494e-9,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        }
+      }
+    },
+    "orrery": {
+      "fixturePath": "artifacts/kineticad/public/demos/orrery.json",
+      "fixtureSha256": "0b545aa00269d7c5d4b7dda7700875a5aef469dda57d33ea0a02f0acd45647e9",
+      "bodyCount": 13,
+      "jointCount": 12,
+      "meshVertices": 5482,
+      "actualTimeMs": 14999.999999999813,
+      "solverSteps": 900,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 349.87420799999984,
+        "meanStepRpcMs": 0.35893735444444624,
+        "p95StepRpcMs": 0.6645409999999856,
+        "maxStepRpcMs": 8.698957999999948
+      },
+      "joints": {
+        "mate-planet-1": {
+          "name": "Planet 1",
+          "targetRpm": 12,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000008667309025156555,
+          "maxRelativeRpmError": 0.00008276670447951975,
+          "maxOffAxisRelativeAngvelRadPerSec": 4.4705908834960267e-8,
+          "maxAnchorSeparationMm": 0.000016838969525847226,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-2": {
+          "name": "Planet 2",
+          "targetRpm": 9.7674,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.0010964163024260731,
+          "maxRelativeRpmError": 0.010470004453058878,
+          "maxOffAxisRelativeAngvelRadPerSec": 6.322027276634106e-8,
+          "maxAnchorSeparationMm": 0.000020150199831702033,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-3": {
+          "name": "Planet 3",
+          "targetRpm": 8.2353,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000014756868672471946,
+          "maxRelativeRpmError": 0.00014091771562691074,
+          "maxOffAxisRelativeAngvelRadPerSec": 8.024520884654678e-8,
+          "maxAnchorSeparationMm": 0.00002001669322523192,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-4": {
+          "name": "Planet 4",
+          "targetRpm": 7.1186,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00038774588292445067,
+          "maxRelativeRpmError": 0.0037027004358574597,
+          "maxOffAxisRelativeAngvelRadPerSec": 3.332000937312528e-8,
+          "maxAnchorSeparationMm": 0.000024419547837444874,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-5": {
+          "name": "Planet 5",
+          "targetRpm": 6.2687,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00001088763946377469,
+          "maxRelativeRpmError": 0.00010396929835572808,
+          "maxOffAxisRelativeAngvelRadPerSec": 3.332000937312528e-8,
+          "maxAnchorSeparationMm": 0.000026089365230646505,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-6": {
+          "name": "Planet 6",
+          "targetRpm": 5.6,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.0001846746333821203,
+          "maxRelativeRpmError": 0.0017635128459868796,
+          "maxOffAxisRelativeAngvelRadPerSec": 3.0719530773294423e-8,
+          "maxAnchorSeparationMm": 0.000023214275266435153,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-7": {
+          "name": "Planet 7",
+          "targetRpm": 5.0602,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000004917752445376955,
+          "maxRelativeRpmError": 0.00004696107663503991,
+          "maxOffAxisRelativeAngvelRadPerSec": 4.5320112483935196e-8,
+          "maxAnchorSeparationMm": 0.000023826828161448248,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-planet-8": {
+          "name": "Planet 8",
+          "targetRpm": 4.6154,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000008986785923092988,
+          "maxRelativeRpmError": 0.00008581748413013464,
+          "maxOffAxisRelativeAngvelRadPerSec": 5.424104548454671e-8,
+          "maxAnchorSeparationMm": 0.00002188933055025206,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-moon-1": {
+          "name": "Moon 1",
+          "targetRpm": 24,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.010888864219969374,
+          "maxRelativeRpmError": 0.10398099391587606,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0009582124429652844,
+          "maxAnchorSeparationMm": 0.0001681178069314856,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-moon-2": {
+          "name": "Moon 2",
+          "targetRpm": 24,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.011320938269443914,
+          "maxRelativeRpmError": 0.10810699716121237,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0007750498786892094,
+          "maxAnchorSeparationMm": 0.00014619377553126063,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-moon-3": {
+          "name": "Moon 3",
+          "targetRpm": 24,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.009989868003063673,
+          "maxRelativeRpmError": 0.09539621241138871,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0013784815654316353,
+          "maxAnchorSeparationMm": 0.00015929230303676293,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mate-ring": {
+          "name": "Asteroid ring",
+          "targetRpm": 3.3333,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 2.3434534313082622e-8,
+          "maxRelativeRpmError": 2.23783318499024e-7,
+          "maxOffAxisRelativeAngvelRadPerSec": 2.942323248569927e-8,
+          "maxAnchorSeparationMm": 1.5074005235058293e-7,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        }
+      }
+    },
+    "gyroscope": {
+      "fixturePath": "artifacts/kineticad/public/demos/gyroscope.json",
+      "fixtureSha256": "c9b0a7404200e23edc55aed44117a182ef487a7989221db75ce9ca46c1e0f652",
+      "bodyCount": 4,
+      "jointCount": 3,
+      "meshVertices": 3992,
+      "actualTimeMs": 14999.999999999813,
+      "solverSteps": 900,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 141.491041,
+        "meanStepRpcMs": 0.14561259111110986,
+        "p95StepRpcMs": 0.24374999999986358,
+        "maxStepRpcMs": 1.3282500000000255
+      },
+      "joints": {
+        "gyro-yaw": {
+          "name": "Yaw · 5 RPM",
+          "targetRpm": 5,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00009249183822801488,
+          "maxRelativeRpmError": 0.0008832319949786699,
+          "maxOffAxisRelativeAngvelRadPerSec": 4.412447657447106e-8,
+          "maxAnchorSeparationMm": 2.7379416175773023e-11,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "gyro-roll": {
+          "name": "Roll · 8 RPM",
+          "targetRpm": 8,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00024934464065817785,
+          "maxRelativeRpmError": 0.0023810659256532835,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.00020287029462197112,
+          "maxAnchorSeparationMm": 0.0000035932103736243992,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "gyro-pitch": {
+          "name": "Flywheel spin · 16 RPM",
+          "targetRpm": 16,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000093580409017191,
+          "maxRelativeRpmError": 0.0008936270802988394,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0008622359902681029,
+          "maxAnchorSeparationMm": 5.268356063861754e-9,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        }
+      }
+    },
+    "kinetic-mobile": {
+      "fixturePath": "artifacts/kineticad/public/demos/kinetic-mobile.json",
+      "fixtureSha256": "2c53a0d18d97be89066054f4907d53c9eb56ca6a94cf9c1b55e3fd1eb0aa68dd",
+      "bodyCount": 8,
+      "jointCount": 7,
+      "meshVertices": 4432,
+      "actualTimeMs": 14999.999999999813,
+      "solverSteps": 900,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 168.1577910000001,
+        "meanStepRpcMs": 0.17669366888888868,
+        "p95StepRpcMs": 0.25,
+        "maxStepRpcMs": 0.7317920000000413
+      },
+      "joints": {
+        "mobile-crown": {
+          "name": "Crown · 4 RPM",
+          "targetRpm": 4,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000025409724626002106,
+          "maxRelativeRpmError": 0.0002426449966099258,
+          "maxOffAxisRelativeAngvelRadPerSec": 3.536461736568331e-8,
+          "maxAnchorSeparationMm": 2.9732558904629115e-10,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-left-joint": {
+          "name": "West branch · −7 RPM",
+          "targetRpm": -7,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00048098908099059035,
+          "maxRelativeRpmError": 0.004593107388772826,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0005029052914902783,
+          "maxAnchorSeparationMm": 0.0077580751560907876,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-pendant-joint-1": {
+          "name": "Medallion 1 · 12 RPM",
+          "targetRpm": 12,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.000268868442416359,
+          "maxRelativeRpmError": 0.0025675044991189293,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.0014914944108224857,
+          "maxAnchorSeparationMm": 0.009170908567003238,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-pendant-joint-2": {
+          "name": "Medallion 2 · -15 RPM",
+          "targetRpm": -15,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00024594288084212046,
+          "maxRelativeRpmError": 0.0023485815122570686,
+          "maxOffAxisRelativeAngvelRadPerSec": 6.064392367499901e-7,
+          "maxAnchorSeparationMm": 0.000032623162414804034,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-right-joint": {
+          "name": "East branch · 9 RPM",
+          "targetRpm": 9,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00019508243093324662,
+          "maxRelativeRpmError": 0.001862899991604568,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.00046066796383417,
+          "maxAnchorSeparationMm": 0.07094811318658004,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-pendant-joint-3": {
+          "name": "Medallion 3 · 18 RPM",
+          "targetRpm": 18,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.00014526091627997673,
+          "maxRelativeRpmError": 0.0013871395718409762,
+          "maxOffAxisRelativeAngvelRadPerSec": 0.000844221376407717,
+          "maxAnchorSeparationMm": 0.019444519606622947,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        },
+        "mobile-pendant-joint-4": {
+          "name": "Medallion 4 · -10 RPM",
+          "targetRpm": -10,
+          "samples": 11,
+          "maxRelativeAngularSpeedErrorRadPerSec": 0.0001302057278538271,
+          "maxRelativeRpmError": 0.00124337311240888,
+          "maxOffAxisRelativeAngvelRadPerSec": 3.8418534970573866e-7,
+          "maxAnchorSeparationMm": 0.00005013713978304001,
+          "maxDiagnosticReconstructionDifferenceRadPerSec": 0
+        }
+      }
+    },
+    "material-studio": {
+      "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
+      "fixtureSha256": "6c63fc4b60d532bd6193ae252529c8842b510bc292896756746e0f32a7102fbd",
+      "bodyCount": 9,
+      "jointCount": 8,
+      "meshVertices": 2664,
+      "actualTimeMs": 14999.999999999813,
+      "solverSteps": 900,
+      "maxFixedPositionDriftMm": 0,
+      "maxFixedQuaternionDifference": 0,
+      "solverIterations": 32,
+      "nodePerformance": {
+        "note": "Headless worker round-trip measurements include Comlink; exclude OCCT rebuild and browser rendering. Host load affects timing.",
+        "elapsedWallMs": 132.75074999999993,
+        "meanStepRpcMs": 0.13792191777778043,
+        "p95StepRpcMs": 0.1881660000001375,
+        "maxStepRpcMs": 0.5957499999999527
+      },
+      "joints": {}
+    }
+  },
+  "rapierVersion": "0.12.0",
+  "passed": true,
+  "failures": []
+}

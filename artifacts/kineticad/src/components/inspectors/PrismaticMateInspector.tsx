@@ -139,13 +139,6 @@ export default function PrismaticMateInspector() {
         Motor (optional)
       </div>
       <NumericField
-        label="Force"
-        unit="N"
-        value={editor.params.motorForceN}
-        onChange={(v) => setParams({ ...editor.params, motorForceN: v })}
-        testId="mate-motor-force"
-      />
-      <NumericField
         label="Velocity"
         unit="mm/s"
         value={editor.params.motorVelocityMmPerSec}
@@ -154,6 +147,10 @@ export default function PrismaticMateInspector() {
         }
         testId="mate-motor-velocity"
       />
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Ideal velocity drive. Blank or 0 switches the motor off and leaves
+        the joint free to move. Force limits are not modelled.
+      </p>
     </MateInspectorShell>
   );
 }

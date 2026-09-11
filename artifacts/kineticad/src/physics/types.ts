@@ -31,6 +31,8 @@ export type PartDescriptor = {
   massKg: number;
   comLocal: [number, number, number];
   principalInertiaKgMm2: [number, number, number];
+  /** Quaternion rotating the inertia principal axes into part-local axes. */
+  principalInertiaLocalFrame: [number, number, number, number];
   isGround: boolean;
 };
 
@@ -103,6 +105,9 @@ export type UpdateJointMotorResult =
 export type PhysicsApi = {
   init: () => Promise<PhysicsInitResult>;
   buildWorld: (args: BuildWorldArgs) => Promise<BuildWorldResult>;
+  /** Accumulate requested time, advance fixed substeps, and report actual
+   * simulated duration. Undefined requests one configured step; zero advances
+   * nothing. Excess catch-up time is retained across calls. */
   step: (scaledDtMs?: number) => Promise<StepResult>;
   /**
    * Phase 9 — update an existing joint's motor parameters live.

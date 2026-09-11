@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-11",
+  "browser": "Chrome",
+  "url": "http://localhost:5184/app/simulator",
+  "bundles": ["Scene-BW8mnfhS.js", "cadWorker-DuilWpZn.js", "physicsWorker-D4Fkel5t.js"],
+  "sampling": "Once per simulated second per driven joint, after at least five seconds. These are sampled maxima, not every-step maxima.",
+  "publicDeploymentVerified": false,
+  "orrery": {
+    "samples": 204,
+    "joints": ["mate-planet-1", "mate-planet-2", "mate-planet-3", "mate-planet-4", "mate-planet-5", "mate-planet-6", "mate-planet-7", "mate-planet-8", "mate-moon-1", "mate-moon-2", "mate-moon-3", "mate-ring"],
+    "firstSampleMs": 5000,
+    "lastSampleMs": 21000,
+    "maxMotorErrorRadPerSec": 0.011320938269443914,
+    "maxAnchorMm": 0.00011784032716373853,
+    "maxOffAxisRadPerSec": 0.001593738148194848
+  },
+  "gimbal": {
+    "samples": 93,
+    "joints": ["gyro-yaw", "gyro-roll", "gyro-pitch"],
+    "firstSampleMs": 5000,
+    "lastSampleMs": 35000,
+    "maxMotorErrorRadPerSec": 0.0002504656099847624,
+    "maxAnchorMm": 2.317538453742768e-7,
+    "maxOffAxisRadPerSec": 0.0008622421620166254
+  },
+  "windmill": {
+    "samples": 5,
+    "joints": ["mate-rev-1"],
+    "firstSampleMs": 5000,
+    "lastSampleMs": 9000,
+    "maxMotorErrorRadPerSec": 8.742278057027875e-8,
+    "maxAnchorMm": 3.155322492793356e-10,
+    "maxOffAxisRadPerSec": 4.6813401978727065e-8,
+    "maxOriginalMagnitudeErrorRadPerSec": 8.742278012618954e-8
+  },
+  "mobile": {
+    "samples": 112,
+    "joints": ["mobile-crown", "mobile-left-joint", "mobile-pendant-joint-1", "mobile-pendant-joint-2", "mobile-right-joint", "mobile-pendant-joint-3", "mobile-pendant-joint-4"],
+    "firstSampleMs": 5000,
+    "lastSampleMs": 20000,
+    "maxMotorErrorRadPerSec": 0.00048098908099059035,
+    "maxAnchorMm": 0.0003046494138823267,
+    "maxOffAxisRadPerSec": 0.0014914944108224857
+  },
+  "materialStudio": {
+    "renderedParts": 9,
+    "fixedJoints": 8,
+    "observedPausedTimeSeconds": 31.93,
+    "massSamples": 8,
+    "maxRelativeMassTransferError": 4.612089206854731e-8,
+    "note": "All eight samples remained visibly mounted. Fixed-joint drift is measured separately in demo-physics-results.json; browser motor logs do not cover fixed joints."
+  }
+}
