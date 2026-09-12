@@ -6,7 +6,7 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import StoryPage from "./pages/StoryPage";
 import NotFound from "./pages/not-found";
-import { isDesktopSupported } from "../../shared/desktopSupport";
+import { isDesktopSupported } from "../../shared/desktopSupport.mts";
 
 function ScrollToTop() {
   const [location] = useLocation();

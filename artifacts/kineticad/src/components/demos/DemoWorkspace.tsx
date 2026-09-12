@@ -44,7 +44,7 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
   const requestId = useRef(0);
   const originalRoute = useRef('/');
   const activeRef = useRef<Demo | null>(null);
-  const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open);
+  const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.sketchDimensionsEditing || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open);
   const editing = blocked || pendingFiles > 0;
   const setFileBusy = (busy: boolean) => {
     pendingFilesRef.current = Math.max(0, pendingFilesRef.current + (busy ? 1 : -1));
@@ -74,7 +74,7 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
       const document = parseDemoDocument(await response.json());
       if (token !== requestId.current) return;
       const current = useKinetiCADStore.getState();
-      if (pendingFilesRef.current > 0 || current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+      if (pendingFilesRef.current > 0 || current.sketchSession.active || current.sketchDimensionsEditing || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
         throw new Error('Finish your current edit or file operation before opening the demo.');
       }
       if (!activeRef.current) originalRoute.current = location;
@@ -120,7 +120,7 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
 
   function applyCrankSlider(params: CrankSliderParams) {
     const current = useKinetiCADStore.getState();
-    if (pendingFilesRef.current > 0 || current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+    if (pendingFilesRef.current > 0 || current.sketchSession.active || current.sketchDimensionsEditing || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
       throw new Error('Finish your current edit or file operation first.');
     }
     if (current.simulation.running) throw new Error('Reset the simulation before changing the mechanism.');

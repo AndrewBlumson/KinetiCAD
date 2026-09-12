@@ -4,7 +4,7 @@ Started 12 September 2026 from `81fd123`. Repository is private while developmen
 
 The user requested one item at a time, with a stop after each completed item for their own testing. Do not begin the following item until that testing is complete and the user asks to continue.
 
-## 1. Adjustable crank-slider — ready for user testing
+## 1. Adjustable crank-slider — implemented
 
 - [x] Build a native editable assembly with a driven crank, passive connecting rod and guided slider.
 - [x] Add bounded radius, rod-length and speed controls without overwriting the original project.
@@ -12,13 +12,25 @@ The user requested one item at a time, with a stop after each completed item for
 - [x] Check support geometry, joint closure, limiting dimensions, both drive directions and timestep refinement.
 - [x] Verify Save/Load, parameter edits, pause/reset and actual Chrome interaction.
 - [x] Run regressions and build; record measured errors and model limits. **195/195 tests passed; full build passed.**
-- [ ] User acceptance: try this completed item before another stage begins.
+- [x] User authorised continuation to sketch dimensions on 12 September 2026; this records permission to continue, not a claim of formal engineering acceptance.
 
-See the [numerical verification](CRANK-SLIDER-VERIFICATION.md), [Chrome matrix](CRANK-SLIDER-CHROME-2026-09-12.md) and [source/build evidence](crank-slider-validation.json). Implementation stops here for the user's testing.
+See the [numerical verification](CRANK-SLIDER-VERIFICATION.md), [Chrome matrix](CRANK-SLIDER-CHROME-2026-09-12.md) and [source/build evidence](crank-slider-validation.json).
+
+## 2. Persistent editable sketch dimensions — ready for user testing
+
+Authorised by the user on 12 September 2026. The dev server is running on port 5184.
+
+- [x] Add numeric editing for existing circle, rectangle, line and arc geometry, with explicit millimetres/degrees.
+- [x] Keep the last valid model if an edit breaks the part's feature chain or dependent assembly geometry.
+- [x] Preserve the sketch dimensions through Save/Load and recovery without changing the existing project format.
+- [x] Verify geometric equations against independently measured OpenCascade solids and test failed/stale edits.
+- [x] Exercise the actual Chrome editor, exports/reload and input errors, then run regression/build checks. **237/237 tests and the full build passed.**
+- [ ] User testing: implementation stops at this stage until the user asks to continue.
+
+See [sketch dimensions verification](SKETCH-DIMENSIONS-VERIFICATION.md) for measured results, tolerances, browser checks and limitations.
 
 ## Following stages — not started
 
-- Persistent editable sketch dimensions.
 - Direct simulation of finished assembly Boolean shapes.
 - A local draw-a-path mechanism optimiser with an explicit supported mechanism family.
 - Assembly motor force limits and load behaviour, then validated contact and bearing friction in separate stages.

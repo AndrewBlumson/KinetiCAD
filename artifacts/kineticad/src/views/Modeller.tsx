@@ -38,6 +38,7 @@ export default function Modeller() {
   const { activeDemo, revision, setFileBusy } = useDemoWorkspace();
   const assembly = useKinetiCADStore((s) => s.assembly);
   const sketchSession = useKinetiCADStore((s) => s.sketchSession);
+  const sketchDimensionsEditing = useKinetiCADStore((s) => s.sketchDimensionsEditing);
   const beginSketch = useKinetiCADStore((s) => s.beginSketch);
   const selection = useKinetiCADStore((s) => s.selection);
   const featureEditor = useKinetiCADStore((s) => s.featureEditor);
@@ -66,12 +67,12 @@ export default function Modeller() {
   const [projectBusy, setProjectBusy] = useState(false);
   const fileOperation = useRef(false);
   const recovery = useProjectRecovery();
-  const exportEditorOpen = sketchSession.active || featureEditor.open || booleanEditor.open || mateEditor.open;
+  const exportEditorOpen = sketchSession.active || sketchDimensionsEditing || featureEditor.open || booleanEditor.open || mateEditor.open;
   const exportDisabled = exportEditorOpen || projectBusy || exporting || exportingStep || importingStep;
   const captureExportAssembly = () => {
     const current = useKinetiCADStore.getState();
     if (fileOperation.current) return null;
-    if (current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+    if (current.sketchSession.active || current.sketchDimensionsEditing || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
       toast.error('Apply or cancel the current edit before exporting.');
       return null;
     }
@@ -125,7 +126,7 @@ export default function Modeller() {
     }
   };
   const handleImportStep = async (file: File) => {
-    if (fileOperation.current) return;
+    if (fileOperation.current || useKinetiCADStore.getState().sketchDimensionsEditing) return;
     fileOperation.current = true;
     setProjectBusy(true);
     setFileBusy(true);
@@ -185,7 +186,7 @@ export default function Modeller() {
   };
 
   const handleSaveModel = async () => {
-    if (fileOperation.current) return;
+    if (fileOperation.current || useKinetiCADStore.getState().sketchDimensionsEditing) return;
     fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
     try {
       const state = useKinetiCADStore.getState();
@@ -200,7 +201,7 @@ export default function Modeller() {
   };
 
   const handleLoadModel = async (file: File) => {
-    if (activeDemo || fileOperation.current) return;
+    if (activeDemo || fileOperation.current || useKinetiCADStore.getState().sketchDimensionsEditing) return;
     fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
     try {
       if (file.size > 100 * 1024 * 1024) throw new Error('Project exceeds the 100 MB file limit.');
@@ -216,7 +217,7 @@ export default function Modeller() {
   };
 
   const handleRecoverPrevious = async () => {
-    if (activeDemo || fileOperation.current) return;
+    if (activeDemo || fileOperation.current || useKinetiCADStore.getState().sketchDimensionsEditing) return;
     fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
     try {
       const document = await projectPersistence.recoverPrevious();
@@ -430,8 +431,9 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Import STEP"
-              description="Add solid geometry from a STEP (.step or .stp) file to this assembly. Original CAD history and joints are not imported."
+              description={sketchDimensionsEditing ? 'Apply or cancel sketch dimensions before importing.' : 'Add solid geometry from a STEP (.step or .stp) file to this assembly. Original CAD history and joints are not imported.'}
               icon={Upload}
+              disabled={sketchDimensionsEditing}
               busy={importingStep}
               onClick={() => stepFileInputRef.current?.click()}
               testId="import-step"
@@ -460,8 +462,9 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Save project"
-              description="Download a complete editable KinetiCAD project, including sketches, features, materials, transforms, joints and embedded STEP geometry."
+              description={sketchDimensionsEditing ? 'Apply or cancel sketch dimensions before saving.' : 'Download a complete editable KinetiCAD project, including sketches, features, materials, transforms, joints and embedded STEP geometry.'}
               icon={Download}
+              disabled={sketchDimensionsEditing}
               busy={projectBusy}
               onClick={handleSaveModel}
               testId="save-model"
@@ -469,11 +472,11 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Load project"
-              description={activeDemo
+              description={sketchDimensionsEditing ? 'Apply or cancel sketch dimensions before loading a project.' : activeDemo
                 ? 'Return to your model before loading a project. Load opens an editable KinetiCAD .json file and replaces the current project.'
                 : 'Open a saved KinetiCAD project (.json), replacing the current project with its sketches, features and joints.'}
               icon={Upload}
-              disabled={!!activeDemo || projectBusy}
+              disabled={!!activeDemo || projectBusy || sketchDimensionsEditing}
               onClick={() => modelFileInputRef.current?.click()}
               testId="load-model"
             />
@@ -489,7 +492,7 @@ export default function Modeller() {
       <DemoWorkspaceBar />
       {!activeDemo && <div className="flex shrink-0 items-center justify-between border-b border-border bg-card px-3 py-1 text-[11px] text-muted-foreground" aria-label="Project recovery status">
         <span>{recovery.status === 'saving' ? 'Saving recovery copy…' : recovery.status === 'error' ? 'Autosave needs attention — download your project' : recovery.savedAt ? 'Recovery copy saved on this device' : 'Autosave ready'}</span>
-        <button type="button" className="underline hover:text-foreground disabled:opacity-40" disabled={projectBusy || !recovery.hasPrevious} title={recovery.hasPrevious ? 'Open the previous complete recovery copy' : 'A previous recovery copy becomes available after a second successful save'} onClick={handleRecoverPrevious}>Recover previous project</button>
+        <button type="button" className="underline hover:text-foreground disabled:opacity-40" disabled={projectBusy || sketchDimensionsEditing || !recovery.hasPrevious} title={recovery.hasPrevious ? 'Open the previous complete recovery copy' : 'A previous recovery copy becomes available after a second successful save'} onClick={handleRecoverPrevious}>Recover previous project</button>
       </div>}
 
       {/* Main area */}

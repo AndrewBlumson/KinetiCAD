@@ -1,0 +1,103 @@
+{
+  "generatedAt": "2026-09-12T15:48:15.770Z",
+  "passed": true,
+  "sources": {
+    "step": {
+      "path": "fixtures/sketch-dimensions/edited-cylinder.step",
+      "bytes": 5753,
+      "sha256": "3993aed155347986ee03beddc69daee15e5e266539533b76ec529b7ca27a8163"
+    },
+    "stl": {
+      "path": "fixtures/sketch-dimensions/edited-cylinder.stl",
+      "bytes": 7684,
+      "sha256": "26d0c0f5c74c607f78386f2ef613488236361c38a4b74992fa48449ecf08cce7"
+    }
+  },
+  "reference": {
+    "diameterMm": 30,
+    "depthMm": 10,
+    "volumeMm3": 7068.583470577035,
+    "boundsMm": {
+      "min": [
+        -15,
+        -15,
+        0
+      ],
+      "max": [
+        15,
+        15,
+        10
+      ]
+    },
+    "centreOfMassMm": [
+      0,
+      0,
+      5
+    ]
+  },
+  "tolerances": {
+    "stepVolumeMm3": 1e-06,
+    "stepBoundsMm": 1e-06,
+    "stepComMm": 1e-06,
+    "stlVertexWeldMm": 1e-05,
+    "stlBoundsMm": 0.10001,
+    "stlZBoundsMm": 1e-05,
+    "stlVertexRadiusMm": 1e-05,
+    "stlRelativeVolume": 0.013289888888889016,
+    "stlPolygonVolumeMm3": 0.002
+  },
+  "scope": "Actual browser downloads. STEP reimport and mass/bounds use the shipped CAD worker with installed OCCT. STL checks oriented triangle volume, dimensions, one connected closed consistently oriented two-manifold after 1e-5 mm welding, plus the analytical cylinder polygon approximation. This is bounded cylinder verification, not a general mesh self-intersection proof.",
+  "stlVolumeToleranceDerivation": "With radius R=15 mm and export linear deflection e=0.1 mm, an inscribed polygon bounded between radii R-e and R has relative cross-section/volume deficit at most 1-(1-e/R)^2 = 0.0132888889. Add 1e-6 for float32 arithmetic. Also compare independently with the polygonal prism from the actual circumference samples within 0.002 mm3.",
+  "stl": {
+    "triangleCount": 152,
+    "weldedVertexCount": 78,
+    "edgeCount": 228,
+    "eulerCharacteristic": 2,
+    "connectedShells": 1,
+    "closedTwoManifold": true,
+    "consistentWinding": true,
+    "boundaryEdges": 0,
+    "nonManifoldEdges": 0,
+    "minimumTwiceTriangleAreaMm2": 0.9347757362979792,
+    "orientedVolumeMm3": 7038.045012438362,
+    "relativeVolumeError": 0.0043203080597107955,
+    "boundsMm": {
+      "min": [
+        -14.951359748840332,
+        -14.987834930419922,
+        0
+      ],
+      "max": [
+        15,
+        14.987834930419922,
+        10
+      ]
+    },
+    "circumferenceSampleCount": 39,
+    "maxChordSagMm": 0.04864039167536305,
+    "polygonPrismVolumeMm3": 7038.044947634227
+  },
+  "step": {
+    "bodyCount": 1,
+    "volumeMm3": 7068.583470577036,
+    "absoluteVolumeErrorMm3": 9.094947017729282e-13,
+    "boundsMm": {
+      "min": [
+        -15.0000001,
+        -15.0000001,
+        -1e-07
+      ],
+      "max": [
+        15.0000001,
+        15.0000001,
+        10.0000001
+      ]
+    },
+    "centreOfMassMm": [
+      -2.3160092400488112e-15,
+      -7.756758198713547e-17,
+      5.000000000000001
+    ],
+    "massKgAtDensity1gCm3": 0.0070685834705770355
+  }
+}

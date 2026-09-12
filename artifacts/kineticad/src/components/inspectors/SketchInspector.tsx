@@ -3,14 +3,21 @@
 // a revolve. Both call `beginCreateFeature`, which opens the corresponding
 // FeatureInspector with default parameters.
 
+import { useState } from "react";
 import { useKinetiCADStore } from "@/state/store";
 import type { Part, Sketch } from "@/state/schemas";
+import { dimensionFields } from '@/sketch/sketchDimensions';
+import SketchDimensionsEditor from './SketchDimensionsEditor';
 
 function planeLabel(plane: Sketch["plane"]): string {
   return typeof plane === "string" ? plane : "Custom";
 }
 
-export default function SketchInspector({
+export default function SketchInspector(props: { part: Part; sketch: Sketch }) {
+  return <SketchInspectorBody key={`${props.part.id}:${props.sketch.id}:${JSON.stringify(props.sketch.primitives)}`} {...props} />;
+}
+
+function SketchInspectorBody({
   part,
   sketch,
 }: {
@@ -18,6 +25,7 @@ export default function SketchInspector({
   sketch: Sketch;
 }) {
   const beginCreateFeature = useKinetiCADStore((s) => s.beginCreateFeature);
+  const [editing, setEditing] = useState(false);
 
   const onExtrude = () =>
     beginCreateFeature(part.id, sketch.id, "extrude");
@@ -38,6 +46,22 @@ export default function SketchInspector({
         </div>
       </div>
 
+      {editing ? <SketchDimensionsEditor part={part} sketch={sketch} onClose={() => setEditing(false)} /> : <>
+      <section aria-label="Saved sketch dimensions" className="flex flex-col gap-2 border-y border-border py-3">
+        <h3 className="text-xs font-semibold">Sketch dimensions</h3>
+        <div className="max-h-48 overflow-y-auto text-xs">
+          {sketch.primitives.map((primitive, index) => <div key={index} className="mb-2 last:mb-0">
+            <p className="mb-1 capitalize text-orange-300">{primitive.type} {index + 1}</p>
+            <dl className="grid grid-cols-[1fr_auto] gap-x-2 gap-y-1 text-muted-foreground">
+              {dimensionFields(primitive).map(field => <div key={field.key} className="contents">
+                <dt>{field.label}</dt><dd className="text-right font-technical">{Number(field.value.toPrecision(8))} {field.unit}</dd>
+              </div>)}
+            </dl>
+          </div>)}
+        </div>
+        <button type="button" onClick={() => setEditing(true)} disabled={sketch.primitives.length === 0 || typeof sketch.plane !== 'string'}
+          className="min-h-9 rounded border border-orange-400/50 px-2 text-xs text-orange-300 hover:bg-orange-400/10 disabled:opacity-40">Edit dimensions</button>
+      </section>
       <div className="flex flex-col gap-1">
         <div className="font-technical text-[10px] uppercase tracking-widest text-muted-foreground">
           Create feature from this sketch
@@ -59,6 +83,7 @@ export default function SketchInspector({
           Revolve
         </button>
       </div>
+      </>}
     </div>
   );
 }

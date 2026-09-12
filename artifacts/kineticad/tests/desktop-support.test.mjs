@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isDesktopSupported } from '../../shared/desktopSupport.ts';
+import { isDesktopSupported } from '../../shared/desktopSupport.mts';
 
 const desktop = {
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36',

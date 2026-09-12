@@ -32,8 +32,8 @@ export default function Simulator() {
   const hasAssemblyBooleans = useKinetiCADStore((s) => s.assembly.booleanFeatures.length > 0);
   const forceCompleted = useForceMeasurements((s) => s.completed);
   const forceExperiment = simulation.forceExperiment;
-  const isStewart = activeDemo?.id === 'stewart-platform' || !!simulation.stewartMotion;
-  const isCrankSlider = !!simulation.crankSlider;
+  const isStewart = !simulation.sketchGeometryEdited && (activeDemo?.id === 'stewart-platform' || !!simulation.stewartMotion);
+  const isCrankSlider = !simulation.sketchGeometryEdited && !!simulation.crankSlider;
   const duration = forceExperiment?.durationMs ?? (simulation.stewartMotion
     ? simulation.stewartMotion.moveDurationMs + simulation.stewartMotion.settleDurationMs : simulation.durationMs);
   const completed = forceCompleted || !!(duration && simulation.running && simulation.paused
@@ -106,6 +106,9 @@ export default function Simulator() {
         <SimStatus running={isRunning} paused={isPaused} completed={completed} />
       </header>
       <DemoWorkspaceBar />
+      {(activeDemo?.id === 'stewart-platform' || activeDemo?.id === 'crank-slider') && simulation.sketchGeometryEdited && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-2 text-xs leading-relaxed text-orange-200">
+        This demo’s sketch dimensions have changed. Its original motion presets and reference comparisons are disabled. Reset the demo to restore them.
+      </p>}
       {hasAssemblyBooleans && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-3 text-xs leading-relaxed text-orange-200">
         Assembly Boolean results are not ready for rigid-body simulation. Export the final assembly as STEP in the Modeller, then import those solids and define their materials and joints. Native cuts within a part already simulate normally.
       </p>}

@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { isDesktopSupported } from "../../shared/desktopSupport";
+import { isDesktopSupported } from "../../shared/desktopSupport.mts";
 import { DesktopRequired } from "./DesktopRequired";
 import "./index.css";
 

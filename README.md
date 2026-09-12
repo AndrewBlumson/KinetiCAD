@@ -97,7 +97,7 @@ and elastic-limit failures. It does not deform the CAD mesh or provide general
 finite-element analysis. [Elastic beam scope and verification](docs/ELASTIC-BEAM.md)
 documents the equations, units, omitted effects and seven passing tests.
 
-## Adjustable crank-slider — next stage
+## Adjustable crank-slider
 
 The new **Crank-slider** workspace adds one editable four-part mechanism: a
 powered crank, passive connecting rod and guided slider on a grounded bed.
@@ -112,14 +112,30 @@ scenarios and 864 sampled geometric intersections. The interface reports mean
 acceleration; finer single-step derivative errors remain explicitly documented.
 The [local Chrome checks](docs/CRANK-SLIDER-CHROME-2026-09-12.md) cover motion,
 parameter changes, pause/reset and the actual Save/Load/refresh path.
-**User testing is pending before further feature work**. See
+See
 [Crank-slider equations, limits and verification](docs/CRANK-SLIDER-VERIFICATION.md).
+
+## Editable sketch dimensions — ready to try
+
+Select a finished sketch in the parts tree, choose **Edit dimensions**, enter
+millimetres or degrees, then **Apply dimensions**. Circles, rectangles, lines
+and arcs retain their measurements through project downloads and recovery.
+The app rebuilds the affected features before accepting an edit; failed geometry
+or a changed joint attachment keeps the saved model intact. Connected endpoints
+must be edited together; automatic sketch constraints are still future work.
+
+The current serialized suite passes **237/237 tests**, including 33 new dimension,
+actual OpenCascade and edit-transaction checks. Chrome checks cover numeric input,
+connected profiles, rejected edits, Save/Load, recovery and actual STEP/STL downloads.
+See [measurements, tolerances and browser evidence](docs/SKETCH-DIMENSIONS-VERIFICATION.md).
+This addition is ready for user testing before the next CAD stage.
 
 ## What works
 
 Modeller:
 
 - Sketching on the global XY, XZ and YZ planes (line, rectangle, three-point arc, circle) with a snap engine
+- Persistent numeric editing of finished sketches, with dependent-feature rebuild and joint-attachment checks
 - Extrude and Revolve features, with forward, backward and symmetric extrude directions
 - Modifier features: Fillet, Chamfer, Hole
 - Boolean operations at assembly level: Union, Subtract, Intersect
@@ -295,7 +311,6 @@ Pull requests are welcome. The most useful contributions:
 - IGES import and export for wider CAD interop
 - Undo/redo via Zustand history middleware
 - WebGL2 fallback for browsers without WebGPU
-- Mobile responsive layout
 - 3D click-to-select on boolean result meshes
 
 The remaining mechanism-workbench direction is future work: persistent sketch

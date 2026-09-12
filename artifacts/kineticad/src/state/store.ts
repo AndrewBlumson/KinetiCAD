@@ -29,6 +29,8 @@ import type {
 } from "./schemas";
 import type { CardinalPlane } from "@/sketch/plane";
 import type { EdgeType, FaceType } from "@/cad/types";
+import { validateSketchDimensions } from '../sketch/sketchDimensions';
+import { sketchEditAssemblySignature, sketchEditPrimitivesSignature } from '../sketch/sketchEditSource';
 
 export type SketchTool = "idle" | "line" | "rectangle" | "circle" | "arc";
 
@@ -366,6 +368,8 @@ export type KinetiCADStore = {
   assembly: Assembly;
   simulation: SimulationState;
   sketchSession: SketchSession;
+  /** Transient explicit dimensions editor; blocks file actions, never saved. */
+  sketchDimensionsEditing: boolean;
   selection: Selection;
   featureEditor: FeatureEditor;
   /** Phase 5 boolean editor (separate slice from featureEditor). */
@@ -404,6 +408,9 @@ export type KinetiCADStore = {
   commitPrimitive: (primitive: SketchPrimitive) => void;
   finishSketch: () => void;
   cancelSketch: () => void;
+  setSketchDimensionsEditing: (editing: boolean) => void;
+  /** Atomic final commit after the sketch-edit coordinator validates CAD. */
+  updateSketch: (partId: string, sketchId: string, primitives: SketchPrimitive[], expectedSource: Sketch, expectedAssemblySignature: string) => void;
 
   selectPart: (partId: string) => void;
   selectSketch: (partId: string, sketchId: string) => void;
@@ -646,6 +653,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       assembly: defaultAssembly,
       simulation: defaultSimulation,
       sketchSession: defaultSketchSession,
+      sketchDimensionsEditing: false,
       selection: null,
       featureEditor: defaultFeatureEditor,
       booleanEditor: defaultBooleanEditor,
@@ -777,6 +785,39 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
       },
 
       cancelSketch: () => set({ sketchSession: defaultSketchSession }),
+
+      setSketchDimensionsEditing: (editing) => set({ sketchDimensionsEditing: editing }),
+
+      updateSketch: (partId, sketchId, primitives, expectedSource, expectedAssemblySignature) => {
+        validateSketchDimensions(primitives);
+        const nextPrimitives = structuredClone(primitives);
+        set((state) => {
+          if (!state.sketchDimensionsEditing || state.mode !== 'modeller' || state.simulation.running
+            || state.sketchSession.active || state.featureEditor.open || state.booleanEditor.open || state.mateEditor.open) {
+            throw new Error('The dimensions editor is no longer ready. Finish other edits and reset the simulation first.');
+          }
+          const part = state.assembly.parts.find(item => item.id === partId);
+          const current = part?.sketches.find(item => item.id === sketchId);
+          if (!part || current !== expectedSource || sketchEditAssemblySignature(state.assembly) !== expectedAssemblySignature) {
+            throw new Error('The model changed while checking these dimensions. Reopen the sketch and try again.');
+          }
+          const { meshHash: _hash, volumeCm3: _volume, massKg: _mass, ...sourcePart } = part;
+          const changed = sketchEditPrimitivesSignature(current.primitives) !== sketchEditPrimitivesSignature(nextPrimitives);
+          if (!changed) return { sketchDimensionsEditing: false };
+          const updated: Part = { ...sourcePart, sketches: part.sketches.map(sketch =>
+            sketch.id === sketchId ? { ...sketch, primitives: nextPrimitives } : sketch) };
+          return {
+            assembly: { ...state.assembly, parts: state.assembly.parts.map(item => item.id === partId ? updated : item) },
+            simulation: { ...state.simulation, running: false, paused: false, simulationTimeMs: 0,
+              crankSlider: undefined, stewartMotion: undefined, sketchGeometryEdited: true },
+            sketchDimensionsEditing: false,
+            selection: { kind: 'sketch', partId, sketchId },
+            pickingMode: 'idle',
+            pickFilter: null,
+            featurePreview: defaultFeaturePreview,
+          };
+        });
+      },
 
       selectPart: (partId) =>
         set({ selection: { kind: "part", partId } }),

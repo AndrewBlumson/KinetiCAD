@@ -1,0 +1,111 @@
+{
+  "recordedAt": "2026-09-12T15:55:09.020112+00:00",
+  "baselineCommit": "d7b5204975bc89f8f8c5f2d6660031fab77ea6c6",
+  "scope": "Editable sketch dimensions, desktop ESM runner compatibility and explicit favicon. Final favicon-only edit rebuilt after full regression suite; no physics or dimension implementation changes after that suite.",
+  "tests": {
+    "passed": 237,
+    "failed": 0,
+    "skipped": 0,
+    "newDimensionTests": 33
+  },
+  "builds": {
+    "workspace": true,
+    "landingRoot": true,
+    "finalCad": true
+  },
+  "sourceSha256": {
+    "artifacts/kineticad/index.html": "7716c2e60c330a4815dbabae408e7205d191673a70d0348ba1c3ad0303f980af",
+    "artifacts/kineticad/public/favicon.ico": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+    "artifacts/kineticad/src/components/demos/DemoWorkspace.tsx": "2d30a8729ed3a3825b6a6a293008548ccea4b2055ccc32ca4f8892d0060c7122",
+    "artifacts/kineticad/src/components/inspectors/SketchDimensionsEditor.tsx": "5911b60ebd0846f0a8f9cb6caa0a835357d64a8c74e60ef20b8e0473d3d14a1b",
+    "artifacts/kineticad/src/components/inspectors/SketchInspector.tsx": "830698324befe2e517a0aa06c0e3d4738f4ed235ac11b79012b11d8a3af1d60a",
+    "artifacts/kineticad/src/main.tsx": "e3321ce241b45ece4b5fde9b7e1b7a0f3fa903f656ad46dc0e9911301db09ffe",
+    "artifacts/kineticad/src/sketch/sketchDimensions.ts": "eb086f6a20e5895539e2f3ad16f44f59c276815137902c7fe0a022aed97dc98c",
+    "artifacts/kineticad/src/sketch/sketchEdit.ts": "a5a6a696ae21b8e6b0f8c776997ece719b8885f48b2956eb023242d1d0b6677f",
+    "artifacts/kineticad/src/sketch/sketchEditSource.ts": "30081644874eecee3da7c95eac12c25af13ab01e13ca2dc6325086ee779c3798",
+    "artifacts/kineticad/src/state/schemas.ts": "c68a4fe9e2839b5f76f360c583d13dfafb86eb4905585995b83e60f5b1e3bbe4",
+    "artifacts/kineticad/src/state/store.ts": "836ce85f639e0ebd592d1815a4b0e2be54e86d64f1567d70499a0a9c6a7234e4",
+    "artifacts/kineticad/src/views/Modeller.tsx": "fa27c3e9d839aa4f0e6eab66e0010e9bccaa5a7397f31c5f391fd5f1344c411c",
+    "artifacts/kineticad/src/views/Simulator.tsx": "2ae9059b2c9805d22c402307c0dd503baf6d965ec379ccb810d9ee16b60115eb",
+    "artifacts/kineticad/tests/desktop-support.test.mjs": "899d9d1fb93f07f156a6f71e44e5437c4510239da21b3502a54c6bf49751e3c0",
+    "artifacts/kineticad/tests/sketch-dimensions-cad.test.mjs": "4042ce7e9ab660b2f677995055534f9ccbb714886a808c4b9924a5b11c622d9a",
+    "artifacts/kineticad/tests/sketch-dimensions.test.mjs": "2255309d2aba5017ef1883e2f7eb4d4d87469f61a8de134716acab0fe90922e3",
+    "artifacts/kineticad/tests/sketch-edit.test.mjs": "62975ccff38ca2f4b7675d35c12ca7fa7e14daf75c386c614843814d50d99a4a",
+    "artifacts/landing/src/App.tsx": "d1b5d15ebc64b830a70983f0e881ed5ed8e467f34cd5ce0800f4a0d3d755fe49",
+    "artifacts/shared/desktopSupport.mts": "1fd4c111e197af258945e77e399ffb416a15ad1ec68a80ef4e9e96fa74235488"
+  },
+  "logs": {
+    "regressions": {
+      "sha256": "893f5806305867b68e2b629dd823469169121a7fdb7ba2c38afba08e0f012375",
+      "tail": [
+        "\u2714 insufficient subdivision and an enlarged unsafe range fail explicitly (3.566875ms)",
+        "\u2714 independent Rodrigues progress matches exact quaternion axis-angle interpolation at intermediate poses (2.541125ms)",
+        "\u2714 all 64 extreme home-to-target paths are enclosed between progress samples (230.725291ms)",
+        "\u2714 exact target solid placements close spherical endpoints and encode independent rod extension (4.023166ms)",
+        "\u2139 tests 237",
+        "\u2139 suites 0",
+        "\u2139 pass 237",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0",
+        "\u2139 duration_ms 133438.490792"
+      ]
+    },
+    "workspaceBuild": {
+      "sha256": "5f1be699fffd1ecf9cc150eee6f1a922d55771e36ee4b51867d406ee77b9bbe2",
+      "tail": [
+        "artifacts/kineticad build: dist/public/assets/Simulator-jKwCe_OY.js                  45.80 kB \u2502 gzip:  14.13 kB",
+        "artifacts/kineticad build: dist/public/assets/Modeller-DZtl1kkG.js                  163.75 kB \u2502 gzip:  43.86 kB",
+        "artifacts/kineticad build: dist/public/assets/index-D_nz1c9h.js                     190.09 kB \u2502 gzip:  60.48 kB",
+        "artifacts/kineticad build: dist/public/assets/partMeshLayerRef-Dys54lPr.js          202.57 kB \u2502 gzip:  53.49 kB",
+        "artifacts/kineticad build: dist/public/assets/App-BWWqm9n5.js                       245.32 kB \u2502 gzip:  72.87 kB",
+        "artifacts/kineticad build: dist/public/assets/Scene-3QH81GGT.js                     664.04 kB \u2502 gzip: 188.26 kB",
+        "artifacts/kineticad build: (!) Some chunks are larger than 500 kB after minification. Consider:",
+        "artifacts/kineticad build: - Using dynamic import() to code-split the application",
+        "artifacts/kineticad build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks",
+        "artifacts/kineticad build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+        "artifacts/kineticad build: \u2713 built in 5.59s",
+        "artifacts/kineticad build: Done"
+      ]
+    },
+    "landingRootBuild": {
+      "sha256": "36828371dc3d3030e86960a41b13699f3298739033d6fd5865aca03e825cb15d",
+      "tail": [
+        "> @workspace/landing@0.0.0 build /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/landing",
+        "> vite build --config vite.config.ts",
+        "",
+        "vite v7.3.2 building client environment for production...",
+        "transforming...",
+        "\u2713 1701 modules transformed.",
+        "rendering chunks...",
+        "computing gzip size...",
+        "dist/public/index.html                   3.51 kB \u2502 gzip:  1.18 kB",
+        "dist/public/assets/index-Bemv5L0o.css   66.29 kB \u2502 gzip: 12.10 kB",
+        "dist/public/assets/index-DOqI8DEV.js   224.01 kB \u2502 gzip: 70.99 kB",
+        "\u2713 built in 1.92s"
+      ]
+    },
+    "finalCadIconBuild": {
+      "sha256": "5b18503a742d5a52b210fd6bbde6b76fecf85ea5553e68e2b8b2a4eed7d5cb5e",
+      "tail": [
+        "dist/public/assets/Simulator-jKwCe_OY.js                  45.80 kB \u2502 gzip:  14.13 kB",
+        "dist/public/assets/Modeller-DZtl1kkG.js                  163.75 kB \u2502 gzip:  43.86 kB",
+        "dist/public/assets/index-D_nz1c9h.js                     190.09 kB \u2502 gzip:  60.48 kB",
+        "dist/public/assets/partMeshLayerRef-Dys54lPr.js          202.57 kB \u2502 gzip:  53.49 kB",
+        "dist/public/assets/App-BWWqm9n5.js                       245.32 kB \u2502 gzip:  72.87 kB",
+        "dist/public/assets/Scene-3QH81GGT.js                     664.04 kB \u2502 gzip: 188.26 kB",
+        "",
+        "(!) Some chunks are larger than 500 kB after minification. Consider:",
+        "- Using dynamic import() to code-split the application",
+        "- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks",
+        "- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+        "\u2713 built in 4.85s"
+      ]
+    }
+  },
+  "browserReport": "SKETCH-DIMENSIONS-VERIFICATION.md",
+  "exports": "sketch-dimensions-export-results.json",
+  "publicDeployment": false,
+  "userAcceptance": "pending"
+}
