@@ -1,8 +1,11 @@
+import { CreatorProfile } from './CreatorProfile';
+import { SiteFooter } from './SiteFooter';
+
 const LOGO = `${import.meta.env.BASE_URL}logo.webp`;
 
 export function MobileHolding() {
   return (
-    <div
+    <><div
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -10,7 +13,7 @@ export function MobileHolding() {
         alignItems: "center",
         justifyContent: "center",
         gap: "32px",
-        padding: "0 32px",
+        padding: "64px 28px",
         textAlign: "center",
         background:
           "radial-gradient(ellipse at 50% 0%, rgba(255,107,26,0.18) 0%, rgba(10,14,26,0) 55%), #0A0E1A",
@@ -75,6 +78,10 @@ export function MobileHolding() {
           of Chrome to launch it.
         </p>
       </div>
+      <p className="creator-byline">Created by <a href="#creator">Andrew Blumson</a> at Adevious AI</p>
     </div>
+      <CreatorProfile />
+      <SiteFooter />
+    </>
   );
 }

@@ -1,4 +1,6 @@
 import { Link } from "wouter";
+import { CreatorProfile } from "./CreatorProfile";
+import { SiteFooter } from "./SiteFooter";
 
 const LOGO   = `${import.meta.env.BASE_URL}logo.webp`;
 const VIDEO  = `${import.meta.env.BASE_URL}orrery.mp4`;
@@ -181,6 +183,7 @@ export function DesktopLanding() {
           >
             No install&nbsp;&nbsp;·&nbsp;&nbsp;No licence&nbsp;&nbsp;·&nbsp;&nbsp;No CAD seat
           </p>
+          <p className="creator-byline">Created by <a href="#creator">Andrew Blumson</a> at Adevious AI</p>
         </div>
 
         {/* ── Product demo video ── */}
@@ -414,116 +417,8 @@ export function DesktopLanding() {
       {/* ══════════════════════════════
           FOOTER
       ══════════════════════════════ */}
-      <footer
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          padding: "36px 64px",
-          flexWrap: "wrap",
-          gap: "24px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <img
-            src={LOGO}
-            alt="KinetiCAD"
-            draggable={false}
-            style={{ width: "36px", height: "36px", borderRadius: "8px" }}
-          />
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "13px",
-              textTransform: "uppercase",
-              letterSpacing: "0.28em",
-              color: "rgba(245,245,245,0.45)",
-            }}
-          >
-            KinetiCAD
-          </span>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            <a
-              href="https://kineticad.co.uk"
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "13px",
-                color: "rgba(245,245,245,0.32)",
-                textDecoration: "none",
-              }}
-            >
-              kineticad.co.uk
-            </a>
-            <Link
-              href="/story"
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "13px",
-                color: "rgba(255,107,26,0.70)",
-                textDecoration: "none",
-              }}
-            >
-              Story
-            </Link>
-            <Link
-              href="/terms"
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "13px",
-                color: "rgba(245,245,245,0.32)",
-                textDecoration: "none",
-              }}
-            >
-              Terms
-            </Link>
-            <Link
-              href="/privacy"
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "13px",
-                color: "rgba(245,245,245,0.32)",
-                textDecoration: "none",
-              }}
-            >
-              Privacy
-            </Link>
-          </div>
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "12px",
-              color: "rgba(245,245,245,0.40)",
-            }}
-          >
-            © 2026 Adevious Ltd. All rights reserved.
-          </span>
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "11px",
-              color: "rgba(245,245,245,0.24)",
-              textAlign: "right",
-            }}
-          >
-            Adevious AI is a trading name of Adevious Ltd. Company No. 08550853, registered in England and Wales.
-          </span>
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "11px",
-              color: "rgba(245,245,245,0.24)",
-              textAlign: "right",
-            }}
-          >
-            Registered Office: Rosedean House, 4 Argyle Road, Barnet, England, EN5 4DX
-          </span>
-        </div>
-      </footer>
+      <CreatorProfile />
+      <SiteFooter />
     </div>
   );
 }

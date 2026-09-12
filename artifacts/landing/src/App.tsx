@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { DesktopLanding } from "./components/DesktopLanding";
 import { MobileHolding } from "./components/MobileHolding";
@@ -6,30 +6,30 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import StoryPage from "./pages/StoryPage";
 import NotFound from "./pages/not-found";
+import { isDesktopSupported } from "../../shared/desktopSupport";
 
 function ScrollToTop() {
   const [location] = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const anchor = document.getElementById(window.location.hash.slice(1));
+    if (anchor) anchor.scrollIntoView();
+    else window.scrollTo(0, 0);
   }, [location]);
   return null;
 }
 
 function detectMobile(): boolean {
-  const touchDevice =
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-  const manyTouchPoints = navigator.maxTouchPoints > 1;
-  return touchDevice || manyTouchPoints;
+  return !isDesktopSupported({
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    maxTouchPoints: navigator.maxTouchPoints,
+    hasCoarsePointer: window.matchMedia("(any-pointer: coarse)").matches,
+    hasFinePointer: window.matchMedia("(any-pointer: fine)").matches,
+  });
 }
 
 function Home() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    setIsMobile(detectMobile());
-  }, []);
-
-  if (isMobile) return <MobileHolding />;
+  if (detectMobile()) return <MobileHolding />;
   return <DesktopLanding />;
 }
 

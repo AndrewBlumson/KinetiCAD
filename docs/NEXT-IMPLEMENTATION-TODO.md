@@ -25,6 +25,15 @@ See the [numerical verification](CRANK-SLIDER-VERIFICATION.md), [Chrome matrix](
 - Broader structural deformation, with a separately defined and independently verified physical model.
 - Final public release, Replit publication and public-route acceptance.
 
+## Additional user request — creator profile and desktop access
+
+- [x] Add Andrew's personal website, Adevious AI, X and LinkedIn to a creator section and shared site footer.
+- [x] Keep the public information readable on phones, while blocking CAD startup on phones and tablets, including direct modeller/simulator links.
+- [x] Verify the new device rules, production builds, actual Chrome navigation and desktop simulator startup.
+- [ ] User review and final published-route acceptance.
+
+See [profile and desktop-access verification](CREATOR-PROFILE-AND-DESKTOP-ACCESS.md). This additional request does not advance the next CAD stage before user testing.
+
 ## Optional support link — release preparation
 
 Keep the full application free. Add a discreet voluntary “Support KinetiCAD” link once the user chooses a payment provider and supplies their destination. Do not create a payment account or publish an unconfigured donation button. The repository can return to public visibility when the user is ready to release it.
