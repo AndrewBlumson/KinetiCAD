@@ -70,7 +70,7 @@ Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
 - [x] Run relevant final regression suites and production build.
 - [x] Finish recording browser evidence separately from numerical/unit evidence.
 - [x] Finalize README, verification reports and Replit handoff after the last browser repair.
-- [ ] Commit/push completed stages and refresh the source ZIP.
+- [x] Commit/push completed stages and refresh the source ZIP.
 - [x] Leave the app running on the completed result.
 
 ## Execution notes
@@ -90,3 +90,4 @@ Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
 - The first implementation stages for load, contact and deformation are deliberately bounded and independently testable. Finite-force Stewart control, arbitrary CAD contact, bearing friction and general 3D deformation are future capabilities, **not delivered claims**. The app and README state this.
 - Native modeller browser checks have additionally exercised new part, rectangle sketch, extrusion, real edge picking for fillet/chamfer, Boolean editing, and export preview gating. Hole creation was repaired and repeated successfully on native and mixed-axis rotated parts.
 - Current detailed browser evidence: [Chrome acceptance](CHROME-ACCEPTANCE-2026-09-12.md). Publication from Replit and final public-route acceptance remain separate from this local implementation.
+- Implementation commit `5c94f61` is pushed to `codex/built-in-demo-gallery`. The source ZIP contains 488 files, includes the STEP recovery fixture and verification reports, and passes archive CRC checks. Development remains running on port 5184, with the completed combined Stewart movement open in Chrome.
