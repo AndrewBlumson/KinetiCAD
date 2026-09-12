@@ -12,12 +12,18 @@ This is a pnpm/TypeScript monorepo. Each package manages its own dependencies.
 The CAD application is browser-local; API/database scaffold packages do not imply
 that a paid AI API or server is required for its geometry/physics calculations.
 
-**Current implementation: `8e954ab`, 298 passing automated tests and a passing
-full workspace typecheck/build.** [Current status](docs/CURRENT-STATUS.md) and
-[HANDOVER.md](HANDOVER.md) are the resumption entry points. The native downloaded
-Boolean project Load-dialog check, latest user review and Replit/public-route
-acceptance remain pending. Historical phase logs below are not current backlog
-or automatic evidence for later revisions.
+**Current local acceptance: 348/348 tests across 51 files, no failures or skips,
+and a passing full workspace typecheck/build.** The source inputs remained
+unchanged during the run. The bounded local four-bar stage is captured in its
+[catalog](docs/FOUR-BAR-TEST-CATALOG.md) and [acceptance record](docs/four-bar-validation.json);
+the 298-test `8e954ab` baseline remains historical.
+[Current status](docs/CURRENT-STATUS.md) and [HANDOVER.md](HANDOVER.md)
+are the resumption entry points. The Boolean fixed-joint project has now passed
+actual native Load, run controls and refresh: [browser record](docs/evidence/boolean-reopen/browser.json).
+New-stage user review and Replit/public-route acceptance remain separate gates.
+Historical phase logs below are not current backlog or automatic evidence for
+later revisions. Retain pinned packages and the committed lockfile; this stage
+requires no dependency upgrade, paid AI service or deployment change.
 
 ## Stack
 
@@ -209,22 +215,69 @@ Orrery generator: `pnpm --filter @workspace/scripts run generate-orrery-seed` �
 The source now delivers durable native/imported project recovery, bounded
 six-axis Stewart control, separate finite-force motor/load and contact/friction
 benches, an analytical elastic-beam tool, an adjustable crank-slider, persistent
-sketch dimensions and direct connected-Boolean simulation. Their physical models
-and limits remain distinct.
+sketch dimensions and direct connected-Boolean simulation. The current stage
+also adds the local **Draw a path** four-bar designer described below. Its local
+automated and scoped Chrome checks are complete; these physical models and
+limits remain distinct. Andrew's testing remains the next step.
 
-The current serialized suite contains **298 passing tests**. Its complete
-per-test results and source locations are in [TEST-CATALOG.md](docs/TEST-CATALOG.md)
-and [test-inventory-results.json](docs/test-inventory-results.json).
+The current serialized run contains **348 passing tests across 51 files**,
+without failures or skips. Its complete per-test results and source locations
+are in [FOUR-BAR-TEST-CATALOG.md](docs/FOUR-BAR-TEST-CATALOG.md) and
+[four-bar-validation.json](docs/four-bar-validation.json). The earlier 298-test
+[catalog](docs/TEST-CATALOG.md) and [inventory](docs/test-inventory-results.json)
+are preserved as the prior baseline.
 [MATHEMATICS-AND-PHYSICS.md](docs/MATHEMATICS-AND-PHYSICS.md) records equations,
 units, independent references, tolerances and observed errors. Preserve the
 original Windmill **π ±5e-7 rad/s after five simulated seconds** gate.
 
-The full workspace typecheck/build passed at `8e954ab`. Recorded Chrome
+The current full workspace typecheck/build passed. Recorded Chrome
 computer-use checks by Codex are linked by stage in [the docs index](docs/README.md).
 Their source/bundle scope matters. Actual Boolean downloads and refresh/new-tab
-recovery passed, but native reopening of a newly downloaded result-joint file
-remains pending. Local checks do not establish Replit publication acceptance.
-The 79-, 166-, 195- and 237-test milestones remain historical evidence.
+recovery passed. The subsequent [fixed-joint file-dialog check](docs/evidence/boolean-reopen/browser.json)
+also passed Load, Play/Pause/Reset and browser refresh with the saved material,
+ground and joint. It does not establish native file-dialog reopening of every
+joint fixture. The four-bar [browser record](docs/evidence/four-bar/browser.json)
+covers 60 mm preset search/build, native Save/Load/refresh, saved-target
+preservation, Pause/Resume/Reset and reference invalidation after manual material
+editing. Closed freehand pointer input was exercised by seven controlled
+component-handler tests; no successful curved gesture is claimed in Chrome.
+Local checks do not establish Replit publication acceptance. The 79-, 166-, 195-,
+237- and 298-test captures retain their original source scope.
+
+### Local four-bar path designer
+
+**Draw a path** opens a desktop dialog with three known-mechanism references,
+an approximate ellipse target, freehand input and a keyboard point list. The
+default known loop is 60 mm wide. Width edits from 40 to 160 mm preserve aspect
+ratio; even a known target at another size may lack an exact admissible mechanism.
+Targets must be simple closed loops. A visibly open stroke requires explicit
+**Close loop**; crossed/retraced loops and unapplied point edits cannot be built.
+
+`mechanisms/fourBarSynthesis.ts` and `fourBarSearchWorker.ts` perform a seeded,
+bounded search locally. Progress is provisional; Cancel terminates the worker.
+The final **Typical path gap (RMS)** and **Worst sampled path gap** compare equal
+arc-length progress around complete loops, allowing a different start and
+direction. They are sampled shape errors, not speed matching, arbitrary machine
+design or a proof of global optimality.
+
+**Build editable model** preflights four native feature chains and mass data
+before entering the protected generated workspace. Only this explicit action
+changes the displayed project. Late search/build responses must not replace a
+changed source project. Save retains the target, dimensions, search seed and
+history; reopening an existing design preserves exact target placement and seed.
+**Return to my model** restores the original project and imported shape handles.
+
+The generated mechanism has four parts and four revolute joints. Its ideal
+input crank makes one turn at 10 RPM in six simulated seconds, with zero gravity
+and 120 Hz fixed stepping. The measured material-point trace derives from the
+actual coupler pose; `three/FourBarTraceLabel.ts` projects the displayed mesh's
+point and refreshes camera matrices before projection. It does not drive motion.
+Physical edits invalidate generated reference claims. This adds no contact,
+bearing friction or finite motor/load rating. See
+[FOUR-BAR-PATH-VERIFICATION.md](docs/FOUR-BAR-PATH-VERIFICATION.md) for the supported
+domain, equations and separately scoped search/CAD/solver evidence. The final
+[stage catalog](docs/FOUR-BAR-TEST-CATALOG.md) and
+[aggregate acceptance](docs/four-bar-validation.json) record the completed local run.
 
 ### Numeric editing and current usability
 
@@ -523,9 +576,13 @@ restoration of the original workspace. Regenerate fixtures with
 
 `test:all` runs test files sequentially. Focused scripts include `test:project`,
 `test:controller`, `test:workspace`, `test:engineering`, `test:transforms` and
-`test:beam`, plus the earlier CAD/physics suites. The current 298-case aggregate
-includes seven actual-worker assembly-export regressions. Use the complete test
-catalog for exact source-level coverage; older totals remain historical.
+`test:beam`, plus the earlier CAD/physics suites. The completed 298-case baseline
+includes seven actual-worker assembly-export regressions. The fresh four-bar
+aggregate passes all 348 tests; use its named catalog for current source-level coverage.
+New four-bar tests cover pure geometry/search, real worker messages, native OCCT
+and Rapier, project/preflight/readout contracts, drawing handlers and Three.js
+trace-label projection. Handler/matrix tests do not establish browser drawing
+or rendered appearance. Preserve the new stage's named evidence separately.
 Mathematical tests never substitute for actual CAD, solver or rendered acceptance.
 
 The Stewart turning profiles exposed a trimmed-arc construction bug: OCCT's
@@ -809,6 +866,6 @@ SEO pass:
 
 ## Current project format: 1, wrapping state version 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
-## Current examples: six editable gallery assemblies plus adjustable crank-slider; public acceptance pending
+## Current examples: six editable gallery assemblies, adjustable crank-slider and bounded four-bar path designer; local checks complete, user/public acceptance pending
 ## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: top-level Chrome against local app or intended deployment

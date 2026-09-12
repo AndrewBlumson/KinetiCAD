@@ -1,3 +1,6 @@
+import { matchesFourBarConfiguration } from '../mechanisms/fourBarWorkspace';
+import { FOUR_BAR_SOLVER_SETTINGS } from '../mechanisms/fourBarSolver';
+import { FOUR_BAR_IDS } from '../mechanisms/fourBarAssembly';
 import { getBooleanResultLayer } from "@/three/booleanResultLayerRef";
 import { regenerateBooleanBody } from "@/features/booleanBodies";
 import { planAssemblySimulation, assemblyPhysicsSignature } from "./assemblySimulation";
@@ -335,6 +338,10 @@ export function startSimulationRunner(): RunnerHandle {
             measurementPartIds: ['crank-slider-crank', 'crank-slider-slider'],
             solverSettings: CRANK_SLIDER_SOLVER_SETTINGS,
           } : {}),
+        ...(matchesFourBarConfiguration(latest.assembly, latest.simulation) ? {
+          measurementPartIds: [FOUR_BAR_IDS.crank, FOUR_BAR_IDS.coupler],
+          solverSettings: FOUR_BAR_SOLVER_SETTINGS,
+        } : {}),
         ...(latest.simulation.stewartMotion ? {
           stewartMotion: latest.simulation.stewartMotion,
           durationMs: latest.simulation.stewartMotion.moveDurationMs + latest.simulation.stewartMotion.settleDurationMs,

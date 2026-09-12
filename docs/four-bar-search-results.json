@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-12T18:49:04.452Z",
+  "completedAt": "2026-09-12T18:49:20.950Z",
+  "passed": true,
+  "scope": "Pure four-bar equations/search and the actual search worker with only its browser message endpoint adapted to Node. No OCCT, Rapier, browser or full-suite acceptance.",
+  "provenance": {
+    "node": "v25.4.0",
+    "head": "9a73c5286f3d21168ff38bcbac5fbaf8ef205134",
+    "implementationMayContainUncommittedChanges": true,
+    "command": {
+      "executable": "node",
+      "cwd": "artifacts/kineticad",
+      "args": [
+        "--import",
+        "../../scripts/node_modules/tsx/dist/loader.mjs",
+        "--test",
+        "--test-concurrency=1",
+        "--test-reporter=tap",
+        "tests/four-bar-kinematics.test.mjs",
+        "tests/four-bar-synthesis.test.mjs",
+        "tests/four-bar-search-worker.test.mjs"
+      ]
+    },
+    "sourceSha256": {
+      "artifacts/kineticad/src/mechanisms/fourBarKinematics.ts": "c9ae8f5b8fee6772cab5a1abe6d311bbc9071a7859caac2b4a6b614e23927db3",
+      "artifacts/kineticad/src/mechanisms/fourBarSynthesis.ts": "9ab3a78760d87db6a4e30eeeaa351d6ff77e7bd929ed35e9789a7af96d7dd047",
+      "artifacts/kineticad/src/mechanisms/fourBarSearchWorker.ts": "d293574c15c68cd29f53f425ee2e3713c6a81abad62d3706a55a8d9912cdcfa5",
+      "artifacts/kineticad/tests/four-bar-kinematics.test.mjs": "efe809e6a86682c2269a3c607feff9bf16a87849a038c68e305efc632f228b0f",
+      "artifacts/kineticad/tests/four-bar-synthesis.test.mjs": "ab3d00bf68058d1bd1007acb55322e2ef4898717a534144b41e9d1e4e53720b9",
+      "artifacts/kineticad/tests/four-bar-search-worker.test.mjs": "a0ec9b357c7906b56009ed3c01ec32a407d6048c56e1f159ee6006a9b60d8477",
+      "artifacts/kineticad/tests/helpers/four-bar-search-worker-node.mjs": "ef2da0c18a877044bfb30f36c0908b2131711b93bccdcb2603956183153cbea7",
+      "artifacts/kineticad/tests/verify-four-bar-search.mjs": "e3af3e3c735e24ee09fae3c0dbea044a26263d8393923f4b51214b841a3f141d"
+    },
+    "sourcesUnchangedDuringRun": true,
+    "stdoutSha256": "6f807d80c2e5dd9bf3f4c726fdb538c42a2a9622f2ab9329823d11ac246db7f2",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "testRun": {
+    "testCount": 13,
+    "passed": 13,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "nodeDurationMs": 16358.843334,
+    "wallDurationMs": 16550.883084,
+    "names": [
+      "four-bar circle intersection has an independent exact coordinate fixture and both branches",
+      "complete rotations preserve all link lengths, branch sign and continuous clearance bounds",
+      "implicit velocity and acceleration agree with independent finite differences and chain rule",
+      "placement transforms once and a complete cycle returns the same geometry",
+      "Grashof equality, lost closure, small transmission angle, markers and invalid fields reject",
+      "production search worker delivers provisional progress and a separately recomputable ellipse fit",
+      "terminating a running search cancels it before a result; a fresh worker rejects invalid input clearly",
+      "closed target validation rejects crossings, open paths, retracing, tiny/huge and nonfinite data",
+      "arc-length resampling is independent of drawing speed and duplicated collinear vertices",
+      "known mechanism paths have a declared source, while an ellipse remains an approximation",
+      "complete-cycle score allows cyclic start/reversal but cannot match a displaced or partial target for free",
+      "seeded search is deterministic, reports real monotone progress and supports cancellation",
+      "default search fits a nonpreset independently supplied mechanism path without receiving its parameters"
+    ],
+    "exitCode": 0,
+    "error": null
+  },
+  "measuredSearches": {
+    "ellipseWorker": {
+      "seed": 42,
+      "evaluations": 8256,
+      "progressMessageCount": 129,
+      "durationMs": 6915.3044580000005,
+      "fit": {
+        "rmsMm": 0.0882973002811317,
+        "maxGapMm": 0.1770501669341142,
+        "symmetricMaxGapMm": 0.17698842748442406,
+        "sampleCount": 256
+      },
+      "parameters": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": 1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      }
+    },
+    "heldOutMechanism": {
+      "seed": 73,
+      "evaluations": 8256,
+      "durationMs": 6279.168541999999,
+      "targetParameters": {
+        "groundLengthMm": 112,
+        "crankLengthMm": 31,
+        "couplerLengthMm": 101,
+        "rockerLengthMm": 91,
+        "couplerPointLocalMm": [
+          72,
+          -12
+        ],
+        "branch": -1,
+        "originMm": [
+          -50,
+          37
+        ],
+        "rotationDeg": 37,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "targetPointCount": 501,
+      "fit": {
+        "rmsMm": 0.0574098794743446,
+        "maxGapMm": 0.12694175463346435,
+        "symmetricMaxGapMm": 0.12675695335105888,
+        "sampleCount": 256
+      },
+      "parameters": {
+        "groundLengthMm": 88.01476713722941,
+        "crankLengthMm": 22.003369926225222,
+        "couplerLengthMm": 138.60395327323693,
+        "rockerLengthMm": 115.25982104982809,
+        "couplerPointLocalMm": [
+          88.64309790181294,
+          -32.0297874543126
+        ],
+        "branch": -1,
+        "originMm": [
+          -40.68877623407703,
+          83.63911756580336
+        ],
+        "rotationDeg": 23.40727080409196,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      }
+    }
+  },
+  "acceptanceGates": {
+    "ellipse": {
+      "rmsMm": 0.3,
+      "maxGapMm": 0.6
+    },
+    "heldOutMechanism": {
+      "rmsMm": 1,
+      "maxGapMm": 3
+    },
+    "knownPresetPolygonComparison": {
+      "rmsMm": 0.005,
+      "maxGapMm": 0.005
+    },
+    "knownPresetSeededSearchRmsMm": 0.01,
+    "linkLengthErrorMm": 1e-10,
+    "exactFixtureErrorMm": 1e-12,
+    "velocityFiniteDifferenceErrorMmPerSec": 0.000002,
+    "accelerationFiniteDifferenceErrorMmPerSec2": 0.00002,
+    "placementErrorMm": 1e-10
+  },
+  "limitations": [
+    "The three known mechanisms seed the population and are labelled as known references; the held-out target supplies only its path, not its parameters.",
+    "Search minimises a sampled complete-loop RMS objective; final metrics use denser samples. It does not prove a global optimum or exact fitting of arbitrary drawings.",
+    "Worst gaps are sampled quantities. Free cyclic starting phase and either traversal direction are allowed; drawing speed is not fitted.",
+    "Runtime is a measurement on this local Node run, not a browser deadline or cross-device guarantee.",
+    "Physical CAD and Rapier acceptance are recorded separately."
+  ],
+  "stdout": "TAP version 13\n# Subtest: four-bar circle intersection has an independent exact coordinate fixture and both branches\nok 1 - four-bar circle intersection has an independent exact coordinate fixture and both branches\n  ---\n  duration_ms: 3.065\n  type: 'test'\n  ...\n# Subtest: complete rotations preserve all link lengths, branch sign and continuous clearance bounds\nok 2 - complete rotations preserve all link lengths, branch sign and continuous clearance bounds\n  ---\n  duration_ms: 47.844084\n  type: 'test'\n  ...\n# Subtest: implicit velocity and acceleration agree with independent finite differences and chain rule\nok 3 - implicit velocity and acceleration agree with independent finite differences and chain rule\n  ---\n  duration_ms: 5.305917\n  type: 'test'\n  ...\n# Subtest: placement transforms once and a complete cycle returns the same geometry\nok 4 - placement transforms once and a complete cycle returns the same geometry\n  ---\n  duration_ms: 0.871375\n  type: 'test'\n  ...\n# Subtest: Grashof equality, lost closure, small transmission angle, markers and invalid fields reject\nok 5 - Grashof equality, lost closure, small transmission angle, markers and invalid fields reject\n  ---\n  duration_ms: 1.613042\n  type: 'test'\n  ...\n# [four-bar-worker-ellipse] {\"seed\":42,\"evaluations\":8256,\"progressMessageCount\":129,\"durationMs\":6915.3044580000005,\"fit\":{\"rmsMm\":0.0882973002811317,\"maxGapMm\":0.1770501669341142,\"symmetricMaxGapMm\":0.17698842748442406,\"sampleCount\":256},\"parameters\":{\"groundLengthMm\":159.01929026673065,\"crankLengthMm\":24.26480983371903,\"couplerLengthMm\":103.5498359491352,\"rockerLengthMm\":89.41157211703141,\"couplerPointLocalMm\":[-17.12415147579941,34.15661157457768],\"branch\":1,\"originMm\":[-22.44104890927602,-29.333506801167974],\"rotationDeg\":-94.59023978725699,\"initialCrankAngleDeg\":0,\"rpm\":10}}\n# Subtest: production search worker delivers provisional progress and a separately recomputable ellipse fit\nok 6 - production search worker delivers provisional progress and a separately recomputable ellipse fit\n  ---\n  duration_ms: 7203.74725\n  type: 'test'\n  ...\n# Subtest: terminating a running search cancels it before a result; a fresh worker rejects invalid input clearly\nok 7 - terminating a running search cancels it before a result; a fresh worker rejects invalid input clearly\n  ---\n  duration_ms: 520.298458\n  type: 'test'\n  ...\n# [four-bar-search-held-out] {\"seed\":73,\"evaluations\":8256,\"durationMs\":6279.168541999999,\"targetParameters\":{\"groundLengthMm\":112,\"crankLengthMm\":31,\"couplerLengthMm\":101,\"rockerLengthMm\":91,\"couplerPointLocalMm\":[72,-12],\"branch\":-1,\"originMm\":[-50,37],\"rotationDeg\":37,\"initialCrankAngleDeg\":0,\"rpm\":10},\"targetPointCount\":501,\"fit\":{\"rmsMm\":0.0574098794743446,\"maxGapMm\":0.12694175463346435,\"symmetricMaxGapMm\":0.12675695335105888,\"sampleCount\":256},\"parameters\":{\"groundLengthMm\":88.01476713722941,\"crankLengthMm\":22.003369926225222,\"couplerLengthMm\":138.60395327323693,\"rockerLengthMm\":115.25982104982809,\"couplerPointLocalMm\":[88.64309790181294,-32.0297874543126],\"branch\":-1,\"originMm\":[-40.68877623407703,83.63911756580336],\"rotationDeg\":23.40727080409196,\"initialCrankAngleDeg\":0,\"rpm\":10}}\n# Subtest: closed target validation rejects crossings, open paths, retracing, tiny/huge and nonfinite data\nok 8 - closed target validation rejects crossings, open paths, retracing, tiny/huge and nonfinite data\n  ---\n  duration_ms: 4.112125\n  type: 'test'\n  ...\n# Subtest: arc-length resampling is independent of drawing speed and duplicated collinear vertices\nok 9 - arc-length resampling is independent of drawing speed and duplicated collinear vertices\n  ---\n  duration_ms: 0.853708\n  type: 'test'\n  ...\n# Subtest: known mechanism paths have a declared source, while an ellipse remains an approximation\nok 10 - known mechanism paths have a declared source, while an ellipse remains an approximation\n  ---\n  duration_ms: 485.059625\n  type: 'test'\n  ...\n# Subtest: complete-cycle score allows cyclic start/reversal but cannot match a displaced or partial target for free\nok 11 - complete-cycle score allows cyclic start/reversal but cannot match a displaced or partial target for free\n  ---\n  duration_ms: 255.484167\n  type: 'test'\n  ...\n# Subtest: seeded search is deterministic, reports real monotone progress and supports cancellation\nok 12 - seeded search is deterministic, reports real monotone progress and supports cancellation\n  ---\n  duration_ms: 281.24425\n  type: 'test'\n  ...\n# Subtest: default search fits a nonpreset independently supplied mechanism path without receiving its parameters\nok 13 - default search fits a nonpreset independently supplied mechanism path without receiving its parameters\n  ---\n  duration_ms: 6283.170958\n  type: 'test'\n  ...\n1..13\n# tests 13\n# suites 0\n# pass 13\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16358.843334\n",
+  "stderr": ""
+}

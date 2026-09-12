@@ -8,14 +8,14 @@ assembly has been validated.
 
 ## Current source and verification status — 12 September 2026
 
-Implementation baseline `8e954ab` includes complete projects, six demos, bounded
+The current source includes local draw-a-path four-bar synthesis, complete projects, six demos, bounded
 six-axis Stewart control, the separate engineering experiments, adjustable
 crank-slider, persistent sketch dimensions and direct connected-Boolean
 simulation. KinetiCAD remains the original Replit/Replit Agent build by Andrew
 and Kevin Blumson; later development and the recorded September numerical and
 Chrome computer-use checks were performed by Codex under Andrew's direction.
 
-Read [Current status](CURRENT-STATUS.md), the [complete test catalog](TEST-CATALOG.md)
+Read [Current status](CURRENT-STATUS.md), the [complete current test catalog](FOUR-BAR-TEST-CATALOG.md)
 and [mathematics/physics reference](MATHEMATICS-AND-PHYSICS.md) first. The latter
 connects equations, units, expected values, observed errors and tolerances to
 source tests and raw reports. It separates actual-kernel measurements, pure
@@ -23,8 +23,9 @@ analytical checks, mocked orchestration tests and rendered browser observations.
 
 | Gate | Recorded status and scope |
 | --- | --- |
-| Current automated aggregate | **298/298 passing**, zero failures/skips; [individual results](test-inventory-results.json) and [catalog](TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
-| Current typecheck/build | Passed at `8e954ab`; [implementation record](boolean-simulation-validation.json). This documentation refresh changes no application source. |
+| Current automated aggregate | See the source-fingerprinted [latest aggregate](four-bar-validation.json) and [individual test catalog](FOUR-BAR-TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
+| Current typecheck/build | Passed; [current source and build record](four-bar-validation.json). Older milestones retain their original source identity. |
+| Local four-bar path | Native four-part mechanism, local bounded search, sampled fit gaps and actual solver trace; [maths, geometry and Chrome evidence](FOUR-BAR-PATH-VERIFICATION.md). |
 | Direct Boolean physics | Actual final OCCT shape/mass and Rapier response, transformed/imported inputs, explicit ground and revision-checked joints; [verification](BOOLEAN-SIMULATION-VERIFICATION.md), [measurements](boolean-physics-results.json). |
 | Persistent sketch dimensions | Independent primitive equations, actual OCCT rebuilds and transaction/recovery checks; [stage record](SKETCH-DIMENSIONS-VERIFICATION.md). |
 | Adjustable crank-slider | 16 recorded actual-CAD motion scenarios and 864 sampled pair intersections; [errors and limits](CRANK-SLIDER-VERIFICATION.md). These scenario counts are not extra unit tests. |
@@ -33,10 +34,10 @@ analytical checks, mocked orchestration tests and rendered browser observations.
 | Separate engineering models | [Finite-force actuator](actuator-bench-results.json), [guided contact](contact-bench-results.json), [analytical beam](beam-analysis-results.json). Their scoped regression tests pass in the aggregate. |
 | Complete projects and exports | [Recovery contract](PROJECT-RECOVERY.md), [export contract](ASSEMBLY-EXPORT.md), [Boolean-stage export run](boolean-simulation-export-results.json). |
 | Actual Chrome acceptance | Codex computer-use observations are linked by stage in [the docs index](README.md#actual-browser-checks-recorded-by-stage); no claim that every path was reclicked on one final bundle. |
-| Latest Boolean downloaded-file reopening | **Pending native Load-dialog check.** Actual downloads, shipped parser validation, refresh and new-tab recovery passed. |
+| Latest Boolean downloaded-file reopening | **Passed for the saved Fixed-joint file.** Native Chrome chooser, two bodies, brass fixed result, Play/Pause/Reset and refresh are in [the follow-up capture](evidence/boolean-reopen/browser.json). |
 | User acceptance / republished Replit route | Pending. Local measurements do not establish public deployment acceptance. |
 
-The earlier 166-, 195- and 237-test milestones remain dated evidence, not the
+The earlier 166-, 195-, 237- and 298-test milestones remain dated evidence, not the
 latest aggregate. Original source hashes and browser bundle identities are
 preserved; a later documentation update does not make an older measurement a
 fresh run. [Report provenance](REPORT-PROVENANCE.md) explains those boundaries.

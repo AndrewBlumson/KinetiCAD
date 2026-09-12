@@ -900,6 +900,14 @@ const api: CadKernelApi = {
       tip = executeUpstreamChain(ocInstance, args.features, args.sketches);
       if (!tip) throw new Error("Cannot build a mesh for an empty part.");
       const mesh = buildMesh(ocInstance, tip);
+      // Report topology as well as a display mesh. Generated mechanisms require
+      // a connected solid; a valid compound must not be silently welded.
+      const oc = ocInstance as any;
+      const explorer = new oc.TopExp_Explorer_2(tip, oc.TopAbs_ShapeEnum.TopAbs_SOLID, oc.TopAbs_ShapeEnum.TopAbs_SHAPE);
+      let solidCount = 0;
+      try { while (explorer.More()) { solidCount++; explorer.Next(); } }
+      finally { explorer.delete?.(); }
+      mesh.solidCount = solidCount;
       let unitDensityMassProperties: MassPropertiesResult | undefined;
       try {
         unitDensityMassProperties = computeMassProperties(ocInstance, tip, 1);

@@ -5,7 +5,26 @@ numbers. A later UI, export or logging change does not justify replacing those
 hashes with the current checkout. This note records the bounded source review;
 it is not a new OCCT or physics measurement.
 
-## Current interpretation at implementation baseline `8e954ab`
+## Four-bar stage acceptance
+
+The latest aggregate is [four-bar-validation.json](four-bar-validation.json),
+with the [complete current catalog](FOUR-BAR-TEST-CATALOG.md), raw event stream,
+source/fixture fingerprints and a separate build record. The stage adds the
+local linkage search and records its numerical, CAD and Chrome checks in
+[FOUR-BAR-PATH-VERIFICATION.md](FOUR-BAR-PATH-VERIFICATION.md). Historical
+measurement files were restored after tests that regenerate them; fresh outputs
+are retained under `evidence/four-bar/` and retain their new run identity.
+
+The actual downloaded project/STEP/STL have their own hashes and
+[independent export audit](evidence/four-bar/export-check.json). It records the
+original floating-point equality failure and its narrow regression-tested fix.
+[Chrome evidence](evidence/four-bar/browser.json) separates the earlier full UI
+flow from the post-fix refresh/motion check and the final read-only observation
+while another model was being tried. It does not claim every control
+was reclicked after an equality-only fix or that a curved mouse gesture was
+exercised by a straight-line automation action.
+
+## Historical interpretation at implementation baseline `8e954ab`
 
 The September documentation audit reran the complete **298-test** suite without
 changing application code. [test-inventory-results.json](test-inventory-results.json)

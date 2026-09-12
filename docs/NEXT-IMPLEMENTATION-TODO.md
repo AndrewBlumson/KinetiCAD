@@ -36,19 +36,37 @@ CAD typecheck and production build passed. Actual Chrome preview on port 5185
 showed the complete crank-slider bed within the grid, with no captured runtime errors.
 This visual-only change does not advance the next CAD stage or add physics claims.
 
-## 3. Direct simulation of finished assembly Boolean shapes — implemented; final UI reopening check pending
+## 3. Direct simulation of finished assembly Boolean shapes — implemented
 
 - [x] Prepare each connected final solid and its mass properties from the same OpenCascade shape.
 - [x] Define finished material, fixed base and result joints; exclude construction inputs.
 - [x] Verify independent geometry/inertia equations and actual solver motion, including rejected ambiguous cases.
 - [x] Exercise the actual Chrome editing, simulation, Save, refresh/recovery, stale-joint rejection and lifecycle controls. Parse the actual downloaded files with the shipped loader.
-- [ ] Reopen a newly downloaded result-joint project through the native Chrome Load dialog. Native access is pending user availability; this is distinct from the passing refresh/recovery and file-parser checks.
-- [x] Run final regression/build checks and document measured scope: **298/298 tests and the full build passed.** Stop for user review; the native file-reopening check above remains pending.
+- [x] Reopen the downloaded result-joint project through the native Chrome Load dialog. On 12 September, the fixed-joint project reopened on port 5190 with brass, fixed base, two bodies and its joint intact. Play/pause/reset and a further browser refresh passed. See [captured Chrome evidence](evidence/boolean-reopen/browser.json).
+- [x] Run final regression/build checks and document measured scope: **298/298 tests and the full build passed.**
 
-See [Boolean simulation verification](BOOLEAN-SIMULATION-VERIFICATION.md) for numerical tolerances, actual Chrome observations and the remaining manual check. No following stage has started.
+See [Boolean simulation verification](BOOLEAN-SIMULATION-VERIFICATION.md) for numerical tolerances, actual Chrome observations and the recorded browser checks.
+
+## 4. Local draw-a-path linkage — implemented
+
+The user authorised continuation on 12 September 2026. Package upgrades remain deferred.
+
+- [x] Search locally in a cancellable worker for a bounded planar four-bar crank-rocker.
+- [x] Show the drawn path and sampled fit errors; do not promise an exact fit or global optimum.
+- [x] Build connected native editable CAD parts and four revolute joints after a successful solid preflight.
+- [x] Measure actual Rapier motion against independently calculated linkage geometry.
+- [x] Verify persistence, failed/stale builds, real Chrome interactions and regressions.
+- [x] Update equations, assumptions, raw evidence and current documentation, then stop for user testing.
+
+Current capture: **348/348 automated tests across 51 files**, full workspace
+typecheck/build passed. Actual Chrome checks covered search/cancel, presets and
+keyboard coordinates, native model creation, Save/Load/refresh, motion controls,
+export and manual-reference invalidation. Pointer coordinate/closure handling has
+seven component tests; a curved live freehand gesture remains a distinct user
+interaction check. See [four-bar verification](FOUR-BAR-PATH-VERIFICATION.md) and
+[the complete current catalog](FOUR-BAR-TEST-CATALOG.md). Stop here for user testing.
 
 ## Following stages — not started
-- A local draw-a-path mechanism optimiser with an explicit supported mechanism family.
 - Assembly motor force limits and load behaviour, then validated contact and bearing friction in separate stages.
 - Broader structural deformation, with a separately defined and independently verified physical model.
 - Final public release, Replit publication and public-route acceptance.

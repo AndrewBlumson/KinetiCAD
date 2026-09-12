@@ -88,6 +88,7 @@ import { setPartMeshLayer } from "./partMeshLayerRef";
 import { createSimulationLayer, type SimulationLayer } from "./SimulationLayer";
 import { setSimulationLayer } from "./simulationLayerRef";
 import { startSimulationRunner } from "@/physics/simulationRunner";
+import { createFourBarTraceLabel } from './FourBarTraceLabel';
 import { createForceSampleLabels } from './ForceSampleLabels';
 import type { FaceMetadata } from "@/cad/types";
 
@@ -128,6 +129,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
 
     let cancelled = false;
     const forceLabels = createForceSampleLabels(container);
+    const fourBarTraceLabel = createFourBarTraceLabel(container);
     let renderer: WebGPURenderer | null = null;
     let controls: OrbitControls | null = null;
     let resizeObserver: ResizeObserver | null = null;
@@ -465,6 +467,9 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
 
           forceLabels.update(useKinetiCADStore.getState().simulation.forceExperiment?.partIds ?? [], camera,
             (id) => simulationLayer?.group.visible ? simulationLayer.group.getObjectByName(`sim:${id}`) ?? null : partMeshLayer?.getPartMesh(id) ?? booleanResultLayer?.getPartMesh(id) ?? null);
+          const displayed = useKinetiCADStore.getState();
+          fourBarTraceLabel.update(displayed.assembly, displayed.simulation, camera,
+            id => simulationLayer?.group.visible ? simulationLayer.group.getObjectByName(`sim:${id}`) ?? null : partMeshLayer?.getPartMesh(id) ?? null);
           renderer.render(scene, camera);
           frameCounter += 1;
         };
@@ -1398,6 +1403,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
     return () => {
       cancelled = true;
       forceLabels.dispose();
+      fourBarTraceLabel.dispose();
       if (previewDebounce) clearTimeout(previewDebounce);
       if (booleanPreviewDebounce) clearTimeout(booleanPreviewDebounce);
       perFrameTopologyCheck = null;

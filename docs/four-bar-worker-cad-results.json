@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T18:53:27.454Z",
+  "sourceSha256": "bf11a30fe4675759b12386ce8f7b065a93e0b49bec9f8e76a419bcd8ce892ef0",
+  "cadWorkerSha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+  "preflightSha256": "6447fe35265a279d93b6b99f4cf1f12cb57da7618b2a205dac7805d74e198f3b",
+  "scope": "Actual shipped full-history CAD worker and preflight for default and optimiser-winner geometry. Independent exact area/volume integration for bed, crank and rocker; coupler uses the separately rebuilt exact CAD reference. Physical mass and full principal inertia are compared to that reference.",
+  "volumeToleranceMm3": 1e-7,
+  "massToleranceKg": 1e-10,
+  "inertiaToleranceKgMm2": 1e-7,
+  "cases": [
+    {
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "parts": [
+        {
+          "id": "four-bar-ground",
+          "solidCount": 1,
+          "volumeMm3": 92706.23826500705,
+          "analyticVolumeMm3": 92706.23826500705,
+          "absoluteVolumeErrorMm3": 0,
+          "massKg": 0.7295980951456054
+        },
+        {
+          "id": "four-bar-crank",
+          "solidCount": 1,
+          "volumeMm3": 4247.405688276906,
+          "analyticVolumeMm3": 4247.405688276911,
+          "absoluteVolumeErrorMm3": 4.547473508864641e-12,
+          "massKg": 0.03610294835035371
+        },
+        {
+          "id": "four-bar-coupler",
+          "solidCount": 1,
+          "volumeMm3": 6421.388166293258,
+          "massKg": 0.017337748048991797
+        },
+        {
+          "id": "four-bar-rocker",
+          "solidCount": 1,
+          "volumeMm3": 7211.2994711784295,
+          "analyticVolumeMm3": 7211.299471178454,
+          "absoluteVolumeErrorMm3": 2.4556356947869062e-11,
+          "massKg": 0.06129604550501665
+        }
+      ]
+    },
+    {
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": 1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "parts": [
+        {
+          "id": "four-bar-ground",
+          "solidCount": 1,
+          "volumeMm3": 122280.35527904391,
+          "analyticVolumeMm3": 122280.35527904388,
+          "absoluteVolumeErrorMm3": 2.9103830456733704e-11,
+          "massKg": 0.9623463960460755
+        },
+        {
+          "id": "four-bar-crank",
+          "solidCount": 1,
+          "volumeMm3": 4203.294278300049,
+          "analyticVolumeMm3": 4203.294278300053,
+          "absoluteVolumeErrorMm3": 3.637978807091713e-12,
+          "massKg": 0.03572800136555042
+        },
+        {
+          "id": "four-bar-coupler",
+          "solidCount": 1,
+          "volumeMm3": 8449.830441764188,
+          "massKg": 0.02281454219276331
+        },
+        {
+          "id": "four-bar-rocker",
+          "solidCount": 1,
+          "volumeMm3": 8375.993798200307,
+          "analyticVolumeMm3": 8375.993798200338,
+          "absoluteVolumeErrorMm3": 3.092281986027956e-11,
+          "massKg": 0.0711959472847026
+        }
+      ]
+    }
+  ],
+  "disconnectedNativeCandidateRejected": true,
+  "passed": true
+}

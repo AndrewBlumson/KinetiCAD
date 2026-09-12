@@ -21,7 +21,7 @@ import PartsPanelItem from '@/components/PartsPanelItem';
 import MatesPanelItem from '@/components/MatesPanelItem';
 import NewPartButton from '@/components/NewPartButton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { CrankSliderButton, DemoButton, DemoWelcome, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
+import { PathDesignerButton, CrankSliderButton, DemoButton, DemoWelcome, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import type { CardinalPlane } from '@/sketch/plane';
 import type {
   BooleanFeature,
@@ -335,6 +335,7 @@ export default function Modeller() {
         </span>
         <DemoButton />
         <CrankSliderButton />
+        <PathDesignerButton />
         <div className="w-px h-5 bg-border mx-1" />
 
         {sketchSession.active ? (

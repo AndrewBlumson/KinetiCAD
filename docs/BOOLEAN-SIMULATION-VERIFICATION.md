@@ -117,7 +117,8 @@ was not overwritten.
     project loader and simulation planner: respectively one body/no joints,
     two bodies/one Fixed joint and two bodies/one Spherical joint. This automated
     file check is distinct from reopening the downloaded file through Chrome's
-    native file dialog, which remains pending below.
+    native file dialog, which was pending at this earlier check and has since
+    passed in the follow-up below.
 11. Inspected the updated landing-page feature card at port 5186 in Chrome.
     The description fits the desktop layout and distinguishes direct Boolean
     simulation from the still unsupported contact/friction/load features.
@@ -128,17 +129,38 @@ was not overwritten.
 
 Chrome's captured console contains no warnings or errors for these application
 checks. The native DevTools window was not separately opened in this stage.
-The final native file-dialog reopening check remains pending: browser automation
-could not set local files, and native actions were interrupted while the user was
-using Chrome. A request to briefly use the CAD tab is pending. Refresh/recovery
-and actual downloaded-file parsing passed; they do not replace that final UI check.
+At that earlier session, the native file-dialog reopening check was incomplete:
+browser automation could not set local files, and native actions were interrupted
+while Chrome was in use. Refresh/recovery and actual downloaded-file parsing had
+passed, but did not replace that UI check. The subsequent native-file follow-up
+below closes the gate with its own dated browser evidence.
 
 Downloaded browser fixtures are retained in
 [`fixtures/boolean-simulation`](fixtures/boolean-simulation).
 The 100 ms freefall fixture is a documented derivative of a downloaded project.
 
-Final complete-suite/build results and remaining Chrome checks are recorded in
+The completed stage's suite/build results and then-pending Chrome checks are recorded in
 [`boolean-simulation-validation.json`](boolean-simulation-validation.json).
 The fresh export regression measurements are retained separately in
 [`boolean-simulation-export-results.json`](boolean-simulation-export-results.json);
-earlier stage reports remain historical snapshots.
+earlier stage reports remain historical snapshots. The original JSON acceptance
+record is retained unchanged; its pending file-check status is superseded only
+by the separate follow-up evidence below.
+
+## Native file reopening follow-up — 12 September 2026
+
+The previously pending Chrome Load check passed on the isolated preview at
+`http://localhost:5190/app/`. After the user enabled the browser extension's
+file-URL permission, the actual file chooser reopened
+`docs/fixtures/boolean-simulation/browser-fixed-joint.kineticad.json`.
+The simulator showed two bodies, the saved fixed joint, the grounded brass
+result, 2,000 mm³ and 0.017 kg. Play advanced time; pause held the run at
+14.23 s; reset restored 0 s. A browser reload then recovered the same model
+and properties. No warning or error was captured for this check.
+
+See [browser observations and console records](evidence/boolean-reopen/browser.json)
+and [the rendered restored model](evidence/boolean-reopen/after-load-and-refresh.png).
+This closes the file-reopening gate; it does not expand the physical model.
+The user has authorised the next, local four-bar path-design stage. That stage
+is in progress; this Boolean report does not claim its new full-suite or browser
+acceptance has passed.

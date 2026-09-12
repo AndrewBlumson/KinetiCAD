@@ -814,7 +814,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           return {
             assembly: { ...state.assembly, parts: state.assembly.parts.map(item => item.id === partId ? updated : item) },
             simulation: { ...state.simulation, running: false, paused: false, simulationTimeMs: 0,
-              crankSlider: undefined, stewartMotion: undefined, sketchGeometryEdited: true },
+              crankSlider: undefined, stewartMotion: undefined, fourBar: undefined, sketchGeometryEdited: true },
             sketchDimensionsEditing: false,
             selection: { kind: 'sketch', partId, sketchId },
             pickingMode: 'idle',

@@ -11,17 +11,27 @@ their own attribution.
 
 ## Current source — 12 September 2026
 
-Implementation baseline `8e954ab` includes **298 passing automated tests**, a passing
+The current source includes **348 passing automated tests across 51 files**, a passing
 full typecheck/build, six gallery demos, an adjustable crank-slider, persistent
-sketch dimensions, complete STEP project recovery and direct simulation of
-connected Boolean results. CAD is desktop-only and requires WebGPU.
+sketch dimensions, complete STEP project recovery, direct simulation of
+connected Boolean results and a local **Draw a path** linkage designer. CAD is
+desktop-only and requires WebGPU. Package upgrades remain deferred.
 
 Start with [Current status](docs/CURRENT-STATUS.md) and the
-[documentation index](docs/README.md). Every automated test is listed in the
-[test catalog](docs/TEST-CATALOG.md); [maths and physics](docs/MATHEMATICS-AND-PHYSICS.md)
-records reference equations, units, observed errors, tolerances and model limits.
-The latest native downloaded-file reopening check and user review remain pending;
-Replit republishing and public-route acceptance are separate steps.
+[documentation index](docs/README.md). Every current automated result is listed
+in the [four-bar stage test catalog](docs/FOUR-BAR-TEST-CATALOG.md);
+[maths and physics](docs/MATHEMATICS-AND-PHYSICS.md) records equations, units,
+observed errors, tolerances and model limits. Earlier catalogs retain their
+historical test totals. The new [acceptance record](docs/four-bar-validation.json)
+identifies tested source bytes, runtime and build evidence.
+
+Actual Chrome computer use covered local search, cancellation, native CAD creation,
+measured motion, Save/Load, refresh recovery and invalidating the original reference
+after manual edits. See [four-bar verification](docs/FOUR-BAR-PATH-VERIFICATION.md).
+The previous Boolean native-file reopening check also
+[passed](docs/evidence/boolean-reopen/browser.json). These checks establish their
+stated cases, not a claim that every possible CAD model is physically correct.
+Replit republishing and public-route acceptance remain separate steps.
 
 Older known issues are reconciled in the [follow-up register](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md).
 The original [May handover](docs/history/HANDOVER-2026-05-17.md) is historical;
@@ -123,6 +133,25 @@ analytical bending deflection/stress and flags slenderness, small-deflection
 and elastic-limit failures. It does not deform the CAD mesh or provide general
 finite-element analysis. [Elastic beam scope and verification](docs/ELASTIC-BEAM.md)
 documents the equations, units, omitted effects and seven passing tests.
+
+## Draw a path
+
+Choose **Draw a path** in either workspace. Draw a closed outline, choose a
+preset or enter coordinates; then select **Find a mechanism**. A cancellable
+worker searches locally for a four-bar linkage whose tracing point follows a
+nearby path. No AI API or paid service is involved.
+
+The preview reports typical and largest sampled shape gaps. **Build editable
+model** first checks four connected native solids, then opens their four-joint
+assembly in a protected temporary workspace. **Run one cycle** compares its
+actual physics trace with the calculated geometry. **Save project** retains the
+drawing, dimensions, materials and joints; **Return to my model** restores your
+original project. Manual edits disable the original comparison.
+
+This is a bounded planar linkage search, with ideal rigid joints and a 10 RPM
+drive. It cannot reproduce every outline or guarantee a global optimum. Motor
+loads, friction, contact and deformation are outside this mechanism's model.
+See [equations, limits and measured verification](docs/FOUR-BAR-PATH-VERIFICATION.md).
 
 ## Adjustable crank-slider
 
@@ -361,11 +390,12 @@ Pull requests are welcome. The most useful contributions:
 - Undo/redo via Zustand history middleware
 - General 3D selection of Boolean results outside joint creation, with derived-geometry behaviour defined explicitly
 
-The remaining mechanism-workbench direction is future work: persistent sketch
-constraints and a local four-bar linkage optimiser that fits a user-drawn path
-and produces editable CAD. Complete project recovery is now implemented.
+The local four-bar linkage optimiser that fits a user-drawn path and produces
+editable CAD is the current **in-progress** stage; it is not a completed or fully
+verified capability yet. Persistent automatic sketch constraints remain future
+work. Complete project recovery is implemented.
 Finite-force Stewart, general CAD contact/friction and general finite-element
-analysis remain future work. No AI API or path-to-mechanism optimiser is included.
+analysis remain future work. No AI API is used for the local mechanism search.
 
 CAD or graphics experience is particularly valuable on the sketch-on-face, multi-loop sketch and arc-pivot items.
 
@@ -454,7 +484,7 @@ Run heavyweight OpenCascade commands sequentially.
 [Report provenance](docs/REPORT-PROVENANCE.md) explains retained measured
 revisions and metadata-only refresh after separate clearance reruns.
 
-The current serialized `test:all` aggregate has **298 passing tests**. See the
+The last completed serialized `test:all` aggregate has **298 passing tests**. See the
 [individual test inventory](docs/TEST-CATALOG.md) for each source, purpose and
 recorded result; the full workspace typecheck/build also passed at `8e954ab`.
 The older 166-, 195- and 237-test totals identify earlier stages, not additional
@@ -463,9 +493,12 @@ cases to add to this total. Standalone CAD/physics experiment counts are separat
 Actual Chrome computer-use checks by Codex are recorded by stage in the
 [documentation index](docs/README.md#actual-browser-checks-recorded-by-stage).
 They cover the specified controls and outputs of each recorded bundle. The final
-Boolean downloaded-file Load-dialog reopening remains pending; its actual Save,
-parser and refresh/new-tab recovery checks passed. Numerical and local browser
-results do not replace final user or public deployment acceptance.
+Boolean downloaded-file Load-dialog reopening has since passed for the saved
+Fixed-joint project, including Play/Pause/Reset and another refresh; see
+[the actual browser record](docs/evidence/boolean-reopen/browser.json).
+That closes the prior stage's gate, not the in-progress four-bar stage's
+regression/browser checks. Numerical and local browser results do not replace
+final user or public deployment acceptance.
 
 Regenerate the six bundled documents and their catalog when their source
 definitions change:

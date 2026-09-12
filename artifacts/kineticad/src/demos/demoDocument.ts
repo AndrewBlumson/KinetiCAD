@@ -1,3 +1,4 @@
+import { validateFourBarDesign } from '../mechanisms/fourBarSynthesis';
 import { z } from 'zod';
 import type { Assembly, AppMode, SimulationState } from '../state/schemas';
 import { validateStewartMotionConfig } from '../physics/stewartKinematics.ts';
@@ -29,6 +30,7 @@ const documentSchema = z.object({
       gravity: vec3, speedMultiplier: z.number().positive().finite(), simulationTimeMs: z.number().finite(),
       durationMs: z.number().finite().positive().optional(),
       stewartMotion: z.unknown().transform((v) => validateStewartMotionConfig(v)).optional(),
+      fourBar: z.unknown().transform((v) => validateFourBarDesign(v)).optional(),
       crankSlider: z.unknown().transform((v) => validateCrankSliderParams(v)).optional(),
       forceExperiment: z.object({
         kind: z.literal('equal-force'), partIds: z.array(z.string().min(1)).min(1),

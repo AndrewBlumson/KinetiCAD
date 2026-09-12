@@ -8,21 +8,35 @@ Blumson using Replit Agent. Subsequent Codex development and automated/Chrome
 computer-use testing are credited in the evidence records; they do not change
 the original build's Replit identity. See [Current status](CURRENT-STATUS.md).
 
-The current implementation baseline is `8e954ab` on
-`codex/built-in-demo-gallery`: **298 automated tests pass**, along with the full
+The prior completed baseline is `8e954ab` on
+`codex/built-in-demo-gallery`: **298 automated tests passed**, along with the full
 workspace typecheck/build. It includes six demos, complete STEP project
 recovery, bounded six-axis Stewart controls, the three separate Engineering
 tests, adjustable crank-slider, persistent sketch dimensions and direct
 connected-Boolean simulation. Creator/social details, Replit UK Ambassador
 biography, labelled file controls and desktop-only CAD access are included.
+The source now adds the bounded **Draw a path** four-bar designer. Its fresh
+local run passed **348/348 tests across 51 files**, with no failures or skips,
+unchanged source inputs during execution and a passing full workspace
+typecheck/build. The [new catalog](FOUR-BAR-TEST-CATALOG.md) and
+[acceptance record](four-bar-validation.json) are distinct from the preserved
+298-test baseline.
 
-The [complete test catalog](TEST-CATALOG.md) details every automated test;
+The [baseline test catalog](TEST-CATALOG.md) details that automated run;
 [maths and physics](MATHEMATICS-AND-PHYSICS.md) connects equations, units,
 references, tolerances and measured errors. [Browser evidence](README.md#actual-browser-checks-recorded-by-stage)
-is recorded by stage. The newly downloaded Boolean result-joint native Load
-check remains pending; its Save, parser validation and refresh/new-tab recovery
-checks passed. Finish that gate and Andrew's review before publication.
-Do not mistake earlier 166/195/237-test milestones for the latest total.
+is recorded by stage. The Boolean fixed-joint download has now passed actual
+native Load, Play/Pause/Reset and browser refresh, preserving its material,
+ground and joint: [record](evidence/boolean-reopen/browser.json). Other joint
+fixtures retain their separately recorded scope. Four-bar
+[Chrome checks](evidence/four-bar/browser.json) passed preset search/build,
+native Save/Load/refresh, saved-target restoration, Pause/Resume/Reset and
+reference invalidation after a manual material edit. Valid custom paths were
+entered through the keyboard editor. Closed freehand pointer drawing has seven
+component-handler tests; a successful curved mouse gesture was not replayed in
+Chrome. Stop for Andrew's testing before another stage, and obtain the intended
+publication decision separately. See the [four-bar guide](FOUR-BAR-PATH-VERIFICATION.md).
+Do not treat an earlier 166/195/237/298-test milestone as a new-stage rerun.
 
 1. Save outstanding Replit edits, then fetch the GitHub repository and check
    out `codex/built-in-demo-gallery` in Replit's Git interface. Review differences
@@ -34,6 +48,8 @@ Do not mistake earlier 166/195/237-test milestones for the latest total.
    `pnpm --filter @workspace/kineticad test:all`.
    The fresh local inventory used Node 25.4.0/pnpm 10.28.2, so record this Replit
    runtime's own result rather than calling that local capture a Node 24 pass.
+   Keep the committed package/kernel versions; this stage needs no dependency
+   upgrade or paid service credentials.
 3. Build with the existing deployment configuration. CAD Vite requires `PORT`
    and `BASE_PATH`; its route is `/app/`. For a local production check:
 
@@ -70,11 +86,21 @@ Do not mistake earlier 166/195/237-test milestones for the latest total.
    test a rejected change, then reopen the project. Create a connected Boolean,
    choose its final material/fixed base and attach supported joints to its result.
    Run it without duplicate input bodies; edit its geometry and verify stale
-   joints are rejected. Reopen the newly downloaded Boolean result-joint file
-   through the actual native Load dialog: this is the remaining latest-stage gate.
-9. Check the current landing feature groups, creator/social links, Replit UK
+   joints are rejected. Repeat the completed local fixed-joint native Load
+   check on the intended Replit origin; local evidence does not prove that route.
+9. In **Draw a path**, inspect the initial 60 mm known-reference loop, change its
+   40–160 mm width, try the ellipse and a valid custom loop, and reject crossed
+   or unapplied input. Test search progress/cancellation and inspect the sampled
+   RMS/maximum gaps before **Build editable model**. Confirm four native parts
+   and four joints, actual tracer motion for one six-second turn, pause/reset,
+   saved design reopening and original-project restoration. Reopening an existing
+   design must preserve its target coordinates and seed. Editing its physical
+   assembly must invalidate the generated reference. Follow the
+   [four-bar acceptance scope](FOUR-BAR-PATH-VERIFICATION.md); handler tests do
+   not establish browser freehand drawing acceptance.
+10. Check the current landing feature groups, creator/social links, Replit UK
    Ambassador wording and labelled file controls. Preserve the Replit build credit.
-10. Record the final source/bundle identifiers and browser acceptance matrix.
+11. Record the final source/bundle identifiers and browser acceptance matrix.
     Republish from Replit, then repeat the unchanged Windmill gate and relevant
     user flows at the public URL. Local passes do not establish deployment acceptance.
 
@@ -90,8 +116,12 @@ choices; consumed inputs never become extra simulation bodies. Empty/disconnecte
 results, shared inputs and stale/ambiguous attachments fail explicitly.
 See [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md).
 The beam tab is an analytical cantilever calculation, not general FEA or CAD
-mesh deformation. No AI API or draw-a-path mechanism optimiser is included.
-Geometry and these calculations remain in the browser.
+mesh deformation. The path designer searches a bounded planar four-bar family
+locally, then builds native parts only after an explicit accepted result. Its
+sampled complete-loop gaps measure shape agreement, not user-drawn timing or a
+guaranteed optimum. The one-turn programme uses zero gravity and an ideal input
+motor; it does not add bearing contact, finite motor capacity or general machine
+design. Geometry and these calculations remain in the browser without an AI API.
 
 Save project downloads a complete editable document with embedded imported STEP
 assets. IndexedDB retains current and previous local recovery copies; browser
@@ -114,3 +144,5 @@ do not implement them as an incidental part of importing or republishing.
 Historical numerical JSON files retain their measured source/date. New runs
 should retain new provenance rather than overwrite old evidence as if it were
 fresh. This applies equally to tests run by Replit Agent, Codex or a human.
+This document is a handoff recipe, not authorization to publish; no deployment
+or dependency changes are included in the current stage.

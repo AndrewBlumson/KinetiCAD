@@ -9,6 +9,7 @@ operating speed or user edit. Browser acceptance is recorded separately.
 | CAD mass and inertia | OCCT B-rep volume, centre of mass and full centroidal inertia; principal-axis frame passed to Rapier; analytic mass regressions cover known solids and rotated frames. | Uniform density per part. Invalid mass/inertia rejects the simulation. A material name does not establish stiffness, strength or friction. |
 | Connected assembly Boolean results | Final OCCT mesh, volume, COM and full inertia from the same connected solid; explicit homogeneous material/ground, actual-kernel freefall/equal-force/pendulum checks and revision-checked result joints. | Construction inputs are excluded. Empty/disconnected output, shared source parts, ambiguous material/ground and stale attachments reject simulation. This does not enable CAD contacts. |
 | Adjustable crank-slider | Editable native mechanism, exact rigid-link reference and actual solver position/velocity/interval-acceleration readouts, constrained parameter range and timestep checks. | Ideal velocity drive; no motor torque, bearing friction or contact-load rating. Raw one-step derivative errors are documented separately from interval readouts. |
+| Four-bar path designer | Deterministic local search for a bounded crank-rocker mechanism; four editable native bodies, exact closure/branch reference and actual solver tracer-position readout. Seven geometries have exact CAD checks; 34 motion scenarios cover both branches, ±10 RPM, selected bounds and timing/refinement. | Sampled RMS/worst path gap describes shape agreement, not exact arbitrary-path reproduction or a proven global minimum. Generated motion is one zero-gravity, six-second turn with an ideal input motor. No drawing-speed fit, actual tracer-acceleration guarantee, bearing friction, contact or drive/load rating. Manual geometry/physics edits disable the specialised reference/profile. |
 | Persistent sketch dimensions | Primitive equations, actual OCCT regeneration, saved dimensions and reject-without-commit transactions are checked. | No automatic constraint solving or multiple-loop sketch support. Validated numeric geometry is not a strength/load test. |
 | Revolute joint | One free rotation, stored local anchors and axis; ideal velocity drive; positive/negative RPM and motor release/reactivation tested. The windmill retains its unchanged ±5e-7 rad/s acceptance gate. | Finite-gain ideal drive, without a torque rating, angular travel stop, bearing friction or backlash. |
 | Prismatic joint | One free translation; velocity units mm/s; passive gravity response and live motor release tested. | Ordinary assembly sliders have no force rating or travel stops. The bounded Stewart controller is a separate exception with explicit stroke limits. |
@@ -29,14 +30,33 @@ operating speed or user edit. Browser acceptance is recorded separately.
 
 ## Evidence
 
-Current implementation baseline: `8e954ab`, **298 passing automated tests**.
+Previously recorded implementation baseline: `8e954ab`, **298 passing automated tests**.
 See [every test and its source](TEST-CATALOG.md), [equations and tolerances](MATHEMATICS-AND-PHYSICS.md)
 and [current acceptance status](CURRENT-STATUS.md). KinetiCAD remains the original
-Replit build; later Codex computer-use checks are recorded by stage. The latest
-native downloaded-Boolean-file Load check remains pending.
+Replit Agent build; later development and Codex computer-use checks are recorded
+by stage. This earlier count does not include the later four-bar addition or
+establish its full-suite/browser acceptance. Current native-file Load and browser
+status are recorded in the linked stage records.
+
+The later four-bar stage has **348/348 passing tests across 51 files**, with no
+failures, cancellations or skips. Its [complete catalog](FOUR-BAR-TEST-CATALOG.md)
+and [validation record](four-bar-validation.json) preserve the new run and source
+snapshot separately from the earlier 298-test evidence.
+
+The [four-bar guide](FOUR-BAR-PATH-VERIFICATION.md) separates its 13 mathematical/search
+tests, 28 native solids/1,008 sampled pair intersections, 34 actual solver scenarios
+and shipped-CAD-worker/preflight checks. A scenario, body or intersection is not
+an additional automated test. Its selected maximum nominal tracer-position error
+is 0.0772475 mm against a 0.1 mm gate; the maximum measured-angle closure-reference
+error is 0.000188749 mm against a 0.05 mm gate. Neither value is a universal bound
+for arbitrary user-edited mechanisms.
 
 - [Connected Boolean measurements](boolean-physics-results.json) and [browser scope](BOOLEAN-SIMULATION-VERIFICATION.md).
 - [Crank-slider equations and measured errors](CRANK-SLIDER-VERIFICATION.md).
+- [Four-bar equations, search limits and test sources](FOUR-BAR-PATH-VERIFICATION.md),
+  [search measurements](four-bar-search-results.json), [native geometry](four-bar-geometry-results.json),
+  [actual solver comparisons](four-bar-physics-results.json) and
+  [shipped CAD worker/preflight](four-bar-worker-cad-results.json).
 - [Sketch-dimension checks](SKETCH-DIMENSIONS-VERIFICATION.md).
 
 - [Six-axis numerical results](stewart-controller-results.json) and

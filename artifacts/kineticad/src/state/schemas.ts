@@ -274,6 +274,7 @@ export type SimulationState = {
   stewartMotion?: import('../physics/stewartKinematics').StewartMotionConfig;
   /** Parameters of the adjustable native crank-slider; runtime readouts are transient. */
   crankSlider?: import('../mechanisms/crankSlider').CrankSliderParams;
+  fourBar?: import('../mechanisms/fourBarSynthesis').FourBarDesign;
   /** A manual sketch geometry edit disables the original demo reference presets. */
   sketchGeometryEdited?: boolean;
 };

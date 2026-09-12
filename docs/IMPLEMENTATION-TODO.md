@@ -5,7 +5,7 @@ Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
 
 This checklist records the completed **166-test milestone** and its original
 execution notes. It is preserved as history, not the active task list or latest
-verification total. For the current 298-test implementation and pending gates,
+verification total. For the current implementation and pending gates,
 see [Current status](CURRENT-STATUS.md), [next stages](NEXT-IMPLEMENTATION-TODO.md)
 and [known issues](KNOWN-ISSUES-AND-FOLLOW-UP.md).
 

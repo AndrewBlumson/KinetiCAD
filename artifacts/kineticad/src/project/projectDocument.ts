@@ -1,3 +1,4 @@
+import { validateFourBarDesign } from '../mechanisms/fourBarSynthesis';
 import { z } from 'zod';
 import type { AppMode, Assembly, SimulationState } from '../state/schemas';
 import { validateStewartMotionConfig } from '../physics/stewartKinematics';
@@ -63,6 +64,7 @@ const stateSchema = z.object({
     forceExperiment: z.object({ kind: z.literal('equal-force'), partIds: z.array(id).min(1), forceN: positive, direction: vec3, durationMs: positive }).optional(),
     stewartMotion: z.unknown().optional(),
     crankSlider: z.unknown().optional(),
+    fourBar: z.unknown().optional(),
   }).passthrough(),
 });
 const assetSchema = z.object({ id: id, sha256: digest, fileName: z.string().max(1024), data: z.string().max(MAX_PROJECT_BYTES), preserveCoordinates: z.boolean(),
@@ -101,6 +103,10 @@ export function parseProjectState(value: unknown): ProjectState {
   if (e && (new Set(e.partIds).size !== e.partIds.length || e.partIds.some((id) => !parts.has(id) || id === assembly.groundPartId) || Math.abs(Math.hypot(...e.direction) - 1) > 1e-9)) throw new Error('Invalid force experiment.');
   if (simulation.stewartMotion !== undefined) validateStewartMotionConfig(simulation.stewartMotion);
   if (simulation.crankSlider !== undefined) simulation.crankSlider = validateCrankSliderParams(simulation.crankSlider);
+  if (simulation.fourBar !== undefined) {
+    simulation.fourBar = validateFourBarDesign(simulation.fourBar);
+    if (simulation.crankSlider || simulation.stewartMotion || simulation.forceExperiment) throw new Error('The path linkage cannot share a motion controller with another experiment.');
+  }
   simulation.running = false; simulation.paused = false; simulation.simulationTimeMs = 0;
   return parsed as unknown as ProjectState;
 }

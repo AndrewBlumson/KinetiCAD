@@ -20,7 +20,7 @@ directly: no STEP export/reimport is required. The result's final OCCT shape
 provides its mesh, volume, COM and inertia. Set its finished material and fixed
 base in the Boolean editor, then attach supported joints to the result itself.
 See [Boolean simulation](BOOLEAN-SIMULATION-VERIFICATION.md) for exact limits,
-numerical evidence and the remaining native Load-dialog acceptance check.
+numerical evidence and the completed native Chrome Fixed-joint file reopening.
 
 Export and simulation deliberately have different inclusion rules. **Hide inputs
 off** can export visible originals alongside the result. Simulation always
@@ -47,10 +47,19 @@ The original export-stage numerical evidence and source hashes remain in
 [assembly-export-results.json](assembly-export-results.json). The later direct-Boolean
 stage reran the same seven export cases and recorded
 [boolean-simulation-export-results.json](boolean-simulation-export-results.json).
-The complete current [test inventory](TEST-CATALOG.md) includes those seven cases. The planar test shapes have no curved-surface tessellation error; their STL tolerances must not be assumed for arbitrary curved geometry. Browser interaction acceptance is recorded separately by the UI verification task.
+The complete current [test inventory](FOUR-BAR-TEST-CATALOG.md) includes those seven cases. The planar test shapes have no curved-surface tessellation error; their STL tolerances must not be assumed for arbitrary curved geometry. Browser interaction acceptance is recorded separately by the UI verification task.
 
 The actual Chrome downloads for Subtract STEP/STL and subsequent applied Union/Intersect STEP exports are retained in `tests/fixtures/browser-boolean-*`. Their independent numerical check is [browser-boolean-export-results.json](browser-boolean-export-results.json), reproduced with:
 
 ```sh
 node --import ./scripts/node_modules/tsx/dist/loader.mjs artifacts/kineticad/tests/verify-browser-boolean-export.mjs
 ```
+
+The four-bar stage additionally checks actual Chrome exports of curved native
+solids. [Its downloaded-file report](evidence/four-bar/export-check.json) verifies
+four STEP solids against volume, centroid, full inertia and bounds, and a
+2,488-triangle STL with four closed components. The STL volume differs from
+exact CAD by 0.08334%, below that fixture's 0.1% gate; it is a tessellation
+approximation. Both [STEP](fixtures/four-bar/browser-custom-loop.step) and
+[STL](fixtures/four-bar/browser-custom-loop.stl) bytes are retained beside the
+complete native project. This is a separate download audit, not extra unit tests.

@@ -1,8 +1,9 @@
 # KinetiCAD developer handover
 
-Updated 12 September 2026 for implementation baseline `8e954ab` on
-`codex/built-in-demo-gallery`. Start with [Current status](docs/CURRENT-STATUS.md)
-and the [documentation index](docs/README.md).
+Updated 12 September 2026 for the bounded four-bar path-designer stage following
+baseline `8e954ab` on `codex/built-in-demo-gallery`. Local automated and scoped
+Chrome checks are complete. Start with [Current status](docs/CURRENT-STATUS.md) and the
+[documentation index](docs/README.md).
 
 ## Project identity and continuation
 
@@ -33,20 +34,59 @@ limitations are not current instructions. Current source, dated evidence and
 The source includes six editable gallery demos, a separate adjustable
 crank-slider, bounded six-axis Stewart control, complete native/imported STEP
 projects and recovery, persistent numeric sketch dimensions, and direct
-simulation of connected assembly Boolean results. The three Engineering tests
-tabs are separate scoped models: Motor & load, Friction & contact, Elastic beam.
+simulation of connected assembly Boolean results. The current stage adds a
+local **Draw a path** four-bar designer. The three Engineering tests tabs remain
+separate scoped models: Motor & load, Friction & contact, Elastic beam.
 
 Desktop WebGPU is required for CAD. Phone/tablet access to both CAD routes is
 blocked; public information pages remain readable. There is no mobile CAD or
 WebGL fallback. File controls have labels and hover/keyboard help. Creator and
 social links are included on the landing page and shared footer.
 
-**Current automated baseline: 298/298 tests and full typecheck/build pass.**
-The [test catalog](docs/TEST-CATALOG.md) lists every test, and
-[mathematics/physics](docs/MATHEMATICS-AND-PHYSICS.md) states equations and limits.
-The latest Boolean stage still awaits user review and one native downloaded-file
-Load check. Actual downloads, parser validation, refresh and new-tab recovery
-passed. Public Replit publication/route acceptance remains pending.
+**Current local acceptance: 348/348 tests across 51 files, with no failures or
+skips, and a passing full workspace typecheck/build.** Source inputs remained
+unchanged during the serialized run. The [stage catalog](docs/FOUR-BAR-TEST-CATALOG.md)
+and [acceptance record](docs/four-bar-validation.json) preserve the exact checks
+and source identities; the older [298-test catalog](docs/TEST-CATALOG.md) remains
+historical. The [four-bar guide](docs/FOUR-BAR-PATH-VERIFICATION.md) separates
+mathematics/search, native CAD, solver and interface evidence.
+
+[Actual Chrome checks](docs/evidence/four-bar/browser.json) passed the 60 mm
+preset search/build, native Save/Load and refresh, saved-target restoration,
+Pause/Resume/Reset, and reference invalidation after a manual material edit.
+Live custom-path checks used the keyboard editor; a closed freehand pointer
+stroke was exercised by seven controlled component-handler tests, not replayed
+as a successful curved gesture in Chrome. This is a coverage distinction, not
+a claim that every feature was retested through every input method.
+
+The Boolean native downloaded-file reopening gate has now passed for the fixed
+joint fixture: actual Load, Play/Pause/Reset and browser refresh retained its
+Brass material, fixed base and joint. See the [browser record](docs/evidence/boolean-reopen/browser.json).
+This does not claim native file-dialog reopening of every joint fixture.
+Andrew's review of the new stage and public Replit publication/route acceptance
+remain separate gates.
+
+### Bounded four-bar path designer
+
+**Draw a path** accepts a simple closed outline, three known-mechanism presets
+or an ellipse target. The initial width is 60 mm; 40–160 mm edits preserve aspect
+ratio. An explicit closing segment and a keyboard point editor make the target
+reviewable before search. A dedicated local worker searches a bounded family of
+planar mechanisms; progress is provisional and Cancel stops that worker.
+
+The final typical RMS and worst sampled gaps compare corresponding progress
+around complete loops. They are sampled geometric errors, not timed tracking or
+a global-optimum guarantee. **Build editable model** prepares four native parts
+and four revolute joints before entering the protected generated workspace.
+The original project remains available through **Return to my model**. Save
+retains the drawing, parameters, seed and editable history.
+
+Play drives one input crank at 10 RPM for one six-second turn with zero gravity
+and ideal joints. The measured tracer comes from the actual coupler pose; its
+screen label follows the displayed material point. No contact, finite motor
+load rating or arbitrary-machine synthesis is implied. Manual physical edits
+invalidate the generated reference. The [four-bar guide](docs/FOUR-BAR-PATH-VERIFICATION.md)
+defines the narrower mechanism domain and acceptance tolerances.
 
 ## Runtime and source map
 
@@ -66,6 +106,7 @@ configured Replit runtime remains part of the publication handoff.
 | `artifacts/kineticad/src/state/` | Typed assembly/project state, editor actions and derived body identities |
 | `artifacts/kineticad/src/project/` | Complete document validation, STEP asset restoration and IndexedDB recovery |
 | `artifacts/kineticad/src/sketch/` | Plane geometry and validated numeric sketch edits |
+| `artifacts/kineticad/src/mechanisms/` | Bounded crank-slider/four-bar geometry, local path search and generated-workspace contracts |
 | `artifacts/kineticad/src/components/` and `views/` | Modeller/Simulator, inspectors, demos and measurement panels |
 | `artifacts/kineticad/tests/` | Automated suites, standalone verifiers and fixtures |
 | `artifacts/landing/` | Replit landing app, creator profile, story and legal pages |
@@ -73,9 +114,11 @@ configured Replit runtime remains part of the publication handoff.
 | `docs/` | Current guides, dated numerical/browser evidence and follow-up register |
 
 React/Three.js and orchestration run on the main thread. The CAD worker owns
-OCCT; the assembly physics worker owns Rapier. Separate engineering experiments
-have a dedicated worker lifecycle. Use Comlink APIs and retain asynchronous
-snapshot/ownership guards. No paid AI API is needed for these calculations.
+OCCT; the assembly physics worker owns Rapier. Path synthesis runs in its own
+cancellable search worker. Separate engineering experiments have a dedicated
+worker lifecycle. Retain asynchronous snapshot/ownership guards and search
+request IDs. Search candidates must not trigger native CAD replacement; only
+the explicit, preflighted Build action does that. No paid AI API is needed.
 
 ## Physical and geometric contracts
 
@@ -167,9 +210,12 @@ Preserve historical numerical reports; rerun into a new named record.
 ## Next work
 
 Use [NEXT-IMPLEMENTATION-TODO.md](docs/NEXT-IMPLEMENTATION-TODO.md), then
-[KNOWN-ISSUES-AND-FOLLOW-UP.md](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md). Finish the
-outstanding Boolean Load-dialog check and Andrew's review before a new feature.
+[KNOWN-ISSUES-AND-FOLLOW-UP.md](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md). The current
+four-bar local acceptance is complete; stop for Andrew's testing before starting
+another feature. The prior Boolean Load-dialog gate is
+closed by the linked fixed-joint record.
 Old issues are queued for later investigation, not assumed still broken merely
-because they appear in the original handover. The draw-a-path optimiser,
-ordinary assembly force/contact/friction, and general deformation remain future
-stages. Keep each change bounded and tested before proceeding.
+because they appear in the original handover. Ordinary assembly force/contact/
+friction and general deformation remain future stages. Keep each change bounded
+and tested before proceeding; do not upgrade packages or publish as part of this
+documentation handoff.

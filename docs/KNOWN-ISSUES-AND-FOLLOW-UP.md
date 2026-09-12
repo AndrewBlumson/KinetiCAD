@@ -11,6 +11,9 @@ user requested one stage at a time, with their testing between stages. KinetiCAD
 remains the Replit-built project created by Andrew Blumson, co-built with Kevin
 Blumson; the existing Replit project remains its intended publishing destination.
 
+Later on 12 September, the native Boolean file-reopening gate passed and the
+user authorised stage 4, the local four-bar path designer. That bounded implementation is now locally verified in the [four-bar record](FOUR-BAR-PATH-VERIFICATION.md); the original audit's 298-test snapshot remains historical. The older feature requests below remain deferred.
+
 ## How to read the dispositions
 
 - **implemented:** the requested capability exists, with linked evidence for its stated scope.
@@ -52,7 +55,7 @@ git show d01f814:replit.md
 | Original issue and source | Current disposition and evidence | Concrete future acceptance check |
 | --- | --- | --- |
 | Imported STEP disappears on refresh; Save omits its B-rep. [README 100][original-step], [HANDOVER 66][original-handover] | **implemented.** Complete project files embed raw STEP assets with stable references and integrity checks. IndexedDB retains current and previous recovery copies; restoration validates/reimports before replacing the active project. Native feature history, materials, transforms and mates are preserved. See [recovery contract](PROJECT-RECOVERY.md), [actual-worker results](project-recovery-results.json) and [baseline Chrome checks](CHROME-ACCEPTANCE-2026-09-12.md). | Keep the regression path Import → native downstream edit → Save → fresh session → Load → edit → simulate/export. Include corrupt/missing assets and a failed storage commit, checking that the original project and last good recovery copy survive. Do not treat an old file that never contained STEP bytes as recoverable without its source file. |
-| Latest downloaded Boolean result-joint project has not been reopened through Chrome's native Load dialog. [Current tracked stage](NEXT-IMPLEMENTATION-TODO.md), rather than an original May defect | **not-freshly-verified.** Initial native fixture loading, actual new downloads, shipped-parser checks, refresh and new-tab recovery passed. Reopening the newly downloaded result-joint file through the native picker remains pending user availability. See [exact Chrome observations](BOOLEAN-SIMULATION-VERIFICATION.md). | Use **Load project** to choose the actual saved Fixed/Spherical result-joint file in the native dialog. Confirm material, fixed-base choice, endpoint names, pivots and attachment revisions; run, pause/reset, then save again. Record this separately from parser and recovery evidence. |
+| Latest downloaded Boolean result-joint project needed a native Chrome Load check. [Tracked stage](NEXT-IMPLEMENTATION-TODO.md), rather than an original May defect | **resolved-with-limits.** The actual saved Fixed-joint project reopened through Chrome's native chooser on port 5190. Brass, its fixed base, two bodies, the Fixed joint, 2,000 mm³ and 0.017 kg were retained; Play/Pause/Reset and another browser refresh passed. See [dated browser evidence](evidence/boolean-reopen/browser.json) and [scope](BOOLEAN-SIMULATION-VERIFICATION.md). This closes the recorded gate; the separate Spherical file's parser/recovery evidence is not relabelled as a native-dialog reopening. | Retain the actual saved-file reopening regression after loader or result-joint changes. Confirm material, grounding and joint identity, run/reset and refresh; record any expanded fixture coverage separately from the fixed-joint case already measured. |
 | STEP round trips lose subassembly grouping. [README 96][original-step], [HANDOVER 64][original-handover] | **still-open.** The app models a flat part list and exports solids, including complete disconnected Boolean compounds. Geometry/placement preservation is tested; subassembly identity and grouping are not preserved. See [export contract](ASSEMBLY-EXPORT.md) and [export measurements](assembly-export-results.json). The original README's general “hierarchy intact” sentence conflicts with its own explicit limitation; it is not evidence that hierarchy worked. | Define a nested-assembly project representation, then import/export a fixture with two subassemblies, repeated component instances and mixed transforms. Compare hierarchy, instance identity and world geometry after reopening. Until then, describe the existing path as flat geometry interchange. |
 | Imported component PRODUCT names become filename-derived names. [README 102][original-step], [HANDOVER 68][original-handover] | **binding-limitation.** The pinned OpenCascade.js importer still has a documented `extractLabelName` stub and filename fallback in [cadWorker.ts](../artifacts/kineticad/src/cad/cadWorker.ts). The historical investigation found the necessary `TDataStd_Name` access unavailable in this binding. “Permanent” in the old notes describes that implementation, not all future OCCT versions. | Before a library change, prove name extraction against the actual candidate binding with distinct PRODUCT names, repeated instances and a nested fixture. Verify association with the correct solid rather than relying only on enumeration order. Re-run durable asset and STEP regressions if the binding changes. |
 | STEP loses KinetiCAD mates. [README 94][original-step], [HANDOVER 62][original-handover] | **resolved-with-limits.** **Save project** preserves mates; this app's STEP import/export path exchanges geometry without reconstructing KinetiCAD joints or editable history. See [project contract](PROJECT-RECOVERY.md) and [export contract](ASSEMBLY-EXPORT.md). The old statement that this is universally impossible in STEP is too broad; the original handover itself mentions AP242 kinematic provisions. | If kinematic STEP interchange is later wanted, specify the exact schema and a second CAD tool, then verify axes, anchors, relative transforms and drive semantics in both directions. Continue recommending the project format for complete editable KinetiCAD assemblies. |
@@ -107,11 +110,11 @@ not silently mark the multi-loop, face-sketch or undo items complete.
 | Unsuffixed `Closed()` broke extrusion; enum coercion broke edge/face classes; builder-owned shape lifetimes broke geometry. [replit.md 64–74][original-runtime] | **resolved-with-limits.** The corrected binding calls, classification and ownership paths remain in current CAD code. Actual [operation tests](../artifacts/kineticad/tests/cad-operations.test.mjs), [STEP recovery tests](../artifacts/kineticad/tests/project-cad-roundtrip.test.mjs) and [picking tests](../artifacts/kineticad/tests/boolean-result-picking.test.mjs) cover relevant current behaviour. These old root causes are not newly observed failures. | Retain actual installed-OCCT solid validity/volume tests and real picking checks, especially after changing the binding or wrapper disposal. A mocked builder alone cannot establish B-rep validity. |
 | Empty-body deployed WASM response; `/app/app/simulator`; malformed `/appseeds/…` URLs. [replit.md 76–80][original-runtime], [277–320][original-routing] | **resolved-with-limits.** The pinned CDN WASM URL and explicit seed URL joining remain in [cadWorker.ts](../artifacts/kineticad/src/cad/cadWorker.ts) and [index.html](../artifacts/kineticad/index.html). Current Chrome reports exercise modeller/simulator navigation. The latest public deployment still needs its own check. | On an authorised Replit publish, verify non-empty WASM bytes and correct MIME/content, internal route navigation/reload, and actual JavaScript/JSON demo responses rather than an HTML fallback. Use the gallery for normal demo isolation; the legacy console seed loader is not equivalent to the durable recovery workflow. |
 
-## Suggested order when work resumes
+## Suggested deferred order after the current stage
 
-1. **Close existing acceptance gaps:** the latest downloaded Boolean native Load
-   check, then the original real partial-arc pivot workflow. These are verification
-   tasks first; do not assume a defect before measuring one.
+1. **Close the original partial-arc acceptance gap:** exercise the real edge-to-mate
+   pivot workflow. This is verification first; do not assume a defect before
+   measuring one. The separate Boolean native Load gate has now passed.
 2. **Choose one modelling feature:** undo/redo, multi-loop sketches or face
    sketches. Each needs its own document/reference model and user test stop.
 3. **Choose one engineering or interchange extension:** supported planar/local
@@ -124,9 +127,10 @@ not silently mark the multi-loop, face-sketch or undo items complete.
    decision on repository visibility, authorised Replit republish and actual
    public-route acceptance. None is implied by this documentation pass.
 
-The local draw-a-path mechanism optimiser, broader assembly physics and general
-deformation remain in the [later queue](NEXT-IMPLEMENTATION-TODO.md). No following
-implementation stage or public deployment was started by this audit.
+The local four-bar path designer is now the **implemented, locally verified** stage in
+the [tracked queue](NEXT-IMPLEMENTATION-TODO.md). Broader assembly physics and
+general deformation remain later work. The historical issue audit itself made
+no application fixes, and no public deployment was started by it.
 
 [original-readme]: https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L90-L138
 [original-step]: https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104

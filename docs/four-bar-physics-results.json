@@ -1,0 +1,4006 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T18:51:55.401Z",
+  "sourceSha256": "bf11a30fe4675759b12386ce8f7b065a93e0b49bec9f8e76a419bcd8ce892ef0",
+  "physicsWorkerSha256": "7143f9f0464f51e0f729d77c3849eb7a8ee4c9a07997545fad0ecb5442d6d342",
+  "solverProfileSha256": "1a7cc6dcaa1a7aa1abaee201983b164b25c74439a3a143bb3279e1bac46d591b",
+  "thresholds": {
+    "positionAtMeasuredAngleMm": 0.05,
+    "nominalPositionMm": 0.1,
+    "jointClosureMm": 0.05,
+    "motorSpeedRadPerSec": 0.005,
+    "outOfPlaneTiltRad": 0.00001,
+    "heightErrorMm": 0.01,
+    "groundDriftMm": 1e-7,
+    "initialPlacementMm": 0.0001
+  },
+  "solverSettings": {
+    "numSolverIterations": 32,
+    "numInternalPgsIterations": 16,
+    "motorVelocityGain": 1000000
+  },
+  "measurement": "Every fixed solver step for position, height and closure, including startup. Motor speed after 0.25s startup. Partition case records batch endpoints and exact final equality. Reference is independent cosine-law test code; no measured positions are synthesized from that reference.",
+  "scope": "120Hz ideal-motor, zero-gravity, no-contact factory mechanisms; 240Hz is a convergence diagnostic. Exact OCCT mass and inertia from all actual solid parts. No tracer velocity/acceleration or finite motor strength claim.",
+  "cases": [
+    {
+      "name": "geometry-0/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00001921851617724652,
+        "nominalPositionMm": 0.0014124046998297201,
+        "jointClosureMm": 0.0000345836895936877,
+        "motorSpeedRadPerSec": 0.0004536204876675054,
+        "outOfPlaneTiltRad": 1.7707266294863024e-7,
+        "heightErrorMm": 0.000007698495302577157,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -2.246110852865968e-9,
+            -1.2153483774923757e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.0074742817778315e-8,
+            -2.42222704116557e-8,
+            0.000017545753507874906,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            25.000003814697266,
+            -0.0008774120360612869,
+            51
+          ],
+          "rotationQuat": [
+            -8.604075674156775e-9,
+            -1.188644827010421e-8,
+            0.41611602902412415,
+            0.9093114733695984
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            -7.078051567077637e-8,
+            42
+          ],
+          "rotationQuat": [
+            -6.957250331396381e-9,
+            1.8368445653393906e-9,
+            0.784526526927948,
+            0.6200952529907227
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-0/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00001614753962066851,
+        "nominalPositionMm": 0.001526462810469763,
+        "jointClosureMm": 0.00003318243801276486,
+        "motorSpeedRadPerSec": 0.0004566616473422602,
+        "outOfPlaneTiltRad": 1.8014436524781127e-7,
+        "heightErrorMm": 0.000008591371980060103,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            2.2500898921862245e-7,
+            5.324386487259858e-10,
+            30
+          ],
+          "rotationQuat": [
+            5.171140848858613e-9,
+            1.813144479001494e-8,
+            -0.000016286314348690212,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            25,
+            0.0008138557896018028,
+            51
+          ],
+          "rotationQuat": [
+            -1.669302562845587e-8,
+            6.223552784234698e-9,
+            0.41610583662986755,
+            0.9093161821365356
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            -4.0046870708465576e-8,
+            42
+          ],
+          "rotationQuat": [
+            -7.1671646395543576e-9,
+            9.396003974870837e-10,
+            0.7845195531845093,
+            0.6201040744781494
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-0/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000016093814923817995,
+        "nominalPositionMm": 0.0014489789509067104,
+        "jointClosureMm": 0.000029311177046130118,
+        "motorSpeedRadPerSec": 0.00044885211608547415,
+        "outOfPlaneTiltRad": 1.845903442222127e-7,
+        "heightErrorMm": 0.000007790515262229292,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -4.329228886490455e-8,
+            -2.056962655760941e-10,
+            30
+          ],
+          "rotationQuat": [
+            2.541322174920424e-8,
+            1.8083228248144678e-9,
+            0.00002294003206770867,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            24.999998092651367,
+            -0.001144804060459137,
+            51
+          ],
+          "rotationQuat": [
+            5.025696303562199e-9,
+            5.704040351162121e-9,
+            -0.416103720664978,
+            0.909317135810852
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            7.059425115585327e-7,
+            42
+          ],
+          "rotationQuat": [
+            -7.885477687485931e-11,
+            9.702308401138282e-11,
+            -0.7845181226730347,
+            0.6201058030128479
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-0/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00001910448341391469,
+        "nominalPositionMm": 0.0013763999309208143,
+        "jointClosureMm": 0.000032841290908061345,
+        "motorSpeedRadPerSec": 0.0005000538287387446,
+        "outOfPlaneTiltRad": 1.910331299222989e-7,
+        "heightErrorMm": 0.00000714236546173197,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            5.458554142023786e-7,
+            2.7912872013757806e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.661825677068407e-9,
+            -1.910176550268261e-8,
+            -0.000024450040655210614,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            25.000001907348633,
+            0.0012227566912770271,
+            51
+          ],
+          "rotationQuat": [
+            1.167225072151723e-8,
+            4.01230293434196e-9,
+            -0.4161180853843689,
+            0.9093105792999268
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            6.454065442085266e-7,
+            42
+          ],
+          "rotationQuat": [
+            1.5062479041816346e-10,
+            1.516999681427933e-8,
+            -0.7845278978347778,
+            0.6200934648513794
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-1/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 45,
+        "rockerLengthMm": 45,
+        "couplerPointLocalMm": [
+          22.5,
+          -20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 52866.238265007036
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3721.3881662932745
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5711.29947117844
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000013042573310784109,
+        "nominalPositionMm": 0.0006047651493299083,
+        "jointClosureMm": 0.000020179149330524723,
+        "motorSpeedRadPerSec": 0.0005080408511386469,
+        "outOfPlaneTiltRad": 1.6651368702495974e-7,
+        "heightErrorMm": 0.000008086478672453268,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            1.8827586245606653e-7,
+            9.606379580695545e-11,
+            30
+          ],
+          "rotationQuat": [
+            4.601109715451912e-9,
+            -9.506548437343554e-9,
+            0.000014978984836488962,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15.000001907348633,
+            -0.00044961273670196533,
+            51
+          ],
+          "rotationQuat": [
+            1.4767735478926625e-8,
+            -5.636257682795076e-8,
+            0.5000042915344238,
+            0.8660229444503784
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            5.126930773258209e-7,
+            42
+          ],
+          "rotationQuat": [
+            2.2122369713883927e-8,
+            2.9683031033123086e-10,
+            0.8660278916358948,
+            0.4999956786632538
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-1/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 45,
+        "rockerLengthMm": 45,
+        "couplerPointLocalMm": [
+          22.5,
+          -20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 52866.238265007036
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3721.3881662932745
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5711.29947117844
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000015086730305297686,
+        "nominalPositionMm": 0.0006038291813328802,
+        "jointClosureMm": 0.000021948534009265224,
+        "motorSpeedRadPerSec": 0.00042393737456936087,
+        "outOfPlaneTiltRad": 1.883806414747305e-7,
+        "heightErrorMm": 0.000007488833297486508,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            7.401513357763179e-8,
+            9.113955423689646e-11,
+            30
+          ],
+          "rotationQuat": [
+            -2.1028668584222032e-8,
+            -1.659519810459642e-8,
+            -0.000011716721928678453,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15.000001907348633,
+            0.00035059964284300804,
+            51
+          ],
+          "rotationQuat": [
+            -4.943644782429146e-8,
+            6.548067688072479e-8,
+            0.49999669194221497,
+            0.866027295589447
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -1.4156103134155273e-7,
+            42
+          ],
+          "rotationQuat": [
+            -5.983015682886617e-8,
+            2.958901390570645e-8,
+            0.8660234212875366,
+            0.5000033974647522
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-1/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 45,
+        "rockerLengthMm": 45,
+        "couplerPointLocalMm": [
+          22.5,
+          -20
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 52866.238265007036
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3721.3881662932745
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5711.29947117844
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000014012803823054963,
+        "nominalPositionMm": 0.000763758137025054,
+        "jointClosureMm": 0.000017571310158560007,
+        "motorSpeedRadPerSec": 0.0005190081057773188,
+        "outOfPlaneTiltRad": 1.7604239577029162e-7,
+        "heightErrorMm": 0.000005527477988209739,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            3.4406600235570295e-8,
+            -4.353422899949777e-10,
+            30
+          ],
+          "rotationQuat": [
+            -2.1027684482533004e-8,
+            -7.49734319072104e-9,
+            0.000016257414245046675,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15.000001907348633,
+            -0.0004906300455331802,
+            51
+          ],
+          "rotationQuat": [
+            -3.66849981503492e-8,
+            2.3016738737169362e-8,
+            -0.4999953508377075,
+            0.8660281300544739
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -8.89413058757782e-8,
+            42
+          ],
+          "rotationQuat": [
+            -6.734058310975399e-10,
+            -7.624458397970102e-9,
+            -0.8660227060317993,
+            0.5000047087669373
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-1/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 45,
+        "rockerLengthMm": 45,
+        "couplerPointLocalMm": [
+          22.5,
+          -20
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 52866.238265007036
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3721.3881662932745
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5711.29947117844
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000013398292144505876,
+        "nominalPositionMm": 0.0007606355284922741,
+        "jointClosureMm": 0.000021341129338596895,
+        "motorSpeedRadPerSec": 0.0004051632342563227,
+        "outOfPlaneTiltRad": 1.9764757038382758e-7,
+        "heightErrorMm": 0.000007381580275023225,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            3.5271838783046405e-8,
+            1.6732602803326557e-10,
+            30
+          ],
+          "rotationQuat": [
+            -3.138977744399085e-9,
+            -2.555631262168845e-8,
+            -0.00001690915087237954,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15.000000953674316,
+            0.0005070427432656288,
+            51
+          ],
+          "rotationQuat": [
+            8.593826983371855e-9,
+            -3.030181661145548e-9,
+            -0.5000049471855164,
+            0.8660224676132202
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -1.6530975699424744e-7,
+            42
+          ],
+          "rotationQuat": [
+            6.29328256174233e-10,
+            7.357007891783951e-9,
+            -0.8660281896591187,
+            0.4999951124191284
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-2/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00007534214918994731,
+        "nominalPositionMm": 0.07724749181512543,
+        "jointClosureMm": 0.000030388262408207564,
+        "motorSpeedRadPerSec": 0.0012253231463656977,
+        "outOfPlaneTiltRad": 2.007044020025756e-7,
+        "heightErrorMm": 0.000012988107954470252,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -4.449736934475368e-7,
+            -3.8049299821985016e-10,
+            30
+          ],
+          "rotationQuat": [
+            2.2731377669060748e-8,
+            1.675662275602008e-8,
+            0.0002418605436105281,
+            -0.9999999403953552
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            37.999996185302734,
+            -0.018375813961029053,
+            50.999996185302734
+          ],
+          "rotationQuat": [
+            1.7680665820307695e-8,
+            -7.359536979834047e-9,
+            0.6427361369132996,
+            0.7660876512527466
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            0.000002998858690261841,
+            42
+          ],
+          "rotationQuat": [
+            7.52704920614633e-9,
+            1.2919437741842899e-9,
+            0.7666243314743042,
+            0.6420958638191223
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-2/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00008596407984782499,
+        "nominalPositionMm": 0.07425925867586074,
+        "jointClosureMm": 0.000028840907010463123,
+        "motorSpeedRadPerSec": 0.0010090774951205805,
+        "outOfPlaneTiltRad": 1.909931257008511e-7,
+        "heightErrorMm": 0.0000106072115357847,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            9.054267025021545e-7,
+            -3.438959672585895e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.3352800642962848e-8,
+            -1.711346442334616e-8,
+            -0.00021478354756254703,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            38,
+            0.01632826030254364,
+            50.999996185302734
+          ],
+          "rotationQuat": [
+            -1.2457151754574625e-8,
+            -4.110047413519169e-8,
+            0.6421316266059875,
+            0.7665943503379822
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            0.000003943219780921936,
+            42
+          ],
+          "rotationQuat": [
+            -2.30447607663109e-8,
+            1.099123458914164e-9,
+            0.7661176323890686,
+            0.6427003741264343
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-2/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00008207469813730492,
+        "nominalPositionMm": 0.05900160684175808,
+        "jointClosureMm": 0.00003199562036525535,
+        "motorSpeedRadPerSec": 0.0008955293240322515,
+        "outOfPlaneTiltRad": 2.290727681878764e-7,
+        "heightErrorMm": 0.00001270689117660595,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            6.151722118374892e-7,
+            -7.675379776195257e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.106294433839139e-8,
+            6.348876535611225e-9,
+            0.0002246991207357496,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            37.999996185302734,
+            -0.01708056777715683,
+            51
+          ],
+          "rotationQuat": [
+            1.9612333090890388e-8,
+            -6.304775812537855e-9,
+            -0.6421183943748474,
+            0.7666054368019104
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -0.000002298504114151001,
+            42
+          ],
+          "rotationQuat": [
+            4.071559200902186e-10,
+            2.3877614552247906e-8,
+            -0.7661066055297852,
+            0.6427135467529297
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-2/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00008281291979105531,
+        "nominalPositionMm": 0.058138046145937844,
+        "jointClosureMm": 0.000027354589751680785,
+        "motorSpeedRadPerSec": 0.0009586519656406001,
+        "outOfPlaneTiltRad": 2.0671405834779772e-7,
+        "heightErrorMm": 0.000012938875926238325,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            0.000001259761916116986,
+            9.882106244418765e-10,
+            30
+          ],
+          "rotationQuat": [
+            -1.5954795262729249e-9,
+            -6.814191988446794e-10,
+            -0.00021918148559052497,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            37.99999237060547,
+            0.016651857644319534,
+            51
+          ],
+          "rotationQuat": [
+            1.4769414136139858e-8,
+            -2.8680434027705815e-8,
+            -0.6427062153816223,
+            0.7661126852035522
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -0.000002345070242881775,
+            42
+          ],
+          "rotationQuat": [
+            -4.69462968499812e-10,
+            -2.9340652574205706e-8,
+            -0.7665992975234985,
+            0.6421257853507996
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-3/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 180,
+        "rockerLengthMm": 150,
+        "couplerPointLocalMm": [
+          -45,
+          -90
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15139.050467266481
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12011.299471178394
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00005011972662901756,
+        "nominalPositionMm": 0.009160066899646003,
+        "jointClosureMm": 0.00007091280215809884,
+        "motorSpeedRadPerSec": 0.0008625692782626704,
+        "outOfPlaneTiltRad": 2.1886174690904587e-7,
+        "heightErrorMm": 0.000021628964724129673,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            4.6007616560928e-7,
+            1.9064960721237867e-9,
+            30
+          ],
+          "rotationQuat": [
+            2.0212164386634868e-8,
+            -1.509435065827347e-8,
+            0.00008529266051482409,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            50,
+            -0.008527956902980804,
+            51.000003814697266
+          ],
+          "rotationQuat": [
+            -2.5302377082425664e-8,
+            -1.3453207436953107e-8,
+            0.4714386463165283,
+            0.881898820400238
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            1.30385160446167e-7,
+            42
+          ],
+          "rotationQuat": [
+            -7.530185364146291e-9,
+            -1.798841520184169e-9,
+            0.7303231954574585,
+            0.6831017136573792
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-3/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 180,
+        "rockerLengthMm": 150,
+        "couplerPointLocalMm": [
+          -45,
+          -90
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15139.050467266481
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12011.299471178394
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00004574739923209902,
+        "nominalPositionMm": 0.007726289302683427,
+        "jointClosureMm": 0.00006629556440042993,
+        "motorSpeedRadPerSec": 0.000883250767208521,
+        "outOfPlaneTiltRad": 1.9732947334998618e-7,
+        "heightErrorMm": 0.000022299602896680426,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            7.839522027097701e-7,
+            -4.324682834067062e-10,
+            30
+          ],
+          "rotationQuat": [
+            -1.87316224753431e-8,
+            -1.4621002186743226e-9,
+            -0.00007113520405255258,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            50.000003814697266,
+            0.007114525884389877,
+            51
+          ],
+          "rotationQuat": [
+            -5.936128921746331e-9,
+            1.4034601258927637e-9,
+            0.4713759124279022,
+            0.8819323778152466
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            2.849847078323364e-7,
+            42
+          ],
+          "rotationQuat": [
+            7.448984096214417e-9,
+            1.0029332919714307e-9,
+            0.7302746176719666,
+            0.6831536293029785
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-3/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 180,
+        "rockerLengthMm": 150,
+        "couplerPointLocalMm": [
+          -45,
+          -90
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15139.050467266481
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12011.299471178394
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00004868071878738961,
+        "nominalPositionMm": 0.018923915768772576,
+        "jointClosureMm": 0.00007304363190104294,
+        "motorSpeedRadPerSec": 0.0008625083508266851,
+        "outOfPlaneTiltRad": 1.9061278083718522e-7,
+        "heightErrorMm": 0.000019357362504024422,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            0.000001089045440494374,
+            3.6277253423477873e-10,
+            30
+          ],
+          "rotationQuat": [
+            -1.5045197088170426e-8,
+            2.503277762855305e-8,
+            0.00007050749263726175,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            50.000003814697266,
+            -0.0070618074387311935,
+            51
+          ],
+          "rotationQuat": [
+            1.2436881746680228e-8,
+            1.9042365906329906e-8,
+            -0.47137629985809326,
+            0.8819321990013123
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            -0.000004939734935760498,
+            42
+          ],
+          "rotationQuat": [
+            2.750794436678916e-8,
+            -7.682090519267604e-10,
+            -0.7302748560905457,
+            0.6831534504890442
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-3/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 180,
+        "rockerLengthMm": 150,
+        "couplerPointLocalMm": [
+          -45,
+          -90
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15139.050467266481
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12011.299471178394
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000039605897294070376,
+        "nominalPositionMm": 0.01874289264036557,
+        "jointClosureMm": 0.00005850274899542613,
+        "motorSpeedRadPerSec": 0.001118689114071314,
+        "outOfPlaneTiltRad": 1.873056680338089e-7,
+        "heightErrorMm": 0.000019375906184393443,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            6.40631981241313e-7,
+            4.796797403727737e-10,
+            30
+          ],
+          "rotationQuat": [
+            -8.175591870163146e-10,
+            -2.595088055556971e-8,
+            -0.00009107933146879077,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            50.000003814697266,
+            0.009111257269978523,
+            50.999996185302734
+          ],
+          "rotationQuat": [
+            -6.315881595497785e-9,
+            -5.485242038361093e-9,
+            -0.47144097089767456,
+            0.8818976283073425
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            6.370246410369873e-7,
+            42
+          ],
+          "rotationQuat": [
+            7.243249888766456e-10,
+            -1.4742518317234499e-8,
+            -0.7303249835968018,
+            0.6830998063087463
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-4/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 148,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 35,
+        "rockerLengthMm": 130,
+        "couplerPointLocalMm": [
+          43.75,
+          17.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 89826.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3302.2208576128774
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10811.299471178403
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00016386625328748558,
+        "nominalPositionMm": 0.0025248562962965422,
+        "jointClosureMm": 0.00005771138475033814,
+        "motorSpeedRadPerSec": 0.0038795762600674077,
+        "outOfPlaneTiltRad": 2.3674184409723502e-7,
+        "heightErrorMm": 0.000014437358480279272,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            4.150846280026599e-7,
+            -5.127096525114894e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.009385908190552e-8,
+            1.585891595823341e-8,
+            0.000024196735466830432,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            14.999999046325684,
+            -0.0007254737429320812,
+            51
+          ],
+          "rotationQuat": [
+            5.168433858671051e-8,
+            3.0438432219170863e-8,
+            0.6259707808494568,
+            0.7798464298248291
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            148,
+            -5.811452865600586e-7,
+            42
+          ],
+          "rotationQuat": [
+            1.4847277185481289e-8,
+            -2.0464752115145757e-10,
+            0.9911701679229736,
+            0.1325960010290146
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-4/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 148,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 35,
+        "rockerLengthMm": 130,
+        "couplerPointLocalMm": [
+          43.75,
+          17.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 89826.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3302.2208576128774
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10811.299471178403
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.0001887488556878162,
+        "nominalPositionMm": 0.0025956121267408927,
+        "jointClosureMm": 0.00006313712820148526,
+        "motorSpeedRadPerSec": 0.0035037702975497798,
+        "outOfPlaneTiltRad": 2.142048121508353e-7,
+        "heightErrorMm": 0.000011411351380274937,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -1.5896227978373645e-7,
+            4.495129823922639e-10,
+            30
+          ],
+          "rotationQuat": [
+            -1.3347599692181689e-9,
+            -3.3180786118691685e-8,
+            -0.000030953335226513445,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15.000000953674316,
+            0.0009295851923525333,
+            51.000003814697266
+          ],
+          "rotationQuat": [
+            2.8510873661957703e-8,
+            -1.495870272094635e-8,
+            0.6259657144546509,
+            0.7798505425453186
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            148,
+            -2.775341272354126e-7,
+            42.000003814697266
+          ],
+          "rotationQuat": [
+            2.986762837053902e-8,
+            2.965704837265548e-8,
+            0.9911693930625916,
+            0.13260217010974884
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-4/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 148,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 35,
+        "rockerLengthMm": 130,
+        "couplerPointLocalMm": [
+          43.75,
+          17.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 89826.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3302.2208576128774
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10811.299471178403
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00015819487876231195,
+        "nominalPositionMm": 0.004002117098014407,
+        "jointClosureMm": 0.00006676242751533517,
+        "motorSpeedRadPerSec": 0.004024476474307592,
+        "outOfPlaneTiltRad": 2.488917409452923e-7,
+        "heightErrorMm": 0.000013293196239771987,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            3.799007686211553e-7,
+            -1.7793480577843468e-10,
+            30
+          ],
+          "rotationQuat": [
+            -2.8793810002980536e-8,
+            2.784847019654535e-8,
+            0.00004316226113587618,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            15,
+            -0.001296013593673706,
+            51
+          ],
+          "rotationQuat": [
+            9.600735317860654e-9,
+            -1.8985442551411325e-8,
+            -0.6259644627571106,
+            0.7798515558242798
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            148,
+            6.118789315223694e-7,
+            42
+          ],
+          "rotationQuat": [
+            -1.0724372778714297e-11,
+            -5.6740646903197245e-11,
+            -0.9911692142486572,
+            0.13260352611541748
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-4/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 148,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 35,
+        "rockerLengthMm": 130,
+        "couplerPointLocalMm": [
+          43.75,
+          17.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 89826.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3302.2208576128774
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10811.299471178403
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00015047639360901482,
+        "nominalPositionMm": 0.0031313589771250383,
+        "jointClosureMm": 0.00005654690412458306,
+        "motorSpeedRadPerSec": 0.0035260015072597906,
+        "outOfPlaneTiltRad": 2.1037207383427928e-7,
+        "heightErrorMm": 0.000014797455243353852,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            1.376253067064681e-7,
+            9.056844163524147e-11,
+            30
+          ],
+          "rotationQuat": [
+            9.749941298764497e-9,
+            4.2832649427282377e-8,
+            -0.00001556290953885764,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            14.999999046325684,
+            0.00046642450615763664,
+            51
+          ],
+          "rotationQuat": [
+            3.1961294721938316e-10,
+            1.200771038156745e-9,
+            -0.6259701251983643,
+            0.7798469662666321
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            148,
+            6.146728992462158e-7,
+            42
+          ],
+          "rotationQuat": [
+            -1.0458132623791805e-11,
+            -6.119686354888465e-12,
+            -0.9911700487136841,
+            0.1325969696044922
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-5/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 200,
+        "rockerLengthMm": 200,
+        "couplerPointLocalMm": [
+          100,
+          0
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12623.68905445013
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15011.299471178372
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00006563515701295489,
+        "nominalPositionMm": 0.02254559344375658,
+        "jointClosureMm": 0.00009027226773122774,
+        "motorSpeedRadPerSec": 0.00168189472534519,
+        "outOfPlaneTiltRad": 2.355086339281889e-7,
+        "heightErrorMm": 0.000015465581832074804,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            0.0000016921183032536646,
+            -9.476242013306546e-11,
+            30
+          ],
+          "rotationQuat": [
+            -1.3479874994004604e-8,
+            5.386084467318142e-9,
+            0.0001707777992123738,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            49.99999237060547,
+            -0.017082713544368744,
+            51
+          ],
+          "rotationQuat": [
+            -1.7313336542201796e-8,
+            -3.0653097837785026e-8,
+            0.6021416783332825,
+            0.7983892560005188
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            0.000004800036549568176,
+            42
+          ],
+          "rotationQuat": [
+            1.470475119447201e-8,
+            4.752345184044771e-10,
+            0.7984827160835266,
+            0.6020177602767944
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-5/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 200,
+        "rockerLengthMm": 200,
+        "couplerPointLocalMm": [
+          100,
+          0
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12623.68905445013
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15011.299471178372
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00006482779774571204,
+        "nominalPositionMm": 0.022116470342716455,
+        "jointClosureMm": 0.0000900616120052473,
+        "motorSpeedRadPerSec": 0.001724629932857935,
+        "outOfPlaneTiltRad": 2.8540707827583596e-7,
+        "heightErrorMm": 0.000014854340456338377,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -3.0165961106831674e-7,
+            1.2942626970158244e-9,
+            30
+          ],
+          "rotationQuat": [
+            -1.2208169586358508e-8,
+            4.543081999486276e-8,
+            -0.0001434837031411007,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            49.99999237060547,
+            0.014345284551382065,
+            51.000003814697266
+          ],
+          "rotationQuat": [
+            3.042522678242676e-8,
+            -8.007360996487023e-9,
+            0.6020275354385376,
+            0.7984752655029297
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            -5.271285772323608e-7,
+            42
+          ],
+          "rotationQuat": [
+            2.176679636534118e-8,
+            -2.9662448497447258e-8,
+            0.7983967065811157,
+            0.6021318435668945
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-5/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 200,
+        "rockerLengthMm": 200,
+        "couplerPointLocalMm": [
+          100,
+          0
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12623.68905445013
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15011.299471178372
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00007604830549438736,
+        "nominalPositionMm": 0.021904048191379824,
+        "jointClosureMm": 0.00010879091772425638,
+        "motorSpeedRadPerSec": 0.0016176992001308843,
+        "outOfPlaneTiltRad": 2.152302940151464e-7,
+        "heightErrorMm": 0.000016023378385909837,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            4.1867087929858826e-7,
+            -7.468999863036174e-10,
+            30
+          ],
+          "rotationQuat": [
+            -6.973202015814195e-10,
+            2.4565178335933524e-8,
+            0.00015570649702567607,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            49.999996185302734,
+            -0.015569902956485748,
+            51
+          ],
+          "rotationQuat": [
+            1.5040438228197672e-8,
+            -1.4690515470761056e-8,
+            -0.602023184299469,
+            0.7984786033630371
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            -0.0000029280781745910645,
+            42
+          ],
+          "rotationQuat": [
+            -1.063257593081346e-9,
+            7.60749152561857e-9,
+            -0.7983933091163635,
+            0.6021361947059631
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-5/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 200,
+        "rockerLengthMm": 200,
+        "couplerPointLocalMm": [
+          100,
+          0
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12623.68905445013
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15011.299471178372
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000060958814649066834,
+        "nominalPositionMm": 0.022291637594091234,
+        "jointClosureMm": 0.00008989960068700028,
+        "motorSpeedRadPerSec": 0.0018223232684360102,
+        "outOfPlaneTiltRad": 2.504084858947184e-7,
+        "heightErrorMm": 0.000013877722906840972,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            6.712436970701674e-7,
+            -4.706587897196357e-11,
+            30
+          ],
+          "rotationQuat": [
+            1.1027836421817483e-8,
+            2.7061608065537257e-8,
+            -0.00016788029461167753,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            49.999996185302734,
+            0.016793716698884964,
+            51.000003814697266
+          ],
+          "rotationQuat": [
+            -1.4288134231321692e-8,
+            3.233054712836747e-8,
+            -0.6021406650543213,
+            0.7983900308609009
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            160,
+            -0.0000011119991540908813,
+            42
+          ],
+          "rotationQuat": [
+            -1.579331110335147e-9,
+            2.2475980188119138e-8,
+            -0.7984818816184998,
+            0.6020187735557556
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-6/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": 1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 122280.35527904391
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4203.294278300049
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8449.830441764188
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8375.993798200307
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000021866519638965226,
+        "nominalPositionMm": 0.0011890440081126635,
+        "jointClosureMm": 0.00004676887515152823,
+        "motorSpeedRadPerSec": 0.0014166540560947016,
+        "outOfPlaneTiltRad": 2.032621985084868e-7,
+        "heightErrorMm": 0.000009056321793821098,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0.000004133118379681399
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            -0.7348568439483643,
+            0.6782222390174866
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -22.441049575805664,
+            -29.33350944519043,
+            30
+          ],
+          "rotationQuat": [
+            2.421675526775857e-9,
+            5.738570507674012e-9,
+            0.7348690629005432,
+            -0.6782090067863464
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            -24.383813858032227,
+            -53.52042007446289,
+            51
+          ],
+          "rotationQuat": [
+            -7.807874347065535e-9,
+            -2.9278641733299082e-9,
+            -0.44654518365859985,
+            0.8947610259056091
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            -35.16722869873047,
+            -187.84274291992188,
+            42
+          ],
+          "rotationQuat": [
+            4.380890761268574e-9,
+            -6.041700473247147e-9,
+            0.3026025891304016,
+            0.9531168341636658
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-6/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": 1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 122280.35527904391
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4203.294278300049
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8449.830441764188
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8375.993798200307
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000022186086896738713,
+        "nominalPositionMm": 0.00181410826979631,
+        "jointClosureMm": 0.000039642984599060836,
+        "motorSpeedRadPerSec": 0.0012818866314663335,
+        "outOfPlaneTiltRad": 2.0107561276962368e-7,
+        "heightErrorMm": 0.000007802796929468059,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0.000004133118379681399
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            -0.7348568439483643,
+            0.6782222390174866
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            30
+          ],
+          "rotationQuat": [
+            2.262050813328642e-8,
+            1.8613617314144904e-8,
+            0.7348368167877197,
+            -0.6782439947128296
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            -24.381515502929688,
+            -53.520606994628906,
+            51
+          ],
+          "rotationQuat": [
+            2.014501276903502e-8,
+            -1.3678529420246832e-8,
+            -0.4465528428554535,
+            0.8947572112083435
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            -35.16722869873047,
+            -187.84274291992188,
+            42
+          ],
+          "rotationQuat": [
+            -2.7581187111991312e-8,
+            -1.4401921433204734e-8,
+            0.3025944232940674,
+            0.9531193375587463
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-6/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": -1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 122280.35527904391
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4203.294278300049
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8449.830441764188
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8375.993798200307
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.000024302236836659614,
+        "nominalPositionMm": 0.001219461000067347,
+        "jointClosureMm": 0.00005608885750441353,
+        "motorSpeedRadPerSec": 0.001229911381222193,
+        "outOfPlaneTiltRad": 1.8672027106560598e-7,
+        "heightErrorMm": 0.000010503656305616005,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0.000004133118379681399
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            -0.7348568439483643,
+            0.6782222390174866
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -22.441049575805664,
+            -29.33350944519043,
+            30
+          ],
+          "rotationQuat": [
+            -1.1925708420790215e-8,
+            -1.8762586151410687e-8,
+            0.7348639369010925,
+            -0.6782145500183105
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            -24.38344955444336,
+            -53.520450592041016,
+            51
+          ],
+          "rotationQuat": [
+            3.4364182610602256e-9,
+            -9.280016755042197e-9,
+            -0.927625834941864,
+            0.3735106885433197
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            -35.16722869873047,
+            -187.84274291992188,
+            42
+          ],
+          "rotationQuat": [
+            9.881359619434704e-11,
+            9.59919366216866e-10,
+            -0.9258445501327515,
+            -0.3779044449329376
+          ]
+        }
+      ]
+    },
+    {
+      "name": "geometry-6/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": -1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 122280.35527904391
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4203.294278300049
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8449.830441764188
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8375.993798200307
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00002058972967175059,
+        "nominalPositionMm": 0.0012728802275956902,
+        "jointClosureMm": 0.0000619943873247636,
+        "motorSpeedRadPerSec": 0.000953764384769018,
+        "outOfPlaneTiltRad": 1.9278669955161362e-7,
+        "heightErrorMm": 0.000007948998309359467,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0.000004133118379681399
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            -0.7348568439483643,
+            0.6782222390174866
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -22.441049575805664,
+            -29.333507537841797,
+            30
+          ],
+          "rotationQuat": [
+            1.0550993856384139e-8,
+            5.916853229592789e-9,
+            0.7348498702049255,
+            -0.6782297492027283
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            -24.382448196411133,
+            -53.520530700683594,
+            51
+          ],
+          "rotationQuat": [
+            4.219848470654597e-9,
+            -1.3853068026037363e-8,
+            -0.9276272654533386,
+            0.37350723147392273
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            -35.16722869873047,
+            -187.84274291992188,
+            42
+          ],
+          "rotationQuat": [
+            -5.744972053634001e-9,
+            8.567592857389172e-9,
+            -0.9258431792259216,
+            -0.37790781259536743
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default-240Hz",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1440,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00002199531610621956,
+        "nominalPositionMm": 0.0012236528855140993,
+        "jointClosureMm": 0.000034221195512757774,
+        "motorSpeedRadPerSec": 0.0010999149737582758,
+        "outOfPlaneTiltRad": 1.9899092841566066e-7,
+        "heightErrorMm": 0.000008885626762378251,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            6.333916644507553e-7,
+            -3.534483816736156e-11,
+            30
+          ],
+          "rotationQuat": [
+            2.529590981126262e-9,
+            3.537608250780977e-8,
+            0.000015207231626845896,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            25,
+            -0.0007591205649077892,
+            51
+          ],
+          "rotationQuat": [
+            -1.967906282374088e-9,
+            2.436523516280431e-8,
+            0.41611531376838684,
+            0.909311830997467
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            4.44706529378891e-7,
+            41.999996185302734
+          ],
+          "rotationQuat": [
+            -7.272645152767154e-9,
+            1.2416448980090422e-9,
+            0.7845260500907898,
+            0.6200959086418152
+          ]
+        }
+      ]
+    },
+    {
+      "name": "render-partitions",
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 720,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00001921851617724652,
+        "nominalPositionMm": 0.0014124046998297201,
+        "jointClosureMm": 0.0000345836895936877,
+        "motorSpeedRadPerSec": 0.00037691063263278757,
+        "outOfPlaneTiltRad": 1.485779895124049e-7,
+        "heightErrorMm": 0.000006305219670821316,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            -2.246110852865968e-9,
+            -1.2153483774923757e-10,
+            30
+          ],
+          "rotationQuat": [
+            1.0074742817778315e-8,
+            -2.42222704116557e-8,
+            0.000017545753507874906,
+            -1
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            25.000003814697266,
+            -0.0008774120360612869,
+            51
+          ],
+          "rotationQuat": [
+            -8.604075674156775e-9,
+            -1.188644827010421e-8,
+            0.41611602902412415,
+            0.9093114733695984
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            100,
+            -7.078051567077637e-8,
+            42
+          ],
+          "rotationQuat": [
+            -6.957250331396381e-9,
+            1.8368445653393906e-9,
+            0.784526526927948,
+            0.6200952529907227
+          ]
+        }
+      ]
+    },
+    {
+      "name": "near-toggle-240Hz/branch-1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1440,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00008169282727492175,
+        "nominalPositionMm": 0.0430669491423675,
+        "jointClosureMm": 0.00003058759729999879,
+        "motorSpeedRadPerSec": 0.002391309207461889,
+        "outOfPlaneTiltRad": 2.2897739555513176e-7,
+        "heightErrorMm": 0.000015212414893994719,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            0.0000019263250123913167,
+            -4.036147527308742e-10,
+            30
+          ],
+          "rotationQuat": [
+            -5.671849212518509e-9,
+            5.732050389894994e-9,
+            0.00013419213064480573,
+            -0.9999999403953552
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            37.999996185302734,
+            -0.01020095869898796,
+            51
+          ],
+          "rotationQuat": [
+            2.7610319364157476e-8,
+            6.157248577665086e-8,
+            0.6425936818122864,
+            0.7662071585655212
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            1.862645149230957e-9,
+            42
+          ],
+          "rotationQuat": [
+            2.7490667520169154e-8,
+            8.692294528600542e-8,
+            0.7665049433708191,
+            0.642238438129425
+          ]
+        }
+      ]
+    },
+    {
+      "name": "near-toggle-240Hz/branch-1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1440,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00005883190325000249,
+        "nominalPositionMm": 0.03998335482448195,
+        "jointClosureMm": 0.000027018251764316186,
+        "motorSpeedRadPerSec": 0.0019961304126010493,
+        "outOfPlaneTiltRad": 2.9588865597043165e-7,
+        "heightErrorMm": 0.000014599925222569254,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            0.0000012361413155304035,
+            -1.9548750118669744e-10,
+            30
+          ],
+          "rotationQuat": [
+            -2.8542626040461982e-8,
+            -6.963515986058155e-9,
+            -0.00011260616156505421,
+            -0.9999999403953552
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            37.999996185302734,
+            0.00855514407157898,
+            51
+          ],
+          "rotationQuat": [
+            6.33132968275163e-9,
+            -5.4186775066966675e-9,
+            0.6422668099403381,
+            0.7664811015129089
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            8.754432201385498e-8,
+            42
+          ],
+          "rotationQuat": [
+            2.964876344435652e-8,
+            -6.918655232057702e-11,
+            0.7662310004234314,
+            0.6425651907920837
+          ]
+        }
+      ]
+    },
+    {
+      "name": "near-toggle-240Hz/branch--1/rpm-10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1440,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00007607891856193025,
+        "nominalPositionMm": 0.032761557201567613,
+        "jointClosureMm": 0.000030367952386746743,
+        "motorSpeedRadPerSec": 0.00183525615356106,
+        "outOfPlaneTiltRad": 2.015478667904916e-7,
+        "heightErrorMm": 0.000012355433241850733,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            4.7107459977269173e-7,
+            -6.731020740780025e-10,
+            30
+          ],
+          "rotationQuat": [
+            -2.48393927648749e-8,
+            -2.9038719873142327e-8,
+            0.0001255399693036452,
+            -0.9999999403953552
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            38.000003814697266,
+            -0.00954393669962883,
+            50.999996185302734
+          ],
+          "rotationQuat": [
+            3.8056608531178426e-8,
+            -4.853709967278519e-8,
+            -0.6422498822212219,
+            0.7664952874183655
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60.000003814697266,
+            -0.0000010561197996139526,
+            42
+          ],
+          "rotationQuat": [
+            -2.1538513195196174e-9,
+            2.1632047264574794e-8,
+            -0.7662167549133301,
+            0.6425822377204895
+          ]
+        }
+      ]
+    },
+    {
+      "name": "near-toggle-240Hz/branch--1/rpm--10",
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": -1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": -10
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1440,
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "metrics": {
+        "positionAtMeasuredAngleMm": 0.00006155508717807055,
+        "nominalPositionMm": 0.03294464685071084,
+        "jointClosureMm": 0.000028124145616277286,
+        "motorSpeedRadPerSec": 0.001944809490658228,
+        "outOfPlaneTiltRad": 2.1663231331350354e-7,
+        "heightErrorMm": 0.00001509123767817755,
+        "groundDriftMm": 0,
+        "initialPlacementMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "four-bar-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "four-bar-crank",
+          "positionMm": [
+            6.455123013893171e-8,
+            -3.4950647931353274e-10,
+            30
+          ],
+          "rotationQuat": [
+            -2.7680377989725002e-9,
+            6.939523178317586e-9,
+            -0.00012503916514106095,
+            -0.9999999403953552
+          ]
+        },
+        {
+          "partId": "four-bar-coupler",
+          "positionMm": [
+            38,
+            0.009499497711658478,
+            51
+          ],
+          "rotationQuat": [
+            -7.9576132350212e-9,
+            -5.846605422021867e-9,
+            -0.6425815224647522,
+            0.7662172913551331
+          ]
+        },
+        {
+          "partId": "four-bar-rocker",
+          "positionMm": [
+            60,
+            -0.0000021131709218025208,
+            42
+          ],
+          "rotationQuat": [
+            1.640615976405968e-9,
+            -7.860124995318074e-9,
+            -0.7664947509765625,
+            0.6422505378723145
+          ]
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

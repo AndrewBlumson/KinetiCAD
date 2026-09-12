@@ -1,10 +1,11 @@
+import { FourBarControls, FourBarMeasurements } from '@/components/mechanisms/FourBarPanel';
 import { getCadKernel } from '@/cad/cadClient';
 import { regenerateBooleanBody } from '@/features/booleanBodies';
 import { getMaterial } from '@/cad/materials';
 import { planAssemblySimulation, assemblyPhysicsSignature } from '@/physics/assemblySimulation';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { useKinetiCADStore } from '@/state/store';
-import { CrankSliderButton, DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
+import { PathDesignerButton, CrankSliderButton, DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import { ForceExperimentControls, ForceExperimentMeasurements } from '@/components/demos/ForceExperimentPanel';
 import { useForceMeasurements } from '@/physics/forceMeasurements';
 import { StewartMeasurements, StewartControls } from '@/components/demos/StewartMeasurements';
@@ -41,6 +42,7 @@ export default function Simulator() {
   const forceCompleted = useForceMeasurements((s) => s.completed);
   const forceExperiment = simulation.forceExperiment;
   const isStewart = !simulation.sketchGeometryEdited && (activeDemo?.id === 'stewart-platform' || !!simulation.stewartMotion);
+  const isFourBar = !simulation.sketchGeometryEdited && !!simulation.fourBar;
   const isCrankSlider = !simulation.sketchGeometryEdited && !!simulation.crankSlider;
   const duration = forceExperiment?.durationMs ?? (simulation.stewartMotion
     ? simulation.stewartMotion.moveDurationMs + simulation.stewartMotion.settleDurationMs : simulation.durationMs);
@@ -85,13 +87,13 @@ export default function Simulator() {
 
         <div className="flex items-center gap-1">
           <PlaybackBtn
-            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isStewart || isCrankSlider ? 'Run motion' : 'Play'}
+            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isFourBar ? 'Run one cycle' : isStewart || isCrankSlider ? 'Run motion' : 'Play'}
             active={isRunning && !isPaused}
             disabled={!canPlay}
             onClick={onPlayPause}
           >
             {isRunning && !isPaused ? '⏸' : '▶'}
-            {(forceExperiment || isStewart || isCrankSlider) && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Run motion'}</span>}
+            {(forceExperiment || isStewart || isCrankSlider || isFourBar) && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isFourBar ? 'Run one cycle' : 'Run motion'}</span>}
           </PlaybackBtn>
           <PlaybackBtn label="Reset" onClick={onReset}>
             ⏹
@@ -109,20 +111,21 @@ export default function Simulator() {
 
         <EngineeringTestsButton />
         <CrankSliderButton />
+        <PathDesignerButton />
         <DemoButton />
         {(preparingGeometry || booleanCheck.loading) && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
         <SimStatus running={isRunning} paused={isPaused} completed={completed} />
       </header>
       <DemoWorkspaceBar />
-      {(activeDemo?.id === 'stewart-platform' || activeDemo?.id === 'crank-slider') && simulation.sketchGeometryEdited && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-2 text-xs leading-relaxed text-orange-200">
+      {(activeDemo?.id === 'stewart-platform' || activeDemo?.id === 'crank-slider' || activeDemo?.id === 'four-bar') && simulation.sketchGeometryEdited && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-2 text-xs leading-relaxed text-orange-200">
         This demo’s sketch dimensions have changed. Its original motion presets and reference comparisons are disabled. Reset the demo to restore them.
       </p>}
       {(physicalPlan.error || booleanCheck.error) && <p role="alert" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-3 text-xs text-orange-200">{physicalPlan.error || booleanCheck.error}</p>}
       {hasAssemblyBooleans && !physicalPlan.error && !booleanCheck.error && <p className="border-b border-border px-4 py-2 text-xs text-muted-foreground">Finished Boolean solids run directly. Construction inputs are excluded; materials and fixed-base choices come from each result’s Boolean editor.</p>}
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart || isCrankSlider ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
-          {isCrankSlider ? <CrankSliderControls /> : forceExperiment ? <ForceExperimentMeasurements /> : isStewart ? <>
+        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart || isCrankSlider || isFourBar ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
+          {isFourBar ? <FourBarControls /> : isCrankSlider ? <CrankSliderControls /> : forceExperiment ? <ForceExperimentMeasurements /> : isStewart ? <>
             <StewartControls completed={completed} />
             <details className="px-3 py-3 text-xs text-muted-foreground"><summary className="cursor-pointer">Assembly · {parts.length} parts · {mates.length} joints</summary>
               <ul className="mt-2 space-y-1">{parts.map(p => <li key={p.id}>{p.name}</li>)}</ul>
@@ -155,7 +158,7 @@ export default function Simulator() {
 
         <main className="flex-1 relative overflow-hidden" style={{ background: '#0A0E1A' }}>
           <Suspense fallback={<div className="absolute inset-0 grid place-items-center font-technical text-xs text-muted-foreground">Loading scene…</div>}>
-            <Scene key={revision} frameOnLoad={!!activeDemo || isCrankSlider} showSketches={false} onAssemblyReady={(ready) => setReadyRevision(ready ? revision : -1)} />
+            <Scene key={revision} frameOnLoad={!!activeDemo || isCrankSlider || isFourBar} showSketches={false} onAssemblyReady={(ready) => setReadyRevision(ready ? revision : -1)} />
           </Suspense>
           <SimDashboard
             simulationTimeMs={simulation.simulationTimeMs}
@@ -164,7 +167,7 @@ export default function Simulator() {
           />
         </main>
 
-        <aside className={`${isStewart || isCrankSlider ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
+        <aside className={`${isStewart || isCrankSlider || isFourBar ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
           {hasAssemblyBooleans && <SidebarSection title="Finished solid properties">
             <div className="px-3 py-2 text-xs space-y-3">{booleanCheck.rows.map(row => <div key={row.id}>
               <p className="font-semibold">{row.name}</p>
@@ -177,6 +180,7 @@ export default function Simulator() {
             </div>)}<p className="text-muted-foreground">Calculated from each finished OpenCascade solid with uniform material density.</p></div>
           </SidebarSection>}
           {isCrankSlider && <CrankSliderMeasurements />}
+          {isFourBar && <FourBarMeasurements />}
           {forceExperiment ? <ForceExperimentControls /> : <>
           {isStewart && <StewartMeasurements />}
           <SidebarSection title="Gravity (mm/s²)">

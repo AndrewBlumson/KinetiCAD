@@ -386,3 +386,26 @@ test('six-axis source rejection never creates a physics world', async () => {
   assert.equal(harness.calls.includes('build'), false);
   assert.match(harness.toasts[0][1].description, /Edited solids/);
 });
+
+test('canonical path linkage dispatches its measured solver profile and six-second real-body run', async () => {
+ const {createFourBarDocument}=await import('../src/mechanisms/fourBarWorkspace.ts');
+ const {FOUR_BAR_PRESETS}=await import('../src/mechanisms/fourBarSynthesis.ts');
+ const {FOUR_BAR_SOLVER_SETTINGS}=await import('../src/mechanisms/fourBarSolver.ts');
+ const fixture=FOUR_BAR_PRESETS[0];
+ const doc=createFourBarDocument({kind:'four-bar-path',version:1,targetPathMm:fixture.targetPathMm,params:fixture.knownParams,search:{algorithmVersion:1,seed:12}});
+ harness.store.setState(doc.state);
+ harness.partLayer.forEachVisible=callback=>doc.state.assembly.parts.forEach(part=>callback(part.id,{geometry:{getAttribute:()=>({array:new Float32Array([0,0,0,1,1,1])}),getIndex:()=>({array:new Uint32Array([0,1,0])})}}));
+ let built;
+ harness.physics.buildWorld=async args=>{built=args;return {ok:true,warnings:[],bodyCount:4,jointCount:4};};
+ harness.store.getState().setSimulationRunning(true);await flush();
+ assert.ok(built);assert.equal(built.parts.length,4);assert.equal(built.mates.length,4);
+ assert.deepEqual(built.measurementPartIds,['four-bar-crank','four-bar-coupler']);
+ assert.deepEqual(built.solverSettings,FOUR_BAR_SOLVER_SETTINGS);
+ assert.equal(built.durationMs,6000);assert.equal(built.timeStepMs,1000/120);
+ assert.equal(built.parts.filter(p=>p.isGround).length,1);
+ harness.store.getState().setSimulationRunning(false);await flush();
+ harness.store.setState(s=>({assembly:{...s.assembly,parts:s.assembly.parts.map((p,i)=>i===1?{...p,materialId:'nylon-6'}:p)}}));
+ harness.store.getState().setSimulationRunning(true);await flush();
+ assert.equal(built.solverSettings,undefined,'edited materials lose the canonical measured profile');
+ assert.equal(built.measurementPartIds,undefined);
+});

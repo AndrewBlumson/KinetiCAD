@@ -1,5 +1,5 @@
-import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowUpRight, Boxes, Loader2, RotateCcw, Settings2 } from 'lucide-react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ArrowLeft, ArrowUpRight, Boxes, Loader2, RotateCcw, Settings2, Route } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useKinetiCADStore } from '@/state/store';
 import { DEMOS } from '@/demos/catalog';
@@ -8,6 +8,13 @@ import { createDemoSession } from '@/demos/demoSession';
 import { DemoGallery } from './DemoGallery';
 import { DEFAULT_CRANK_SLIDER_PARAMS, type CrankSliderParams } from '@/mechanisms/crankSlider';
 import { createCrankSliderDocument, matchesCrankSliderAssembly } from '@/mechanisms/crankSliderWorkspace';
+
+import { PathDesignerDialog } from '../mechanisms/PathDesignerDialog';
+import type { FourBarDesign } from '@/mechanisms/fourBarSynthesis';
+import { createFourBarDocument } from '@/mechanisms/fourBarWorkspace';
+import { preflightFourBarDocument } from '@/mechanisms/fourBarPreflight';
+import { getCadKernel } from '@/cad/cadClient';
+import { sketchEditAssemblySignature } from '@/sketch/sketchEditSource';
 
 type Demo = (typeof DEMOS)[number];
 type WorkspaceContext = {
@@ -20,11 +27,15 @@ type WorkspaceContext = {
   leaveDemo: () => void;
   resetDemo: () => void;
   openCrankSlider: () => void;
+  openPathDesigner: () => void;
   applyCrankSlider: (params: CrankSliderParams) => void;
 };
 const crankSliderDemo: Demo = { id: 'crank-slider', title: 'Adjustable crank-slider', subtitle: 'Turning motion becomes straight motion',
   description: 'A powered crank drives a passive connecting rod and guided slider.', category: 'Mechanism', partCount: 4, jointCount: 4,
   highlights: ['Editable dimensions', 'Measured motion'], learningTip: 'Change the radius, rod length or speed, then compare the solver with the equations.', accent: '#ecab76' };
+const fourBarDemo: Demo = { id: 'four-bar', title: 'Draw-a-path linkage', subtitle: 'Your drawing becomes a moving mechanism',
+  description: 'One driven crank, a connecting bar and a passive rocker trace a closed path.', category: 'Mechanism', partCount: 4, jointCount: 4,
+  highlights: ['Local search', 'Editable solids', 'Measured path'], learningTip: 'Compare the drawn target, calculated path and measured motion.', accent: '#ecab76' };
 const DemoContext = createContext<WorkspaceContext | null>(null);
 export function useDemoWorkspace() {
   const value = useContext(DemoContext);
@@ -35,6 +46,9 @@ export function useDemoWorkspace() {
 export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
   const [location, navigate] = useLocation();
   const [open, setOpen] = useState(false);
+  const [pathDesignerOpen, setPathDesignerOpen] = useState(false);
+  const [pathInitialDesign, setPathInitialDesign] = useState<FourBarDesign>();
+  const acceptedFourBar = useRef<FourBarDesign | null>(null);
   const [activeDemo, setActiveDemo] = useState<Demo | null>(null);
   const [revision, setRevision] = useState(0);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -45,7 +59,8 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
   const originalRoute = useRef('/');
   const activeRef = useRef<Demo | null>(null);
   const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.sketchDimensionsEditing || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open);
-  const editing = blocked || pendingFiles > 0;
+  const editing = blocked || pendingFiles > 0 || loadingId === 'four-bar';
+  useEffect(() => () => { ++requestId.current; }, []);
   const setFileBusy = (busy: boolean) => {
     pendingFilesRef.current = Math.max(0, pendingFilesRef.current + (busy ? 1 : -1));
     setPendingFiles(pendingFilesRef.current);
@@ -136,14 +151,58 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
     setRevision(n => n + 1);
   }
 
+  function openPathDesigner() {
+    if (editing || loadingId) return;
+    setPathInitialDesign(useKinetiCADStore.getState().simulation.fourBar);
+    setPathDesignerOpen(true);
+  }
+
+  async function buildFourBar(design: FourBarDesign) {
+    const before = useKinetiCADStore.getState();
+    const signature = sketchEditAssemblySignature(before.assembly);
+    if (editing || loadingId) throw new Error('Finish your current edit or file operation first.');
+    const token = ++requestId.current;
+    const assertCurrent = () => {
+      const current = useKinetiCADStore.getState();
+      if (token !== requestId.current || current.mode !== before.mode
+        || signature !== sketchEditAssemblySignature(current.assembly)
+        || pendingFilesRef.current > 0 || current.sketchSession.active || current.sketchDimensionsEditing
+        || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+        throw new Error('The project changed while checking the linkage. Your model is kept; try building again.');
+      }
+    };
+    setLoadingId('four-bar');
+    try {
+      assertCurrent();
+      const document = createFourBarDocument(design);
+      await preflightFourBarDocument(document, await getCadKernel(), assertCurrent);
+      assertCurrent();
+      if (!activeRef.current) originalRoute.current = location;
+      session.current.enter(document);
+      acceptedFourBar.current = document.state.simulation.fourBar!;
+      activeRef.current = fourBarDemo;
+      setActiveDemo(fourBarDemo);
+      setRevision(n => n + 1);
+      setOpen(false);
+      navigate('/simulator');
+    } finally {
+      if (token === requestId.current) setLoadingId(null);
+    }
+  }
+
   return (
     <DemoContext.Provider value={{
       activeDemo, revision, loadingId, editing, setFileBusy,
       openGallery: () => { if (!editing) { setError(null); setOpen(true); } },
-      leaveDemo, openCrankSlider, applyCrankSlider,
-      resetDemo: () => { if (activeDemo?.id === 'crank-slider') openCrankSlider(); else if (activeDemo) void openDemo(activeDemo.id); },
+      leaveDemo, openCrankSlider, applyCrankSlider, openPathDesigner,
+      resetDemo: () => { if (activeDemo?.id === 'four-bar' && acceptedFourBar.current) {
+        if (editing || loadingId) return;
+        session.current.enter(createFourBarDocument(acceptedFourBar.current));
+        setRevision(n => n + 1);
+      } else if (activeDemo?.id === 'crank-slider') openCrankSlider(); else if (activeDemo) void openDemo(activeDemo.id); },
     }}>
       {children}
+      <PathDesignerDialog open={pathDesignerOpen} onClose={() => setPathDesignerOpen(false)} onBuild={buildFourBar} initialDesign={pathInitialDesign} />
       <DemoGallery open={open} onOpenChange={(next) => {
         setOpen(next);
         if (!next) { ++requestId.current; setLoadingId(null); }
@@ -158,6 +217,15 @@ export function CrankSliderButton() {
     title="Open an adjustable crank-slider; your current model is kept safe"
     className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border px-2 text-xs hover:bg-secondary disabled:opacity-40">
     <Settings2 size={14} />Crank-slider
+  </button>;
+}
+
+export function PathDesignerButton() {
+  const { openPathDesigner, editing, loadingId } = useDemoWorkspace();
+  return <button type="button" onClick={openPathDesigner} disabled={editing || !!loadingId}
+    title="Draw a closed path and search locally for an editable linkage"
+    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border px-2 text-xs hover:bg-secondary disabled:opacity-40">
+    <Route size={14} />Draw a path
   </button>;
 }
 

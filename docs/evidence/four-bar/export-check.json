@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T19:08:05.450Z",
+  "passed": true,
+  "canonicalComparison": {
+    "strictMatcherPassed": false,
+    "maximumTransformRoundoffMmOrDeg": 2.842170943040401e-14,
+    "toleranceMmOrDeg": 1e-10,
+    "otherPhysicalFieldsExact": true,
+    "note": "Actual browser and Node regenerate a rocker angle differing only by floating-point rounding. Audit uses actual saved transforms, not regenerated transforms; numeric equivalence is stated explicitly."
+  },
+  "provenance": {
+    "agent": "Codex automated checks of actual Chrome downloads",
+    "nodeVersion": "v25.4.0",
+    "source": "Existing native DTO and original downloaded bytes; no regeneration of browser export files.",
+    "project": {
+      "path": "docs/fixtures/four-bar/browser-custom-loop.kineticad.json",
+      "sha256": "4d420c5d6025d94a7fc7682db9056f058ff9bbdd1066509bc436820f0801660f"
+    },
+    "step": {
+      "path": "docs/fixtures/four-bar/browser-custom-loop.step",
+      "originalDownload": "kineticad-export-20260912-200311.step",
+      "bytes": 297767,
+      "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca"
+    },
+    "stl": {
+      "path": "docs/fixtures/four-bar/browser-custom-loop.stl",
+      "originalDownload": "kineticad-export-20260912-200300.stl",
+      "bytes": 124484,
+      "sha256": "9a8098bd3229b61e00f6bd9595c8312ec381e6e3f18d8450046532b29e0b97f1"
+    },
+    "cadWorkerSha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+    "checkerSourceSha256": "b6739683fe113539464cdad4a70e3c6b97abe8a98ab2ff8848fc7888105e7f6d"
+  },
+  "tolerances": {
+    "stepVolumeMm3": 0.00001,
+    "stepCentroidMm": 0.000001,
+    "stepInertiaKgMm2": 1e-7,
+    "stepBoundsMm": 0.00001,
+    "stlBoundsMm": 0.11,
+    "stlVolumeRelative": 0.001,
+    "stlVertexWeldMm": 0.0001
+  },
+  "scope": "Actual browser exported static design pose. STEP is checked through the shipped CAD worker, with preserved world coordinates, against native history independently transformed into world coordinates. STL is an approximate triangle mesh: stream, finite coordinates, nondegenerate triangles, welded closed manifold edges, four connected components, world bounds and oriented volume. This does not establish imported editable feature history, mate or material retention; native project Save is separate.",
+  "step": {
+    "solidCount": 4,
+    "nativeReferences": [
+      {
+        "id": "four-bar-ground",
+        "volumeMm3": 112071.2734721588,
+        "centroidMm": [
+          -32.366073011815324,
+          -32.70178714850467,
+          4.287430055278727
+        ],
+        "tensorKgMm2": [
+          [
+            97.49489726888034,
+            -4.243600145947107,
+            5.144560583222351
+          ],
+          [
+            -4.243600145947107,
+            266.1197911820209,
+            0.12938569536074063
+          ],
+          [
+            5.14456058322235,
+            0.12938569536074068,
+            357.62486266075314
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -114.31918342103035,
+            -87.05090798055556,
+            0
+          ],
+          "max": [
+            54.08254987819224,
+            21.76039581954811,
+            36
+          ]
+        }
+      },
+      {
+        "id": "four-bar-crank",
+        "volumeMm3": 4687.664024904832,
+        "centroidMm": [
+          -10.863614072379054,
+          -32.16100032000121,
+          29.790567818207332
+        ],
+        "tensorKgMm2": [
+          [
+            0.4324660192138831,
+            -0.023674666885601284,
+            0.36921754136176366
+          ],
+          [
+            -0.023674666885601284,
+            1.3732092689816957,
+            0.009285820927887923
+          ],
+          [
+            0.36921754136176355,
+            0.009285820927887921,
+            1.0187422985559564
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -34.88310113512836,
+            -39.58904040868798,
+            8
+          ],
+          "max": [
+            11.444315516195601,
+            -24.77600590068962,
+            58
+          ]
+        }
+      },
+      {
+        "id": "four-bar-coupler",
+        "volumeMm3": 5724.003848248345,
+        "centroidMm": [
+          -42.69458576431467,
+          -55.24554583596636,
+          54
+        ],
+        "tensorKgMm2": [
+          [
+            3.1575590005779923,
+            -0.7789471827368014,
+            0
+          ],
+          [
+            -0.7789471827368015,
+            0.49416229622885105,
+            0
+          ],
+          [
+            0,
+            0,
+            3.617377273717355
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -63.5359367132603,
+            -98.7015010524879,
+            51
+          ],
+          "max": [
+            -20.88310113512837,
+            -3.503288479830129,
+            57
+          ]
+        }
+      },
+      {
+        "id": "four-bar-rocker",
+        "volumeMm3": 7224.046767114099,
+        "centroidMm": [
+          -80.10747351797416,
+          -58.28634782391506,
+          38.492911138088324
+        ],
+        "tensorKgMm2": [
+          [
+            4.24253274312095,
+            2.511317351448803,
+            -0.5695152987208159
+          ],
+          [
+            2.5113173514488025,
+            2.4539939814184204,
+            0.8073483341555739
+          ],
+          [
+            -0.5695152987208159,
+            0.8073483341555739,
+            5.449560291303698
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -104.0083657103577,
+            -98.70150105248791,
+            8
+          ],
+          "max": [
+            -49.5359367132603,
+            -27.327540768316197,
+            58
+          ]
+        }
+      }
+    ],
+    "measurements": [
+      {
+        "nativePartId": "four-bar-ground",
+        "volumeMm3": 112071.27347213084,
+        "centroidMm": [
+          -32.36607301179847,
+          -32.70178714850028,
+          4.2874300552791285
+        ],
+        "tensorKgMm2": [
+          [
+            97.49489726884288,
+            -4.243600145927216,
+            5.144560583224827
+          ],
+          [
+            -4.243600145927216,
+            266.11979118186343,
+            0.1293856953630418
+          ],
+          [
+            5.144560583224829,
+            0.1293856953630418,
+            357.6248626605575
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -114.31918352100004,
+            -87.0509080805515,
+            -1e-7
+          ],
+          "max": [
+            54.08254997819207,
+            21.760395919548024,
+            36.0000001
+          ]
+        },
+        "volumeErrorMm3": 2.796878106892109e-8,
+        "centroidErrorMm": 1.742134328497334e-11,
+        "inertiaErrorKgMm2": 1.956550477189012e-10,
+        "boundsErrorMm": 1.0000000116860974e-7
+      },
+      {
+        "nativePartId": "four-bar-crank",
+        "volumeMm3": 4687.664024905139,
+        "centroidMm": [
+          -10.863614072375789,
+          -32.16100031999772,
+          29.79056781820752
+        ],
+        "tensorKgMm2": [
+          [
+            0.43246601921392774,
+            -0.02367466688535725,
+            0.36921754136172014
+          ],
+          [
+            -0.02367466688535725,
+            1.3732092689813662,
+            0.009285820927793887
+          ],
+          [
+            0.36921754136172014,
+            0.009285820927793889,
+            1.0187422985555759
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -34.88310123512,
+            -39.58904050868,
+            7.9999999
+          ],
+          "max": [
+            11.444315616196,
+            -24.776005800689997,
+            58.0000001
+          ]
+        },
+        "volumeErrorMm3": 3.064997144974768e-10,
+        "centroidErrorMm": 4.7819235775130926e-12,
+        "inertiaErrorKgMm2": 3.8058445284150366e-13,
+        "boundsErrorMm": 1.0000039907254177e-7
+      },
+      {
+        "nativePartId": "four-bar-coupler",
+        "volumeMm3": 5724.00384824708,
+        "centroidMm": [
+          -42.69458576431155,
+          -55.24554583596164,
+          54.000000000000014
+        ],
+        "tensorKgMm2": [
+          [
+            3.157559000577265,
+            -0.7789471827370931,
+            0
+          ],
+          [
+            -0.7789471827370931,
+            0.49416229622904284,
+            0
+          ],
+          [
+            0,
+            0,
+            3.617377273716822
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -63.53593681326,
+            -98.70150115247999,
+            50.9999999
+          ],
+          "max": [
+            -20.88310103512,
+            -3.5032883798300003,
+            57.0000001
+          ]
+        },
+        "volumeErrorMm3": 1.2651071301661432e-9,
+        "centroidErrorMm": 5.655942492647069e-12,
+        "inertiaErrorKgMm2": 7.274181257344026e-13,
+        "boundsErrorMm": 1.00008371362037e-7
+      },
+      {
+        "nativePartId": "four-bar-rocker",
+        "volumeMm3": 7224.046767108637,
+        "centroidMm": [
+          -80.10747351796864,
+          -58.286347823902595,
+          38.49291113808482
+        ],
+        "tensorKgMm2": [
+          [
+            4.242532743119904,
+            2.5113173514481484,
+            -0.5695152987208232
+          ],
+          [
+            2.5113173514481484,
+            2.453993981417641,
+            0.807348334155613
+          ],
+          [
+            -0.5695152987208232,
+            0.8073483341556129,
+            5.4495602913018
+          ]
+        ],
+        "boundsMm": {
+          "min": [
+            -104.00836581035,
+            -98.70150115247999,
+            7.9999999
+          ],
+          "max": [
+            -49.53593661326,
+            -27.32754066831,
+            58.0000001
+          ]
+        },
+        "volumeErrorMm3": 5.461515684146434e-9,
+        "centroidErrorMm": 1.4071152118407036e-11,
+        "inertiaErrorKgMm2": 1.8971491044794675e-12,
+        "boundsErrorMm": 1.0000619710126557e-7
+      }
+    ]
+  },
+  "stl": {
+    "triangleCount": 2488,
+    "weldedVertexCount": 1236,
+    "closedComponentCount": 4,
+    "components": [
+      {
+        "triangles": 1020,
+        "orientedVolumeMm3": 112023.78787871331
+      },
+      {
+        "triangles": 444,
+        "orientedVolumeMm3": 4662.739553549085
+      },
+      {
+        "triangles": 580,
+        "orientedVolumeMm3": 5715.193444672906
+      },
+      {
+        "triangles": 444,
+        "orientedVolumeMm3": 7197.1686785742695
+      }
+    ],
+    "nonmanifoldEdges": 0,
+    "inconsistentOrientationEdges": 0,
+    "minimumTriangleAreaMm2": 0.0183530590720693,
+    "maxNormalLengthError": 3.794284642033574e-8,
+    "boundsMm": {
+      "min": [
+        -114.31918334960938,
+        -98.70038604736328,
+        0
+      ],
+      "max": [
+        54.082550048828125,
+        21.760395050048828,
+        58
+      ]
+    },
+    "referenceBoundsMm": {
+      "min": [
+        -114.31918342103035,
+        -98.70150105248791,
+        0
+      ],
+      "max": [
+        54.08254987819224,
+        21.76039581954811,
+        58
+      ]
+    },
+    "orientedVolumeMm3": 129598.8895555095,
+    "exactReferenceVolumeMm3": 129706.98811242609,
+    "relativeVolumeError": 0.000833405805575384
+  },
+  "reproduction": {
+    "note": "The exact checker source is embedded below so this one-off download audit remains auditable. Resolve repo and input download paths or use the copied tracked fixtures, then run with the workspace tsx loader.",
+    "checkerSource": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdirSync,copyFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {Worker} from 'node:worker_threads';\nimport {pathToFileURL} from 'node:url';\nconst repo='/Users/amb/Documents/New project/KinetiCAD-review-20260911',app=repo+'/artifacts/kineticad';\nconst Comlink=await import(pathToFileURL(app+'/node_modules/comlink/dist/esm/comlink.mjs'));\nconst{default:nodeEndpoint}=await import(pathToFileURL(app+'/node_modules/comlink/dist/esm/node-adapter.mjs'));\nconst{Quaternion,Euler,Vector3,Matrix4}=await import(pathToFileURL(app+'/node_modules/three/build/three.module.js'));\nconst{parseProjectDocument}=await import(pathToFileURL(app+'/src/project/projectDocument.ts'));\nconst{matchesFourBarAssembly}=await import(pathToFileURL(app+'/src/mechanisms/fourBarWorkspace.ts'));\nconst stepName='kineticad-export-20260912-200311.step',stlName='kineticad-export-20260912-200300.stl';\nconst step=readFileSync('/Users/amb/Downloads/'+stepName),stl=readFileSync('/Users/amb/Downloads/'+stlName);\nconst dtoRelative='docs/fixtures/four-bar/browser-custom-loop.kineticad.json',dtoBytes=readFileSync(repo+'/'+dtoRelative),dto=parseProjectDocument(JSON.parse(dtoBytes));\nconst assembly=dto.state.assembly;\nconst {buildFourBarAssembly}=await import(pathToFileURL(app+'/src/mechanisms/fourBarAssembly.ts'));\nconst canonical=buildFourBarAssembly(dto.state.simulation.fourBar.params),comparison=structuredClone(assembly);\nlet maxTransformRoundoff=0;\nfor(let i=0;i<comparison.parts.length;i++)for(const key of['positionMm','rotationDeg'])for(let axis=0;axis<3;axis++){\n  const difference=Math.abs(comparison.parts[i].transform[key][axis]-canonical.parts[i].transform[key][axis]);\n  assert(difference<=1e-10,'only floating-point transform roundoff may differ from the known authored factory');maxTransformRoundoff=Math.max(maxTransformRoundoff,difference);\n  comparison.parts[i].transform[key][axis]=canonical.parts[i].transform[key][axis];\n}\nassert(matchesFourBarAssembly(comparison,dto.state.simulation.fourBar.params),'all other physical fields match exactly');\nconst canonicalComparison={strictMatcherPassed:matchesFourBarAssembly(assembly,dto.state.simulation.fourBar.params),maximumTransformRoundoffMmOrDeg:maxTransformRoundoff,toleranceMmOrDeg:1e-10,otherPhysicalFieldsExact:true,note:'Actual browser and Node regenerate a rocker angle differing only by floating-point rounding. Audit uses actual saved transforms, not regenerated transforms; numeric equivalence is stated explicitly.'};\nconst hash=bytes=>createHash('sha256').update(bytes).digest('hex');\nconst report={schemaVersion:1,generatedAt:new Date().toISOString(),passed:false,canonicalComparison,\n  provenance:{agent:'Codex automated checks of actual Chrome downloads',nodeVersion:process.version,source:'Existing native DTO and original downloaded bytes; no regeneration of browser export files.',\n    project:{path:dtoRelative,sha256:hash(dtoBytes)},step:{path:'docs/fixtures/four-bar/browser-custom-loop.step',originalDownload:stepName,bytes:step.length,sha256:hash(step)},stl:{path:'docs/fixtures/four-bar/browser-custom-loop.stl',originalDownload:stlName,bytes:stl.length,sha256:hash(stl)},\n    cadWorkerSha256:hash(readFileSync(app+'/src/cad/cadWorker.ts')),checkerSourceSha256:hash(readFileSync(import.meta.filename))},\n  tolerances:{stepVolumeMm3:1e-5,stepCentroidMm:1e-6,stepInertiaKgMm2:1e-7,stepBoundsMm:1e-5,stlBoundsMm:.11,stlVolumeRelative:.001,stlVertexWeldMm:.0001},\n  scope:'Actual browser exported static design pose. STEP is checked through the shipped CAD worker, with preserved world coordinates, against native history independently transformed into world coordinates. STL is an approximate triangle mesh: stream, finite coordinates, nondegenerate triangles, welded closed manifold edges, four connected components, world bounds and oriented volume. This does not establish imported editable feature history, mate or material retention; native project Save is separate.'};\nconst close=(a,b,t,label)=>assert(Number.isFinite(a)&&Math.abs(a-b)<=t,`${label}: ${a} != ${b} ±${t}`);\nconst rotation=part=>new Quaternion().setFromEuler(new Euler(...part.transform.rotationDeg.map(v=>v*Math.PI/180),'XYZ'));\nconst worldPoint=(p,part)=>new Vector3(...p).applyQuaternion(rotation(part)).add(new Vector3(...part.transform.positionMm)).toArray();\nfunction tensor(props,worldQ=new Quaternion()){\n  const frame=worldQ.clone().multiply(new Quaternion(...props.principalInertiaLocalFrame)),m=new Matrix4().makeRotationFromQuaternion(frame).elements;\n  return [0,1,2].map(i=>[0,1,2].map(j=>[0,1,2].reduce((s,k)=>s+m[4*k+i]*props.principalInertiaKgMm2[k]*m[4*k+j],0)));\n}\nfunction nativeOuterBounds(part){\n  assert.equal(part.transform.rotationDeg[0],0);assert.equal(part.transform.rotationDeg[1],0);\n  const bounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};\n  const include=p=>p.forEach((v,i)=>{bounds.min[i]=Math.min(bounds.min[i],v);bounds.max[i]=Math.max(bounds.max[i],v);});\n  for(const f of part.features){\n    assert.equal(f.type,'extrude');if(f.extrudeMode==='subtract')continue;\n    const sketch=part.sketches.find(s=>s.id===f.sketchId);assert.equal(sketch.plane,'XY');\n    const zlo=f.direction==='symmetric'?-f.depthMm/2:f.direction==='backward'?-f.depthMm:0;\n    const zhi=f.direction==='symmetric'?f.depthMm/2:f.direction==='backward'?0:f.depthMm;\n    for(const primitive of sketch.primitives)for(const z of[zlo,zhi]){\n      if(primitive.type==='circle'){\n        const center=worldPoint([...primitive.centre,z],part);include([center[0]-primitive.radius,center[1]-primitive.radius,center[2]]);include([center[0]+primitive.radius,center[1]+primitive.radius,center[2]]);\n      }else if(primitive.type==='rectangle')for(const x of[primitive.corner[0],primitive.corner[0]+primitive.width])for(const y of[primitive.corner[1],primitive.corner[1]+primitive.height])include(worldPoint([x,y,z],part));\n      else if(primitive.type==='line'){include(worldPoint([...primitive.start,z],part));include(worldPoint([...primitive.end,z],part));}\n      else assert.fail('Unexpected authored profile');\n    }\n  }\n  // The canonical factory guard ensures the omitted cuts are internal bores\n  // and mounting holes; none removes an additive outer extremum.\n  return bounds;\n}\nconst worker=new Worker(pathToFileURL(app+'/tests/helpers/cad-worker-node.mjs')),api=Comlink.wrap(nodeEndpoint(worker));\ntry{\n  await api.init();const expected=[];\n  for(const part of assembly.parts){\n    const result=await api.buildPartMesh({features:part.features,sketches:part.sketches});assert.equal(result.mesh.solidCount,1);\n    const p=result.unitDensityMassProperties;assert(p);expected.push({id:part.id,volumeMm3:p.volumeMm3,centroidMm:worldPoint(p.comLocal,part),tensorKgMm2:tensor(p,rotation(part)),boundsMm:nativeOuterBounds(part)});\n  }\n  const imported=await api.importStep(new Uint8Array(step),'browser-custom-loop.step',{preserveCoordinates:true});assert.equal(imported.length,4);\n  const measurements=[];\n  for(const part of imported){\n    const props=await api.getMassProperties({features:[{id:'verification',type:'imported-step',shapeId:part.shapeId}],sketches:[],density:1});\n    const match=expected.reduce((a,b)=>Math.abs(a.volumeMm3-props.volumeMm3)<Math.abs(b.volumeMm3-props.volumeMm3)?a:b);\n    assert(!measurements.some(m=>m.nativePartId===match.id));\n    const actualTensor=tensor(props),volumeErrorMm3=Math.abs(props.volumeMm3-match.volumeMm3),centroidErrorMm=Math.hypot(...props.comLocal.map((v,i)=>v-match.centroidMm[i]));\n    close(props.volumeMm3,match.volumeMm3,report.tolerances.stepVolumeMm3,'STEP volume');\n    props.comLocal.forEach((v,i)=>close(v,match.centroidMm[i],report.tolerances.stepCentroidMm,'STEP centroid'));\n    let inertiaErrorKgMm2=0,boundsErrorMm=0;\n    for(let i=0;i<3;i++)for(let j=0;j<3;j++){close(actualTensor[i][j],match.tensorKgMm2[i][j],report.tolerances.stepInertiaKgMm2,'STEP inertia');inertiaErrorKgMm2=Math.max(inertiaErrorKgMm2,Math.abs(actualTensor[i][j]-match.tensorKgMm2[i][j]));}\n    for(const side of['min','max'])part.boundingBox[side].forEach((v,i)=>{close(v,match.boundsMm[side][i],report.tolerances.stepBoundsMm,'STEP bounds');boundsErrorMm=Math.max(boundsErrorMm,Math.abs(v-match.boundsMm[side][i]));});\n    measurements.push({nativePartId:match.id,volumeMm3:props.volumeMm3,centroidMm:props.comLocal,tensorKgMm2:actualTensor,boundsMm:part.boundingBox,volumeErrorMm3,centroidErrorMm,inertiaErrorKgMm2,boundsErrorMm});\n  }\n  report.step={solidCount:imported.length,nativeReferences:expected,measurements};\n}finally{await worker.terminate();}\nassert(stl.length>=84);const n=stl.readUInt32LE(80);assert.equal(stl.length,84+50*n);assert(n>0);\nconst edges=new Map(),parents=[],vertices=new Map(),pointsList=[],triangles=[];\nconst vertexId=p=>{const key=p.map(v=>Math.round(v/report.tolerances.stlVertexWeldMm)).join(',');if(!vertices.has(key)){const id=parents.length;vertices.set(key,id);parents.push(id);pointsList.push(p);}return vertices.get(key);};\nconst find=i=>{while(parents[i]!==i){parents[i]=parents[parents[i]];i=parents[i];}return i;};\nconst unite=(a,b)=>{a=find(a);b=find(b);if(a!==b)parents[b]=a;};\nconst bounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let volume=0,minArea=Infinity,maxNormalLengthError=0;\nfor(let i=0;i<n;i++){\n  const normal=[0,1,2].map(a=>stl.readFloatLE(84+50*i+4*a));assert(normal.every(Number.isFinite));maxNormalLengthError=Math.max(maxNormalLengthError,Math.abs(Math.hypot(...normal)-1));\n  const points=[0,1,2].map(p=>[0,1,2].map(a=>stl.readFloatLE(84+50*i+12+12*p+4*a)));\n  for(const p of points)p.forEach((v,a)=>{assert(Number.isFinite(v));bounds.min[a]=Math.min(bounds.min[a],v);bounds.max[a]=Math.max(bounds.max[a],v);});\n  const[a,b,c]=points,u=b.map((v,j)=>v-a[j]),v=c.map((v,j)=>v-a[j]),cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],area=Math.hypot(...cross)/2;\n  assert(area>1e-10,'nondegenerate triangle');minArea=Math.min(minArea,area);\n  const signed=(a[0]*(b[1]*c[2]-b[2]*c[1])+a[1]*(b[2]*c[0]-b[0]*c[2])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;volume+=signed;\n  const ids=points.map(vertexId);assert(new Set(ids).size===3,'welding does not collapse a triangle');unite(ids[0],ids[1]);unite(ids[1],ids[2]);triangles.push({ids,volume:signed});\n  for(let j=0;j<3;j++){const x=ids[j],y=ids[(j+1)%3],key=[Math.min(x,y),Math.max(x,y)].join(','),entry=edges.get(key)??{count:0,orientation:0};entry.count++;entry.orientation+=x<y?1:-1;edges.set(key,entry);}\n}\nconst nonmanifold=[...edges.values()].filter(e=>e.count!==2).length,orientationErrors=[...edges.values()].filter(e=>e.orientation!==0).length;\nassert.equal(nonmanifold,0);assert.equal(orientationErrors,0);assert(maxNormalLengthError<1e-5);\nconst components=new Map();for(const triangle of triangles){const key=find(triangle.ids[0]),entry=components.get(key)??{triangles:0,orientedVolumeMm3:0};entry.triangles++;entry.orientedVolumeMm3+=triangle.volume;components.set(key,entry);}assert.equal(components.size,4);assert([...components.values()].every(c=>c.orientedVolumeMm3>0));\nconst exactVolume=report.step.nativeReferences.reduce((s,r)=>s+r.volumeMm3,0),relativeVolumeError=Math.abs(volume-exactVolume)/exactVolume;assert(relativeVolumeError<=report.tolerances.stlVolumeRelative);\nconst expectedBounds={min:[0,1,2].map(a=>Math.min(...report.step.nativeReferences.map(r=>r.boundsMm.min[a]))),max:[0,1,2].map(a=>Math.max(...report.step.nativeReferences.map(r=>r.boundsMm.max[a])))};\nfor(const side of['min','max'])for(let a=0;a<3;a++)close(bounds[side][a],expectedBounds[side][a],report.tolerances.stlBoundsMm,'STL bounds');\nreport.stl={triangleCount:n,weldedVertexCount:vertices.size,closedComponentCount:components.size,components:[...components.values()],nonmanifoldEdges:nonmanifold,inconsistentOrientationEdges:orientationErrors,minimumTriangleAreaMm2:minArea,maxNormalLengthError,boundsMm:bounds,referenceBoundsMm:expectedBounds,orientedVolumeMm3:volume,exactReferenceVolumeMm3:exactVolume,relativeVolumeError};\nreport.passed=true;\nmkdirSync(repo+'/docs/evidence/four-bar',{recursive:true});copyFileSync('/Users/amb/Downloads/'+stepName,repo+'/docs/fixtures/four-bar/browser-custom-loop.step');copyFileSync('/Users/amb/Downloads/'+stlName,repo+'/docs/fixtures/four-bar/browser-custom-loop.stl');\nreport.reproduction={note:'The exact checker source is embedded below so this one-off download audit remains auditable. Resolve repo and input download paths or use the copied tracked fixtures, then run with the workspace tsx loader.',checkerSource:readFileSync(import.meta.filename,'utf8')};\nwriteFileSync(repo+'/docs/evidence/four-bar/export-check.json',JSON.stringify(report,null,2)+'\\n');console.log(JSON.stringify({passed:report.passed,step:report.step.measurements,stl:report.stl},null,2));\n"
+  },
+  "massComparisonDensityGcm3": 1,
+  "portabilityCorrection": {
+    "checkedAt": "2026-09-12T19:11:14.888Z",
+    "description": "The original export audit found a browser/Node rocker-angle rounding difference of 2.842170943040401e-14 degrees. That original pre-fix mismatch remains recorded above. The corrected physical matcher accepts only finite machine roundoff and retains exact types, object key sets and array order; there is no decimal quantization.",
+    "numericTolerance": "16 * Number.EPSILON * max(1, abs(a), abs(b))",
+    "source": "artifacts/kineticad/src/mechanisms/fourBarWorkspace.ts",
+    "sourceSha256": "21adf9b83814ad798193be8fae29628d959b08e2c0523eab2d8d0a3a802baa13",
+    "actualSavedAssemblyMatches": true,
+    "actualSavedConfigurationMatches": true,
+    "focusedTests": {
+      "source": "artifacts/kineticad/tests/four-bar-workspace.test.mjs",
+      "passed": 9,
+      "coverage": "Actual Chrome Save and explicit 2.84e-14 degree roundoff accepted; 1e-8 geometry, joint and angle edits rejected, along with nonfinite data, sparse coordinates, type/key and order changes."
+    },
+    "checkerSource": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync}from'node:fs';\nimport{createHash}from'node:crypto';\nimport{pathToFileURL}from'node:url';\nconst repo='/Users/amb/Documents/New project/KinetiCAD-review-20260911',filename=repo+'/docs/evidence/four-bar/export-check.json';\nconst{matchesFourBarAssembly,matchesFourBarConfiguration}=await import(pathToFileURL(repo+'/artifacts/kineticad/src/mechanisms/fourBarWorkspace.ts'));\nconst dto=JSON.parse(readFileSync(repo+'/docs/fixtures/four-bar/browser-custom-loop.kineticad.json'));\nassert(matchesFourBarAssembly(dto.state.assembly,dto.state.simulation.fourBar.params));assert(matchesFourBarConfiguration(dto.state.assembly,dto.state.simulation));\nconst report=JSON.parse(readFileSync(filename));\nreport.massComparisonDensityGcm3=1;\nreport.portabilityCorrection={checkedAt:new Date().toISOString(),description:'The original export audit found a browser/Node rocker-angle rounding difference of 2.842170943040401e-14 degrees. That original pre-fix mismatch remains recorded above. The corrected physical matcher accepts only finite machine roundoff and retains exact types, object key sets and array order; there is no decimal quantization.',numericTolerance:'16 * Number.EPSILON * max(1, abs(a), abs(b))',source:'artifacts/kineticad/src/mechanisms/fourBarWorkspace.ts',sourceSha256:createHash('sha256').update(readFileSync(repo+'/artifacts/kineticad/src/mechanisms/fourBarWorkspace.ts')).digest('hex'),actualSavedAssemblyMatches:true,actualSavedConfigurationMatches:true,focusedTests:{source:'artifacts/kineticad/tests/four-bar-workspace.test.mjs',passed:9,coverage:'Actual Chrome Save and explicit 2.84e-14 degree roundoff accepted; 1e-8 geometry, joint and angle edits rejected, along with nonfinite data, sparse coordinates, type/key and order changes.'},checkerSource:readFileSync(import.meta.filename,'utf8')};\nwriteFileSync(filename,JSON.stringify(report,null,2)+'\\n');\nconsole.log(JSON.stringify({report:filename,passed:report.passed,maxStepVolumeErrorMm3:Math.max(...report.step.measurements.map(p=>p.volumeErrorMm3)),maxStepCentroidErrorMm:Math.max(...report.step.measurements.map(p=>p.centroidErrorMm)),maxStepInertiaErrorKgMm2:Math.max(...report.step.measurements.map(p=>p.inertiaErrorKgMm2)),maxStepBoundsErrorMm:Math.max(...report.step.measurements.map(p=>p.boundsErrorMm)),stlTriangles:report.stl.triangleCount,stlComponents:report.stl.closedComponentCount,stlVolumeErrorPercent:100*report.stl.relativeVolumeError,sourceFixed:true}));\n"
+  }
+}

@@ -25,11 +25,13 @@ revision remains invalid until its attachment is picked again.
 Current source includes regression tests and actual downloaded-file parsing for
 these additions. Numeric sketch Save/Load and browser recovery are covered in
 [its stage record](SKETCH-DIMENSIONS-VERIFICATION.md). The Boolean stage's actual
-Save and refresh/new-tab recovery passed; reopening a newly downloaded
-result-joint file through Chrome's native Load dialog remains pending.
+Save and refresh/new-tab recovery passed; the actual downloaded Fixed-joint
+file subsequently reopened through Chrome's native Load chooser and survived
+another refresh. [That capture](evidence/boolean-reopen/browser.json) names its scope.
 See [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md) and the
-[complete test catalog](TEST-CATALOG.md). A passing parser test is not substituted
-for that final UI path.
+[current test catalog](FOUR-BAR-TEST-CATALOG.md). The four-bar stage also retains
+its drawing, search seed and complete native geometry through actual Chrome
+Save/Load/refresh; see [its evidence](evidence/four-bar/browser.json).
 
 ## Restoration contract
 

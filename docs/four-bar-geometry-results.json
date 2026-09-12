@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "sourceSha256": "bf11a30fe4675759b12386ce8f7b065a93e0b49bec9f8e76a419bcd8ce892ef0",
+  "generatedAt": "2026-09-12T18:47:02.611Z",
+  "scope": "Six selected dimension/trace boundary cases plus one measured optimiser winner, both closure branches, twelve equally spaced input angles per branch. Continuous authored-envelope bounds are checked separately; this is not general contact simulation.",
+  "overlapToleranceMm3": 0.00001,
+  "cases": [
+    {
+      "params": {
+        "groundLengthMm": 100,
+        "crankLengthMm": 25,
+        "couplerLengthMm": 90,
+        "rockerLengthMm": 70,
+        "couplerPointLocalMm": [
+          45,
+          20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 92706.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4247.405688276906
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6421.388166293258
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7211.2994711784295
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 62.97237910500725,
+        "crankToOutputPedestalMm": 59,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 43.74428900898052
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921538969
+    },
+    {
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 45,
+        "rockerLengthMm": 45,
+        "couplerPointLocalMm": [
+          22.5,
+          -20
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 52866.238265007036
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3721.3881662932745
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5711.29947117844
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 28.97114317029974,
+        "crankToOutputPedestalMm": 29,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 24.603986446980738
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921538963
+    },
+    {
+      "params": {
+        "groundLengthMm": 60,
+        "crankLengthMm": 38,
+        "couplerLengthMm": 63,
+        "rockerLengthMm": 63,
+        "couplerPointLocalMm": [
+          78.75,
+          31.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 98406.23826500708
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5027.4056882769
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5587.953471890817
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6791.299471178431
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 11.662055442790987,
+        "crankToOutputPedestalMm": 6,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 29.718070645621687
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921537853
+    },
+    {
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 180,
+        "rockerLengthMm": 150,
+        "couplerPointLocalMm": [
+          -45,
+          -90
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15139.050467266481
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12011.299471178394
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 99.75528334536892,
+        "crankToOutputPedestalMm": 94,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 95.12305898749054
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921538452
+    },
+    {
+      "params": {
+        "groundLengthMm": 148,
+        "crankLengthMm": 15,
+        "couplerLengthMm": 35,
+        "rockerLengthMm": 130,
+        "couplerPointLocalMm": [
+          43.75,
+          17.5
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 89826.23826500705
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3647.405688276911
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3302.2208576128774
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10811.299471178403
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 3.0479679435389997,
+        "crankToOutputPedestalMm": 117,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 14.065594803123162
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921539113
+    },
+    {
+      "params": {
+        "groundLengthMm": 160,
+        "crankLengthMm": 50,
+        "couplerLengthMm": 200,
+        "rockerLengthMm": 200,
+        "couplerPointLocalMm": [
+          100,
+          0
+        ],
+        "branch": 1,
+        "originMm": [
+          0,
+          0
+        ],
+        "rotationDeg": 0,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 211206.23826500706
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5747.405688276895
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 12623.68905445013
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 15011.299471178372
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 95.75886487666175,
+        "crankToOutputPedestalMm": 94,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 94.5
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921537892
+    },
+    {
+      "params": {
+        "groundLengthMm": 159.01929026673065,
+        "crankLengthMm": 24.26480983371903,
+        "couplerLengthMm": 103.5498359491352,
+        "rockerLengthMm": 89.41157211703141,
+        "couplerPointLocalMm": [
+          -17.12415147579941,
+          34.15661157457768
+        ],
+        "branch": 1,
+        "originMm": [
+          -22.44104890927602,
+          -29.333506801167974
+        ],
+        "rotationDeg": -94.59023978725699,
+        "initialCrankAngleDeg": 0,
+        "rpm": 10
+      },
+      "solids": [
+        {
+          "id": "four-bar-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 122280.35527904391
+        },
+        {
+          "id": "four-bar-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4203.294278300049
+        },
+        {
+          "id": "four-bar-coupler",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8449.830441764188
+        },
+        {
+          "id": "four-bar-rocker",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 8375.993798200307
+        }
+      ],
+      "clearances": {
+        "inputPinToRockerMm": 51.662062318622425,
+        "crankToOutputPedestalMm": 118.75448043301162,
+        "crankToRockerSlabMm": 6,
+        "rockerToCouplerSlabMm": 6,
+        "couplerToGroundSupportMm": 15,
+        "inputPlateToPedestalMm": 3,
+        "outputPlateToPedestalMm": 3,
+        "spindleRadialMm": 0.5,
+        "pinRadialMm": 0.5,
+        "traceBossToPinBoreMm": 32.7087774997146
+      },
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0,
+      "traceProbeVolumeMm3": 0.18849555921539018
+    }
+  ],
+  "passed": true
+}
