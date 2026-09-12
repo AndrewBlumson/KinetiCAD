@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T10:18:44.900Z",
+  "passed": true,
+  "sources": {
+    "step": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.step",
+      "sha256": "358d075014c4c4611fe80a281dbe5875e69b6057d6173cfe96afc84962d24a9d",
+      "originalDownload": "kineticad-export-20260912-111613.step"
+    },
+    "unionStep": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-boolean-union.step",
+      "sha256": "077478b935c3a80b166a40dfdaa1f57fcbf6c80ff8ea6cb6a130060b2294b22f",
+      "originalDownload": "kineticad-export-20260912-111658.step"
+    },
+    "intersectStep": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-boolean-intersect.step",
+      "sha256": "bf01283072f00177bdf30992e050d7cd2f41ceacf76bc4639225bc9d94280475",
+      "originalDownload": "kineticad-export-20260912-111715.step"
+    },
+    "stl": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.stl",
+      "sha256": "b9545ad6e2d9b00840ee87c667205c4d3ff005f3e7cb0873d64387bfa39612d7",
+      "originalDownload": "kineticad-export-20260912-111619.stl"
+    },
+    "project": {
+      "path": "artifacts/kineticad/tests/fixtures/assembly-boolean-subtract.kineticad.json",
+      "sha256": "422d1f4a6475a512146b6b2729d52ef3d55f83a43cedafeb34f22911dd34e6e5"
+    },
+    "cadWorkerSha256": "49cfd6cea197aeeb5d00471caad384d71fbf7bc60b8a7d90f17d33359fa33afd"
+  },
+  "expected": {
+    "volumeMm3": 2000,
+    "centroidMm": [
+      5,
+      10,
+      5
+    ],
+    "boundsMm": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        10,
+        20,
+        10
+      ]
+    }
+  },
+  "tolerance": {
+    "volumeMm3": 0.00001,
+    "centroidMm": 0.00001,
+    "boundsMm": 0.00001
+  },
+  "scope": "Actual Chrome files exported from the committed Subtract fixture, then edited/applied as Union and Intersect. Two overlapping 20×20×10 mm boxes offset 10 mm in X; source parts hidden by Boolean hideInputs; unrelated hidden 10 mm cube must be absent. STEP re-import uses the shipped CAD worker with preserved world coordinates. Subtract STL is checked directly as oriented triangles. Scope excludes general curved-surface tessellation and Boolean result nesting.",
+  "step": [
+    {
+      "operation": "subtract",
+      "expected": {
+        "volumeMm3": 2000,
+        "centroidMm": [
+          5,
+          10,
+          5
+        ],
+        "boundsMm": {
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            10,
+            20,
+            10
+          ]
+        }
+      },
+      "solidCount": 1,
+      "volumeMm3": 1999.9999999999995,
+      "centroidMm": [
+        4.999999999999999,
+        10,
+        5
+      ],
+      "boundsMm": {
+        "min": [
+          -1e-7,
+          -1e-7,
+          -1e-7
+        ],
+        "max": [
+          10.0000001,
+          20.0000001,
+          10.0000001
+        ]
+      }
+    },
+    {
+      "operation": "union",
+      "expected": {
+        "volumeMm3": 6000,
+        "centroidMm": [
+          15,
+          10,
+          5
+        ],
+        "boundsMm": {
+          "min": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            30,
+            20,
+            10
+          ]
+        }
+      },
+      "solidCount": 1,
+      "volumeMm3": 5999.999999999998,
+      "centroidMm": [
+        15.000000000000005,
+        10.000000000000004,
+        5.000000000000002
+      ],
+      "boundsMm": {
+        "min": [
+          -1e-7,
+          -1e-7,
+          -1e-7
+        ],
+        "max": [
+          30.0000001,
+          20.0000001,
+          10.0000001
+        ]
+      }
+    },
+    {
+      "operation": "intersect",
+      "expected": {
+        "volumeMm3": 2000,
+        "centroidMm": [
+          15,
+          10,
+          5
+        ],
+        "boundsMm": {
+          "min": [
+            10,
+            0,
+            0
+          ],
+          "max": [
+            20,
+            20,
+            10
+          ]
+        }
+      },
+      "solidCount": 1,
+      "volumeMm3": 1999.9999999999995,
+      "centroidMm": [
+        15.000000000000002,
+        10,
+        5
+      ],
+      "boundsMm": {
+        "min": [
+          9.9999999,
+          -1e-7,
+          -1e-7
+        ],
+        "max": [
+          20.0000001,
+          20.0000001,
+          10.0000001
+        ]
+      }
+    }
+  ],
+  "stl": {
+    "triangleCount": 12,
+    "orientedVolumeMm3": 1999.9999999999998,
+    "centroidMm": [
+      5.000000000000001,
+      10.000000000000002,
+      5.000000000000001
+    ],
+    "boundsMm": {
+      "min": [
+        0,
+        0,
+        0
+      ],
+      "max": [
+        10,
+        20,
+        10
+      ]
+    }
+  },
+  "nestedResults": {
+    "supported": false,
+    "missingResultReferenceRejected": true
+  }
+}

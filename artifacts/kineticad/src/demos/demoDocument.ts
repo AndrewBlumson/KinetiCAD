@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Assembly, AppMode, SimulationState } from '../state/schemas';
+import { validateStewartMotionConfig } from '../physics/stewartKinematics.ts';
 
 export type DemoDocument = {
   version: 9;
@@ -26,6 +27,7 @@ const documentSchema = z.object({
       running: z.boolean(), paused: z.boolean(), timeStepMs: z.number().positive().finite(),
       gravity: vec3, speedMultiplier: z.number().positive().finite(), simulationTimeMs: z.number().finite(),
       durationMs: z.number().finite().positive().optional(),
+      stewartMotion: z.unknown().transform((v) => validateStewartMotionConfig(v)).optional(),
       forceExperiment: z.object({
         kind: z.literal('equal-force'), partIds: z.array(z.string().min(1)).min(1),
         forceN: z.number().finite().positive(), direction: vec3,

@@ -1,0 +1,1722 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T09:40:54.892Z",
+  "moduleSha256": "b977c7e1a9fd4708dfeb0b26f7a4bc7d8b064179395898241e21b9bf0484ba79",
+  "method": "Actual Rapier 0.12 rigid bodies and an unpowered prismatic guide. Motor force is explicitly capped in newtons and applied as an equal/opposite pair. Independent script reconstructs acceleration from successive velocity readouts, compares inferred F=m(a+g) to the applied force, integrates the force schedule from rest, and checks analytic hold/overload and free-base momentum.",
+  "limitations": "This is a simple vertical actuator experiment, not a load rating for the Stewart mechanism. Ideal guide; no contact, bearing friction, electrical motor model, transmission efficiency, structural deformation or impacts. The travel boundary ends the test before a possible crossing and preserves its measured state. Commanded speed limits do not clamp gravity-driven actual velocity.",
+  "thresholds": {
+    "forceInferenceErrorN": 0.0004,
+    "holdPositionErrorMm": 0.00001,
+    "liftPositionErrorMm": 0.02,
+    "overloadPositionErrorMm": 0.2,
+    "overloadVelocityErrorMmPerSec": 0.05,
+    "referenceVelocityErrorMmPerSec": 0.05,
+    "referencePositionErrorMm": 0.2,
+    "energyBalanceErrorJ": 0.003,
+    "momentumErrorKgMmPerSec": 0.0001
+  },
+  "cases": [
+    {
+      "name": "lift",
+      "parameters": {
+        "initialHeightMm": 300,
+        "durationMs": 4000,
+        "timeStepMs": 8.333333333333334,
+        "gravityMPerSec2": 9.81,
+        "maxSpeedMmPerSec": 40,
+        "baseFixed": true,
+        "payloadKg": 1,
+        "maxForceN": 16,
+        "targetHeightMm": 380
+      },
+      "massKg": 1,
+      "samples": 480,
+      "maxAppliedForceN": 13.010000000000002,
+      "maxForceInferenceErrorN": 0.000005493164062286837,
+      "maxReferenceVelocityErrorMmPerSec": 0.001608610153472273,
+      "maxReferencePositionErrorMm": 0.09817893107577902,
+      "maxEnergyBalanceErrorJ": 0.000012822475776386177,
+      "maxMomentumErrorKgMmPerSec": 0,
+      "trace": [
+        {
+          "timeMs": 50,
+          "heightMm": 301.67230224609375,
+          "velocityMmPerSec": 39.94519805908203,
+          "appliedForceN": 9.823163452148439,
+          "inferredForceN": 9.823168945312501,
+          "saturated": false
+        },
+        {
+          "timeMs": 100,
+          "heightMm": 303.67034912109375,
+          "velocityMmPerSec": 39.99988555908203,
+          "appliedForceN": 9.810018920898438,
+          "inferredForceN": 9.8100146484375,
+          "saturated": false
+        },
+        {
+          "timeMs": 150,
+          "heightMm": 305.66839599609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 200,
+          "heightMm": 307.66644287109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 250.00000000000003,
+          "heightMm": 309.66448974609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 300,
+          "heightMm": 311.66253662109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 350,
+          "heightMm": 313.66058349609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 400,
+          "heightMm": 315.65863037109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 450.00000000000006,
+          "heightMm": 317.65667724609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 500.00000000000006,
+          "heightMm": 319.65472412109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 550,
+          "heightMm": 321.65277099609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 600,
+          "heightMm": 323.65081787109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 650,
+          "heightMm": 325.64886474609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 700,
+          "heightMm": 327.64691162109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 750,
+          "heightMm": 329.64495849609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 800,
+          "heightMm": 331.64300537109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 850.0000000000001,
+          "heightMm": 333.64105224609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 900.0000000000001,
+          "heightMm": 335.63909912109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 950.0000000000001,
+          "heightMm": 337.63714599609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1000.0000000000001,
+          "heightMm": 339.63519287109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1050,
+          "heightMm": 341.63323974609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1100,
+          "heightMm": 343.63128662109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1150,
+          "heightMm": 345.62933349609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1200,
+          "heightMm": 347.62738037109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1250,
+          "heightMm": 349.62542724609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1300,
+          "heightMm": 351.62347412109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1350,
+          "heightMm": 353.62152099609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1400,
+          "heightMm": 355.61956787109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1450,
+          "heightMm": 357.61761474609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1500,
+          "heightMm": 359.61566162109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1550,
+          "heightMm": 361.61370849609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1600,
+          "heightMm": 363.61175537109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1650.0000000000002,
+          "heightMm": 365.60980224609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1700.0000000000002,
+          "heightMm": 367.60784912109375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1750.0000000000002,
+          "heightMm": 369.60589599609375,
+          "velocityMmPerSec": 40.00000762939453,
+          "appliedForceN": 9.809999389648437,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1800.0000000000002,
+          "heightMm": 371.53948974609375,
+          "velocityMmPerSec": 35.67359161376953,
+          "appliedForceN": 9.660585327148437,
+          "inferredForceN": 9.6605859375,
+          "saturated": false
+        },
+        {
+          "timeMs": 1850.0000000000002,
+          "heightMm": 373.1475830078125,
+          "velocityMmPerSec": 28.90669059753418,
+          "appliedForceN": 9.685975494384767,
+          "inferredForceN": 9.685979003906251,
+          "saturated": false
+        },
+        {
+          "timeMs": 1900.0000000000002,
+          "heightMm": 374.4500427246094,
+          "velocityMmPerSec": 23.41230583190918,
+          "appliedForceN": 9.709530181884766,
+          "inferredForceN": 9.70953369140625,
+          "saturated": false
+        },
+        {
+          "timeMs": 1950.0000000000002,
+          "heightMm": 375.5050354003906,
+          "velocityMmPerSec": 18.96198844909668,
+          "appliedForceN": 9.728621978759767,
+          "inferredForceN": 9.72862060546875,
+          "saturated": false
+        },
+        {
+          "timeMs": 2000.0000000000002,
+          "heightMm": 376.3595275878906,
+          "velocityMmPerSec": 15.357246398925781,
+          "appliedForceN": 9.744096069335939,
+          "inferredForceN": 9.7440966796875,
+          "saturated": false
+        },
+        {
+          "timeMs": 2050,
+          "heightMm": 377.05157470703125,
+          "velocityMmPerSec": 12.437873840332031,
+          "appliedForceN": 9.756615600585938,
+          "inferredForceN": 9.756613769531251,
+          "saturated": false
+        },
+        {
+          "timeMs": 2100,
+          "heightMm": 377.6120300292969,
+          "velocityMmPerSec": 10.073554992675781,
+          "appliedForceN": 9.766766967773439,
+          "inferredForceN": 9.766765136718751,
+          "saturated": false
+        },
+        {
+          "timeMs": 2150,
+          "heightMm": 378.0659484863281,
+          "velocityMmPerSec": 8.158821105957031,
+          "appliedForceN": 9.774989624023439,
+          "inferredForceN": 9.774990234375,
+          "saturated": false
+        },
+        {
+          "timeMs": 2200,
+          "heightMm": 378.4335632324219,
+          "velocityMmPerSec": 6.608017921447754,
+          "appliedForceN": 9.781642990112305,
+          "inferredForceN": 9.781642456054689,
+          "saturated": false
+        },
+        {
+          "timeMs": 2250,
+          "heightMm": 378.7313537597656,
+          "velocityMmPerSec": 5.351838111877441,
+          "appliedForceN": 9.78702507019043,
+          "inferredForceN": 9.787025756835938,
+          "saturated": false
+        },
+        {
+          "timeMs": 2300,
+          "heightMm": 378.97247314453125,
+          "velocityMmPerSec": 4.334473609924316,
+          "appliedForceN": 9.79139762878418,
+          "inferredForceN": 9.791398315429689,
+          "saturated": false
+        },
+        {
+          "timeMs": 2350,
+          "heightMm": 379.16778564453125,
+          "velocityMmPerSec": 3.5106265544891357,
+          "appliedForceN": 9.794940280914307,
+          "inferredForceN": 9.794940490722658,
+          "saturated": false
+        },
+        {
+          "timeMs": 2400,
+          "heightMm": 379.3260192871094,
+          "velocityMmPerSec": 2.8433139324188232,
+          "appliedForceN": 9.79779977798462,
+          "inferredForceN": 9.797799682617187,
+          "saturated": false
+        },
+        {
+          "timeMs": 2450,
+          "heightMm": 379.4541931152344,
+          "velocityMmPerSec": 2.3026111125946045,
+          "appliedForceN": 9.800097751617432,
+          "inferredForceN": 9.800097656250001,
+          "saturated": false
+        },
+        {
+          "timeMs": 2500,
+          "heightMm": 379.5578918457031,
+          "velocityMmPerSec": 1.8645122051239014,
+          "appliedForceN": 9.801941928863526,
+          "inferredForceN": 9.801942443847656,
+          "saturated": false
+        },
+        {
+          "timeMs": 2550,
+          "heightMm": 379.64190673828125,
+          "velocityMmPerSec": 1.5102412700653076,
+          "appliedForceN": 9.803499851226807,
+          "inferredForceN": 9.803500213623048,
+          "saturated": false
+        },
+        {
+          "timeMs": 2600,
+          "heightMm": 379.71014404296875,
+          "velocityMmPerSec": 1.2234828472137451,
+          "appliedForceN": 9.804763278961182,
+          "inferredForceN": 9.804763641357422,
+          "saturated": false
+        },
+        {
+          "timeMs": 2650,
+          "heightMm": 379.7653503417969,
+          "velocityMmPerSec": 0.9909007549285889,
+          "appliedForceN": 9.805738315582277,
+          "inferredForceN": 9.805738220214844,
+          "saturated": false
+        },
+        {
+          "timeMs": 2700,
+          "heightMm": 379.8096923828125,
+          "velocityMmPerSec": 0.8026511669158936,
+          "appliedForceN": 9.806622562408448,
+          "inferredForceN": 9.806623077392578,
+          "saturated": false
+        },
+        {
+          "timeMs": 2750,
+          "heightMm": 379.8462829589844,
+          "velocityMmPerSec": 0.6500709056854248,
+          "appliedForceN": 9.807175998687745,
+          "inferredForceN": 9.807175827026368,
+          "saturated": false
+        },
+        {
+          "timeMs": 2800,
+          "heightMm": 379.875732421875,
+          "velocityMmPerSec": 0.5261352062225342,
+          "appliedForceN": 9.80765329360962,
+          "inferredForceN": 9.807653274536133,
+          "saturated": false
+        },
+        {
+          "timeMs": 2850,
+          "heightMm": 379.899169921875,
+          "velocityMmPerSec": 0.42676234245300293,
+          "appliedForceN": 9.80812334060669,
+          "inferredForceN": 9.808123054504396,
+          "saturated": false
+        },
+        {
+          "timeMs": 2900,
+          "heightMm": 379.91778564453125,
+          "velocityMmPerSec": 0.3464639186859131,
+          "appliedForceN": 9.808586902618408,
+          "inferredForceN": 9.808586883544923,
+          "saturated": false
+        },
+        {
+          "timeMs": 2950,
+          "heightMm": 379.9339599609375,
+          "velocityMmPerSec": 0.277266263961792,
+          "appliedForceN": 9.808730182647706,
+          "inferredForceN": 9.808730506896973,
+          "saturated": false
+        },
+        {
+          "timeMs": 3000,
+          "heightMm": 379.9456787109375,
+          "velocityMmPerSec": 0.22900843620300293,
+          "appliedForceN": 9.80906213760376,
+          "inferredForceN": 9.809062500000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3050,
+          "heightMm": 379.9573974609375,
+          "velocityMmPerSec": 0.18213343620300293,
+          "appliedForceN": 9.80906213760376,
+          "inferredForceN": 9.809062500000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3100,
+          "heightMm": 379.96405029296875,
+          "velocityMmPerSec": 0.14967942237854004,
+          "appliedForceN": 9.809526309967042,
+          "inferredForceN": 9.809526386260988,
+          "saturated": false
+        },
+        {
+          "timeMs": 3150,
+          "heightMm": 379.96990966796875,
+          "velocityMmPerSec": 0.12622570991516113,
+          "appliedForceN": 9.809530849456788,
+          "inferredForceN": 9.809531250000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3200,
+          "heightMm": 379.97576904296875,
+          "velocityMmPerSec": 0.10278820991516113,
+          "appliedForceN": 9.809530849456788,
+          "inferredForceN": 9.809531250000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3250.0000000000005,
+          "heightMm": 379.98162841796875,
+          "velocityMmPerSec": 0.07935070991516113,
+          "appliedForceN": 9.809530849456788,
+          "inferredForceN": 9.809531250000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3300.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05591320991516113,
+          "appliedForceN": 9.809530849456788,
+          "inferredForceN": 9.809531250000001,
+          "saturated": false
+        },
+        {
+          "timeMs": 3350.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809998950958253,
+          "inferredForceN": 9.809999027252198,
+          "saturated": false
+        },
+        {
+          "timeMs": 3400.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3450.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3500.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3550.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3600.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3650.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3700.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3750.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3800.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3850.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3900.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 3950.0000000000005,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 4000,
+          "heightMm": 379.98681640625,
+          "velocityMmPerSec": 0.05273938179016113,
+          "appliedForceN": 9.809999599456788,
+          "inferredForceN": 9.81,
+          "saturated": false
+        }
+      ],
+      "final": {
+        "kind": "actuator",
+        "simulatedTimeMs": 4000,
+        "dtMs": 8.333333333333334,
+        "completed": true,
+        "stopReason": "duration",
+        "parameters": {
+          "initialHeightMm": 300,
+          "durationMs": 4000,
+          "timeStepMs": 8.333333333333334,
+          "gravityMPerSec2": 9.81,
+          "maxSpeedMmPerSec": 40,
+          "baseFixed": true,
+          "payloadKg": 1,
+          "maxForceN": 16,
+          "targetHeightMm": 380
+        },
+        "massKg": 1,
+        "positionMm": [
+          0,
+          0,
+          379.98681640625
+        ],
+        "velocityMmPerSec": [
+          0,
+          0,
+          0.05273938179016113
+        ],
+        "basePositionMm": [
+          0,
+          0,
+          0
+        ],
+        "baseVelocityMmPerSec": [
+          0,
+          0,
+          0
+        ],
+        "appliedForceN": 9.809999599456788,
+        "reactionForceN": -9.809999599456788,
+        "accelerationMmPerSec2": 0,
+        "inferredActuatorForceN": 9.81,
+        "saturated": false,
+        "weightN": 9.81,
+        "positionErrorMm": 0.01318359375,
+        "reference": {
+          "accelerationMmPerSec2": -0.0004005432128195707,
+          "velocityMmPerSec": 0.05113077163668886,
+          "positionMm": 380.0849953373258,
+          "valid": true,
+          "description": "Newton reference integrates the applied force schedule independently of the measured positions and velocities. Overload has the constant acceleration Fmax/m − g; hold has zero acceleration."
+        },
+        "energyJ": {
+          "kinetic": 1.39072119580419e-9,
+          "potential": 0.7846706689453126,
+          "actuatorWork": 0.7846834914049892
+        }
+      }
+    },
+    {
+      "name": "hold",
+      "parameters": {
+        "initialHeightMm": 300,
+        "durationMs": 2000,
+        "timeStepMs": 8.333333333333334,
+        "gravityMPerSec2": 9.81,
+        "maxSpeedMmPerSec": 40,
+        "baseFixed": true,
+        "payloadKg": 1,
+        "maxForceN": 16,
+        "targetHeightMm": 300
+      },
+      "massKg": 1,
+      "samples": 240,
+      "maxAppliedForceN": 9.81,
+      "maxForceInferenceErrorN": 0,
+      "maxReferenceVelocityErrorMmPerSec": 0,
+      "maxReferencePositionErrorMm": 0,
+      "maxEnergyBalanceErrorJ": 0,
+      "maxMomentumErrorKgMmPerSec": 0,
+      "trace": [
+        {
+          "timeMs": 50,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 100,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 150,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 200,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 250.00000000000003,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 300,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 350,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 400,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 450.00000000000006,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 500.00000000000006,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 550,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 600,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 650,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 700,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 750,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 800,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 850.0000000000001,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 900.0000000000001,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 950.0000000000001,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1000.0000000000001,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1050,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1100,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1150,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1200,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1250,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1300,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1350,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1400,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1450,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1500,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1550,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1600,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1650.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1700.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1750.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1800.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1850.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1900.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 1950.0000000000002,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        },
+        {
+          "timeMs": 2000,
+          "heightMm": 300,
+          "velocityMmPerSec": 0,
+          "appliedForceN": 9.81,
+          "inferredForceN": 9.81,
+          "saturated": false
+        }
+      ],
+      "final": {
+        "kind": "actuator",
+        "simulatedTimeMs": 2000,
+        "dtMs": 8.333333333333334,
+        "completed": true,
+        "stopReason": "duration",
+        "parameters": {
+          "initialHeightMm": 300,
+          "durationMs": 2000,
+          "timeStepMs": 8.333333333333334,
+          "gravityMPerSec2": 9.81,
+          "maxSpeedMmPerSec": 40,
+          "baseFixed": true,
+          "payloadKg": 1,
+          "maxForceN": 16,
+          "targetHeightMm": 300
+        },
+        "massKg": 1,
+        "positionMm": [
+          0,
+          0,
+          300
+        ],
+        "velocityMmPerSec": [
+          0,
+          0,
+          0
+        ],
+        "basePositionMm": [
+          0,
+          0,
+          0
+        ],
+        "baseVelocityMmPerSec": [
+          0,
+          0,
+          0
+        ],
+        "appliedForceN": 9.81,
+        "reactionForceN": -9.81,
+        "accelerationMmPerSec2": 0,
+        "inferredActuatorForceN": 9.81,
+        "saturated": false,
+        "weightN": 9.81,
+        "positionErrorMm": 0,
+        "reference": {
+          "accelerationMmPerSec2": 0,
+          "velocityMmPerSec": 0,
+          "positionMm": 300,
+          "valid": true,
+          "description": "Newton reference integrates the applied force schedule independently of the measured positions and velocities. Overload has the constant acceleration Fmax/m − g; hold has zero acceleration."
+        },
+        "energyJ": {
+          "kinetic": 0,
+          "potential": 0,
+          "actuatorWork": 0
+        }
+      }
+    },
+    {
+      "name": "overload",
+      "parameters": {
+        "initialHeightMm": 320,
+        "durationMs": 500,
+        "timeStepMs": 8.333333333333334,
+        "gravityMPerSec2": 9.81,
+        "maxSpeedMmPerSec": 40,
+        "baseFixed": true,
+        "payloadKg": 2,
+        "maxForceN": 16,
+        "targetHeightMm": 400
+      },
+      "massKg": 2,
+      "samples": 60,
+      "maxAppliedForceN": 16,
+      "maxForceInferenceErrorN": 0.0001562499999998579,
+      "maxReferenceVelocityErrorMmPerSec": 0.012512207030454192,
+      "maxReferencePositionErrorMm": 0.1184005737303977,
+      "maxEnergyBalanceErrorJ": 0.00040596282562344044,
+      "maxMomentumErrorKgMmPerSec": 0,
+      "trace": [
+        {
+          "timeMs": 50,
+          "heightMm": 317.72576904296875,
+          "velocityMmPerSec": -90.49992370605469,
+          "appliedForceN": 16,
+          "inferredForceN": 16.00001953125,
+          "saturated": true
+        },
+        {
+          "timeMs": 100,
+          "heightMm": 310.92657470703125,
+          "velocityMmPerSec": -181.0002899169922,
+          "appliedForceN": 16,
+          "inferredForceN": 15.999960937500001,
+          "saturated": true
+        },
+        {
+          "timeMs": 150,
+          "heightMm": 299.6021728515625,
+          "velocityMmPerSec": -271.5007629394531,
+          "appliedForceN": 16,
+          "inferredForceN": 16.000078125,
+          "saturated": true
+        },
+        {
+          "timeMs": 200,
+          "heightMm": 283.75286865234375,
+          "velocityMmPerSec": -361.9988098144531,
+          "appliedForceN": 16,
+          "inferredForceN": 16.000078125,
+          "saturated": true
+        },
+        {
+          "timeMs": 250.00000000000003,
+          "heightMm": 263.3787841796875,
+          "velocityMmPerSec": -452.4968566894531,
+          "appliedForceN": 16,
+          "inferredForceN": 16.000078125,
+          "saturated": true
+        },
+        {
+          "timeMs": 300,
+          "heightMm": 238.47967529296875,
+          "velocityMmPerSec": -542.9968872070312,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 350,
+          "heightMm": 209.05545043945312,
+          "velocityMmPerSec": -633.5007934570312,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 400,
+          "heightMm": 175.10604858398438,
+          "velocityMmPerSec": -724.0046997070312,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 450.00000000000006,
+          "heightMm": 136.63140869140625,
+          "velocityMmPerSec": -814.5086059570312,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 500,
+          "heightMm": 93.63159942626953,
+          "velocityMmPerSec": -905.0125122070312,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        }
+      ],
+      "final": {
+        "kind": "actuator",
+        "simulatedTimeMs": 500,
+        "dtMs": 8.333333333333334,
+        "completed": true,
+        "stopReason": "duration",
+        "parameters": {
+          "initialHeightMm": 320,
+          "durationMs": 500,
+          "timeStepMs": 8.333333333333334,
+          "gravityMPerSec2": 9.81,
+          "maxSpeedMmPerSec": 40,
+          "baseFixed": true,
+          "payloadKg": 2,
+          "maxForceN": 16,
+          "targetHeightMm": 400
+        },
+        "massKg": 2,
+        "positionMm": [
+          0,
+          0,
+          93.63159942626953
+        ],
+        "velocityMmPerSec": [
+          0,
+          0,
+          -905.0125122070312
+        ],
+        "basePositionMm": [
+          0,
+          0,
+          0
+        ],
+        "baseVelocityMmPerSec": [
+          0,
+          0,
+          0
+        ],
+        "appliedForceN": 16,
+        "reactionForceN": -16,
+        "accelerationMmPerSec2": -1810.078125,
+        "inferredActuatorForceN": 15.99984375,
+        "saturated": true,
+        "weightN": 19.62,
+        "positionErrorMm": 306.36840057373047,
+        "reference": {
+          "accelerationMmPerSec2": -1810.0000000000005,
+          "velocityMmPerSec": -905.0000000000008,
+          "positionMm": 93.74999999999993,
+          "valid": true,
+          "description": "Newton reference integrates the applied force schedule independently of the measured positions and velocities. Overload has the constant acceleration Fmax/m − g; hold has zero acceleration."
+        },
+        "energyJ": {
+          "kinetic": 0.8190476472512819,
+          "potential": -4.441348019256592,
+          "actuatorWork": -3.621894409179687
+        }
+      },
+      "closedForm": {
+        "accelerationMmPerSec2": -1810.0000000000005,
+        "velocityMmPerSec": -905.0000000000002,
+        "positionMm": 93.74999999999994
+      }
+    },
+    {
+      "name": "overload-240Hz",
+      "parameters": {
+        "initialHeightMm": 320,
+        "durationMs": 500,
+        "timeStepMs": 4.166666666666667,
+        "gravityMPerSec2": 9.81,
+        "maxSpeedMmPerSec": 40,
+        "baseFixed": true,
+        "payloadKg": 2,
+        "maxForceN": 16,
+        "targetHeightMm": 400
+      },
+      "massKg": 2,
+      "samples": 120,
+      "maxAppliedForceN": 16,
+      "maxForceInferenceErrorN": 0.0003124999999997158,
+      "maxReferenceVelocityErrorMmPerSec": 0.02508544921727207,
+      "maxReferencePositionErrorMm": 0.05725097656267053,
+      "maxEnergyBalanceErrorJ": 0.0002526525689621195,
+      "maxMomentumErrorKgMmPerSec": 0,
+      "trace": [
+        {
+          "timeMs": 50,
+          "heightMm": 317.7316589355469,
+          "velocityMmPerSec": -90.5001449584961,
+          "appliedForceN": 16,
+          "inferredForceN": 15.999960937500001,
+          "saturated": true
+        },
+        {
+          "timeMs": 100,
+          "heightMm": 310.9383850097656,
+          "velocityMmPerSec": -180.99940490722656,
+          "appliedForceN": 16,
+          "inferredForceN": 16.000078125,
+          "saturated": true
+        },
+        {
+          "timeMs": 150,
+          "heightMm": 299.62030029296875,
+          "velocityMmPerSec": -271.4984436035156,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 200,
+          "heightMm": 283.77703857421875,
+          "velocityMmPerSec": -362.0023498535156,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 250.00000000000003,
+          "heightMm": 263.4081115722656,
+          "velocityMmPerSec": -452.5062561035156,
+          "appliedForceN": 16,
+          "inferredForceN": 15.99984375,
+          "saturated": true
+        },
+        {
+          "timeMs": 300,
+          "heightMm": 238.51451110839844,
+          "velocityMmPerSec": -543.0061645507812,
+          "appliedForceN": 16,
+          "inferredForceN": 16.0003125,
+          "saturated": true
+        },
+        {
+          "timeMs": 350,
+          "heightMm": 209.09593200683594,
+          "velocityMmPerSec": -633.4983520507812,
+          "appliedForceN": 16,
+          "inferredForceN": 16.0003125,
+          "saturated": true
+        },
+        {
+          "timeMs": 400,
+          "heightMm": 175.15281677246094,
+          "velocityMmPerSec": -723.9905395507812,
+          "appliedForceN": 16,
+          "inferredForceN": 16.0003125,
+          "saturated": true
+        },
+        {
+          "timeMs": 450.00000000000006,
+          "heightMm": 136.6851348876953,
+          "velocityMmPerSec": -814.4827270507812,
+          "appliedForceN": 16,
+          "inferredForceN": 16.0003125,
+          "saturated": true
+        },
+        {
+          "timeMs": 500,
+          "heightMm": 93.6927490234375,
+          "velocityMmPerSec": -904.9749145507812,
+          "appliedForceN": 16,
+          "inferredForceN": 16.0003125,
+          "saturated": true
+        }
+      ],
+      "final": {
+        "kind": "actuator",
+        "simulatedTimeMs": 500,
+        "dtMs": 4.166666666666667,
+        "completed": true,
+        "stopReason": "duration",
+        "parameters": {
+          "initialHeightMm": 320,
+          "durationMs": 500,
+          "timeStepMs": 4.166666666666667,
+          "gravityMPerSec2": 9.81,
+          "maxSpeedMmPerSec": 40,
+          "baseFixed": true,
+          "payloadKg": 2,
+          "maxForceN": 16,
+          "targetHeightMm": 400
+        },
+        "massKg": 2,
+        "positionMm": [
+          0,
+          0,
+          93.6927490234375
+        ],
+        "velocityMmPerSec": [
+          0,
+          0,
+          -904.9749145507812
+        ],
+        "basePositionMm": [
+          0,
+          0,
+          0
+        ],
+        "baseVelocityMmPerSec": [
+          0,
+          0,
+          0
+        ],
+        "appliedForceN": 16,
+        "reactionForceN": -16,
+        "accelerationMmPerSec2": -1809.84375,
+        "inferredActuatorForceN": 16.0003125,
+        "saturated": true,
+        "weightN": 19.62,
+        "positionErrorMm": 306.3072509765625,
+        "reference": {
+          "accelerationMmPerSec2": -1810.0000000000005,
+          "velocityMmPerSec": -904.9999999999985,
+          "positionMm": 93.75000000000017,
+          "valid": true,
+          "description": "Newton reference integrates the applied force schedule independently of the measured positions and velocities. Overload has the constant acceleration Fmax/m − g; hold has zero acceleration."
+        },
+        "energyJ": {
+          "kinetic": 0.8189795959661939,
+          "potential": -4.440148264160156,
+          "actuatorWork": -3.6209160156249998
+        }
+      },
+      "closedForm": {
+        "accelerationMmPerSec2": -1810.0000000000005,
+        "velocityMmPerSec": -905.0000000000002,
+        "positionMm": 93.74999999999994
+      }
+    },
+    {
+      "name": "free-base-reaction",
+      "parameters": {
+        "initialHeightMm": 300,
+        "durationMs": 1000,
+        "timeStepMs": 8.333333333333334,
+        "gravityMPerSec2": 0,
+        "maxSpeedMmPerSec": 40,
+        "baseFixed": false,
+        "payloadKg": 1,
+        "maxForceN": 0.01,
+        "targetHeightMm": 500
+      },
+      "massKg": 1,
+      "samples": 120,
+      "maxAppliedForceN": 0.01,
+      "maxForceInferenceErrorN": 0.0000012207031250006245,
+      "maxReferenceVelocityErrorMmPerSec": 0.00019550323485173493,
+      "maxReferencePositionErrorMm": 0.0012763129340100932,
+      "maxEnergyBalanceErrorJ": 1.5514360033541338e-8,
+      "maxMomentumErrorKgMmPerSec": 0,
+      "trace": [
+        {
+          "timeMs": 50,
+          "heightMm": 300.01251220703125,
+          "velocityMmPerSec": 0.4999992251396179,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.009999961853027343,
+          "saturated": true
+        },
+        {
+          "timeMs": 100,
+          "heightMm": 300.04998779296875,
+          "velocityMmPerSec": 1.0000029802322388,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.01000006914138794,
+          "saturated": true
+        },
+        {
+          "timeMs": 150,
+          "heightMm": 300.1126708984375,
+          "velocityMmPerSec": 1.4999953508377075,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.009999847412109375,
+          "saturated": true
+        },
+        {
+          "timeMs": 200,
+          "heightMm": 300.20025634765625,
+          "velocityMmPerSec": 1.9999877214431763,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.009999847412109375,
+          "saturated": true
+        },
+        {
+          "timeMs": 250.00000000000003,
+          "heightMm": 300.312744140625,
+          "velocityMmPerSec": 2.500002861022949,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.01000030517578125,
+          "saturated": true
+        },
+        {
+          "timeMs": 300,
+          "heightMm": 300.4502868652344,
+          "velocityMmPerSec": 3.0000181198120117,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.01000030517578125,
+          "saturated": true
+        },
+        {
+          "timeMs": 350,
+          "heightMm": 300.6129455566406,
+          "velocityMmPerSec": 3.500033378601074,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.01000030517578125,
+          "saturated": true
+        },
+        {
+          "timeMs": 400,
+          "heightMm": 300.8005065917969,
+          "velocityMmPerSec": 4.000048637390137,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.01000030517578125,
+          "saturated": true
+        },
+        {
+          "timeMs": 450.00000000000006,
+          "heightMm": 301.0129699707031,
+          "velocityMmPerSec": 4.500018119812012,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 500.00000000000006,
+          "heightMm": 301.2505798339844,
+          "velocityMmPerSec": 4.999987602233887,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 550,
+          "heightMm": 301.5132141113281,
+          "velocityMmPerSec": 5.499957084655762,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 600,
+          "heightMm": 301.8007507324219,
+          "velocityMmPerSec": 5.999926567077637,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 650,
+          "heightMm": 302.1131896972656,
+          "velocityMmPerSec": 6.499896049499512,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 700,
+          "heightMm": 302.45086669921875,
+          "velocityMmPerSec": 6.999865531921387,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 750,
+          "heightMm": 302.8134765625,
+          "velocityMmPerSec": 7.499835014343262,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 800,
+          "heightMm": 303.20098876953125,
+          "velocityMmPerSec": 7.999804496765137,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.0099993896484375,
+          "saturated": true
+        },
+        {
+          "timeMs": 850.0000000000001,
+          "heightMm": 303.61346435546875,
+          "velocityMmPerSec": 8.499865531921387,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.010001220703125,
+          "saturated": true
+        },
+        {
+          "timeMs": 900.0000000000001,
+          "heightMm": 304.0511474609375,
+          "velocityMmPerSec": 8.999926567077637,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.010001220703125,
+          "saturated": true
+        },
+        {
+          "timeMs": 950.0000000000001,
+          "heightMm": 304.51373291015625,
+          "velocityMmPerSec": 9.499987602233887,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.010001220703125,
+          "saturated": true
+        },
+        {
+          "timeMs": 1000,
+          "heightMm": 305.001220703125,
+          "velocityMmPerSec": 10.000048637390137,
+          "appliedForceN": 0.01,
+          "inferredForceN": 0.010001220703125,
+          "saturated": true
+        }
+      ],
+      "final": {
+        "kind": "actuator",
+        "simulatedTimeMs": 1000,
+        "dtMs": 8.333333333333334,
+        "completed": true,
+        "stopReason": "duration",
+        "parameters": {
+          "initialHeightMm": 300,
+          "durationMs": 1000,
+          "timeStepMs": 8.333333333333334,
+          "gravityMPerSec2": 0,
+          "maxSpeedMmPerSec": 40,
+          "baseFixed": false,
+          "payloadKg": 1,
+          "maxForceN": 0.01,
+          "targetHeightMm": 500
+        },
+        "massKg": 1,
+        "positionMm": [
+          0,
+          0,
+          305.001220703125
+        ],
+        "velocityMmPerSec": [
+          0,
+          0,
+          10.000048637390137
+        ],
+        "basePositionMm": [
+          0,
+          0,
+          -1.250315546989441
+        ],
+        "baseVelocityMmPerSec": [
+          0,
+          0,
+          -2.500012159347534
+        ],
+        "appliedForceN": 0.01,
+        "reactionForceN": -0.01,
+        "accelerationMmPerSec2": 10.001220703125,
+        "inferredActuatorForceN": 0.010001220703125,
+        "saturated": true,
+        "weightN": 0,
+        "positionErrorMm": 193.74846374988556,
+        "reference": {
+          "accelerationMmPerSec2": 10,
+          "velocityMmPerSec": 10.000000000000002,
+          "positionMm": 305,
+          "valid": true,
+          "description": "Newton reference integrates the applied force schedule independently of the measured positions and velocities. Overload has the constant acceleration Fmax/m − g; hold has zero acceleration."
+        },
+        "energyJ": {
+          "kinetic": 0.0000625006079688552,
+          "potential": 0,
+          "actuatorWork": 0.00006251536250114442
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "passed": true
+}

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-11T22:22:10.448Z",
+  "generatedAt": "2026-09-12T09:52:02.679Z",
   "method": "Exact OCCT B-rep intersection volumes for every pair at the initial pose and the measured 1 mN, 2 s final pose. Separate interval containment verifies the bounded straight-Y travel corridor between these poses. This is geometric interference verification; contact forces are disabled in the simulation.",
   "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
   "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
-  "forceMeasurementReportSha256": "ef5ceb9a2074de609de1c750ed5efada1b228fa9ca5ce351b73c6df52c8bfefe",
-  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "forceMeasurementReportSha256": "6b50580105d99da598e3bf8565db489f494b995a51df8d04677958926b17a651",
+  "physicsWorkerSha256": "a7c7e84367b88438bec20e0ce5285bdfcd7a6fb961c94deead006b2543718e46",
   "overlapToleranceMm3": 0.00001,
   "coordinateToleranceMm": 0.00001,
   "bed": {

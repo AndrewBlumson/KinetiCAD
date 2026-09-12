@@ -4,7 +4,7 @@
 // react to selections):
 //   1. User clicks a planar face → store dispatches `selectFace` →
 //      this inspector copies the faceId into editor.params.targetFace
-//      and clears the selection.
+//      and retains the selection for the second click.
 //   2. User clicks a point on the chosen face → store dispatches
 //      `selectPointOnFace` → this inspector copies the UV into
 //      editor.params.positionUV and clears the selection.
@@ -18,6 +18,7 @@
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
 import NumericInput from "@/components/NumericInput";
+import { clearHoleFace, consumeHoleSelection } from './holeSelection';
 
 export default function HoleInspector() {
   const editor = useKinetiCADStore((s) => s.featureEditor);
@@ -29,41 +30,10 @@ export default function HoleInspector() {
   );
   const apply = useKinetiCADStore((s) => s.applyFeatureEditor);
   const cancel = useKinetiCADStore((s) => s.cancelFeatureEditor);
-  const clearSelection = useKinetiCADStore((s) => s.clearSelection);
   const assembly = useKinetiCADStore((s) => s.assembly);
 
   useEffect(() => {
-    if (!editor.open || editor.type !== "hole") return;
-    if (!selection) return;
-    // Assembly-level selections (boolean / mate) have no partId; ignore.
-    if (selection.kind === "boolean" || selection.kind === "mate") return;
-    if (selection.partId !== editor.partId) return;
-
-    if (selection.kind === "face") {
-      // Stage 1: face pick. Replace any prior face/UV.
-      setParams({
-        ...editor.params,
-        targetFace: selection.faceId,
-        positionUV: null,
-      });
-      clearSelection();
-      return;
-    }
-    if (selection.kind === "point-on-face") {
-      // Stage 2: point pick. Only accept it if the face matches the chosen
-      // one (defensive: protects against stale selections during a face swap).
-      if (
-        editor.params.targetFace &&
-        selection.faceId === editor.params.targetFace
-      ) {
-        setParams({
-          ...editor.params,
-          positionUV: [selection.uv[0], selection.uv[1]],
-        });
-        clearSelection();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    consumeHoleSelection(useKinetiCADStore.getState());
   }, [selection]);
 
   if (!editor.open || editor.type !== "hole") return null;
@@ -82,8 +52,7 @@ export default function HoleInspector() {
   const errorDetails =
     featurePreview.status === "error" ? featurePreview.details : null;
 
-  const clearFace = () =>
-    setParams({ ...editor.params, targetFace: null, positionUV: null });
+  const clearFace = () => clearHoleFace(useKinetiCADStore.getState());
 
   const through = editor.params.depthMm === 0;
   const canApply =

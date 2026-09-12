@@ -39,6 +39,7 @@ import type {
   UpdateJointMotorResult,
 } from "./types";
 import type { Mate } from "@/state/schemas";
+import { createStewartController } from './stewartController.ts';
 
 // Worker→main-thread console bridge. 16/05/2026
 // Mirrors the same bridge in cadWorker.ts -- see that file for rationale.
@@ -63,6 +64,7 @@ let accumulatedTimeMs = 0;
 let durationMs: number | null = null;
 let maximumSolverSteps = Infinity;
 const forcedPartIds = new Set<string>();
+let stewartController: ReturnType<typeof createStewartController> | null = null;
 // Bound a single worker task while retaining excess time for subsequent calls.
 const MAX_SUBSTEPS_PER_CALL = 120;
 
@@ -687,11 +689,14 @@ function destroyWorld(): void {
   durationMs = null;
   maximumSolverSteps = Infinity;
   forcedPartIds.clear();
+  stewartController = null;
 }
 
 /** Preserve the existing DevTools diagnostic, sampled by solver steps. */
 function logStepDiagnostics(): void {
   mateIdToJoint.forEach((_joint, mateId) => {
+    // Trajectory drives have changing length targets and their own readout.
+    if (stewartController?.ownsJoint(mateId)) return;
     const mate = mateById.get(mateId);
     if (!mate || (mate.type !== 'revolute' && mate.type !== 'prismatic')) return;
     const bodyA = partIdToBody.get(mate.partA);
@@ -803,6 +808,12 @@ const api: PhysicsApi = {
         if (warning) warnings.push(warning);
       }
 
+      if (args.stewartMotion) {
+        stewartController = createStewartController(args, partIdToBody, mateIdToJoint, MOTOR_VELOCITY_GAIN);
+        durationMs = stewartController.durationMs;
+        maximumSolverSteps = Math.round(durationMs / timeStepMs);
+      }
+
       for (const applied of args.appliedForces ?? []) {
         if (!Array.isArray(applied.forceN) || applied.forceN.length !== 3
           || applied.forceN.some((value) => !Number.isFinite(value) || !Number.isFinite(Math.fround(value * 1000)))) {
@@ -845,8 +856,13 @@ const api: PhysicsApi = {
     // Every solver step uses the configured dt, independent of render rate,
     // playback speed, and the partitioning of worker messages.
     for (let i = 0; i < steps; i++) {
+      stewartController?.beforeStep(stepCount * timeStepMs, timeStepMs);
       world.step();
       stepCount += 1;
+      const stewartReadout = stewartController?.afterStep(stepCount * timeStepMs);
+      if (stewartReadout && stepCount % 60 === 0) {
+        console.log('[stewart-diag]', JSON.stringify({ simulatedTimeMs: stepCount * timeStepMs, ...stewartReadout }));
+      }
       if (stepCount % 60 === 0) logStepDiagnostics();
     }
     accumulatedTimeMs = Math.max(0, accumulatedTimeMs - steps * timeStepMs);
@@ -872,6 +888,7 @@ const api: PhysicsApi = {
       transforms, dtMs: steps * timeStepMs,
       simulatedTimeMs: Math.min(stepCount * timeStepMs, durationMs ?? Infinity),
       completed, bodyMeasurements,
+      ...(stewartController ? { stewartMeasurement: stewartController.measurement(stepCount * timeStepMs) } : {}),
     };
   },
 
@@ -880,6 +897,9 @@ const api: PhysicsApi = {
   ): Promise<UpdateJointMotorResult> {
     if (!world) {
       return { ok: false, error: "no active world" };
+    }
+    if (stewartController?.ownsJoint(args.mateId)) {
+      return { ok: false, error: 'This actuator is controlled by the six-axis trajectory. Stop the run to change its command.' };
     }
     let joint = mateIdToJoint.get(args.mateId);
     if (!joint) {

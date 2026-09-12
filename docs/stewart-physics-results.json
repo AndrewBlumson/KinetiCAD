@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-11T22:35:41.488Z",
+  "generatedAt": "2026-09-12T09:52:01.205Z",
   "fixturePath": "artifacts/kineticad/public/demos/stewart-platform.json",
   "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
-  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "physicsWorkerSha256": "a7c7e84367b88438bec20e0ce5285bdfcd7a6fb961c94deead006b2543718e46",
   "method": "Actual OCCT meshes and mass tensors in the shipped Comlink/Rapier worker. Every fixed-step pose independently reconstructs slider travel, both spherical closures and each platform-to-base leg length. Symmetric heave is derived from initial pivot coordinates and commanded extension using Pythagoras; no pose is assigned to the platform.",
   "scope": "Six-second equal-extension, zero-gravity closed-loop test. No arbitrary six-axis inverse kinematics, contact/friction, payload rating or singularity guarantee.",
   "durationMs": 6000,

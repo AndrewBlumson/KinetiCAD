@@ -3,60 +3,81 @@
 Use the existing KinetiCAD Replit project so its domain, secrets and publishing
 settings stay attached to the same app.
 
-The current source extends the gallery to six demos, replaces static Material
-studio with the equal-force experiment, and adds file-button labels/tooltips.
-The six-demo actual-CAD physics report, material-force experiment and Stewart
-lift/endpoint-clearance reports pass. The post-arc-fix production build and
-local Chrome Stewart run pass. All 79 tests passed in serialized runs,
-including mass/regeneration after the arc fix. The final local windmill
-browser canary also passes; public deployment acceptance remains pending. Current evidence
-is recorded separately from the earlier five-demo Chrome bundle; see
-[Physics verification](PHYSICS-VERIFICATION.md) and the
-[current Chrome record](force-stewart-browser-results.json).
+The current source includes six editable demos, complete native/imported STEP
+project recovery, bounded six-axis Stewart control and three **Engineering tests**
+tabs: **Motor & load**, **Friction & contact** and **Elastic beam**. The latest
+serialized aggregate passed 166/166 cases with zero failures in 101.047 seconds,
+including committed assembly STEP/STL exports and pause-clock regressions.
+The full workspace build and final production bundle passed. The
+[Chrome acceptance matrix](CHROME-ACCEPTANCE-2026-09-12.md) records actual UI
+checks, final input/point-picking repairs and measured downloads.
+The older 79-case and Chrome results apply only to their recorded revisions;
+no local result establishes final publication approval.
+See [Physics verification](PHYSICS-VERIFICATION.md) for report scope and gates.
 
-1. Save any outstanding Replit edits, then fetch the GitHub repository and
-   check out `codex/built-in-demo-gallery` in Replit's Git interface. Review
-   any differences before replacing local changes.
+1. Save outstanding Replit edits, then fetch the GitHub repository and check
+   out `codex/built-in-demo-gallery` in Replit's Git interface. Review differences
+   before replacing local changes. Confirm the intended final revision exists
+   on the remote; a local working-tree change is not fetched by Git.
 2. Run `pnpm install --frozen-lockfile`, then the verification commands in
-   [Physics verification](PHYSICS-VERIFICATION.md). This repository already
-   specifies Node 24 in `.replit`.
-3. Build using the app's existing deployment configuration. The CAD Vite
-   configuration requires both `PORT` and `BASE_PATH`; its public route is
-   `/app/`. For a local production check, use:
+   [Physics verification](PHYSICS-VERIFICATION.md). Node 24 is specified in
+   `.replit`. Run heavyweight OCCT tests sequentially. The aggregate entry is
+   `pnpm --filter @workspace/kineticad test:all`.
+3. Build with the existing deployment configuration. CAD Vite requires `PORT`
+   and `BASE_PATH`; its route is `/app/`. For a local production check:
 
    ```sh
    PORT=5184 BASE_PATH=/app pnpm run build
    PORT=5184 BASE_PATH=/app node artifacts/kineticad/serve.mjs
    ```
 
-4. Open the preview as a top-level Chrome page. Check all six cards under
-   **Demos**, the updated gimbal shafts/bearings, simulation controls and
-   **Return to my model**. Read the numerical console measurements alongside
-   the actual rendered movement. For Material force lab, run both 0.5 and
-   1 mN, compare measured acceleration/travel, pause/resume, and confirm the
-   result holds at two simulated seconds. For Stewart platform, inspect all
-   six actuators during the coordinated lift, compare the deck with the
-   independent leg-length reference, and confirm the six-second hold.
-   Check the five labelled file buttons and their hover/keyboard tooltips,
-   including the explanation for disabled Load project inside a demo.
-5. Republish from Replit, then repeat the windmill's unchanged π ±5e-7 rad/s
-   gate after five simulated seconds at the public URL. Record the deployed
-   revision and results. Local tests do not replace this final check.
+4. Open a top-level WebGPU-capable Chrome page. Exercise all six demo cards,
+   editable features, Play/Pause/Reset, speed changes, and Return to my model.
+   Observe real motion and read actual worker measurements. Keep the Windmill
+   criterion at π ±5e-7 rad/s after five simulated seconds.
+5. For Material force lab, compare 0.5/1 mN acceleration and travel and verify
+   its two-second hold. For Stewart, run X/Y/Z, roll/pitch/yaw, combined and
+   Home presets. Inspect the deck/rods and actual target/error/joint readouts
+   during the default four-second move and two-second settling period.
+   Saved validated configurations retain their own bounded durations.
+6. In Engineering tests, run Hold/Lift/Overload, then resting, frictionless and
+   sliding contact with timestep refinement. The 2 kg, 1000 mm/s, μ=0.25 slide
+   stops at about 199.788 mm at 120 Hz and 201.846 mm at 240 Hz, against an
+   analytical 203.874 mm. Its visible integration bounds are ±4.667/2.583 mm.
+   Verify the elastic-beam reference and load/dimension scaling and invalid-range
+   warnings. Check pause/reset, completion and tab switching.
+7. Import STEP, add/edit native and imported features, Save project, refresh,
+   reload the downloaded project and recover a previous copy. Reject a malformed
+   file without losing the prior project. Open/edit/save a demo, return and refresh;
+   the original imported geometry must survive. Check STEP/STL exports of both
+   mixed native/imported geometry and assembly booleans with hidden inputs.
+   Inspect all labelled file buttons and their hover/keyboard tooltips.
+8. Record the final source/bundle identifiers and browser acceptance matrix.
+   Republish from Replit, then repeat the unchanged Windmill gate and relevant
+   user flows at the public URL. Local passes do not establish deployment acceptance.
 
-If importing a ZIP instead, import it into a separate project first and carry
-over the intended publishing configuration deliberately. A source archive
-does not include secrets, dependency directories, generated build output or
-the original Replit project's domain attachment.
+Stewart uses inverse kinematics to command six actuator lengths within ±5 mm
+per translation axis and ±2° per rotation axis. The physics solver determines
+the deck pose through ideal joints. It has no finite drive force, external load
+or gravity in this example. The separate motor/load bench applies real capped
+forces, and the contact bench enables contact only for its guided cuboid setup.
+Neither enables finite-force Stewart, general CAD collisions or bearing friction.
+Assembly-level Boolean results are blocked from simulation; export their final
+STEP solids, re-import and assign materials/joints. Per-part feature cuts remain
+supported. This avoids simulating the original uncut Boolean inputs.
+The beam tab is an analytical cantilever calculation, not general FEA or CAD
+mesh deformation. No AI API or draw-a-path mechanism optimiser is included.
+Geometry and these calculations remain in the browser.
 
-This change adds the built-in demo gallery, physics corrections, a real
-equal-force experiment and a six-actuator Stewart demonstration. The Stewart
-programme is a symmetric vertical lift with ideal joints and motors, not a
-general six-axis controller or a certified payload simulation. This change does
-not implement the proposed draw-a-path mechanism optimiser or an AI API.
-The complete geometry and simulation computation remains in the browser.
+Save project downloads a complete editable document with embedded imported STEP
+assets. IndexedDB retains current and previous local recovery copies; browser
+storage is origin/device-specific and an unfinished autosave can be lost on an
+abrupt close. Older JSON files that never contained imported geometry require
+the original STEP. See [Project recovery](PROJECT-RECOVERY.md). Demo edits are
+isolated from the original autosave; Load project is disabled inside a demo
+until Return to my model. STEP is solid geometry exchange and STL is a mesh;
+use the project file to retain editable KinetiCAD history.
 
-The gallery preserves the original in-memory model while exploring examples.
-Its **Save project** button downloads the current demo including edits. **Load project** is
-disabled inside an example until **Return to my model**. Imported STEP shapes
-remain available across gallery visits, but the existing loss on page refresh
-is still documented and is not solved by this change.
+If importing a ZIP, use a separate project first and deliberately carry over the
+intended publishing configuration. Source archives omit secrets, dependencies,
+build output and the original Replit project's domain attachment.

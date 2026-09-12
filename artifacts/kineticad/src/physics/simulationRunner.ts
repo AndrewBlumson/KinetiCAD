@@ -32,6 +32,7 @@ import { getPhysicsKernel } from "./physicsClient";
 import type { PartDescriptor, StepResult, BuildWorldResult, UpdateJointMotorResult } from "./types";
 import { beginForceMeasurements, clearForceMeasurements, publishForceMeasurements } from './forceMeasurements';
 import { clearPoseMeasurements, publishPoseMeasurements } from './poseMeasurements';
+import { verifyBundledStewartGeometry } from './stewartFixture';
 
 /**
  * Walk a part's feature chain and return the tip hash — the same key that
@@ -182,6 +183,9 @@ export function startSimulationRunner(): RunnerHandle {
 
   const buildAndStart = async (myToken: number): Promise<void> => {
     const state = useKinetiCADStore.getState();
+    if (state.assembly.booleanFeatures?.length) {
+      throw new Error('Assembly Boolean results need their own rigid-body and joint definitions. Export the final assembly as STEP and import those solids to simulate them.');
+    }
     const partLayer = getPartMeshLayer();
     const simLayer = getSimulationLayer();
     if (!partLayer || !simLayer) {
@@ -277,13 +281,27 @@ export function startSimulationRunner(): RunnerHandle {
 
     if (!isCurrent(myToken)) return;
 
+    if (state.simulation.stewartMotion) {
+      await verifyBundledStewartGeometry(state.assembly, import.meta.env?.BASE_URL ?? '/');
+      if (!isCurrent(myToken)) return;
+    }
+
     let dispatchedMates: Mate[] = [];
     let dispatchedExperiment = state.simulation.forceExperiment;
     const result = await queuePhysics<BuildWorldResult | null>((physics) => {
       if (!isCurrent(myToken)) return Promise.resolve(null);
       const latest = useKinetiCADStore.getState();
+      if (latest.assembly.booleanFeatures?.length) {
+        throw new Error('An assembly Boolean was added while preparing the simulation. Export its result as STEP and import the solids before simulating.');
+      }
+      if (latest.simulation.stewartMotion && latest.assembly !== state.assembly) {
+        throw new Error('The assembly changed while the six-axis controller was preparing. Reset and run again.');
+      }
       dispatchedMates = latest.assembly.mates;
       dispatchedExperiment = latest.simulation.forceExperiment;
+      if (latest.simulation.stewartMotion && (dispatchedExperiment || latest.simulation.gravity.some(g => g !== 0))) {
+        throw new Error('The six-axis motion comparison requires zero gravity and no external force experiment.');
+      }
       if (dispatchedExperiment && latest.simulation.gravity.some((g) => g !== 0)) {
         throw new Error('The equal-force comparison requires zero gravity. Reset the demo to restore its experiment settings.');
       }
@@ -292,11 +310,15 @@ export function startSimulationRunner(): RunnerHandle {
         mates: latest.assembly.mates,
         gravity: latest.simulation.gravity,
         timeStepMs: latest.simulation.timeStepMs,
+        ...(latest.simulation.stewartMotion ? {
+          stewartMotion: latest.simulation.stewartMotion,
+          durationMs: latest.simulation.stewartMotion.moveDurationMs + latest.simulation.stewartMotion.settleDurationMs,
+        } : {}),
         ...(dispatchedExperiment ? {
           appliedForces: dispatchedExperiment.partIds.map((partId) => ({ partId,
             forceN: dispatchedExperiment!.direction.map((v) => v * dispatchedExperiment!.forceN) as [number, number, number] })),
           durationMs: dispatchedExperiment.durationMs,
-        } : latest.simulation.durationMs ? { durationMs: latest.simulation.durationMs } : {}),
+        } : !latest.simulation.stewartMotion && latest.simulation.durationMs ? { durationMs: latest.simulation.durationMs } : {}),
       });
     });
 

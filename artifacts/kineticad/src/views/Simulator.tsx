@@ -3,7 +3,8 @@ import { useKinetiCADStore } from '@/state/store';
 import { DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import { ForceExperimentControls, ForceExperimentMeasurements } from '@/components/demos/ForceExperimentPanel';
 import { useForceMeasurements } from '@/physics/forceMeasurements';
-import { StewartMeasurements } from '@/components/demos/StewartMeasurements';
+import { StewartMeasurements, StewartControls } from '@/components/demos/StewartMeasurements';
+import { EngineeringTestsButton } from '@/components/engineering/EngineeringTests';
 
 // Phase 8 — same Scene component as the Modeller. The simulation
 // subsystem is wired into Scene at mount; the Simulator view just
@@ -27,14 +28,17 @@ export default function Simulator() {
   const resetSimulation = useKinetiCADStore((s) => s.resetSimulation);
   const parts = useKinetiCADStore((s) => s.assembly.parts);
   const mates = useKinetiCADStore((s) => s.assembly.mates);
+  const hasAssemblyBooleans = useKinetiCADStore((s) => s.assembly.booleanFeatures.length > 0);
   const forceCompleted = useForceMeasurements((s) => s.completed);
   const forceExperiment = simulation.forceExperiment;
-  const duration = forceExperiment?.durationMs ?? simulation.durationMs;
+  const isStewart = activeDemo?.id === 'stewart-platform' || !!simulation.stewartMotion;
+  const duration = forceExperiment?.durationMs ?? (simulation.stewartMotion
+    ? simulation.stewartMotion.moveDurationMs + simulation.stewartMotion.settleDurationMs : simulation.durationMs);
   const completed = forceCompleted || !!(duration && simulation.running && simulation.paused
     && simulation.simulationTimeMs >= Math.floor((duration + 1e-7) / simulation.timeStepMs) * simulation.timeStepMs - 1e-7);
 
   const preparingGeometry = readyRevision !== revision;
-  const canPlay = parts.some((part) => part.visible && part.features.length > 0) && !preparingGeometry;
+  const canPlay = !hasAssemblyBooleans && parts.some((part) => part.visible && part.features.length > 0) && !preparingGeometry;
   const isRunning = simulation.running;
   const isPaused = simulation.paused;
 
@@ -71,13 +75,13 @@ export default function Simulator() {
 
         <div className="flex items-center gap-1">
           <PlaybackBtn
-            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Play'}
+            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isStewart ? 'Run motion' : 'Play'}
             active={isRunning && !isPaused}
             disabled={!canPlay}
             onClick={onPlayPause}
           >
             {isRunning && !isPaused ? '⏸' : '▶'}
-            {forceExperiment && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : 'Run experiment'}</span>}
+            {(forceExperiment || isStewart) && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Run motion'}</span>}
           </PlaybackBtn>
           <PlaybackBtn label="Reset" onClick={onReset}>
             ⏹
@@ -93,16 +97,25 @@ export default function Simulator() {
 
         <div className="flex-1" />
 
+        <EngineeringTestsButton />
         <DemoButton />
-        {preparingGeometry && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
+        {preparingGeometry && !hasAssemblyBooleans && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
         <SimStatus running={isRunning} paused={isPaused} completed={completed} />
       </header>
       <DemoWorkspaceBar />
+      {hasAssemblyBooleans && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-3 text-xs leading-relaxed text-orange-200">
+        Assembly Boolean results are not ready for rigid-body simulation. Export the final assembly as STEP in the Modeller, then import those solids and define their materials and joints. Native cuts within a part already simulate normally.
+      </p>}
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
-          {forceExperiment ? <ForceExperimentMeasurements /> : <>
-          <SidebarSection title="Rigid Bodies">
+        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
+          {forceExperiment ? <ForceExperimentMeasurements /> : isStewart ? <>
+            <StewartControls completed={completed} />
+            <details className="px-3 py-3 text-xs text-muted-foreground"><summary className="cursor-pointer">Assembly · {parts.length} parts · {mates.length} joints</summary>
+              <ul className="mt-2 space-y-1">{parts.map(p => <li key={p.id}>{p.name}</li>)}</ul>
+            </details>
+          </> : <>
+          <SidebarSection title={hasAssemblyBooleans ? 'CAD parts' : 'Rigid Bodies'}>
             {parts.length === 0 ? (
               <EmptyState text="No parts in assembly" />
             ) : (
@@ -133,14 +146,14 @@ export default function Simulator() {
           </Suspense>
           <SimDashboard
             simulationTimeMs={simulation.simulationTimeMs}
-            bodyCount={parts.length}
-            jointCount={mates.length}
+            bodyCount={hasAssemblyBooleans ? 0 : parts.filter(p => p.visible && p.features.length > 0).length}
+            jointCount={hasAssemblyBooleans ? 0 : mates.length}
           />
         </main>
 
-        <aside className="w-60 shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto">
+        <aside className={`${isStewart ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
           {forceExperiment ? <ForceExperimentControls /> : <>
-          {activeDemo?.id === 'stewart-platform' && <StewartMeasurements />}
+          {isStewart && <StewartMeasurements />}
           <SidebarSection title="Gravity (mm/s²)">
             <div className="px-3 py-2 font-technical text-xs text-muted-foreground space-y-1">
               <KvRow label="X" value={simulation.gravity[0].toFixed(0)} />

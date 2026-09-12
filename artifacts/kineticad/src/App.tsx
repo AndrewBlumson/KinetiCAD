@@ -3,6 +3,7 @@ import { Switch, Route, Router as WouterRouter, Link, useLocation } from 'wouter
 import { useKinetiCADStore } from '@/state/store';
 import { DemoWorkspaceProvider } from '@/components/demos/DemoWorkspace';
 import { Toaster } from '@/components/ui/sonner';
+import { ProjectRecoveryGate } from '@/project/ProjectRecoveryGate';
 
 const Modeller = lazy(() => import('@/views/Modeller'));
 const Simulator = lazy(() => import('@/views/Simulator'));
@@ -91,7 +92,7 @@ function App() {
   return (
     <div className="h-full bg-background text-foreground">
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <DemoWorkspaceProvider><Router /></DemoWorkspaceProvider>
+        <ProjectRecoveryGate><DemoWorkspaceProvider><Router /></DemoWorkspaceProvider></ProjectRecoveryGate>
         <Toaster position="bottom-right" />
       </WouterRouter>
     </div>

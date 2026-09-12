@@ -24,6 +24,8 @@ export type MateInspectorShellProps = {
   canApply: boolean;
   /** Optional inline hint shown above the buttons (e.g. "Pick at least one"). */
   validationHint?: string | null;
+  /** Replace the picking-stage prompt for unavailable legacy mate types. */
+  statusText?: string;
   children: ReactNode;
 };
 
@@ -31,6 +33,7 @@ export default function MateInspectorShell({
   heading,
   canApply,
   validationHint,
+  statusText,
   children,
 }: MateInspectorShellProps) {
   const editor = useKinetiCADStore((s) => s.mateEditor) as MateEditor;
@@ -45,7 +48,7 @@ export default function MateInspectorShell({
       <div className="font-technical text-xs text-foreground">{heading}</div>
 
       <div className="font-technical text-[11px] text-muted-foreground italic leading-snug">
-        {STAGE_LABEL[editor.stage]}
+        {statusText ?? STAGE_LABEL[editor.stage]}
       </div>
 
       {children}

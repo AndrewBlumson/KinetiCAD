@@ -48,7 +48,7 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
   if (!part) return null;
 
   const hasBaseFeature = part.features.some(
-    (f) => f.type === "extrude" || f.type === "revolve",
+    (f) => f.type === "extrude" || f.type === "revolve" || f.type === 'imported-step',
   );
   const tx = part.transform;
   const effectiveGroundId =
@@ -235,8 +235,8 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
       </div>
       {!hasBaseFeature ? (
         <div className="font-technical text-[11px] text-muted-foreground italic leading-snug">
-          Add an Extrude or Revolve first; modifier features need an upstream
-          shape.
+          Create an Extrude or Revolve, or import a STEP solid first;
+          modifier features need an upstream shape.
         </div>
       ) : null}
       <button

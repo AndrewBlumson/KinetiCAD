@@ -288,10 +288,10 @@ const descriptions = [
     description: "Give eight identical shapes the same force for two seconds. Watch lighter materials accelerate faster and compare measured results with F = ma.",
     highlights: ["8 materials", "Measured acceleration", "Two-second experiment"],
     learningTip: "Try simulation, choose 0.5 or 1 millinewton, then press Run experiment. The result holds after two seconds. Ideal guides; gravity and friction are off." },
-  { id: 'stewart-platform', title: 'Stewart platform', subtitle: 'Six actuators. One moving deck.', category: 'Engineering', accent: '#ecab76',
-    description: 'Six telescopic actuators close a network of 18 joints around one payload deck. Inspect the bored barrels, turned rods and spherical ends, then run a coordinated lift.',
-    highlights: ['14 rigid bodies', '18 coupled joints', 'Closed-loop mechanism'],
-    learningTip: 'Six linear motors extend at 2 mm/s for six seconds, then hold. The lift is checked against leg-length geometry. Ideal bearings and drives; this demo does not command all six axes.' },
+  { id: 'stewart-platform', title: 'Stewart platform', subtitle: 'Six actuators. Six controlled axes.', category: 'Engineering', accent: '#ecab76',
+    description: 'Six telescopic actuators translate and tilt one deck through 18 coupled joints. Inspect the bored barrels and spherical ends, then compare requested motion with the measured solver pose.',
+    highlights: ['14 rigid bodies', '18 coupled joints', 'Six-axis motion'],
+    learningTip: 'Try X, Y, Z, roll, pitch, yaw or combined motion. Targets stay within ±5 mm and ±2° per axis. Four seconds moving, two settling; ideal drives with gravity off, without a payload rating.' },
 ];
 
 function emit(filename, contents) {

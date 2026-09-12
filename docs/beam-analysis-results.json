@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T09:48:14.380Z",
+  "passed": true,
+  "command": "pnpm --filter @workspace/kineticad test:beam",
+  "tests": 7,
+  "reference": {
+    "lengthMm": 300,
+    "widthMm": 20,
+    "depthMm": 10,
+    "forceN": 10,
+    "youngsModulusGPa": 200,
+    "elasticLimitMPa": 250,
+    "tipDeflectionMm": 0.27,
+    "maxBendingStressMPa": 9,
+    "secondMomentMm4": 1666.6666666666667,
+    "tipSlopeRad": 0.00135,
+    "clampForceN": -10,
+    "clampMomentNm": -3
+  },
+  "scope": "Independent uniform rectangular cantilever Euler–Bernoulli calculation. No deformable CAD mesh or general finite-element analysis. Explicit user material properties and stated slenderness, small-deflection and elastic-stress limits.",
+  "sourceHashes": {
+    "artifacts/kineticad/src/engineering/beamAnalysis.ts": "c226bd2115bae5e66bf0ab780a64b555343948803248aa5f4625a1d0da678edb",
+    "artifacts/kineticad/src/components/engineering/BeamAnalysisPanel.tsx": "4d30a83e22c443da3a4d7ebbe5856739f7787c16ff7fcf1abed435edf37538da",
+    "artifacts/kineticad/tests/beam-analysis.test.mjs": "6ac643c82bec23fb00f7d847e986f83f990eccefdac1ac26af8e4eafca21694f"
+  }
+}

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { projectPersistence, setProjectMigration } from '../project/projectPersistence';
 import { DEFAULT_MATERIAL_ID } from "@/cad/materials";
 import type {
   Assembly,
@@ -2005,6 +2006,9 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     {
       name: "kineticad-state",
       version: 9,
+      storage: projectPersistence.storage,
+      // Imported OCCT shapes must be restored before Scene subscribes/regens.
+      skipHydration: true,
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation runtime fields.
       // Phase 10: volumeCm3 and massKg are non-persisted — they are
@@ -2341,3 +2345,5 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
     },
   ),
 );
+
+setProjectMigration((state, version) => useKinetiCADStore.persist.getOptions().migrate?.(state, version) ?? state);

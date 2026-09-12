@@ -4,6 +4,7 @@
 
 import type {
   BooleanOperation,
+  BooleanFeature,
   ExtrudeMode,
   Feature,
   Sketch,
@@ -202,7 +203,18 @@ export type ExportPartDescriptor = {
   features: Feature[];
   sketches: Sketch[];
   transform: Transform;
+  /** Omitted for internal single-asset exports; false excludes a standalone part. */
+  visible?: boolean;
 };
+
+/** Committed modeller output; Boolean inputs may be hidden but still required. */
+export type ExportAssemblyDescriptor = {
+  parts: ExportPartDescriptor[];
+  booleanFeatures: BooleanFeature[];
+};
+
+/** The array form remains available for isolated geometry/asset exports. */
+export type AssemblyExportArgs = ExportAssemblyDescriptor | ExportPartDescriptor[];
 
 /**
  * Phase 8 — args for `getMassProperties`. The CAD worker re-executes the
@@ -311,20 +323,19 @@ export type CadKernelApi = {
    * Phase 8 — re-execute the upstream feature chain and return the tip
    * shape's volume / mass / centre-of-mass / principal inertia. Used by
    * the physics layer to seed a Rapier rigid body with realistic mass
-   * properties. Empty / non-solid shapes return zero volume and a tiny
-   * fallback mass.
+   * properties. Empty / non-solid shapes fail explicitly.
    */
   getMassProperties: (
     args: MassPropertiesArgs,
   ) => Promise<MassPropertiesResult>;
   /**
-   * Build every part's geometry, apply its world transform, combine into a
-   * single compound, mesh it, and write binary STL. Returns the raw file
+   * Rebuild committed visible parts and assembly Boolean results in world
+   * coordinates, combine into a compound, mesh it, and write binary STL. Returns the raw file
    * bytes so the caller can wrap them in a Blob and trigger a download.
    *
    * Parts with no features are silently skipped.
    */
-  exportAssemblyStl: (parts: ExportPartDescriptor[]) => Promise<Uint8Array>;
+  exportAssemblyStl: (assembly: AssemblyExportArgs) => Promise<Uint8Array>;
   /**
    * Read a STEP file (raw bytes), expand any compound roots into individual
    * solids, tessellate each solid with full edge + face topology, register
@@ -333,12 +344,17 @@ export type CadKernelApi = {
    * parts. Parts whose geometry comes from STEP files do NOT carry parametric
    * feature history — STEP is flat B-rep only.
    */
-  importStep: (fileBytes: Uint8Array, fileName?: string) => Promise<ImportedPart[]>;
+  importStep: (fileBytes: Uint8Array, fileName?: string, options?: {
+    /** Content-addressed durable asset identity; fixes each extracted body's ID. */
+    assetId?: string;
+    /** Project assets exported from an existing local shape must not be grounded again. */
+    preserveCoordinates?: boolean;
+  }) => Promise<ImportedPart[]>;
   /**
-   * Build every part's geometry (re-executing parametric chains, or
-   * retrieving STEP-imported shapes from the worker registry), apply world
-   * transforms, combine into a compound, and write an AP214 STEP file.
+   * Rebuild committed visible parts and assembly Boolean results (including
+   * native feature chains and imported shapes), apply world transforms,
+   * combine into a compound, and write an AP214 STEP file.
    * Returns the raw file bytes. Parts with no features are silently skipped.
    */
-  exportAssemblyStep: (parts: ExportPartDescriptor[]) => Promise<Uint8Array>;
+  exportAssemblyStep: (assembly: AssemblyExportArgs) => Promise<Uint8Array>;
 };

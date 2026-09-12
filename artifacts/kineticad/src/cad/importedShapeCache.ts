@@ -1,6 +1,6 @@
 // Main-thread cache for tessellated meshes that came from imported STEP
-// shapes. Lives in module memory — cleared on page reload, just like the
-// worker-side shape registry.
+// shapes. This render cache is transient. Project assets in IndexedDB and
+// downloaded project files reconstruct it before the scene mounts on reload.
 //
 // Populated by the import handler in Modeller.tsx immediately after
 // cadWorker.importStep() resolves. Consumed by featureRegen.runFeature()

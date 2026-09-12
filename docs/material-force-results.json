@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-11T22:15:08.606Z",
+  "generatedAt": "2026-09-12T09:52:00.395Z",
   "method": "Real OCCT-rebuilt equal-volume samples and exact CAD mass tensors; shipped Comlink/Rapier worker. Forces at each centre of mass, ideal unpowered Y guides, zero gravity. Readouts are measured worker positions and COM velocities; analytical predictions are computed independently from exported CAD mass.",
   "fixturePath": "artifacts/kineticad/public/demos/material-studio.json",
   "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
-  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "physicsWorkerSha256": "a7c7e84367b88438bec20e0ce5285bdfcd7a6fb961c94deead006b2543718e46",
   "massPropertiesSha256": "dafa18c949651652dc7cef7de0879023d00fa0605a59bde3d88a6f3e8fc6834d",
   "equalSampleVolumeMm3": 10050.283064729765,
   "experiment": {

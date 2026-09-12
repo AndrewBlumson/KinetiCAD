@@ -1,7 +1,10 @@
 import { lazy, Suspense, useRef, useState } from 'react';
+import { useLocation } from 'wouter';
 import { toast } from 'sonner';
 import { Download, Loader2, Upload } from 'lucide-react';
-import { setImportedShapeMesh } from '@/cad/importedShapeCache';
+import { createProjectDocument, importDurableStep } from '@/project/projectAssets';
+import { projectPersistence, useProjectRecovery } from '@/project/projectPersistence';
+import { downloadProjectText } from '@/project/ProjectRecoveryGate';
 import { getCadKernel } from '@/cad/cadClient';
 import { useKinetiCADStore } from '@/state/store';
 import type { MateType } from '@/state/store';
@@ -31,6 +34,7 @@ import type {
 const Scene = lazy(() => import('@/three/Scene'));
 
 export default function Modeller() {
+  const [, navigate] = useLocation();
   const { activeDemo, revision, setFileBusy } = useDemoWorkspace();
   const assembly = useKinetiCADStore((s) => s.assembly);
   const sketchSession = useKinetiCADStore((s) => s.sketchSession);
@@ -59,27 +63,34 @@ export default function Modeller() {
   const [exportingStep, setExportingStep] = useState(false);
   const stepFileInputRef = useRef<HTMLInputElement>(null);
   const modelFileInputRef = useRef<HTMLInputElement>(null);
+  const [projectBusy, setProjectBusy] = useState(false);
+  const fileOperation = useRef(false);
+  const recovery = useProjectRecovery();
+  const exportEditorOpen = sketchSession.active || featureEditor.open || booleanEditor.open || mateEditor.open;
+  const exportDisabled = exportEditorOpen || projectBusy || exporting || exportingStep || importingStep;
+  const captureExportAssembly = () => {
+    const current = useKinetiCADStore.getState();
+    if (fileOperation.current) return null;
+    if (current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+      toast.error('Apply or cancel the current edit before exporting.');
+      return null;
+    }
+    return structuredClone({
+      parts: current.assembly.parts.map((p) => ({ partId: p.id, features: p.features, sketches: p.sketches, transform: p.transform, visible: p.visible })),
+      booleanFeatures: current.assembly.booleanFeatures,
+    });
+  };
 
   const handleExportStl = async () => {
-    const partsWithFeatures = assembly.parts.filter(
-      (p) => p.features && p.features.length > 0,
-    );
-    if (partsWithFeatures.length === 0) {
-      toast.error('Nothing to export. Add at least one feature first.');
-      return;
-    }
+    const exportAssembly = captureExportAssembly();
+    if (!exportAssembly) return;
+    fileOperation.current = true;
+    setFileBusy(true);
     setExporting(true);
     const t0 = performance.now();
     try {
       const kernel = await getCadKernel();
-      const bytes = await kernel.exportAssemblyStl(
-        partsWithFeatures.map((p) => ({
-          partId: p.id,
-          features: p.features,
-          sketches: p.sketches,
-          transform: p.transform,
-        })),
-      );
+      const bytes = await kernel.exportAssemblyStl(exportAssembly);
       const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'model/stl' });
       const url = URL.createObjectURL(blob);
       const now = new Date();
@@ -97,7 +108,8 @@ export default function Modeller() {
       const durationMs = Math.round(performance.now() - t0);
       // eslint-disable-next-line no-console
       console.log('[stl-export]', {
-        partCount: partsWithFeatures.length,
+        sourcePartCount: exportAssembly.parts.length,
+        booleanResultCount: exportAssembly.booleanFeatures.length,
         fileSizeBytes: bytes.byteLength,
         durationMs,
       });
@@ -105,33 +117,34 @@ export default function Modeller() {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[stl-export] failed:', err);
-      toast.error('Export failed. Check the console for details.');
+      toast.error('STL export failed', { description: err instanceof Error ? err.message : String(err) });
     } finally {
+      fileOperation.current = false;
+      setFileBusy(false);
       setExporting(false);
     }
   };
   const handleImportStep = async (file: File) => {
+    if (fileOperation.current) return;
+    fileOperation.current = true;
+    setProjectBusy(true);
     setFileBusy(true);
     setImportingStep(true);
     const t0 = performance.now();
     try {
       const kernel = await getCadKernel();
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const imported = await kernel.importStep(bytes, file.name);
+      const { parts: imported } = await importDurableStep(kernel, bytes, file.name);
       if (imported.length === 0) {
         toast.error('No geometry found in the STEP file.');
         return;
-      }
-      // Cache tessellated meshes on the main thread so the regen pipeline
-      // can display each imported part without a worker round-trip.
-      for (const part of imported) {
-        setImportedShapeMesh(part.shapeId, part.tessellated);
       }
       // The worker supplies the name directly from the XCAF document tree
       // (or a file-stem fallback).  No local name derivation needed here.
       for (let i = 0; i < imported.length; i++) {
         addImportedStepPart(imported[i].name, imported[i].shapeId);
       }
+      if (!activeDemo) await projectPersistence.flush();
       const durationMs = Math.round(performance.now() - t0);
       // eslint-disable-next-line no-console
       console.log('[step-import]', {
@@ -158,6 +171,8 @@ export default function Modeller() {
       toast.error('Import failed. Check the console for details.');
     } finally {
       setImportingStep(false);
+      setProjectBusy(false);
+      fileOperation.current = false;
       setFileBusy(false);
     }
   };
@@ -169,80 +184,50 @@ export default function Modeller() {
     if (file) handleImportStep(file);
   };
 
-  const handleSaveModel = () => {
-    // Read directly from localStorage — the persist middleware writes the
-    // exact { state, version } format the seed system uses, so no
-    // re-serialisation is needed.
-    const options = useKinetiCADStore.persist.getOptions();
-    const raw = JSON.stringify({
-      state: options.partialize?.(useKinetiCADStore.getState()),
-      version: options.version,
-    });
-    if (!raw) {
-      toast.error('Nothing to save — no model state found.');
-      return;
+  const handleSaveModel = async () => {
+    if (fileOperation.current) return;
+    fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
+    try {
+      const state = useKinetiCADStore.getState();
+      const document = await createProjectDocument(state, getCadKernel);
+      downloadProjectText(JSON.stringify(document), `kineticad-project-${new Date().toISOString().replace(/[:.]/g, '-')}.kineticad.json`);
+      toast.success('Complete project downloaded, including imported STEP geometry.');
+    } catch (error) {
+      toast.error('Project could not be saved', { description: error instanceof Error ? error.message : String(error) });
+    } finally {
+      fileOperation.current = false; setProjectBusy(false); setFileBusy(false);
     }
-    const blob = new Blob([raw], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const filename =
-      `kineticad-model-` +
-      `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}` +
-      `-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
-      `.json`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
-  const handleLoadModel = (file: File) => {
-    if (activeDemo) return;
-    setFileBusy(true);
-    const reader = new FileReader();
-    reader.onloadend = () => setFileBusy(false);
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      try {
-        const parsed: unknown = JSON.parse(text);
-        if (
-          typeof parsed !== 'object' ||
-          parsed === null ||
-          !('version' in parsed) ||
-          !('state' in parsed)
-        ) {
-          toast.error('Invalid model file — not a KinetiCAD model.');
-          return;
-        }
-        const p = parsed as { version: unknown; state: unknown };
-        // Accept v8 and v9. v8 files are migrated to v9 automatically on
-        // load via the store's migrate function. All earlier versions are
-        // rejected: the migration chain before v8 is not guaranteed safe.
-        if (p.version !== 8 && p.version !== 9) {
-          toast.error(
-            `Version mismatch — file is version ${String(p.version)}, app expects version 8 or 9.`,
-          );
-          return;
-        }
-        if (
-          typeof p.state !== 'object' ||
-          p.state === null ||
-          !('assembly' in (p.state as object))
-        ) {
-          toast.error('Invalid model file — missing assembly data.');
-          return;
-        }
-        // Reuse exactly the seed-loader mechanism: write the raw JSON into
-        // the same localStorage key and reload so the workers rebuild cleanly.
-        localStorage.setItem('kineticad-state', text);
-        location.reload();
-      } catch {
-        toast.error('Failed to read model file — invalid JSON.');
-      }
-    };
-    reader.readAsText(file);
+  const handleLoadModel = async (file: File) => {
+    if (activeDemo || fileOperation.current) return;
+    fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
+    try {
+      if (file.size > 100 * 1024 * 1024) throw new Error('Project exceeds the 100 MB file limit.');
+      const document = await projectPersistence.load(await file.text());
+      useKinetiCADStore.setState({ ...useKinetiCADStore.getInitialState(), ...document.state });
+      navigate(document.state.mode === 'simulator' ? '/simulator' : '/');
+      toast.success('Project opened. The previous complete project remains recoverable.');
+    } catch (error) {
+      toast.error('Project was not replaced', { description: error instanceof Error ? error.message : String(error) });
+    } finally {
+      fileOperation.current = false; setProjectBusy(false); setFileBusy(false);
+    }
+  };
+
+  const handleRecoverPrevious = async () => {
+    if (activeDemo || fileOperation.current) return;
+    fileOperation.current = true; setProjectBusy(true); setFileBusy(true);
+    try {
+      const document = await projectPersistence.recoverPrevious();
+      useKinetiCADStore.setState({ ...useKinetiCADStore.getInitialState(), ...document.state });
+      navigate(document.state.mode === 'simulator' ? '/simulator' : '/');
+      toast.success('Previous complete project recovered.');
+    } catch (error) {
+      toast.error('Recovery did not replace the project', { description: error instanceof Error ? error.message : String(error) });
+    } finally {
+      fileOperation.current = false; setProjectBusy(false); setFileBusy(false);
+    }
   };
 
   const onModelFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,25 +237,15 @@ export default function Modeller() {
   };
 
   const handleExportStep = async () => {
-    const partsWithFeatures = assembly.parts.filter(
-      (p) => p.features && p.features.length > 0,
-    );
-    if (partsWithFeatures.length === 0) {
-      toast.error('Nothing to export. Add at least one feature first.');
-      return;
-    }
+    const exportAssembly = captureExportAssembly();
+    if (!exportAssembly) return;
+    fileOperation.current = true;
+    setFileBusy(true);
     setExportingStep(true);
     const t0 = performance.now();
     try {
       const kernel = await getCadKernel();
-      const bytes = await kernel.exportAssemblyStep(
-        partsWithFeatures.map((p) => ({
-          partId: p.id,
-          features: p.features,
-          sketches: p.sketches,
-          transform: p.transform,
-        })),
-      );
+      const bytes = await kernel.exportAssemblyStep(exportAssembly);
       const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], {
         type: 'application/STEP',
       });
@@ -290,7 +265,8 @@ export default function Modeller() {
       const durationMs = Math.round(performance.now() - t0);
       // eslint-disable-next-line no-console
       console.log('[step-export]', {
-        partCount: partsWithFeatures.length,
+        sourcePartCount: exportAssembly.parts.length,
+        booleanResultCount: exportAssembly.booleanFeatures.length,
         fileSizeBytes: bytes.byteLength,
         durationMs,
       });
@@ -298,8 +274,10 @@ export default function Modeller() {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[step-export] failed:', err);
-      toast.error('Export failed. Check the console for details.');
+      toast.error('STEP export failed', { description: err instanceof Error ? err.message : String(err) });
     } finally {
+      fileOperation.current = false;
+      setFileBusy(false);
       setExportingStep(false);
     }
   };
@@ -346,7 +324,8 @@ export default function Modeller() {
     !mateEditor.open;
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground">
+    <div className="relative flex flex-col h-full bg-background text-foreground">
+      {projectBusy && <div role="status" aria-live="polite" className="absolute inset-0 z-[80] flex items-center justify-center bg-background/70 backdrop-blur-sm"><span className="rounded border bg-card px-5 py-4 text-sm">Preparing complete project…</span></div>}
       {/* Top Toolbar */}
       <header className="flex items-center gap-2 px-3 h-11 overflow-x-auto border-b border-border bg-card shrink-0 select-none">
         <span className="font-technical text-xs font-semibold tracking-widest uppercase text-[#FF6B1A]">
@@ -414,7 +393,6 @@ export default function Modeller() {
                   ['prismatic', '↔', 'Prismatic'],
                   ['spherical', '●', 'Spherical'],
                   ['fixed', '⊞', 'Fixed'],
-                  ['planar', '║', 'Planar'],
                 ] as Array<[MateType, string, string]>
               ).map(([type, icon, label]) => (
                 <ToolbarBtn
@@ -432,8 +410,9 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Export STL"
-              description="Download a triangle mesh (.stl) for 3D printing. CAD features and joints are not included."
+              description={exportEditorOpen ? 'Apply or cancel the current edit before exporting.' : 'Download the visible committed solids, including Boolean results, as a triangle mesh (.stl). Feature history and joints are not included.'}
               icon={Download}
+              disabled={exportDisabled}
               busy={exporting}
               onClick={handleExportStl}
               testId="export-stl"
@@ -459,8 +438,9 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Export STEP"
-              description="Download solid CAD geometry (.step) for other CAD tools. KinetiCAD feature history and joints are not included."
+              description={exportEditorOpen ? 'Apply or cancel the current edit before exporting.' : 'Download the visible committed solids, including Boolean results, as CAD geometry (.step). Feature history and joints are not included.'}
               icon={Download}
+              disabled={exportDisabled}
               busy={exportingStep}
               onClick={handleExportStep}
               testId="export-step"
@@ -479,8 +459,9 @@ export default function Modeller() {
 
             <FileToolbarButton
               label="Save project"
-              description="Download an editable KinetiCAD project (.json), including sketches, features and joints. Imported STEP geometry is not embedded."
+              description="Download a complete editable KinetiCAD project, including sketches, features, materials, transforms, joints and embedded STEP geometry."
               icon={Download}
+              busy={projectBusy}
               onClick={handleSaveModel}
               testId="save-model"
             />
@@ -491,7 +472,7 @@ export default function Modeller() {
                 ? 'Return to your model before loading a project. Load opens an editable KinetiCAD .json file and replaces the current project.'
                 : 'Open a saved KinetiCAD project (.json), replacing the current project with its sketches, features and joints.'}
               icon={Upload}
-              disabled={!!activeDemo}
+              disabled={!!activeDemo || projectBusy}
               onClick={() => modelFileInputRef.current?.click()}
               testId="load-model"
             />
@@ -505,6 +486,10 @@ export default function Modeller() {
         </span>
       </header>
       <DemoWorkspaceBar />
+      {!activeDemo && <div className="flex shrink-0 items-center justify-between border-b border-border bg-card px-3 py-1 text-[11px] text-muted-foreground" aria-label="Project recovery status">
+        <span>{recovery.status === 'saving' ? 'Saving recovery copy…' : recovery.status === 'error' ? 'Autosave needs attention — download your project' : recovery.savedAt ? 'Recovery copy saved on this device' : 'Autosave ready'}</span>
+        <button type="button" className="underline hover:text-foreground disabled:opacity-40" disabled={projectBusy || !recovery.hasPrevious} title={recovery.hasPrevious ? 'Open the previous complete recovery copy' : 'A previous recovery copy becomes available after a second successful save'} onClick={handleRecoverPrevious}>Recover previous project</button>
+      </div>}
 
       {/* Main area */}
       <div className="flex flex-1 overflow-hidden">

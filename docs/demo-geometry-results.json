@@ -386,39 +386,59 @@
     "maxIntersectionMm3": 0
   },
   "schemaVersion": 2,
-  "generatedAt": "2026-09-11T22:38:11.990Z",
+  "generatedAt": "2026-09-12T09:51:35.939Z",
   "provenance": {
-    "aggregation": "Serial OCCT runs combined by current fixture SHA-256. Solid records and existing gimbal/mobile intersection results are preserved, not recomputed or inferred.",
-    "priorFiveDemoAggregateSha256": "e9b6d800ab5a76aa7e22aacc56cccc86b66dc1fe9efa704eae91b6d6abadc2bb",
-    "priorFiveArcEntityCount": 0,
-    "priorFiveReuseReason": "The only subsequent geometric kernel change was the trimmed-arc coordinate frame. The five retained fixtures contain no arc entities; all five fixture hashes were verified unchanged.",
-    "stewart": {
-      "command": "node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs stewart-platform --export-descriptors --descriptors-only",
-      "resultSha256": "5e31ad3d4e13df15a8a5c98580cb44cc4034ac942e4987171db4838bea13750e",
-      "sketchToWireSha256": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
-      "scope": "All 14 final B-reps rebuilt from current feature chains, checked valid and one solid. Separate exact clearance checks use the initial fixture pose and the actual measured final solver pose."
+    "measurementSource": "Actual final all-six-fixture OCCT run. The complete measured payload is byte-identical to the retained run stdout. Metadata was restored without rerunning geometry; no earlier five-demo or pre-arc records were substituted.",
+    "command": "node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs --export-descriptors",
+    "generatedAtBasis": "Original report file modification time captured before metadata restoration; the older verifier did not record a clock field.",
+    "sourceSha256": {
+      "scripts/src/verify-demo-geometry.mjs": "dd240b619b96928a1212c42df372a1685ad1a536a670bb7dfe9189a20ac88b3a",
+      "artifacts/kineticad/src/cad/operations/sketchToWire.ts": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
+      "artifacts/kineticad/src/cad/operations/extrude.ts": "246cd2b8a684788ec12571c6194e060655468d5f8d18d70eaf4896acb3cd2fe9",
+      "artifacts/kineticad/src/cad/operations/revolve.ts": "7f88bc12ed3f805864ba865c972ef9c3d2dd96299759471213b24cc8ee2752ad",
+      "artifacts/kineticad/src/cad/operations/boolean.ts": "d9a1bbe49028a173efeac5e45851974df6038a594ff79f482ca2285912dcf240",
+      "artifacts/kineticad/src/cad/operations/massProperties.ts": "dafa18c949651652dc7cef7de0879023d00fa0605a59bde3d88a6f3e8fc6834d",
+      "artifacts/kineticad/src/cad/operations/tessellate.ts": "6888cf42aaa939b722b0b32d524e262299528afc097aa83135f0659358b74993",
+      "artifacts/kineticad/src/cad/materials.ts": "c8188ff0d3f0627c3d4d6ac8e997a395de0563e2696878e36de02c80ba463d8a"
     },
-    "material": {
-      "report": "docs/material-clearance-results.json",
-      "reportSha256": "c699cd1d67c8e3564a20770b01696452b13a462e208d2a5060875a5033a23ea9",
-      "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
-      "scope": "Exact OCCT B-rep intersection volumes for every pair at the initial pose and the measured 1 mN, 2 s final pose. Separate interval containment verifies the bounded straight-Y travel corridor between these poses. This is geometric interference verification; contact forces are disabled in the simulation."
+    "descriptorsExported": true,
+    "interferenceSweepsSkipped": false,
+    "metadataRestoration": {
+      "restoredAt": "2026-09-12T10:25:38.247Z",
+      "originalReportSha256": "9c5d0a898b0e063c321f004771cf33fad6c87691836e20bfccadc7da39840f8f",
+      "retainedRunLogSha256": "3c84f22d17a74e352b7319ed5d82a23f0351e5bd16a5c7159372d441f5455814",
+      "retainedRunLogName": "kineticad-final-six-geometry.log",
+      "verification": "All six fixture hashes match current files. sketchToWire/extrude/revolve/boolean hashes match the independently rerun Stewart clearance report. The pre-metadata verifier and its operation files had no git diff at restoration. Later CAD worker assembly-export/self-test edits are not imported by this direct geometry verifier.",
+      "laterVerifierChange": "The verifier now adds summary/provenance and a metadata-only refresh path. Its geometry functions and measurement loops are unchanged."
     },
-    "stewartClearance": {
-      "report": "docs/stewart-clearance-results.json",
-      "reportSha256": "677e5abdce609a62785b2599c2cbbbef5341be00f765cb1a2c518b4e0b89ed1d",
-      "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
-      "measurementReport": "docs/stewart-physics-results.json",
-      "measurementReportSha256": "6892bda7d977d10696d461f2bc8a871d9d9d17f7f4d0f4e64bad5714fd0c89fb",
-      "scope": "Every pair of the 14 actual OCCT B-rep solids is intersected at the initial fixture pose and at the measured six-second final physics pose. The final pose comes from the shipped Rapier worker, including its residual translations and rotations; no ideal pose is substituted."
+    "measurementPayloadSha256": "9c5d0a898b0e063c321f004771cf33fad6c87691836e20bfccadc7da39840f8f",
+    "relatedReportsRefreshedAt": "2026-09-12T10:27:30.119Z",
+    "relatedReports": {
+      "material": {
+        "report": "docs/material-clearance-results.json",
+        "reportSha256": "274c324443ea872634aeb9a05abed6037ff9877436179f67432ea88df1e0dcac",
+        "generatedAt": "2026-09-12T09:52:02.679Z",
+        "fixtureSha256": "bb0a4beab96daeb992ca83045ea18d18e6199d2834fa20a1819bea0dc56aaad1",
+        "status": "passing report for identical fixture bytes",
+        "scope": "Exact OCCT B-rep intersection volumes for every pair at the initial pose and the measured 1 mN, 2 s final pose. Separate interval containment verifies the bounded straight-Y travel corridor between these poses. This is geometric interference verification; contact forces are disabled in the simulation."
+      },
+      "stewartClearance": {
+        "report": "docs/stewart-clearance-results.json",
+        "reportSha256": "60d03bd52bf708982722ec6851c231ee54569d621afb25d1c4cac6059a1a8bd5",
+        "generatedAt": "2026-09-12T09:52:14.244Z",
+        "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+        "status": "passing report for identical fixture bytes",
+        "scope": "Every pair of the 14 actual OCCT B-rep solids is intersected at the initial fixture pose and at the measured six-second final physics pose. The final pose comes from the shipped Rapier worker, including its residual translations and rotations; no ideal pose is substituted."
+      },
+      "stewartWorkspace": {
+        "report": "docs/stewart-workspace-results.json",
+        "reportSha256": "ef8320eab3c6a9e766ae6eba8385da74b964bbfd5103b24aa43f1a6a543b1993",
+        "generatedAt": "2026-09-12T09:53:13.549Z",
+        "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
+        "status": "passing report for identical fixture bytes",
+        "scope": "Adaptive Lipschitz enclosures cover the entire six-dimensional pose box. Independent Rodrigues paths use interval enclosures between progress samples. Neumann inverse bounds certify nonsingularity and normalized infinity-norm Jacobian conditioning. Optional OCCT spots intersect every exact solid pair at selected target poses."
+      }
     }
-  },
-  "material": {
-    "poses": 2,
-    "pairChecks": 72,
-    "maxIntersectionMm3": 0,
-    "minimumSampleLaneSeparationMm": 11.999999799999998,
-    "sourceReport": "docs/material-clearance-results.json"
   },
   "summary": {
     "fixtureCount": 6,
@@ -439,11 +459,29 @@
       }
     ]
   },
+  "passed": true,
+  "material": {
+    "poses": 2,
+    "pairChecks": 72,
+    "maxIntersectionMm3": 0,
+    "sourceReport": "docs/material-clearance-results.json",
+    "sourceReportSha256": "274c324443ea872634aeb9a05abed6037ff9877436179f67432ea88df1e0dcac",
+    "minimumSampleLaneSeparationMm": 11.999999799999998
+  },
   "stewart": {
     "poses": 2,
     "pairChecks": 182,
     "maxIntersectionMm3": 0,
     "sourceReport": "docs/stewart-clearance-results.json",
+    "sourceReportSha256": "60d03bd52bf708982722ec6851c231ee54569d621afb25d1c4cac6059a1a8bd5",
     "limitations": "These 182 endpoint pair checks establish sampled geometric noninterference only, not continuous collision detection or contact forces. Separate stewart-geometry.test.mjs checks conservative leg capsules at 61 intermediate analytic poses. Spherical bearings and actuator drives are ideal joints; bearing retention, seals, friction, load ratings and manufacturing tolerances are not modeled."
+  },
+  "stewartWorkspace": {
+    "poses": 10,
+    "pairChecks": 910,
+    "maxIntersectionMm3": 0,
+    "sourceReport": "docs/stewart-workspace-results.json",
+    "sourceReportSha256": "ef8320eab3c6a9e766ae6eba8385da74b964bbfd5103b24aa43f1a6a543b1993",
+    "limitations": "Ideal fixture geometry; finite floating-point arithmetic with millimetre-scale margins, not a formal interval-arithmetic proof. Geometry does not model retained bearing cartridges, seals, friction, actuator force limits or flexible material. Target-path clearance does not certify uncontrolled dynamic overshoot or arbitrary geometry edits."
   }
 }

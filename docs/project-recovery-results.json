@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T09:48:14.376Z",
+  "passed": true,
+  "command": "pnpm --filter @workspace/kineticad test:project",
+  "tests": {
+    "total": 13,
+    "passed": 13,
+    "persistence": 11,
+    "actualCadWorker": 2
+  },
+  "method": "Shipped CAD worker over Comlink in fresh Node worker threads, using installed OCCT WASM instead of CDN loading. Independent analytical mass references; no replacement CAD engine. Pure persistence tests use an in-memory transactional repository adapter; real IndexedDB and UI require separate Chrome acceptance.",
+  "observed": {
+    "originalVolumeMm3": 3717.256661176908,
+    "expectedOriginalVolumeMm3": 3717.2566611769184,
+    "expectedModifiedVolumeMm3": 3685.840734641021,
+    "postRestartVolumeToleranceMm3": 1e-7,
+    "analyticalHoleVolumeToleranceMm3": 0.00001,
+    "comAndEdgeIdsPreserved": true,
+    "downstreamHoleRegenerated": true,
+    "projectTransformAndMateStatePreserved": true,
+    "completeStepExportReturned": true,
+    "corruptBodyFingerprintRejected": true,
+    "liveLegacyImportPackaged": true
+  },
+  "sourceHashes": {
+    "artifacts/kineticad/src/cad/cadWorker.ts": "23c731d38f10b1b68f914f742bf3359cb7b107bc4252543229275c2b6efc4bdf",
+    "artifacts/kineticad/src/cad/operations/hole.ts": "5ab60eb5f29fbf0e124f8f1f2ae9886b538fd7adb712c5872548197ba4067fa2",
+    "artifacts/kineticad/src/project/projectDocument.ts": "0be933c3003940445782a16f865ca4403beb406c1c8786b0e8c2310ddf22ea5d",
+    "artifacts/kineticad/src/project/projectAssets.ts": "d6364f1b7e03d0fbfba2374a8123c30de3136d7aedb8b8f5c82863a11b19700f",
+    "artifacts/kineticad/src/project/projectPersistence.ts": "29872d0d92eeb62618725d9568fff1f5dc0f666b5633df859ef5c1b2da75ab39",
+    "artifacts/kineticad/src/project/projectRepository.ts": "24e913bc1bfd99438e9482ccdee7f338b0d914a041b1026923892230c013487a",
+    "artifacts/kineticad/tests/fixtures/recovery-block.step": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+    "artifacts/kineticad/tests/fixtures/mixed-recovery.kineticad.json": "8a1a89080c3d726b9dc566d88a1d7c68d580f35b6ef9dd1293687f5a9ae4e1a4",
+    "artifacts/kineticad/tests/fixtures/modified-import-recovery.kineticad.json": "e98effa8f014f927c5df6f6d666a7a9b6425fc0112e943b42a5fa68d77038689"
+  },
+  "limitations": [
+    "No production deployment acceptance is implied.",
+    "Legacy files that never contained STEP geometry need the original source STEP.",
+    "Exact body mesh fingerprints can require a migration when OCCT or tessellation changes."
+  ]
+}

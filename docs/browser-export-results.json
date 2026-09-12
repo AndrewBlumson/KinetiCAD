@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T10:00:30.537Z",
+  "passed": true,
+  "sources": {
+    "step": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.step",
+      "sha256": "8b2b943df869fca819cc102fc31340cc28efbaef6ea2a98bedce9018b1bc6dc8"
+    },
+    "stl": {
+      "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.stl",
+      "sha256": "47714cfca00d8bdfd25c04847dca212414f936a4dc069466a7a4eb73fa9116e9"
+    },
+    "workerSha256": "23c731d38f10b1b68f914f742bf3359cb7b107bc4252543229275c2b6efc4bdf"
+  },
+  "benchmark": {
+    "blockSizeMm": [
+      20,
+      20,
+      10
+    ],
+    "bores": [
+      {
+        "centreMm": [
+          10,
+          10,
+          5
+        ],
+        "radiusMm": 3,
+        "throughLengthMm": 10
+      },
+      {
+        "centreMm": [
+          5,
+          5,
+          5
+        ],
+        "radiusMm": 2,
+        "throughLengthMm": 10
+      }
+    ],
+    "blockPositionMm": [
+      31,
+      -17,
+      23
+    ],
+    "blockRotationDegXYZ": [
+      19,
+      -37,
+      61
+    ],
+    "reference": [
+      {
+        "name": "native plate",
+        "volumeMm3": 10800,
+        "comWorldMm": [
+          0,
+          0,
+          1.5
+        ],
+        "bounds": {
+          "min": [
+            -30,
+            -30,
+            0
+          ],
+          "max": [
+            30,
+            30,
+            3
+          ]
+        }
+      },
+      {
+        "name": "edited imported block",
+        "volumeMm3": 3591.5929550333267,
+        "comWorldMm": [
+          24.823301000602104,
+          -4.44440757030803,
+          29.021989356857375
+        ],
+        "bounds": {
+          "min": [
+            11.011802650305814,
+            -19.600102890900473,
+            16.203121946163908
+          ],
+          "max": [
+            38.74372356682535,
+            10.234837514807012,
+            41.763611601063516
+          ]
+        }
+      }
+    ]
+  },
+  "tolerances": {
+    "stepVolumeMm3": 0.00001,
+    "stepComMm": 0.000001,
+    "stepBoundsMm": 0.00001,
+    "stlBoundsMm": 0.0001,
+    "stlVolumeRelative": 0.001
+  },
+  "scope": "Actual browser downloads; STEP exact B-rep volume/centroid and mesh bounds in assembly world coordinates. STL bounds and total oriented triangle volume. STL is a tessellated approximation, not an exact surface or CAD history. This benchmark contains per-part features and a fixed mate, not an assembly-level Boolean.",
+  "step": {
+    "bodyCount": 2,
+    "measurements": [
+      {
+        "name": "native plate",
+        "volumeMm3": 10800,
+        "comWorldMm": [
+          -2.7755575615628914e-17,
+          -2.621359919253842e-16,
+          1.5
+        ],
+        "boundsMm": {
+          "min": [
+            -30.0000001,
+            -30.0000001,
+            -1e-7
+          ],
+          "max": [
+            30.0000001,
+            30.0000001,
+            3.0000001
+          ]
+        }
+      },
+      {
+        "name": "edited imported block",
+        "volumeMm3": 3591.5929550332553,
+        "comWorldMm": [
+          24.823301000601287,
+          -4.444407570310369,
+          29.021989356856576
+        ],
+        "boundsMm": {
+          "min": [
+            11.011802550306001,
+            -19.6001029909,
+            16.203121846163167
+          ],
+          "max": [
+            38.743723666825,
+            10.234837614809491,
+            41.76361170106633
+          ]
+        }
+      }
+    ]
+  },
+  "stl": {
+    "triangleCount": 240,
+    "orientedVolumeMm3": 14395.556642397349,
+    "exactReferenceVolumeMm3": 14391.592955033328,
+    "relativeVolumeError": 0.000275416861525036,
+    "boundsMm": {
+      "min": [
+        -30,
+        -30,
+        0
+      ],
+      "max": [
+        38.74372482299805,
+        30,
+        41.76361083984375
+      ]
+    }
+  }
+}

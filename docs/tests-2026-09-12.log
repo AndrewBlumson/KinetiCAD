@@ -1,0 +1,352 @@
+
+> @workspace/kineticad@0.0.0 test:all /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad
+> node --import ../../scripts/node_modules/tsx/dist/loader.mjs --test --test-concurrency=1 tests/*.test.mjs
+
+✔ capped axial force produces F/m acceleration with correct SI/mm conversion (135.677459ms)
+✔ a rated motor holds gravity and an overloaded motor saturates and falls at Fmax/m − g (74.103333ms)
+✔ free-base reaction conserves momentum and mass-weighted centre of mass (12.539375ms)
+✔ lift reaches its target without ever exceeding the actuator force rating (20.758833ms)
+✔ fixed-step partitioning is invariant and halving dt reduces overload position error (10.475167ms)
+✔ travel cutoff stops before geometry crosses the base and is distinguished from modeled impact (1.618958ms)
+✔ invalid configuration and step requests reject explicitly (1.426333ms)
+✔ union STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (14293.22525ms)
+✔ subtract STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (384.987458ms)
+✔ intersect STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (311.233125ms)
+✔ Hide inputs off exports visible originals as well as result, preserving deliberate overlapping solids (396.769791ms)
+✔ disconnected Boolean compound exports every solid without restoring hidden originals (223.054666ms)
+✔ multiple visible Boolean results share immutable source geometry safely (444.300167ms)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: Boolean "Visible union" needs missing or empty part deleted.
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:32:54
+    at Array.map (<anonymous>)
+    at planAssemblyExport (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:22:36)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:491:16)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: no visible committed solids to export.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:518:36)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: Boolean "Visible intersect": empty-result: boolean produced no geometry.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:515:15)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: Boolean "Visible union" needs missing or empty part deleted.
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:32:54
+    at Array.map (<anonymous>)
+    at planAssemblyExport (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:22:36)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:491:16)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: no visible committed solids to export.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:518:36)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: Boolean "Visible intersect": empty-result: boolean produced no geometry.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:515:15)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+✔ invalid/empty output aborts; subsequent raw asset export and native feature chain remain intact (190.585875ms)
+✔ independent hand-calculated steel-like reference uses N/mm/GPa consistently (5.873959ms)
+✔ curve satisfies clamped/free-end solution and intermediate hand reference (1.42725ms)
+✔ load reversal reverses displacement/reactions and retains stress magnitude (1.071792ms)
+✔ depth cubed, width, length cubed and modulus govern bending stiffness (0.206208ms)
+✔ elastic, slenderness and small-deflection failures are explicit (0.296917ms)
+✔ missing/nonfinite/nonpositive material or geometry and overflow reject (1.057ms)
+✔ eligible native dimensions respect sketch planes and exclude modified/imported/boolean shapes (2.963959ms)
+✔ a paused background tab earns no simulation time when resumed before its next animation frame (1.917792ms)
+✔ delayed first play and ordinary paused frames cannot consume a short test window (2.87925ms)
+✔ running cadence partitions retain elapsed time while repeated play calls do not reset the clock (1.792417ms)
+✔ XY extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (8375.671292ms)
+✔ XZ extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (82.206958ms)
+✔ YZ extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (65.985958ms)
+✔ quarter-turn revolve keeps analytical annular-sector volume and centroid (91.819833ms)
+✔ single-edge fillet removes square-minus-quarter-circle volume and leaves its input unchanged (261.644ms)
+✔ single-edge chamfer removes an exact triangular prism and leaves its input unchanged (48.800917ms)
+✔ all six face pick bases drill inward for blind holes and span the correct dimension for through holes (1114.124125ms)
+✔ Boolean union matches overlapping-box volume and preserves both input solids (111.653625ms)
+✔ Boolean subtract matches overlapping-box volume and preserves both input solids (82.088542ms)
+✔ Boolean intersect matches overlapping-box volume and preserves both input solids (60.990875ms)
+✔ invalid dimensions, missing picks, non-solid inputs and empty booleans fail without consuming originals (30.846917ms)
+✔ step zero reads the actual initial body without advancing, and disposal prevents further use (74.01925ms)
+✔ resting cuboid has measured contact support equal to weight, without horizontal force (63.012917ms)
+✔ frictionless contact preserves horizontal velocity and kinetic energy while supporting weight (34.99675ms)
+✔ Coulomb sliding stops within the fixed-step integration bound and contact impulses match momentum (19.536458ms)
+✔ halving the timestep converges in stopping distance and penetration at 60, 120 and 240 Hz (42.710667ms)
+✔ material mass changes support force but not Coulomb deceleration; increasing friction shortens travel (8.300458ms)
+✔ accumulated frame partitions produce the same body state as a single elapsed-time request (4.496458ms)
+✔ airborne and impact phases disable the continuous-support reference (4.948125ms)
+✔ invalid physical inputs and elapsed time are rejected (2.29475ms)
+✔ all bundled examples load and reference existing parts (24.659916ms)
+✔ asset paths work at the Replit /app base and a local root (0.801458ms)
+✔ force experiment survives document parsing and rejects invalid target references (6.596375ms)
+✔ invalid and unsupported documents fail before entering a workspace (4.817125ms)
+✔ editing and playing multiple demos never overwrite the original project (8.571792ms)
+✔ a second visit captures the newly edited original and begins stopped (1.041333ms)
+✔ real Comlink worker serializes initial asynchronous build before zero-time and advancing calls (476.860834ms)
+✔ queued actuator step, contact rebuild and contact step remain FIFO and reset the physical world (42.85775ms)
+✔ invalid build rejects and clears the previous world without poisoning subsequent queued rebuilds (18.692041ms)
+✔ concurrent scene regenerations dispatch one operation per matching cold feature (4.687125ms)
+✔ pending operations on different kernel instances remain independent (0.555ms)
+✔ changed feature parameters do not join an older in-flight operation (0.941458ms)
+✔ shared failures reach every caller and a later request retries the worker (2.65275ms)
+✔ clearing the cache separates pending work and rejects late cache repopulation (3.254083ms)
+✔ concurrent chains share each stage and preview uses the same full upstream hash (25.624583ms)
+✔ display regeneration sends one complete chain and caches its exact final-feature hash (2.678959ms)
+✔ display cache invalidates when an upstream feature or source sketch changes (0.754083ms)
+✔ full-chain rejection reaches all display callers and retries without a poisoned cache (0.359334ms)
+✔ unit-density mass data warms the cache and material/pose changes need no CAD rebuild (1.323542ms)
+✔ unmodified STEP uses its live mesh; modified STEP dispatches its intact full history (0.463583ms)
+✔ a late full-chain result cannot repopulate mesh or physical caches after clear (0.10125ms)
+✔ a final-feature preview cannot hide an invalid earlier history from display regeneration (0.233542ms)
+✔ display measures acceleration from solver readback even when it disagrees with F/m (1.527375ms)
+✔ measurement uses consecutive actual simulation timestamps and holds at completion (0.373083ms)
+✔ new runs clear prior readings and missing measurements cannot look successful (0.625459ms)
+✔ equal newton forces yield measured inverse-mass acceleration on unpowered prismatic sliders (522.028666ms)
+ℹ Maximum measured acceleration relative error 0.00009767859956366642; masses 0.009999999776482582, 0.019999999552965164, 0.07999999821186066 kg.
+✔ doubling force and mass preserves measured acceleration and motion (11.426959ms)
+✔ world-space COM force adds to gravity without creating torque on an offset, rotated body (8.605667ms)
+✔ duration cap and force motion are invariant to elapsed-time partitions, including capped catch-up (75.259875ms)
+✔ zero requests pause a forced run and rebuilding removes its cap and persistent forces (3.195667ms)
+[PHYSICS] buildWorld failed: Error: missing: force target must be an existing dynamic body.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:823:44)
+[PHYSICS] buildWorld failed: Error: ground: force target must be an existing dynamic body.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:823:44)
+[PHYSICS] buildWorld failed: Error: target: duplicate applied-force target.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:824:54)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:820:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:820:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:820:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:820:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:780:17)
+✔ invalid force vectors, duplicate/fixed/missing targets and invalid caps reject the whole world (14.048208ms)
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+✔ two real canvas clicks set Hole UV on the top face of an untransformed solid (7.478708ms)
+✔ two real canvas clicks set Hole UV on the bottom face of an untransformed solid (2.929792ms)
+✔ two real canvas clicks set Hole UV on the top face of an translated with mixed XYZ rotation solid (2.792125ms)
+✔ two real canvas clicks set Hole UV on the bottom face of an translated with mixed XYZ rotation solid (1.280042ms)
+✔ Clear face and a changed face both restart the Hole picker without stale UV (4.459125ms)
+[mass-tests] Initialising the installed OCCT kernel.
+[mass-tests] OCCT ready; initialising Rapier.
+✔ OCCT cuboid volume, mass, centroid and all three anisotropic moments match analytic values (7911.540584ms)
+✔ translated and generally rotated cuboid retains centroidal tensor, including off-diagonal terms (13.673375ms)
+✔ solid cylinder moments match axial and transverse analytic inertia (35.386417ms)
+✔ bored ring retains removed-volume effects in its axial and transverse inertia (595.338833ms)
+✔ warm cache and a material change preserve the full tensor and principal frame (14.769125ms)
+✔ Rapier torque impulse follows the full rotated inertia inverse, not part-local diagonal axes (39.345333ms)
+✔ eigensolver handles tiny and large units and rejects non-physical tensors (0.968959ms)
+✔ empty geometry and invalid density fail instead of creating fictitious physical bodies (2.311958ms)
+✔ finished sketches follow arbitrary part transforms, including changes without geometry edits (6.025584ms)
+✔ consumed sketches show only when selected, unused profiles show, and hidden parts stay hidden (3.527417ms)
+✔ gyroscope profiles retain the assembly elevation instead of being drawn at the ground origin (14.268708ms)
+✔ joint glyph anchors and axes track moving body poses rather than static design transforms (5.580333ms)
+✔ selection enlargement does not displace prismatic or planar anchors (1.550208ms)
+✔ a translated, generally rotated B-rep keeps its analytic volume and Three-world centroid (8268.988875ms)
+✔ the same world transform preserves boolean overlap between two independently transformed bodies (448.360584ms)
+✔ arbitrary mixed XYZ rotations and translations match the actual Three quaternion convention (3.043125ms)
+✔ invalid transforms fail before constructing OCCT values (0.412ms)
+✔ OCCT transform wrappers are released on constructor or shape-operation failures (0.246708ms)
+✔ windmill seed mate retains pi ±5e-7 rad/s after five seconds with an analytical rotor (572.001917ms)
+ℹ Maximum settled windmill error: 8.742278012618954e-8 rad/s
+✔ free fall uses millimetres, seconds, kilograms and is independent of mass (30.22425ms)
+ℹ One-second fall: 4905.64404296875 mm; continuum reference 4905 mm
+✔ zero and blank live revolute commands release the motor so a rotor coasts (113.218917ms)
+✔ zero and blank live prismatic commands release the slider to gravity (59.611167ms)
+✔ unpowered pendulum follows the analytical physical-pendulum period (53.875834ms)
+ℹ Pendulum period 1.6411441888476992s; analytical finite-amplitude reference 1.6411470562544834s; max anchor error 0.000030550614547257853mm
+✔ revolute motor follows part A local axis when both bodies share a rotated frame (21.437584ms)
+✔ prismatic motor follows rotated local axis and preserves lateral position (23.214541ms)
+ℹ Slider travelled 99.97734832763672mm during its second second
+✔ fixed mate preserves an initially translated and rotated child (19.3305ms)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: different-frames requires separate local axes for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:515:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:537:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:806:33)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: different-frames requires separate local orientation frames for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:515:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:591:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:806:33)
+✔ unsupported mismatched joint frames stop the whole world instead of snapping parts (7.718833ms)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: twisted-axis requires separate local orientation frames for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:515:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:591:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:806:33)
+✔ revolute allows initial twist about its shared axis; prismatic rejects that twist (24.674208ms)
+[PHYSICS] buildWorld failed: Error: plane: planar mates are not supported by the current physics engine binding; simulation was stopped.
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:651:13)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:806:33)
+✔ unsupported planar constraints stop simulation rather than being omitted (0.572041ms)
+[PHYSICS] buildWorld failed: Error: missing-link: cannot simulate a mate with missing part geometry (hidden-rotor). Show both mated parts and wait for their geometry to finish loading.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:801:17)
+✔ a mate referencing a hidden or missing body rejects the whole incomplete assembly (0.589ms)
+✔ new gimbal seed drives each relative joint speed, not each child world-speed magnitude (78.463125ms)
+ℹ Nested gimbal: max relative speed error 0.00022979047607252223rad/s; transverse 0.0004547721356077113rad/s; anchor 0mm
+✔ fixed solver stepping gives identical motion at 30 Hz, 144 Hz and irregular render rates (30.040542ms)
+ℹ 30 Hz, 144 Hz and irregular schedules produced bit-identical body transforms after 100 fixed solver steps.
+✔ fractional requests accumulate; zero pauses and undefined advances one configured step (6.473375ms)
+✔ bounded catch-up retains time instead of dropping it and zero never drains backlog (3.222042ms)
+✔ playback time scaling advances only the actual zero, one or two seconds requested (10.420792ms)
+✔ actual worker restores embedded STEP after worker restart, retaining native history, transforms, topology and exportable geometry (21569.015ms)
+[CAD WORKER] exportAssemblyStep failed: Error: imported-step shape "no-longer-in-worker" is not in the worker registry. Re-import the STEP file to restore this part.
+    at executeUpstreamChain (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:453:15)
+    at partShape (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:498:18)
+    at Array.map (<anonymous>)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:508:40)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+✔ a legacy live import is packaged in local coordinates and missing old worker geometry fails clearly (10574.161167ms)
+✔ native history, transforms, materials and mates survive with runtime stopped (10.809167ms)
+✔ Save accepts the live Zustand object without cloning actions or editor state (2.976125ms)
+✔ malformed references, dimensions, transforms and unknown features reject (8.958958ms)
+✔ six-axis configuration persists and invalid target rejects (7.372709ms)
+✔ corrupt embedded bytes reject before asset reconstruction or storage changes (19.201375ms)
+✔ invalid downloaded project does not replace the current or previous snapshots (16.339375ms)
+✔ autosave keeps two complete generations and quota failure retains both (8.052375ms)
+✔ corrupt newest recovery falls back to validated previous without overwriting either (2.952333ms)
+✔ newest state is captured before async work and load follows queued autosave (1.522459ms)
+✔ real Zustand demo isolation preserves durable project and last-good copy (3.245875ms)
+✔ version 8 migration runs before validation; old missing STEP files reject clearly (1.226291ms)
+[PHYSICS] simulation stopped: Error: Assembly Boolean results need their own rigid-body and joint definitions. Export the final assembly as STEP and import those solids to simulate them.
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:187:13)
+    at launchBuild (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:357:10)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:367:9)
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/node_modules/.pnpm/zustand@5.0.12_@types+react@19.2.14_react@19.1.0_use-sync-external-store@1.6.0_react@19.1.0_/node_modules/zustand/esm/vanilla.mjs:9:39
+    at Set.forEach (<anonymous>)
+    at setState (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/node_modules/.pnpm/zustand@5.0.12_@types+react@19.2.14_react@19.1.0_use-sync-external-store@1.6.0_react@19.1.0_/node_modules/zustand/esm/vanilla.mjs:9:17)
+    at Object.setSimulationRunning (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:65:40)
+    at TestContext.<anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:106:28)
+    at Test.runInAsyncScope (node:async_hooks:213:14)
+    at Test.run (node:internal/test_runner/test:1095:25)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ assembly Boolean geometry cannot silently simulate its original uncut inputs (179.142875ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ runner permits one in-flight step, retains elapsed time, and counts actual worker time (19.839708ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ finite experiments hold the final solver pose and clock instead of resetting the model (6.679375ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ late RPC response cannot move the paused pose or clock; resume preserves its actual time (5.914542ms)
+✔ stopped or replaced assembly ignores a late step response (4.703833ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+[PHYSICS] simulation stopped: Error: Invalid mass tensor
+    at Object.harness.mass (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:199:32)
+    at massPropertiesForMaterial (data:text/javascript,export%20const%20getVolumeData%3D()%3D%3E(%7B%7D)%3B%20export%20const%20setVolumeData%3D()%3D%3E%7B%7D%3B%20export%20const%20massPropertiesForMaterial%3D()%3D%3EglobalThis.__kineticadRunnerTest.mass()%3B%20export%20const%20volumeDataFromMassProperties%3D(p)%3D%3Ep%3B:1:149)
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:239:23)
+✔ old build reply and teardown cannot destroy the replacement scene world (4.142459ms)
+[PHYSICS] simulation stopped: Error: Worker build rejected
+    at Object.harness.physics.buildWorld (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:213:31)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:308:22)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:66:51)
+✔ invalid cached mass stops the current run and restores modelling layers (6.269125ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ rejected build RPC is caught and does not poison the next successful build (4.841125ms)
+[PHYSICS] world ready — 2 bodies, 1 joints
+✔ motor edits during pending CAD work reach the world that is eventually built (5.824709ms)
+[PHYSICS] world ready — 2 bodies, 1 joints
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ motor edits during an in-flight build replay before the first solver step (4.224ms)
+[PHYSICS] simulation stopped: Error: Edited solids are outside the verified workspace
+    at Object.harness.verifyStewart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:284:47)
+    at verifyBundledStewartGeometry (data:text/javascript,export%20const%20verifyBundledStewartGeometry%3D(assembly%2Cbase)%3D%3EglobalThis.__kineticadRunnerTest.verifyStewart(assembly%2Cbase)%3B:1:93)
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:285:13)
+✔ six-axis build validates source solids and uses its own full movement duration (2.79075ms)
+✔ six-axis source rejection never creates a physics world (3.336584ms)
+✔ XY arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (7957.117ms)
+✔ XY semicircle revolves to an exact sphere about the sketch V axis (51.494584ms)
+✔ XZ arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (22.900292ms)
+✔ XZ semicircle revolves to an exact sphere about the sketch V axis (11.925167ms)
+✔ YZ arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (45.456417ms)
+✔ YZ semicircle revolves to an exact sphere about the sketch V axis (10.44ms)
+✔ both Stewart turning profiles retain exact circular ends and rebuild as single valid solids (46.366167ms)
+✔ six-axis IK agrees with independently transformed anchors for both directions of every axis (77.427792ms)
+✔ all 64 simultaneous translation/rotation workspace corners satisfy stroke, speed and singularity guards (120.741542ms)
+✔ quintic trajectory starts and ends at rest and holds its final requested pose (1.155208ms)
+✔ invalid values, speed requests, altered frames and altered anchors reject explicitly (4.431375ms)
+✔ dimensionless Jacobian guard detects a collapsed singular geometry (2.90825ms)
+✔ orientation error measures tiny and sign-equivalent quaternions without acos cancellation (0.150167ms)
+✔ the editable v9 fixture forms one connected 14-body, 18-joint mechanism (10.863125ms)
+✔ every encoded joint closes in world space and each actuator uses compatible oblique frames (4.991959ms)
+✔ the six-axis length Jacobian stays nonsingular and equal actuator rates produce pure heave (4.860792ms)
+✔ sampled lift retains rod overlap, radial bore clearance and conservative separation between legs (16.461792ms)
+✔ the builder rejects an unsafe programme or insufficient rod overlap (1.344917ms)
+✔ saved six-axis command survives demo parsing and invalid commands fail closed (18.108083ms)
+✔ source guard permits labels and material changes but rejects altered solids, topology and visibility (19.265375ms)
+✔ measurement state uses actual worker results, holds on zero step, and clears on reset or another experiment (0.309584ms)
+✔ the entire ±5 mm / ±2° pose box is enclosed with no unresolved cells (176.060208ms)
+✔ insufficient subdivision and an enlarged unsafe range fail explicitly (4.746667ms)
+✔ independent Rodrigues progress matches exact quaternion axis-angle interpolation at intermediate poses (2.451375ms)
+✔ all 64 extreme home-to-target paths are enclosed between progress samples (258.549416ms)
+✔ exact target solid placements close spherical endpoints and encode independent rod extension (5.051792ms)
+ℹ tests 166
+ℹ suites 0
+ℹ pass 166
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101046.771958

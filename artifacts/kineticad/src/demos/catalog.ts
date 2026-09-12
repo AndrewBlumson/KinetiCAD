@@ -98,16 +98,16 @@ export const DEMOS: DemoDefinition[] = [
   {
     "id": "stewart-platform",
     "title": "Stewart platform",
-    "subtitle": "Six actuators. One moving deck.",
+    "subtitle": "Six actuators. Six controlled axes.",
     "category": "Engineering",
     "accent": "#ecab76",
-    "description": "Six telescopic actuators close a network of 18 joints around one payload deck. Inspect the bored barrels, turned rods and spherical ends, then run a coordinated lift.",
+    "description": "Six telescopic actuators translate and tilt one deck through 18 coupled joints. Inspect the bored barrels and spherical ends, then compare requested motion with the measured solver pose.",
     "highlights": [
       "14 rigid bodies",
       "18 coupled joints",
-      "Closed-loop mechanism"
+      "Six-axis motion"
     ],
-    "learningTip": "Six linear motors extend at 2 mm/s for six seconds, then hold. The lift is checked against leg-length geometry. Ideal bearings and drives; this demo does not command all six axes.",
+    "learningTip": "Try X, Y, Z, roll, pitch, yaw or combined motion. Targets stay within ±5 mm and ±2° per axis. Four seconds moving, two settling; ideal drives with gravity off, without a payload rating.",
     "partCount": 14,
     "jointCount": 18
   }

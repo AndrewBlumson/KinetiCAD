@@ -28,7 +28,7 @@ import type {
   BooleanOpArgs,
   CadKernelApi,
   ChamferArgs,
-  ExportPartDescriptor,
+  AssemblyExportArgs,
   ExtrudeArgs,
   FilletArgs,
   HoleArgs,
@@ -56,6 +56,8 @@ import { applyChamfer } from "./operations/chamfer";
 import { applyHole, type HoleFaceRef } from "./operations/hole";
 import { applyBoolean } from "./operations/boolean";
 import { computeMassProperties } from "./operations/massProperties";
+import { transformPartShape } from './operations/partTransform';
+import { planAssemblyExport } from './assemblyExport';
 
 // Worker→main-thread console bridge. 16/05/2026
 // Production builds do not forward worker console.log to the page's DevTools
@@ -212,12 +214,8 @@ async function runSelfTest(oc: OC): Promise<void> {
       `[SELF-TEST] OK: tris=${triCount} ` +
       `bbox=[${minX.toFixed(2)}, ${minY.toFixed(2)}, ${minZ.toFixed(2)}] → ` +
       `[${maxX.toFixed(2)}, ${maxY.toFixed(2)}, ${maxZ.toFixed(2)}]`;
-    // Use console.error (not console.info) so Chrome's default filter
-    // ("Errors" only) still surfaces it without the user expanding the
-    // "Info" level. Semantically not an error — the [SELF-TEST] prefix
-    // makes the intent obvious and greppable.
     // eslint-disable-next-line no-console
-    console.error(okMsg);
+    console.info(okMsg);
     try {
       (self as unknown as Worker).postMessage({
         type: "self-test",
@@ -486,6 +484,40 @@ function executeUpstreamChain(
     // the previously built solid here; imported registry originals are copies.
     current?.delete?.();
   }
+}
+
+/** Rebuild one immutable export snapshot; every temporary wrapper has one owner. */
+function buildAssemblyExportShapes(oc: any, args: AssemblyExportArgs): { shapes: any[]; dispose: () => void } {
+  const plan = planAssemblyExport(args);
+  const owned = new Set<any>();
+  const worldShapes = new Map<string, any>();
+  const dispose = () => { for (const shape of owned) { try { shape.delete?.(); } catch { /* already released by OCCT */ } } owned.clear(); };
+  const partShape = (id: string) => {
+    if (worldShapes.has(id)) return worldShapes.get(id);
+    const part = plan.partsById.get(id)!;
+    const base = executeUpstreamChain(oc, part.features, part.sketches);
+    owned.add(base);
+    const tx = part.transform;
+    const identity = !tx || [...tx.positionMm, ...tx.rotationDeg].every((value) => value === 0);
+    const world = identity ? base : transformPartShape(oc, base, tx);
+    owned.add(world);
+    worldShapes.set(id, world);
+    return world;
+  };
+  try {
+    const shapes = plan.visiblePartIds.map(partShape);
+    for (const { feature, orderedInputIds } of plan.booleans) {
+      try {
+        const result = applyBoolean(oc, orderedInputIds.map(partShape), feature.operation);
+        owned.add(result);
+        shapes.push(result);
+      } catch (error) {
+        throw new Error(`assembly-export-failed: Boolean "${feature.resultPartName || feature.id}": ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    if (shapes.length === 0) throw new Error('assembly-export-failed: no visible committed solids to export.');
+    return { shapes, dispose };
+  } catch (error) { dispose(); throw error; }
 }
 
 const api: CadKernelApi = {
@@ -812,60 +844,7 @@ const api: CadKernelApi = {
         // X) and translation last. This matches three.js's
         // mesh.matrixWorld with rotation order "XYZ" so the live mesh
         // position and the OCCT-baked geometry stay in lockstep.
-        const trsf = new oc.gp_Trsf_1();
-        const origin = new oc.gp_Pnt_3(0, 0, 0);
-        const axisX = new oc.gp_Dir_4(1, 0, 0);
-        const axisY = new oc.gp_Dir_4(0, 1, 0);
-        const axisZ = new oc.gp_Dir_4(0, 0, 1);
-        const ax1X = new oc.gp_Ax1_2(origin, axisX);
-        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
-        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
-
-        const trsfRotZ = new oc.gp_Trsf_1();
-        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
-        const trsfRotY = new oc.gp_Trsf_1();
-        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
-        const trsfRotX = new oc.gp_Trsf_1();
-        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
-        const trsfTrans = new oc.gp_Trsf_1();
-        const transVec = new oc.gp_Vec_4(
-          tx.positionMm[0],
-          tx.positionMm[1],
-          tx.positionMm[2],
-        );
-        trsfTrans.SetTranslation_1(transVec);
-
-        // Multiply pre-multiplies: trsf becomes (other · trsf). Start with
-        // Z (innermost), then Y, X, T to end up with M = T·Rx·Ry·Rz.
-        trsf.Multiply(trsfRotZ);
-        trsf.Multiply(trsfRotY);
-        trsf.Multiply(trsfRotX);
-        trsf.Multiply(trsfTrans);
-
-        const transformer = new oc.BRepBuilderAPI_Transform_2(
-          base as never,
-          trsf,
-          true,
-        );
-        const transformed = transformer.Shape();
-        transformedShapes.push(transformed);
-
-        // Free every gp_* and the transformer wrapper. The transformed
-        // TopoDS_Shape is now independent.
-        transformer.delete();
-        transVec.delete();
-        trsfTrans.delete();
-        trsfRotX.delete();
-        trsfRotY.delete();
-        trsfRotZ.delete();
-        ax1Z.delete();
-        ax1Y.delete();
-        ax1X.delete();
-        axisZ.delete();
-        axisY.delete();
-        axisX.delete();
-        origin.delete();
-        trsf.delete();
+        transformedShapes.push(transformPartShape(oc, base, tx));
       }
 
       // Worker trusts the orchestrator's ordering: for subtract the body
@@ -954,97 +933,21 @@ const api: CadKernelApi = {
     }
   },
 
-  async exportAssemblyStl(parts: ExportPartDescriptor[]) {
+  async exportAssemblyStl(assembly: AssemblyExportArgs) {
     await ensureKernel();
     if (!ocInstance) throw new Error("CAD kernel failed to initialise");
     const oc = ocInstance;
     const ocAny = oc as any;
 
-    const baseShapes: any[] = [];
-    const transformedShapes: any[] = [];
+    let exported: ReturnType<typeof buildAssemblyExportShapes> | null = null;
     let compound: any = null;
     let builder: any = null;
     let meshBuilder: any = null;
     let progressRange: any = null;
 
     try {
-      for (const part of parts) {
-        if (!part.features || part.features.length === 0) continue;
-
-        const base = executeUpstreamChain(oc, part.features, part.sketches);
-        baseShapes.push(base);
-
-        // Apply world transform — identical pattern to booleanOp.
-        const tx = part.transform;
-        const isIdentity =
-          !tx ||
-          (tx.positionMm[0] === 0 &&
-            tx.positionMm[1] === 0 &&
-            tx.positionMm[2] === 0 &&
-            tx.rotationDeg[0] === 0 &&
-            tx.rotationDeg[1] === 0 &&
-            tx.rotationDeg[2] === 0);
-
-        if (isIdentity) {
-          transformedShapes.push(base);
-          continue;
-        }
-
-        const trsf = new oc.gp_Trsf_1();
-        const origin = new oc.gp_Pnt_3(0, 0, 0);
-        const axisX = new oc.gp_Dir_4(1, 0, 0);
-        const axisY = new oc.gp_Dir_4(0, 1, 0);
-        const axisZ = new oc.gp_Dir_4(0, 0, 1);
-        const ax1X = new oc.gp_Ax1_2(origin, axisX);
-        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
-        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
-        const trsfRotZ = new oc.gp_Trsf_1();
-        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
-        const trsfRotY = new oc.gp_Trsf_1();
-        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
-        const trsfRotX = new oc.gp_Trsf_1();
-        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
-        const trsfTrans = new oc.gp_Trsf_1();
-        const transVec = new oc.gp_Vec_4(
-          tx.positionMm[0],
-          tx.positionMm[1],
-          tx.positionMm[2],
-        );
-        trsfTrans.SetTranslation_1(transVec);
-        trsf.Multiply(trsfRotZ);
-        trsf.Multiply(trsfRotY);
-        trsf.Multiply(trsfRotX);
-        trsf.Multiply(trsfTrans);
-
-        const transformer = new oc.BRepBuilderAPI_Transform_2(
-          base as never,
-          trsf,
-          true,
-        );
-        const transformed = transformer.Shape();
-        transformedShapes.push(transformed);
-
-        transformer.delete();
-        transVec.delete();
-        trsfTrans.delete();
-        trsfRotX.delete();
-        trsfRotY.delete();
-        trsfRotZ.delete();
-        ax1Z.delete();
-        ax1Y.delete();
-        ax1X.delete();
-        axisZ.delete();
-        axisY.delete();
-        axisX.delete();
-        origin.delete();
-        trsf.delete();
-      }
-
-      if (transformedShapes.length === 0) {
-        throw new Error(
-          "stl-export-failed: no parts with features to export.",
-        );
-      }
+      exported = buildAssemblyExportShapes(oc, assembly);
+      const transformedShapes = exported.shapes;
 
       // Combine every transformed shape into a single compound so the
       // STL writer sees one coherent B-Rep.
@@ -1115,20 +1018,14 @@ const api: CadKernelApi = {
           compound.delete();
         } catch { /* ignore */ }
       }
-      for (let i = 0; i < transformedShapes.length; i++) {
-        if (transformedShapes[i] !== baseShapes[i]) {
-          transformedShapes[i]?.delete?.();
-        }
-      }
-      for (const s of baseShapes) {
-        s?.delete?.();
-      }
+      exported?.dispose();
     }
   },
 
   // ---- STEP import ----
 
-  async importStep(fileBytes: Uint8Array, fileName?: string) {
+  async importStep(fileBytes: Uint8Array, fileName?: string, options?: { assetId?: string; preserveCoordinates?: boolean }) {
+    if (options?.assetId && !/^[a-f0-9]{64}-(ground|local)$/.test(options.assetId)) throw new Error('Invalid project asset identity.');
     await ensureKernel();
     if (!ocInstance) throw new Error('CAD kernel failed to initialise');
     const oc = ocInstance;
@@ -1506,7 +1403,7 @@ const api: CadKernelApi = {
         }
       }
 
-      const dz = isFinite(assemblyZMin) && assemblyZMin < -0.001 ? -assemblyZMin : 0;
+      const dz = !options?.preserveCoordinates && isFinite(assemblyZMin) && assemblyZMin < -0.001 ? -assemblyZMin : 0;
 
       if (dz > 0.001) {
         for (let k = 0; k < solidShapes.length; k++) {
@@ -1535,11 +1432,8 @@ const api: CadKernelApi = {
       const shape = solidShapes[j];
 
       // Unique key for this import session.
-      const shapeId =
+      const shapeId = options?.assetId ? `step-${options.assetId}-${j}` :
         `step-${Date.now()}-${j}-${Math.random().toString(36).slice(2, 8)}`;
-
-      // Register in the worker-side registry for later STEP re-export.
-      importedShapeRegistry.set(shapeId, shape);
 
       // Tessellate with full topology so edges/faces are highlight-able and
       // the part is pickable for mates.
@@ -1570,6 +1464,13 @@ const api: CadKernelApi = {
       });
     }
 
+    // Publish only after every body tessellates successfully. Durable IDs are
+    // content-addressed, so a repeated asset cannot overwrite another asset.
+    for (let j = 0; j < results.length; j++) {
+      const prior = importedShapeRegistry.get(results[j].shapeId) as { delete?: () => void } | undefined;
+      importedShapeRegistry.set(results[j].shapeId, solidShapes[j]);
+      prior?.delete?.();
+    }
     const durationMs = Math.round(performance.now() - t0);
     // eslint-disable-next-line no-console
     console.log('[step-import]', {
@@ -1588,95 +1489,21 @@ const api: CadKernelApi = {
 
   // ---- STEP export ----
 
-  async exportAssemblyStep(parts: ExportPartDescriptor[]) {
+  async exportAssemblyStep(assembly: AssemblyExportArgs) {
     await ensureKernel();
     if (!ocInstance) throw new Error('CAD kernel failed to initialise');
     const oc = ocInstance;
     const ocAny = oc as any;
 
-    const baseShapes: any[] = [];
-    const transformedShapes: any[] = [];
+    let exported: ReturnType<typeof buildAssemblyExportShapes> | null = null;
     let writer: any = null;
     let compound: any = null;
     let builder: any = null;
     const t0 = performance.now();
 
     try {
-      for (const part of parts) {
-        if (!part.features || part.features.length === 0) continue;
-
-        const base = executeUpstreamChain(oc, part.features, part.sketches);
-        baseShapes.push(base);
-
-        // Apply world transform — identical pattern to exportAssemblyStl.
-        const tx = part.transform;
-        const isIdentity =
-          !tx ||
-          (tx.positionMm[0] === 0 &&
-            tx.positionMm[1] === 0 &&
-            tx.positionMm[2] === 0 &&
-            tx.rotationDeg[0] === 0 &&
-            tx.rotationDeg[1] === 0 &&
-            tx.rotationDeg[2] === 0);
-
-        if (isIdentity) {
-          transformedShapes.push(base);
-          continue;
-        }
-
-        const trsf = new oc.gp_Trsf_1();
-        const origin = new oc.gp_Pnt_3(0, 0, 0);
-        const axisX = new oc.gp_Dir_4(1, 0, 0);
-        const axisY = new oc.gp_Dir_4(0, 1, 0);
-        const axisZ = new oc.gp_Dir_4(0, 0, 1);
-        const ax1X = new oc.gp_Ax1_2(origin, axisX);
-        const ax1Y = new oc.gp_Ax1_2(origin, axisY);
-        const ax1Z = new oc.gp_Ax1_2(origin, axisZ);
-        const trsfRotZ = new oc.gp_Trsf_1();
-        trsfRotZ.SetRotation_1(ax1Z, (tx.rotationDeg[2] * Math.PI) / 180);
-        const trsfRotY = new oc.gp_Trsf_1();
-        trsfRotY.SetRotation_1(ax1Y, (tx.rotationDeg[1] * Math.PI) / 180);
-        const trsfRotX = new oc.gp_Trsf_1();
-        trsfRotX.SetRotation_1(ax1X, (tx.rotationDeg[0] * Math.PI) / 180);
-        const trsfTrans = new oc.gp_Trsf_1();
-        const transVec = new oc.gp_Vec_4(
-          tx.positionMm[0],
-          tx.positionMm[1],
-          tx.positionMm[2],
-        );
-        trsfTrans.SetTranslation_1(transVec);
-        trsf.Multiply(trsfRotZ);
-        trsf.Multiply(trsfRotY);
-        trsf.Multiply(trsfRotX);
-        trsf.Multiply(trsfTrans);
-
-        const transformer = new oc.BRepBuilderAPI_Transform_2(
-          base as never,
-          trsf,
-          true,
-        );
-        const transformed = transformer.Shape();
-        transformedShapes.push(transformed);
-
-        transformer.delete();
-        transVec.delete();
-        trsfTrans.delete();
-        trsfRotX.delete();
-        trsfRotY.delete();
-        trsfRotZ.delete();
-        ax1Z.delete();
-        ax1Y.delete();
-        ax1X.delete();
-        axisZ.delete();
-        axisY.delete();
-        axisX.delete();
-        origin.delete();
-        trsf.delete();
-      }
-
-      if (transformedShapes.length === 0) {
-        throw new Error('step-export-failed: no parts with features to export.');
-      }
+      exported = buildAssemblyExportShapes(oc, assembly);
+      const transformedShapes = exported.shapes;
 
       // Combine all transformed shapes into a single compound.
       compound = new ocAny.TopoDS_Compound();
@@ -1739,14 +1566,7 @@ const api: CadKernelApi = {
       if (writer) { try { writer.delete(); } catch { /* ignore */ } }
       if (builder) { try { builder.delete(); } catch { /* ignore */ } }
       if (compound) { try { compound.delete(); } catch { /* ignore */ } }
-      for (let i = 0; i < transformedShapes.length; i++) {
-        if (transformedShapes[i] !== baseShapes[i]) {
-          transformedShapes[i]?.delete?.();
-        }
-      }
-      for (const s of baseShapes) {
-        s?.delete?.();
-      }
+      exported?.dispose();
     }
   },
 };

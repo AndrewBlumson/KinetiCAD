@@ -4,6 +4,8 @@
 // Add --export-descriptors to export the actual CAD meshes and mass properties
 // to /tmp/kineticad-demo-descriptors.json for the physics worker tests (macOS/Linux).
 // Add --descriptors-only to skip repeating the interference sweeps during export.
+// --refresh-metadata updates existing report links/counts without running OCCT;
+// it preserves the measured date/source snapshot and rejects stale fixtures.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -16,6 +18,7 @@ import { applyBoolean } from '../../artifacts/kineticad/src/cad/operations/boole
 import { computeMassProperties } from '../../artifacts/kineticad/src/cad/operations/massProperties.ts';
 import { tessellateShape } from '../../artifacts/kineticad/src/cad/operations/tessellate.ts';
 import { getMaterial } from '../../artifacts/kineticad/src/cad/materials.ts';
+import {completeGeometryReport, geometryReportPath, geometrySourceSnapshot} from './demo-geometry-metadata.mjs';
 
 export async function loadGeometryKernel() { return factory(); }
 
@@ -99,12 +102,21 @@ export function intersectionVolume(oc, a, b) {
 async function main() {
   const available=['windmill','orrery','gyroscope','kinetic-mobile','material-studio','stewart-platform'];
   const options=process.argv.slice(2);
+  if (options.includes('--refresh-metadata')) {
+    assert.equal(options.length, 1, '--refresh-metadata only refreshes the existing measured report and links; do not combine it with an OCCT run.');
+    const refreshed=completeGeometryReport(JSON.parse(fs.readFileSync(geometryReportPath,'utf8')));
+    fs.writeFileSync(geometryReportPath,JSON.stringify(refreshed,null,2)+'\n');
+    console.log('Geometry metadata refreshed; no OCCT measurements were rerun.');
+    return;
+  }
   const exportDescriptors=options.includes('--export-descriptors');
   const descriptorsOnly=options.includes('--descriptors-only');
   assert(!descriptorsOnly || exportDescriptors, '--descriptors-only requires --export-descriptors');
   const selected=options.filter(value=>!['--export-descriptors','--descriptors-only'].includes(value));
   assert(selected.every(id=>available.includes(id)), 'Pass only known demo IDs, or no arguments to check all demos');
   const descriptors={schemaVersion:1,fixtures:{}};
+  const startedAt=new Date().toISOString();
+  const measurementSources=geometrySourceSnapshot();
   const oc=await loadGeometryKernel();
   const report={
     description:'Actual generated B-rep validation and sampled geometric interference; this does not validate contact dynamics.',
@@ -199,15 +211,23 @@ async function main() {
       }
     } finally { shapes.forEach(s=>s.delete()); }
   }
+  const completeReport=completeGeometryReport(report, {generatedAt:new Date().toISOString(),provenance:{
+    measurementSource:'Direct serial OCCT run from the recorded fixture bytes and operation sources. Separate clearance reports are linked, not rerun by this command.',
+    startedAt,
+    command:'node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs'+(options.length?' '+options.join(' '):''),
+    sourceSha256:measurementSources,
+    descriptorsExported:exportDescriptors,
+    interferenceSweepsSkipped:descriptorsOnly,
+  }});
   if (!selected.length && !descriptorsOnly) {
     fs.mkdirSync(new URL('../../docs/',import.meta.url),{recursive:true});
-    fs.writeFileSync(new URL('../../docs/demo-geometry-results.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+    fs.writeFileSync(geometryReportPath,JSON.stringify(completeReport,null,2)+'\n');
   }
   if(exportDescriptors) {
     fs.writeFileSync('/tmp/kineticad-demo-descriptors.json',JSON.stringify(descriptors));
     console.log('DEMO_DESCRIPTORS_WRITTEN /tmp/kineticad-demo-descriptors.json');
   }
-  console.log('DEMO_GEOMETRY_RESULT '+JSON.stringify(report));
+  console.log('DEMO_GEOMETRY_RESULT '+JSON.stringify(completeReport));
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href===import.meta.url) {

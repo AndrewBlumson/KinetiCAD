@@ -44,10 +44,10 @@ export function getCadKernel(): Promise<Comlink.Remote<CadKernelApi>> {
         ((typeof fn === 'function' ? fn : console.log) as (...a: unknown[]) => void)(
           '[worker]', ...(data.args ?? []),
         );
-      } else if (data && data.type === "self-test") {
-        // eslint-disable-next-line no-console
-        console.error(data.message ?? "[SELF-TEST] (no message)");
       }
+      // The structured self-test status also arrives, but its success/failure
+      // text is already forwarded through __log at the correct level. Logging
+      // that second envelope repeats the same diagnostic in the page console.
     });
 
     const api = Comlink.wrap<CadKernelApi>(worker);

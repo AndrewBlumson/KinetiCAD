@@ -1,0 +1,76 @@
+{
+  "format": "kineticad-project",
+  "version": 1,
+  "stateVersion": 9,
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "native-recovery-stage",
+      "name": "Native recovery stage",
+      "groundPartId": "native",
+      "booleanFeatures": [],
+      "mates": [],
+      "parts": [
+        {
+          "id": "native",
+          "name": "Native steel plate",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "profile",
+              "name": "Plate sketch",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    -30,
+                    -30
+                  ],
+                  "width": 60,
+                  "height": 60
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "extrude",
+              "type": "extrude",
+              "sketchId": "missing",
+              "depthMm": 3,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "simulationTimeMs": 0,
+      "gravity": [
+        0,
+        0,
+        -9810
+      ],
+      "timeStepMs": 16.666666666666668,
+      "speedMultiplier": 1
+    }
+  },
+  "assets": []
+}

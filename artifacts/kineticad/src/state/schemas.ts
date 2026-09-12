@@ -55,8 +55,8 @@ export type Feature =
   /**
    * Flat B-rep shape imported from a STEP file. No parametric history is
    * preserved — STEP is boundary representation only. The `shapeId`
-   * references a shape held in the CAD worker's in-memory registry; the
-   * part must be re-imported after a page reload.
+   * references a shape in the CAD worker. Portable project documents embed
+   * the original STEP asset and restore that registry before opening.
    */
   | { id: string; type: 'imported-step'; shapeId: string };
 
@@ -265,6 +265,8 @@ export type SimulationState = {
   forceExperiment?: ForceExperimentConfig;
   /** Optional finite experiment window; the final pose is held on completion. */
   durationMs?: number;
+  /** Bounded six-axis pose command for the bundled Stewart mechanism. */
+  stewartMotion?: import('../physics/stewartKinematics').StewartMotionConfig;
 };
 
 export type AppMode = 'modeller' | 'simulator';

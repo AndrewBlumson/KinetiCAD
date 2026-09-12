@@ -391,9 +391,15 @@ export function createTopologyPicker(opts: {
       sel.faceId === hit.face.id;
     if (sameFaceSelected && hit.face.planeBasis) {
       const basis = hit.face.planeBasis;
-      const dx0 = hit.point.x - basis.origin[0];
-      const dy0 = hit.point.y - basis.origin[1];
-      const dz0 = hit.point.z - basis.origin[2];
+      // Raycaster points are in world space, while OCCT face frames are in
+      // part-local coordinates. Undo the complete mesh transform before UV
+      // projection so moved/rotated parts retain the clicked CAD position.
+      const mesh = partMeshLayer.getPartMesh(hit.partId);
+      if (!mesh) return;
+      const localPoint = mesh.worldToLocal(hit.point.clone());
+      const dx0 = localPoint.x - basis.origin[0];
+      const dy0 = localPoint.y - basis.origin[1];
+      const dz0 = localPoint.z - basis.origin[2];
       const u =
         dx0 * basis.u[0] + dy0 * basis.u[1] + dz0 * basis.u[2];
       const v =

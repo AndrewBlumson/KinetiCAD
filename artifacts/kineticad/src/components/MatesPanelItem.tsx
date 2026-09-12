@@ -50,12 +50,22 @@ export default function MatesPanelItem({
 }: MatesPanelItemProps) {
   const renameMate = useKinetiCADStore((s) => s.renameMate);
   const removeMate = useKinetiCADStore((s) => s.removeMate);
+  const sixAxisControl = useKinetiCADStore((s) => !!s.simulation.stewartMotion);
 
   const defaultName = `${MATE_TYPE_LABEL[mate.type]} ${indexAmongType + 1}`;
   const displayName = mate.name && mate.name.trim() ? mate.name : defaultName;
   const partA = parts.find((p) => p.id === mate.partA)?.name ?? "?";
   const partB = parts.find((p) => p.id === mate.partB)?.name ?? "?";
-  const motorLine = motorSummary(mate);
+  const motorLine = sixAxisControl && /^stewart-slider-[1-6]$/.test(mate.id)
+    ? 'Six-axis length control'
+    : motorSummary(mate);
+  const unsupportedLine = mate.type === 'planar'
+    ? 'Unsupported in simulation'
+    : mate.type === 'revolute' && mate.motorTorqueNm != null
+      ? `Stored torque ${mate.motorTorqueNm} N·m is not applied`
+      : mate.type === 'prismatic' && mate.motorForceN != null
+        ? `Stored force ${mate.motorForceN} N is not applied`
+        : null;
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(displayName);
@@ -159,26 +169,26 @@ export default function MatesPanelItem({
           className="font-technical text-[10px] text-[#FF6B1A]/80 truncate ml-5"
           data-testid={`mate-motor-${mate.id}`}
         >
-          Motor: {motorLine}
+          {motorLine}
         </div>
       ) : null}
+      {unsupportedLine && <div className="font-technical text-[10px] text-amber-400 ml-5" data-testid={`mate-limitation-${mate.id}`}>
+        {unsupportedLine}
+      </div>}
     </div>
   );
 }
 
 function motorSummary(mate: Mate): string | null {
   if (mate.type === "revolute") {
-    const parts: string[] = [];
-    if (mate.motorSpeedRpm != null) parts.push(`${mate.motorSpeedRpm} RPM`);
-    if (mate.motorTorqueNm != null) parts.push(`${mate.motorTorqueNm} Nm`);
-    return parts.length ? parts.join(" / ") : null;
+    return mate.motorSpeedRpm == null || mate.motorSpeedRpm === 0
+      ? 'Motor off'
+      : `Ideal drive: ${mate.motorSpeedRpm} RPM`;
   }
   if (mate.type === "prismatic") {
-    const parts: string[] = [];
-    if (mate.motorForceN != null) parts.push(`${mate.motorForceN} N`);
-    if (mate.motorVelocityMmPerSec != null)
-      parts.push(`${mate.motorVelocityMmPerSec} mm/s`);
-    return parts.length ? parts.join(" / ") : null;
+    return mate.motorVelocityMmPerSec == null || mate.motorVelocityMmPerSec === 0
+      ? 'Motor off'
+      : `Ideal drive: ${mate.motorVelocityMmPerSec} mm/s`;
   }
   return null;
 }

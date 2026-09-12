@@ -6,6 +6,7 @@
 // (gravity in mm/s², distances in mm, masses in kg, inertia in kg·mm²).
 
 import type { Mate, Transform } from "@/state/schemas";
+import type { StewartMotionConfig, StewartPose, StewartVector } from './stewartKinematics';
 
 /**
  * A single rigid body descriptor sent to the physics worker.
@@ -64,6 +65,30 @@ export type BodyMeasurement = {
   linearVelocityMmPerSec: [number, number, number];
 };
 
+export type StewartMeasurement = {
+  phase: 'moving' | 'settling' | 'complete';
+  /** Desired pose at the actual solver time; finalTargetPose is the user target. */
+  requestedPose: StewartPose;
+  finalTargetPose: StewartPose;
+  actualPose: StewartPose;
+  actualTranslationMm: StewartVector;
+  actualRotationDeg: StewartVector;
+  positionErrorMm: number;
+  orientationErrorDeg: number;
+  peakPositionErrorMm: number;
+  peakOrientationErrorDeg: number;
+  jacobianCondition: number;
+  reached: boolean;
+  actuators: Array<{
+    mateId: string;
+    targetLengthMm: number;
+    actualLengthMm: number;
+    targetExtensionMm: number;
+    actualExtensionMm: number;
+    commandVelocityMmPerSec: number;
+  }>;
+};
+
 export type StepResult = {
   transforms: StepTransform[];
   /** Physics-time advanced by this step, in milliseconds. */
@@ -74,6 +99,7 @@ export type StepResult = {
   completed?: boolean;
   /** Measured values, never values synthesized from F/m. */
   bodyMeasurements?: BodyMeasurement[];
+  stewartMeasurement?: StewartMeasurement;
 };
 
 export type BuildWorldArgs = {
@@ -89,6 +115,9 @@ export type BuildWorldArgs = {
   /** Optional positive run cap. Completes at the final whole configured step
    * that fits within this duration; must permit at least one fixed step. */
   durationMs?: number;
+  /** Optional bounded six-axis trajectory for the bundled Stewart assembly.
+   * Owns its move+settle duration. Omit to retain ordinary joint motors. */
+  stewartMotion?: StewartMotionConfig;
 };
 
 export type BuildWorldResult =

@@ -112,10 +112,12 @@ export function applyHole(
     dir = new ocAny.gp_Dir_4(dx, dy, dz);
     ax2 = new ocAny.gp_Ax2_3(pnt, dir);
     cylBuilder = new ocAny.BRepPrimAPI_MakeCylinder_3(ax2, radius, length);
+    // OCCT's primitive builder is lazy: Shape() performs the build. Testing
+    // IsDone before it runs incorrectly rejects every otherwise valid hole.
+    cylinder = cylBuilder.Shape();
     if (!cylBuilder.IsDone()) {
       throw new Error("MakeCylinder did not complete.");
     }
-    cylinder = cylBuilder.Shape();
   } catch (err) {
     if (cylinder) cylinder.delete?.();
     if (cylBuilder) cylBuilder.delete?.();

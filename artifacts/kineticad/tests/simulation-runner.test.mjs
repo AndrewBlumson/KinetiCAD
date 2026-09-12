@@ -17,6 +17,7 @@ const adapterModules = {
   '@/three/partMeshLayerRef': `export const getPartMeshLayer=()=>globalThis.${key}.partLayer;`,
   '@/three/simulationLayerRef': `export const getSimulationLayer=()=>globalThis.${key}.simLayer;`,
   './physicsClient': `export const getPhysicsKernel=()=>Promise.resolve(globalThis.${key}.physics);`,
+  './stewartFixture': `export const verifyBundledStewartGeometry=(assembly,base)=>globalThis.${key}.verifyStewart(assembly,base);`,
   sonner: `export const toast={error:(...args)=>globalThis.${key}.toasts.push(args)};`,
 };
 const hooks = registerHooks({
@@ -50,6 +51,7 @@ beforeEach(async () => {
   harness = {
     ...layers(), frames: new Map(), calls: [], pending: [], toasts: [], poses: [], simultaneousSteps: 0, maxSimultaneousSteps: 0,
     cad: async () => ({}),
+    verifyStewart: async () => {},
     mass: () => ({ massKg: 1, comLocal: [0, 0, 0], principalInertiaKgMm2: [1, 1, 1], principalInertiaLocalFrame: [0, 0, 0, 1] }),
   };
   let frameId = 0;
@@ -97,6 +99,17 @@ async function runningStep() {
   await flush();
   assert.equal(harness.pending.length, 1);
 }
+
+test('assembly Boolean geometry cannot silently simulate its original uncut inputs', async () => {
+  harness.store.setState({ assembly: { ...harness.store.getState().assembly,
+    booleanFeatures: [{ id: 'cut', type: 'subtract', inputPartIds: ['part'], hideInputs: true }] } });
+  harness.store.getState().setSimulationRunning(true);
+  await flush();
+  assert.equal(harness.store.getState().simulation.running, false);
+  assert.equal(harness.calls.includes('build'), false);
+  assert.equal(harness.poses.length, 0);
+  assert.match(harness.toasts[0][1].description, /Export.*STEP/);
+});
 
 test('runner permits one in-flight step, retains elapsed time, and counts actual worker time', async () => {
   await runningStep();
@@ -253,4 +266,24 @@ test('motor edits during an in-flight build replay before the first solver step'
   harness.frame(1010);
   await flush();
   assert.deepEqual(harness.calls, [['build-rpm', 30], ['update-rpm', 90], ['step', 10]]);
+});
+
+test('six-axis build validates source solids and uses its own full movement duration', async () => {
+  const motion = { kind: 'six-axis', target: {translationMm: [4,-3,4], rotationDeg: [1.5,-1,2]}, moveDurationMs: 5000, settleDurationMs: 2000 };
+  harness.store.setState(s => ({simulation: {...s.simulation, stewartMotion: motion, durationMs: 1000}}));
+  const order = []; let args;
+  harness.verifyStewart = async (assembly) => { assert.equal(assembly, harness.store.getState().assembly); order.push('source guard'); };
+  harness.physics.buildWorld = async value => { args = value; order.push('build'); return {ok:true, bodyCount:1, jointCount:0, warnings:[]}; };
+  harness.store.getState().setSimulationRunning(true); await flush();
+  assert.deepEqual(order, ['source guard', 'build']);
+  assert.deepEqual(args.stewartMotion, motion); assert.equal(args.durationMs, 7000);
+});
+
+test('six-axis source rejection never creates a physics world', async () => {
+  harness.store.setState(s => ({simulation: {...s.simulation, stewartMotion: {kind:'six-axis'}}}));
+  harness.verifyStewart = async () => { throw new Error('Edited solids are outside the verified workspace'); };
+  harness.store.getState().setSimulationRunning(true); await flush();
+  assert.equal(harness.store.getState().simulation.running, false);
+  assert.equal(harness.calls.includes('build'), false);
+  assert.match(harness.toasts[0][1].description, /Edited solids/);
 });

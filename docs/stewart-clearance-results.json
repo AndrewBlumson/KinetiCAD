@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-11T22:36:00.605Z",
+  "generatedAt": "2026-09-12T09:52:14.244Z",
   "method": "Every pair of the 14 actual OCCT B-rep solids is intersected at the initial fixture pose and at the measured six-second final physics pose. The final pose comes from the shipped Rapier worker, including its residual translations and rotations; no ideal pose is substituted.",
   "limitations": "These 182 endpoint pair checks establish sampled geometric noninterference only, not continuous collision detection or contact forces. Separate stewart-geometry.test.mjs checks conservative leg capsules at 61 intermediate analytic poses. Spherical bearings and actuator drives are ideal joints; bearing retention, seals, friction, load ratings and manufacturing tolerances are not modeled.",
   "fixturePath": "artifacts/kineticad/public/demos/stewart-platform.json",
   "fixtureSha256": "dcae35c5e59d16dff64e3ddfba8ceacf948d3c0ee801ab748b04989b681af0f4",
   "measurementPath": "docs/stewart-physics-results.json",
-  "measurementReportSha256": "6892bda7d977d10696d461f2bc8a871d9d9d17f7f4d0f4e64bad5714fd0c89fb",
-  "physicsWorkerSha256": "bd44645eef2db63a52871b6067a654d5199097996eb028bb9a7fc69bd3a1a8e5",
+  "measurementReportSha256": "4aaacafd21b63c47ea6289943257c6b6675bd72c4fc6593ba900cd47b34b3501",
+  "physicsWorkerSha256": "a7c7e84367b88438bec20e0ce5285bdfcd7a6fb961c94deead006b2543718e46",
   "geometrySourceSha256": {
     "sketchToWire": "ea8849fb3ac991d87dad63c8791a15f6eb10ea7818ecb4152211b317313d2281",
     "extrude": "246cd2b8a684788ec12571c6194e060655468d5f8d18d70eaf4896acb3cd2fe9",
