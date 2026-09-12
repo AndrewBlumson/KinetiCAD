@@ -51,6 +51,7 @@ export type BooleanResultLayer = {
     kernel: Remote<CadKernelApi>,
   ) => void;
   size: () => number;
+  hasPendingGeometry: () => boolean;
   getPartMesh: (bodyId: string) => THREE.Mesh | null;
   getPartTopology: (bodyId: string) => PartTopology | null;
   getGeometryHash: (bodyId: string) => string | null;
@@ -304,5 +305,5 @@ export function createBooleanResultLayer(): BooleanResultLayer {
     if (group.parent) group.parent.remove(group);
   };
 
-  return { group, sync, size, getPartMesh, getPartTopology, getGeometryHash, getVisiblePartMeshes, forEachVisible, topologyVersion: () => version, dispose };
+  return { group, sync, size, hasPendingGeometry: () => Array.from(entries.values()).some(entry => entry.pending), getPartMesh, getPartTopology, getGeometryHash, getVisiblePartMeshes, forEachVisible, topologyVersion: () => version, dispose };
 }

@@ -33,6 +33,7 @@ import type { CardinalPlane } from "@/sketch/plane";
 import type { EdgeType, FaceType } from "@/cad/types";
 import { validateSketchDimensions } from '../sketch/sketchDimensions';
 import { sketchEditAssemblySignature, sketchEditPrimitivesSignature } from '../sketch/sketchEditSource';
+import { createDocumentHistoryController, type DocumentHistoryActions, type DocumentHistoryState } from './documentHistory';
 
 export type SketchTool = "idle" | "line" | "rectangle" | "circle" | "arc";
 
@@ -368,7 +369,7 @@ const DEFAULT_HOLE_PARAMS: HoleParams = {
   depthMm: 0, // 0 = through-all
 };
 
-export type KinetiCADStore = {
+export type KinetiCADStore = DocumentHistoryState & DocumentHistoryActions & {
   mode: AppMode;
   assembly: Assembly;
   simulation: SimulationState;
@@ -653,7 +654,45 @@ function isMmGravity(g: unknown): boolean {
 
 export const useKinetiCADStore = create<KinetiCADStore>()(
   persist(
-    (set, get) => ({
+    (rawSet, get, api) => {
+      const history = createDocumentHistoryController<KinetiCADStore>({
+        read: get,
+        write: patch => rawSet(patch),
+        resetTransient: () => ({ selection: null, sketchSession: defaultSketchSession,
+          sketchDimensionsEditing: false, featureEditor: defaultFeatureEditor,
+          booleanEditor: defaultBooleanEditor, mateEditor: defaultMateEditor,
+          featurePreview: defaultFeaturePreview, pickingMode: 'idle', pickFilter: null }),
+      });
+      const set: typeof rawSet = (update, replace) => {
+        const before = get();
+        const patch = typeof update === 'function' ? update(before) : update;
+        if (patch === before) return;
+        const after = (replace ? patch : { ...before, ...patch }) as KinetiCADStore;
+        history.record(before, after);
+        rawSet({ ...patch, ...history.state(after) } as KinetiCADStore, replace as false);
+      };
+      // Existing Load/recovery/demo adapters publish complete assembly slices
+      // through setState. Treat each as a new document boundary, including a
+      // byte-identical reopen, so Undo cannot cross original/demo ownership.
+      const externalSet = api.setState;
+      api.setState = (update, replace) => {
+        const before = get();
+        const patch = typeof update === 'function' ? update(before) : update;
+        if (patch === before) return;
+        const after = (replace ? patch : { ...before, ...patch }) as KinetiCADStore;
+        if (Object.prototype.hasOwnProperty.call(patch, 'assembly')) history.clear();
+        else history.record(before, after);
+        externalSet({ ...patch, ...history.state(after) } as KinetiCADStore, replace as false);
+      };
+      return {
+      ...history.actions,
+      canUndo: false,
+      canRedo: false,
+      historyBusy: false,
+      historyBlockedReason: null,
+      historyRevision: 0,
+      historyUndoLabel: null,
+      historyRedoLabel: null,
       mode: "modeller",
       assembly: defaultAssembly,
       simulation: defaultSimulation,
@@ -2072,13 +2111,18 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         get().assembly.mates.filter(
           (m) => m.partA === partId || m.partB === partId,
         ),
-    }),
+    };
+    },
     {
       name: "kineticad-state",
       version: 9,
       storage: projectPersistence.storage,
       // Imported OCCT shapes must be restored before Scene subscribes/regens.
       skipHydration: true,
+      onRehydrateStorage: () => {
+        useKinetiCADStore.getState().clearHistory();
+        return () => useKinetiCADStore.getState().clearHistory();
+      },
       // Don't persist the active sketch session, in-flight feature editor,
       // selection, or live simulation runtime fields.
       // Phase 10: volumeCm3 and massKg are non-persisted — they are

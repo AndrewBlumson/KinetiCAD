@@ -55,13 +55,21 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [pendingFiles, setPendingFiles] = useState(0);
   const pendingFilesRef = useRef(0);
+  const historyFileReleases = useRef<Array<() => void>>([]);
   const requestId = useRef(0);
   const originalRoute = useRef('/');
   const activeRef = useRef<Demo | null>(null);
-  const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.sketchDimensionsEditing || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open);
+  const blocked = useKinetiCADStore((s) => s.sketchSession.active || s.sketchDimensionsEditing || s.featureEditor.open || s.booleanEditor.open || s.mateEditor.open || s.historyBusy);
   const editing = blocked || pendingFiles > 0 || loadingId === 'four-bar';
   useEffect(() => () => { ++requestId.current; }, []);
+  useEffect(() => {
+    if (!loadingId && !open && !pathDesignerOpen) return;
+    return useKinetiCADStore.getState().beginHistoryOperation('the demo or mechanism window');
+  }, [loadingId, open, pathDesignerOpen]);
+  useEffect(() => () => historyFileReleases.current.splice(0).forEach(release => release()), []);
   const setFileBusy = (busy: boolean) => {
+    if (busy) historyFileReleases.current.push(useKinetiCADStore.getState().beginHistoryOperation('the file operation'));
+    else historyFileReleases.current.pop()?.();
     pendingFilesRef.current = Math.max(0, pendingFilesRef.current + (busy ? 1 : -1));
     setPendingFiles(pendingFilesRef.current);
   };

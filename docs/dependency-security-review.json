@@ -1,0 +1,1719 @@
+{
+  "schemaVersion": 1,
+  "observedDate": "2026-09-12",
+  "command": "pnpm audit --json",
+  "registryRequestSucceeded": true,
+  "commandExitCode": 1,
+  "source": {
+    "rawReportSha256": "18ae494aecd94bc26194c53cb6b73b395a28a1f1097ac2e98b7530e1522bc6b1",
+    "rawOverviewOmitted": true,
+    "checkoutHead": "80690884ceb9b46b991dfc0269bd39a631fe1cf1",
+    "workingTreeIncluded": true
+  },
+  "releaseDecision": {
+    "status": "pending-owner-decision",
+    "dependenciesFrozen": true,
+    "upgradesApplied": false,
+    "securityClean": false,
+    "publicationApprovedByThisReview": false,
+    "deploymentApprovedByThisReview": false
+  },
+  "summary": {
+    "advisoryRecords": 58,
+    "uniqueGhsaIds": 56,
+    "affectedPackageNames": 20,
+    "registrySeverityCounts": {
+      "info": 0,
+      "low": 3,
+      "moderate": 16,
+      "high": 28,
+      "critical": 11
+    },
+    "registryDependencyCount": 518,
+    "registryDevDependencyCount": 0,
+    "registryClassificationReliableForWorkspaceRuntime": false
+  },
+  "categories": {
+    "codeGeneration": {
+      "label": "Explicit OpenAPI code generation and its tooling",
+      "observation": "The codegen command reads checked-in openapi.yaml. It is absent from normal install/build scripts; generated schemas can be imported by the API scaffold. Untrusted specifications or refs require separate review.",
+      "advisoryRecords": 30,
+      "severities": {
+        "critical": 11,
+        "high": 16,
+        "moderate": 3,
+        "low": 0
+      },
+      "packages": [
+        "brace-expansion",
+        "fast-uri",
+        "js-yaml",
+        "linkify-it",
+        "markdown-it",
+        "orval"
+      ]
+    },
+    "browserBuildTools": {
+      "label": "Browser build/development tooling",
+      "observation": "Vite/React/Tailwind build inputs and development servers, not browser CAD file parsing. Both Vite configs bind 0.0.0.0 with allowedHosts:true. Production exposure is not established by local source.",
+      "advisoryRecords": 16,
+      "severities": {
+        "critical": 0,
+        "high": 9,
+        "moderate": 6,
+        "low": 1
+      },
+      "packages": [
+        "@babel/core",
+        "baseline-browser-mapping",
+        "browserslist",
+        "nanoid",
+        "picomatch",
+        "postcss",
+        "vite",
+        "yaml"
+      ]
+    },
+    "serverRuntime": {
+      "label": "Optional API-server scaffold runtime",
+      "observation": "Express middleware parses JSON and extended URL-encoded bodies; current static route is /api/healthz. Actual public API exposure and request-specific exploitability were not tested.",
+      "advisoryRecords": 6,
+      "severities": {
+        "critical": 0,
+        "high": 1,
+        "moderate": 4,
+        "low": 1
+      },
+      "packages": [
+        "body-parser",
+        "path-to-regexp",
+        "qs"
+      ]
+    },
+    "serverBuildTool": {
+      "label": "API-server build tooling",
+      "observation": "esbuild is called through its build API. No esbuild development-server call was found in the build script.",
+      "advisoryRecords": 1,
+      "severities": {
+        "critical": 0,
+        "high": 0,
+        "moderate": 0,
+        "low": 1
+      },
+      "packages": [
+        "esbuild"
+      ]
+    },
+    "unusedBrowserScaffold": {
+      "label": "Unreferenced browser chart scaffold",
+      "observation": "Recharts imports exist only in ui/chart.tsx; neither current browser entry graph reaches that file. No direct Lodash call was found in app source. This is source reachability, not a final bundle or exploit proof.",
+      "advisoryRecords": 2,
+      "severities": {
+        "critical": 0,
+        "high": 1,
+        "moderate": 1,
+        "low": 0
+      },
+      "packages": [
+        "lodash"
+      ]
+    },
+    "typeDependency": {
+      "label": "Type-definition dependency",
+      "observation": "fflate is reported through @types/three. No fflate/unzipSync application import or call was found; STEP/project file handling is not this ZIP parser.",
+      "advisoryRecords": 1,
+      "severities": {
+        "critical": 0,
+        "high": 0,
+        "moderate": 1,
+        "low": 0
+      },
+      "packages": [
+        "fflate"
+      ]
+    },
+    "mockupTooling": {
+      "label": "Separate mockup-sandbox tooling",
+      "observation": "fast-glob/micromatch path belongs to the scaffold mockup workspace, separate from the CAD and landing entry points.",
+      "advisoryRecords": 2,
+      "severities": {
+        "critical": 0,
+        "high": 1,
+        "moderate": 1,
+        "low": 0
+      },
+      "packages": [
+        "picomatch"
+      ]
+    }
+  },
+  "sourceInspection": {
+    "method": "TypeScript AST walk of value imports/exports, literal dynamic imports and worker URL/query imports from both main.tsx entries; declaration-only imports excluded. Installed non-peer dependency closure of those external imports also collected. No exploit payload, browser runtime reachability or final bundle analysis performed.",
+    "graphs": [
+      {
+        "workspace": "artifacts/kineticad",
+        "entry": "artifacts/kineticad/src/main.tsx",
+        "visitedSourceFiles": 145,
+        "sourceGraphSha256": "ccd847b6e21e5739e3b6be8bb5b32568138c3d4863ae9c544e1e671bfd8190cd",
+        "reachableExternalPackages": [
+          "@dimforge/rapier3d-compat",
+          "@radix-ui/react-dialog",
+          "@radix-ui/react-dropdown-menu",
+          "@radix-ui/react-tooltip",
+          "clsx",
+          "comlink",
+          "lucide-react",
+          "next-themes",
+          "opencascade.js",
+          "react",
+          "react-dom",
+          "sonner",
+          "tailwind-merge",
+          "three",
+          "wouter",
+          "zod",
+          "zustand"
+        ],
+        "conservativeInstalledDependencyClosure": [
+          "@dimforge/rapier3d-compat@0.12.0",
+          "@floating-ui/core@1.7.5",
+          "@floating-ui/dom@1.7.6",
+          "@floating-ui/react-dom@2.1.8",
+          "@floating-ui/utils@0.2.11",
+          "@radix-ui/primitive@1.1.3",
+          "@radix-ui/react-arrow@1.1.7",
+          "@radix-ui/react-collection@1.1.7",
+          "@radix-ui/react-compose-refs@1.1.2",
+          "@radix-ui/react-context@1.1.2",
+          "@radix-ui/react-dialog@1.1.15",
+          "@radix-ui/react-direction@1.1.1",
+          "@radix-ui/react-dismissable-layer@1.1.11",
+          "@radix-ui/react-dropdown-menu@2.1.16",
+          "@radix-ui/react-focus-guards@1.1.3",
+          "@radix-ui/react-focus-scope@1.1.7",
+          "@radix-ui/react-id@1.1.1",
+          "@radix-ui/react-menu@2.1.16",
+          "@radix-ui/react-popper@1.2.8",
+          "@radix-ui/react-portal@1.1.9",
+          "@radix-ui/react-presence@1.1.5",
+          "@radix-ui/react-primitive@2.1.3",
+          "@radix-ui/react-roving-focus@1.1.11",
+          "@radix-ui/react-slot@1.2.3",
+          "@radix-ui/react-tooltip@1.2.8",
+          "@radix-ui/react-use-callback-ref@1.1.1",
+          "@radix-ui/react-use-controllable-state@1.2.2",
+          "@radix-ui/react-use-effect-event@0.0.2",
+          "@radix-ui/react-use-escape-keydown@1.1.1",
+          "@radix-ui/react-use-layout-effect@1.1.1",
+          "@radix-ui/react-use-rect@1.1.1",
+          "@radix-ui/react-use-size@1.1.1",
+          "@radix-ui/react-visually-hidden@1.2.3",
+          "@radix-ui/rect@1.1.1",
+          "aria-hidden@1.2.6",
+          "clsx@2.1.1",
+          "comlink@4.4.1",
+          "detect-node-es@1.1.0",
+          "get-nonce@1.0.1",
+          "lucide-react@0.545.0",
+          "mitt@3.0.1",
+          "next-themes@0.4.6",
+          "opencascade.js@2.0.0-beta.94e2944",
+          "react-dom@19.1.0",
+          "react-remove-scroll-bar@2.3.8",
+          "react-remove-scroll@2.7.2",
+          "react-style-singleton@2.2.3",
+          "react@19.1.0",
+          "regexparam@3.0.0",
+          "scheduler@0.26.0",
+          "sonner@2.0.7",
+          "tailwind-merge@3.5.0",
+          "three@0.184.0",
+          "tslib@2.8.1",
+          "use-callback-ref@1.3.3",
+          "use-sidecar@1.1.3",
+          "use-sync-external-store@1.6.0",
+          "wouter@3.9.0",
+          "zod@3.25.76",
+          "zustand@5.0.12"
+        ],
+        "chartScaffoldReachable": false,
+        "unresolvedImports": []
+      },
+      {
+        "workspace": "artifacts/landing",
+        "entry": "artifacts/landing/src/main.tsx",
+        "visitedSourceFiles": 16,
+        "sourceGraphSha256": "d95976665b4c55d051fca45cdc48124e2a5902a71868948cbae67b1a2fee51f8",
+        "reachableExternalPackages": [
+          "lucide-react",
+          "react",
+          "react-dom",
+          "react-icons",
+          "wouter"
+        ],
+        "conservativeInstalledDependencyClosure": [
+          "lucide-react@0.545.0",
+          "mitt@3.0.1",
+          "react-dom@19.1.0",
+          "react-icons@5.6.0",
+          "react@19.1.0",
+          "regexparam@3.0.0",
+          "scheduler@0.26.0",
+          "use-sync-external-store@1.6.0",
+          "wouter@3.9.0"
+        ],
+        "chartScaffoldReachable": false,
+        "unresolvedImports": []
+      }
+    ],
+    "auditEntriesInActiveInstalledClosure": [],
+    "sourceEvidence": [
+      {
+        "path": "package.json",
+        "sha256": "5e9da7b874ed349e71d05662d690542076e1a4141959d91587c6d701843ed31e"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "5dedadc56807354a051947da7475ac3e0014583e49678006f3f2a0687b29901b"
+      },
+      {
+        "path": ".replit",
+        "sha256": "c5c015b211a38b8e064679d9f8e613acdd9cf6e03c8c940cea6a1eb15462570f"
+      },
+      {
+        "path": "scripts/post-merge.sh",
+        "sha256": "b24e774867ccf11b9fa9270478d29e50fb4b72a92d7004512f57d720cbb39959"
+      },
+      {
+        "path": "lib/api-spec/package.json",
+        "sha256": "b25ae2f09a8f923ec77b73dbd4b8d90b068fda36b8907b9e96b297f732c57a17"
+      },
+      {
+        "path": "lib/api-spec/orval.config.ts",
+        "sha256": "9f90e6a59cbea54853c714932f8fc87cead1224a3ab1066fd825aeaefde2aa4c"
+      },
+      {
+        "path": "lib/api-spec/openapi.yaml",
+        "sha256": "f9ab7c42c1b0ac5c937994943e70ffce6bb728d22ccb7fe7af963939264a82be"
+      },
+      {
+        "path": "artifacts/api-server/src/app.ts",
+        "sha256": "72f19250d5ea5e836225d357338a0ff9459e813eb48f1a2ac7e60fa5335ca878"
+      },
+      {
+        "path": "artifacts/api-server/src/routes/health.ts",
+        "sha256": "0386ceddb4ff4bff220af72ca38a62191ad95a2f41fd619df3bb9ceffce03db2"
+      },
+      {
+        "path": "artifacts/api-server/build.mjs",
+        "sha256": "a268757bc319f2ccaf2f2661d6616ea9cab3c8d8bc45b46b0ebfdb2bc6180267"
+      },
+      {
+        "path": "artifacts/kineticad/vite.config.ts",
+        "sha256": "9d86d09ad93bee8dc21da3ed000a0e40db8eb11cea18c7b6fddd02b69ca01ec0"
+      },
+      {
+        "path": "artifacts/landing/vite.config.ts",
+        "sha256": "51bf274ad0697b292f45c630ebd1061f62013882bd386bf0a65daffe7afb4d13"
+      },
+      {
+        "path": "artifacts/kineticad/src/components/ui/chart.tsx",
+        "sha256": "b40d1236f168c746b228adec6bc4e9d196ea362a7910878f161d3c359a013b89"
+      },
+      {
+        "path": "artifacts/landing/src/components/ui/chart.tsx",
+        "sha256": "b40d1236f168c746b228adec6bc4e9d196ea362a7910878f161d3c359a013b89"
+      }
+    ]
+  },
+  "advisories": [
+    {
+      "registryAdvisoryId": 1115541,
+      "ghsa": "GHSA-f886-m6hf-6m8v",
+      "cves": [
+        "CVE-2026-33750"
+      ],
+      "package": "brace-expansion",
+      "severity": "moderate",
+      "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+      "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+      "vulnerableVersions": ">=2.0.0 <2.0.3",
+      "patchedVersions": ">=2.0.3",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>minimatch>brace-expansion",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115549,
+      "ghsa": "GHSA-3v7f-55p6-f55p",
+      "cves": [
+        "CVE-2026-33672"
+      ],
+      "package": "picomatch",
+      "severity": "moderate",
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "vulnerableVersions": "<2.3.2",
+      "patchedVersions": ">=2.3.2",
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [
+            {
+              "path": "artifacts__mockup-sandbox>fast-glob>micromatch>picomatch",
+              "category": "mockupTooling"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115551,
+      "ghsa": "GHSA-3v7f-55p6-f55p",
+      "cves": [
+        "CVE-2026-33672"
+      ],
+      "package": "picomatch",
+      "severity": "moderate",
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>picomatch",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115552,
+      "ghsa": "GHSA-c2c7-rcm5-vvqj",
+      "cves": [
+        "CVE-2026-33671"
+      ],
+      "package": "picomatch",
+      "severity": "high",
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "vulnerableVersions": "<2.3.2",
+      "patchedVersions": ">=2.3.2",
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [
+            {
+              "path": "artifacts__mockup-sandbox>fast-glob>micromatch>picomatch",
+              "category": "mockupTooling"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115554,
+      "ghsa": "GHSA-c2c7-rcm5-vvqj",
+      "cves": [
+        "CVE-2026-33671"
+      ],
+      "package": "picomatch",
+      "severity": "high",
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>picomatch",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115556,
+      "ghsa": "GHSA-48c2-rrv3-qjmp",
+      "cves": [
+        "CVE-2026-33532"
+      ],
+      "package": "yaml",
+      "severity": "moderate",
+      "title": "yaml is vulnerable to Stack Overflow via deeply nested YAML collections",
+      "url": "https://github.com/advisories/GHSA-48c2-rrv3-qjmp",
+      "vulnerableVersions": ">=2.0.0 <2.8.3",
+      "patchedVersions": ">=2.8.3",
+      "findings": [
+        {
+          "version": "2.8.2",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>yaml",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115573,
+      "ghsa": "GHSA-j3q9-mxjg-w52f",
+      "cves": [
+        "CVE-2026-4926"
+      ],
+      "package": "path-to-regexp",
+      "severity": "high",
+      "title": "path-to-regexp vulnerable to Denial of Service via sequential optional groups",
+      "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+      "vulnerableVersions": ">=8.0.0 <8.4.0",
+      "patchedVersions": ">=8.4.0",
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>router>path-to-regexp",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115582,
+      "ghsa": "GHSA-27v5-c462-wpq7",
+      "cves": [
+        "CVE-2026-4923"
+      ],
+      "package": "path-to-regexp",
+      "severity": "moderate",
+      "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards",
+      "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7",
+      "vulnerableVersions": ">=8.0.0 <8.4.0",
+      "patchedVersions": ">=8.4.0",
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>router>path-to-regexp",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115806,
+      "ghsa": "GHSA-r5fr-rjxr-66jc",
+      "cves": [
+        "CVE-2026-4800"
+      ],
+      "package": "lodash",
+      "severity": "high",
+      "title": "lodash vulnerable to Code Injection via `_.template` imports key names",
+      "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+      "vulnerableVersions": ">=4.0.0 <=4.17.23",
+      "patchedVersions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>recharts>lodash",
+              "category": "unusedBrowserScaffold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1115810,
+      "ghsa": "GHSA-f23m-r3pf-42rh",
+      "cves": [
+        "CVE-2026-2950"
+      ],
+      "package": "lodash",
+      "severity": "moderate",
+      "title": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+      "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+      "vulnerableVersions": "<=4.17.23",
+      "patchedVersions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>recharts>lodash",
+              "category": "unusedBrowserScaffold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1117015,
+      "ghsa": "GHSA-qx2v-qp2m-jg93",
+      "cves": [
+        "CVE-2026-41305"
+      ],
+      "package": "postcss",
+      "severity": "moderate",
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "vulnerableVersions": "<8.5.10",
+      "patchedVersions": ">=8.5.10",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1119502,
+      "ghsa": "GHSA-q8mj-m7cp-5q26",
+      "cves": [
+        "CVE-2026-8723"
+      ],
+      "package": "qs",
+      "severity": "moderate",
+      "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+      "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+      "vulnerableVersions": ">=6.11.1 <=6.15.1",
+      "patchedVersions": ">=6.15.2",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>qs",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1120680,
+      "ghsa": "GHSA-g7r4-m6w7-qqqr",
+      "cves": [],
+      "package": "esbuild",
+      "severity": "low",
+      "title": "esbuild allows arbitrary file read when running the development server on Windows",
+      "url": "https://github.com/advisories/GHSA-g7r4-m6w7-qqqr",
+      "vulnerableVersions": ">=0.27.3 <0.28.1",
+      "patchedVersions": ">=0.28.1",
+      "findings": [
+        {
+          "version": "0.27.3",
+          "paths": [
+            {
+              "path": "artifacts__api-server>esbuild",
+              "category": "serverBuildTool"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1120785,
+      "ghsa": "GHSA-v6wh-96g9-6wx3",
+      "cves": [
+        "CVE-2026-53632"
+      ],
+      "package": "vite",
+      "severity": "moderate",
+      "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+      "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+      "vulnerableVersions": ">=7.0.0 <=7.3.4",
+      "patchedVersions": ">=7.3.5",
+      "findings": [
+        {
+          "version": "7.3.2",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1120820,
+      "ghsa": "GHSA-6v5v-wf23-fmfq",
+      "cves": [
+        "CVE-2026-48988"
+      ],
+      "package": "markdown-it",
+      "severity": "moderate",
+      "title": "markdown-it: Quadratic complexity DoS in smartquotes rule via replaceAt string operations",
+      "url": "https://github.com/advisories/GHSA-6v5v-wf23-fmfq",
+      "vulnerableVersions": "<=14.1.1",
+      "patchedVersions": ">=14.2.0",
+      "findings": [
+        {
+          "version": "14.1.1",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>markdown-it",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1121797,
+      "ghsa": "GHSA-22p9-wv53-3rq4",
+      "cves": [
+        "CVE-2026-48801"
+      ],
+      "package": "linkify-it",
+      "severity": "high",
+      "title": "LinkifyIt#match scan loop has quadratic algorithmic complexity",
+      "url": "https://github.com/advisories/GHSA-22p9-wv53-3rq4",
+      "vulnerableVersions": "<=5.0.0",
+      "patchedVersions": ">=5.0.1",
+      "findings": [
+        {
+          "version": "5.0.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>markdown-it>linkify-it",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1121860,
+      "ghsa": "GHSA-h67p-54hq-rp68",
+      "cves": [
+        "CVE-2026-53550"
+      ],
+      "package": "js-yaml",
+      "severity": "moderate",
+      "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "vulnerableVersions": ">=4.0.0 <=4.1.1",
+      "patchedVersions": ">=4.2.0",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>js-yaml",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1123526,
+      "ghsa": "GHSA-fx2h-pf6j-xcff",
+      "cves": [
+        "CVE-2026-53571"
+      ],
+      "package": "vite",
+      "severity": "high",
+      "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+      "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+      "vulnerableVersions": ">=7.0.0 <=7.3.4",
+      "patchedVersions": ">=7.3.5",
+      "findings": [
+        {
+          "version": "7.3.2",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1123528,
+      "ghsa": "GHSA-4x5r-pxfx-6jf8",
+      "cves": [
+        "CVE-2026-49356"
+      ],
+      "package": "@babel/core",
+      "severity": "low",
+      "title": "@babel/core: Arbitrary File Read via sourceMappingURL Comment",
+      "url": "https://github.com/advisories/GHSA-4x5r-pxfx-6jf8",
+      "vulnerableVersions": "<=7.29.0",
+      "patchedVersions": ">=7.29.6",
+      "findings": [
+        {
+          "version": "7.29.0",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>@vitejs/plugin-react>@babel/core",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1123896,
+      "ghsa": "GHSA-3jxr-9vmj-r5cp",
+      "cves": [
+        "CVE-2026-13149"
+      ],
+      "package": "brace-expansion",
+      "severity": "high",
+      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+      "vulnerableVersions": ">=2.0.0 <2.1.2",
+      "patchedVersions": ">=2.1.2",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>minimatch>brace-expansion",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1123911,
+      "ghsa": "GHSA-52cp-r559-cp3m",
+      "cves": [
+        "CVE-2026-59869"
+      ],
+      "package": "js-yaml",
+      "severity": "high",
+      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "vulnerableVersions": ">=4.0.0 <4.3.0",
+      "patchedVersions": ">=4.3.0",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>js-yaml",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1123976,
+      "ghsa": "GHSA-v422-hmwv-36x6",
+      "cves": [
+        "CVE-2026-12590"
+      ],
+      "package": "body-parser",
+      "severity": "low",
+      "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+      "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+      "vulnerableVersions": ">=2.0.0 <2.3.0",
+      "patchedVersions": ">=2.3.0",
+      "findings": [
+        {
+          "version": "2.2.2",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>body-parser",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1124012,
+      "ghsa": "GHSA-v245-v573-v5vm",
+      "cves": [
+        "CVE-2026-59887"
+      ],
+      "package": "linkify-it",
+      "severity": "high",
+      "title": "linkify-it: Quadratic-complexity DoS via the `mailto:` validator scan-loop on attacker text",
+      "url": "https://github.com/advisories/GHSA-v245-v573-v5vm",
+      "vulnerableVersions": "<=5.0.1",
+      "patchedVersions": ">=5.0.2",
+      "findings": [
+        {
+          "version": "5.0.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>markdown-it>linkify-it",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1124064,
+      "ghsa": "GHSA-v2hh-gcrm-f6hx",
+      "cves": [
+        "CVE-2026-16221"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
+      "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx",
+      "vulnerableVersions": ">=3.0.0 <=3.1.3",
+      "patchedVersions": ">=3.1.4",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1124252,
+      "ghsa": "GHSA-6g55-p6wh-862q",
+      "cves": [
+        "CVE-2026-45623"
+      ],
+      "package": "postcss",
+      "severity": "high",
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "vulnerableVersions": "<=8.5.11",
+      "patchedVersions": ">=8.5.12",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1130589,
+      "ghsa": "GHSA-mh99-v99m-4gvg",
+      "cves": [
+        "CVE-2026-14257"
+      ],
+      "package": "brace-expansion",
+      "severity": "high",
+      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+      "vulnerableVersions": ">=2.0.0 <2.1.3",
+      "patchedVersions": ">=2.1.3",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>minimatch>brace-expansion",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1130709,
+      "ghsa": "GHSA-fxqj-rqcc-2cmp",
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "package": "postcss",
+      "severity": "moderate",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "vulnerableVersions": "<=8.5.22",
+      "patchedVersions": ">=8.5.23",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1130720,
+      "ghsa": "GHSA-7p8r-x3mc-p8w7",
+      "cves": [
+        "CVE-2026-18446"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via backslash authority introducer",
+      "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7",
+      "vulnerableVersions": ">=3.0.0 <3.1.5",
+      "patchedVersions": ">=3.1.5",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1130736,
+      "ghsa": "GHSA-rgw5-rvv9-x895",
+      "cves": [
+        "CVE-2026-69152"
+      ],
+      "package": "brace-expansion",
+      "severity": "high",
+      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+      "vulnerableVersions": ">=2.0.0 <2.1.4",
+      "patchedVersions": ">=2.1.4",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>typedoc>minimatch>brace-expansion",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1138115,
+      "ghsa": "GHSA-5p4m-2wfm-xmqj",
+      "cves": [],
+      "package": "js-yaml",
+      "severity": "high",
+      "title": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported",
+      "url": "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj",
+      "vulnerableVersions": ">=4.0.0 <4.3.1",
+      "patchedVersions": ">=4.3.1",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>js-yaml",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1138811,
+      "ghsa": "GHSA-28wg-ghj8-5hjv",
+      "cves": [
+        "CVE-2026-67214"
+      ],
+      "package": "nanoid",
+      "severity": "high",
+      "title": "nanoid: non-secure generators can loop indefinitely with negative size",
+      "url": "https://github.com/advisories/GHSA-28wg-ghj8-5hjv",
+      "vulnerableVersions": "<3.3.16",
+      "patchedVersions": ">=3.3.16",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss>nanoid",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1139427,
+      "ghsa": "GHSA-2v37-7h3g-55p8",
+      "cves": [
+        "CVE-2026-67213"
+      ],
+      "package": "nanoid",
+      "severity": "high",
+      "title": "nanoid: custom generators can loop indefinitely when size is zero",
+      "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8",
+      "vulnerableVersions": "<3.3.18",
+      "patchedVersions": ">=3.3.18",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss>nanoid",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1139510,
+      "ghsa": "GHSA-r28c-9q8g-f849",
+      "cves": [
+        "CVE-2026-73646"
+      ],
+      "package": "postcss",
+      "severity": "high",
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "vulnerableVersions": "<=8.5.17",
+      "patchedVersions": ">=8.5.18",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1145559,
+      "ghsa": "GHSA-q3j6-qgpj-74h6",
+      "cves": [
+        "CVE-2026-6321"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to path traversal via percent-encoded dot segments",
+      "url": "https://github.com/advisories/GHSA-q3j6-qgpj-74h6",
+      "vulnerableVersions": ">=3.0.0 <=3.1.0",
+      "patchedVersions": ">=3.1.1",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1153168,
+      "ghsa": "GHSA-v39h-62p7-jpjc",
+      "cves": [
+        "CVE-2026-6322"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via percent-encoded authority delimiters",
+      "url": "https://github.com/advisories/GHSA-v39h-62p7-jpjc",
+      "vulnerableVersions": ">=3.0.0 <=3.1.1",
+      "patchedVersions": ">=3.1.2",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1153171,
+      "ghsa": "GHSA-c83g-rgw3-j3cx",
+      "cves": [
+        "CVE-2026-73089"
+      ],
+      "package": "browserslist",
+      "severity": "high",
+      "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+      "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+      "vulnerableVersions": "<=4.28.6",
+      "patchedVersions": ">=4.28.7",
+      "findings": [
+        {
+          "version": "4.28.1",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1153172,
+      "ghsa": "GHSA-73wf-gq98-2v4g",
+      "cves": [
+        "CVE-2026-73088"
+      ],
+      "package": "browserslist",
+      "severity": "high",
+      "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+      "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g",
+      "vulnerableVersions": "<=4.28.6",
+      "patchedVersions": ">=4.28.7",
+      "findings": [
+        {
+          "version": "4.28.1",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1153189,
+      "ghsa": "GHSA-xwg4-73v4-xw9w",
+      "cves": [
+        "CVE-2026-73086"
+      ],
+      "package": "nanoid",
+      "severity": "high",
+      "title": "nanoid: Integer Overflow or Wraparound",
+      "url": "https://github.com/advisories/GHSA-xwg4-73v4-xw9w",
+      "vulnerableVersions": "<3.3.12",
+      "patchedVersions": ">=3.3.12",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>vite>postcss>nanoid",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158502,
+      "ghsa": "GHSA-cxq5-97v7-87j8",
+      "cves": [
+        "CVE-2026-62680"
+      ],
+      "package": "orval",
+      "severity": "high",
+      "title": "Orval: Generation-time SSRF + remote/local file inclusion via unrestricted $ref",
+      "url": "https://github.com/advisories/GHSA-cxq5-97v7-87j8",
+      "vulnerableVersions": "<8.22.0",
+      "patchedVersions": ">=8.22.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158503,
+      "ghsa": "GHSA-p4cg-3328-rvfg",
+      "cves": [
+        "CVE-2026-72716"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via query-parameter default -> zod module-level template literal",
+      "url": "https://github.com/advisories/GHSA-p4cg-3328-rvfg",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158504,
+      "ghsa": "GHSA-6mr6-jvcr-2f25",
+      "cves": [
+        "CVE-2026-71866"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via schema property name -> computed-property-key injection in the zod client",
+      "url": "https://github.com/advisories/GHSA-6mr6-jvcr-2f25",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158506,
+      "ghsa": "GHSA-x5fp-wj9c-mxmx",
+      "cves": [
+        "CVE-2026-82562"
+      ],
+      "package": "qs",
+      "severity": "moderate",
+      "title": "qs array-limit bypass via bracket-key comma parsing",
+      "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+      "vulnerableVersions": ">=6.14.2 <=6.15.3",
+      "patchedVersions": ">=6.16.0",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>qs",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158507,
+      "ghsa": "GHSA-4mjr-xmp4-gh2g",
+      "cves": [
+        "CVE-2026-82417"
+      ],
+      "package": "qs",
+      "severity": "moderate",
+      "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+      "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+      "vulnerableVersions": ">=2.2.5 <6.16.0",
+      "patchedVersions": ">=6.16.0",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            {
+              "path": "artifacts__api-server>express>qs",
+              "category": "serverRuntime"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158524,
+      "ghsa": "GHSA-f65p-4m7j-42xc",
+      "cves": [
+        "CVE-2026-75975"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+      "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc",
+      "vulnerableVersions": ">=3.0.0 <3.1.6",
+      "patchedVersions": ">=3.1.6",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1158530,
+      "ghsa": "GHSA-jqff-g426-hqxp",
+      "cves": [
+        "CVE-2026-76172"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+      "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp",
+      "vulnerableVersions": ">=3.0.0 <3.1.6",
+      "patchedVersions": ">=3.1.6",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164782,
+      "ghsa": "GHSA-px8p-9vwx-vf98",
+      "cves": [
+        "CVE-2026-45820"
+      ],
+      "package": "fflate",
+      "severity": "moderate",
+      "title": "fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives",
+      "url": "https://github.com/advisories/GHSA-px8p-9vwx-vf98",
+      "vulnerableVersions": ">=0.8.0 <0.8.3",
+      "patchedVersions": ">=0.8.3",
+      "findings": [
+        {
+          "version": "0.8.2",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>@types/three>fflate",
+              "category": "typeDependency"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164800,
+      "ghsa": "GHSA-6437-gxhq-pqv8",
+      "cves": [
+        "CVE-2026-71864"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via header parameter name -> computed-property-key injection in the zod client",
+      "url": "https://github.com/advisories/GHSA-6437-gxhq-pqv8",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164801,
+      "ghsa": "GHSA-2w86-xfrc-g85r",
+      "cves": [
+        "CVE-2026-71867"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: RCE via schema property name -> computed-property-key injection in the MSW mock generator",
+      "url": "https://github.com/advisories/GHSA-2w86-xfrc-g85r",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164802,
+      "ghsa": "GHSA-3575-w9fc-c2j6",
+      "cves": [
+        "CVE-2026-71868"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via enum-typed default -> zod module-level template literal",
+      "url": "https://github.com/advisories/GHSA-3575-w9fc-c2j6",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164803,
+      "ghsa": "GHSA-653q-5476-x79g",
+      "cves": [
+        "CVE-2026-71865"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via query parameter name -> computed-property-key injection in the zod cli",
+      "url": "https://github.com/advisories/GHSA-653q-5476-x79g",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164804,
+      "ghsa": "GHSA-2h9g-j24r-h63g",
+      "cves": [
+        "CVE-2026-71869"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via array-items default -> zod module-level template literal",
+      "url": "https://github.com/advisories/GHSA-2h9g-j24r-h63g",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164805,
+      "ghsa": "GHSA-8j6p-r8jg-mxqh",
+      "cves": [
+        "CVE-2026-71871"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via header-parameter default -> zod module-level template literal",
+      "url": "https://github.com/advisories/GHSA-8j6p-r8jg-mxqh",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164816,
+      "ghsa": "GHSA-88f2-fpv8-89q2",
+      "cves": [
+        "CVE-2026-62682"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: RCE via servers[].url -> unescaped request-URL template literal (with getBaseUrlFromSpecification)",
+      "url": "https://github.com/advisories/GHSA-88f2-fpv8-89q2",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164817,
+      "ghsa": "GHSA-w727-8j6c-2rj4",
+      "cves": [
+        "CVE-2026-72717"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: Import-time RCE via schema default -> zod module-level template literal",
+      "url": "https://github.com/advisories/GHSA-w727-8j6c-2rj4",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1164818,
+      "ghsa": "GHSA-fg9p-mrxr-hvq7",
+      "cves": [
+        "CVE-2026-62681"
+      ],
+      "package": "orval",
+      "severity": "critical",
+      "title": "Orval: RCE via OpenAPI path -> unescaped request-URL template literal (backtick breakout)",
+      "url": "https://github.com/advisories/GHSA-fg9p-mrxr-hvq7",
+      "vulnerableVersions": "<8.21.0",
+      "patchedVersions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1193686,
+      "ghsa": "GHSA-w5vr-8v7q-w6rv",
+      "cves": [
+        "CVE-2026-45819"
+      ],
+      "package": "baseline-browser-mapping",
+      "severity": "moderate",
+      "title": "baseline-browser-mapping process termination on invalid input causes denial of service",
+      "url": "https://github.com/advisories/GHSA-w5vr-8v7q-w6rv",
+      "vulnerableVersions": ">=2.0.0 <2.11.0",
+      "patchedVersions": ">=2.11.0",
+      "findings": [
+        {
+          "version": "2.10.0",
+          "paths": [
+            {
+              "path": "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist>baseline-browser-mapping",
+              "category": "browserBuildTools"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1193727,
+      "ghsa": "GHSA-2883-xcg3-v3hh",
+      "cves": [
+        "CVE-2026-84375"
+      ],
+      "package": "js-yaml",
+      "severity": "high",
+      "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+      "vulnerableVersions": ">=4.0.0 <4.3.2",
+      "patchedVersions": ">=4.3.2",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>js-yaml",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "registryAdvisoryId": 1204921,
+      "ghsa": "GHSA-4c8g-83qw-93j6",
+      "cves": [
+        "CVE-2026-13676"
+      ],
+      "package": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via failed IDN canonicalization",
+      "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6",
+      "vulnerableVersions": ">=3.0.0 <3.1.3",
+      "patchedVersions": ">=3.1.3",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            {
+              "path": "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri",
+              "category": "codeGeneration"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 #!/bin/bash
 set -e
 pnpm install --frozen-lockfile
-pnpm --filter db push
+# CAD is browser-local. Database schema changes are an explicit scaffold task,
+# never an automatic side effect of merging this repository.

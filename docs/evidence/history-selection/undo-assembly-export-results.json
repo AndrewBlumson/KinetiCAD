@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "generatedAt": "2026-09-12T20:25:55.930Z",
+  "sources": {
+    "workerSha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+    "plannerSha256": "10a78894c99a0f88b6441c6a8c14bc77156333d27e5cd9d629650c2591a783af"
+  },
+  "tolerances": {
+    "stepVolumeMm3": 0.00001,
+    "stepCentroidMm": 0.00001,
+    "stlVolumeRelative": 0.00001,
+    "stlCentroidMm": 0.0001
+  },
+  "scope": "Actual shipped worker and installed OCCT. Box faces are planar, so STL tessellation has only float32 coordinate roundoff; these STL tolerances do not apply to arbitrary curved surfaces. Files represent committed modeller geometry, excluding transient editor previews.",
+  "cases": [
+    {
+      "label": "union",
+      "expectedSolidCount": 2,
+      "exactVolumeMm3": 9024,
+      "exactCentroidMm": [
+        30.080765390151527,
+        -19.057863497183018,
+        70.9492037662872
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 8999.999999996351,
+          "centroidMm": [
+            29.89164743119172,
+            -19.112684466507794,
+            71.1330683096629
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 40,
+        "volumeMm3": 9023.999482101071,
+        "centroidMm": [
+          30.08076477851855,
+          -19.057863943512796,
+          70.94920361663655
+        ]
+      }
+    },
+    {
+      "label": "subtract",
+      "expectedSolidCount": 2,
+      "exactVolumeMm3": 3024,
+      "exactCentroidMm": [
+        28.535433074886498,
+        -22.579942700031854,
+        67.80354879375541
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 2999.999999999139,
+          "centroidMm": [
+            27.95571653948735,
+            -22.772582241630253,
+            68.32997718410668
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 24,
+        "volumeMm3": 3024.0007764478705,
+        "centroidMm": [
+          28.535432747889335,
+          -22.579942492009277,
+          67.8035494433469
+        ]
+      }
+    },
+    {
+      "label": "intersect",
+      "expectedSolidCount": 2,
+      "exactVolumeMm3": 3024,
+      "exactCentroidMm": [
+        30.455999435706275,
+        -18.949091732647656,
+        70.58439316434918
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 2999.999999998084,
+          "centroidMm": [
+            29.89164743119157,
+            -19.112684466506792,
+            71.13306830966249
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 24,
+        "volumeMm3": 3023.999589334633,
+        "centroidMm": [
+          30.456000284745027,
+          -18.94909223220441,
+          70.58439446645613
+        ]
+      }
+    },
+    {
+      "label": "hideInputs=false",
+      "expectedSolidCount": 4,
+      "exactVolumeMm3": 21024,
+      "exactCentroidMm": [
+        29.972821349649475,
+        -19.08915400478908,
+        71.05414928191321
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 5999.999999997588,
+          "centroidMm": [
+            28.923681985339847,
+            -20.94263335406994,
+            69.73152274688515
+          ]
+        },
+        {
+          "volumeMm3": 5999.999999997025,
+          "centroidMm": [
+            30.85961287704416,
+            -17.282735578945793,
+            72.53461387244135
+          ]
+        },
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 8999.999999996351,
+          "centroidMm": [
+            29.89164743119172,
+            -19.112684466507794,
+            71.1330683096629
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 64,
+        "volumeMm3": 21023.998582618842,
+        "centroidMm": [
+          29.972821079072766,
+          -19.08915432363583,
+          71.0541490866369
+        ]
+      }
+    },
+    {
+      "label": "disconnected union compound",
+      "expectedSolidCount": 3,
+      "exactVolumeMm3": 12024,
+      "exactCentroidMm": [
+        34.86374716612552,
+        -9.940059908882896,
+        77.98881848658705
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 5999.999999998007,
+          "centroidMm": [
+            40.539267335576646,
+            1.0167532966681054,
+            86.55006950023346
+          ]
+        },
+        {
+          "volumeMm3": 5999.999999997588,
+          "centroidMm": [
+            28.923681985339847,
+            -20.94263335406994,
+            69.73152274688515
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 36,
+        "volumeMm3": 12023.999837634892,
+        "centroidMm": [
+          34.86374625968936,
+          -9.94006056466833,
+          77.98881813811259
+        ]
+      }
+    },
+    {
+      "label": "two results from shared sources",
+      "expectedSolidCount": 3,
+      "exactVolumeMm3": 12024,
+      "exactCentroidMm": [
+        30.033580270650628,
+        -19.071541383741355,
+        70.99507815335726
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 24,
+          "centroidMm": [
+            101,
+            1.5,
+            2
+          ]
+        },
+        {
+          "volumeMm3": 8999.999999996351,
+          "centroidMm": [
+            29.89164743119172,
+            -19.112684466507794,
+            71.1330683096629
+          ]
+        },
+        {
+          "volumeMm3": 2999.999999998084,
+          "centroidMm": [
+            29.89164743119157,
+            -19.112684466506792,
+            71.13306830966249
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 52,
+        "volumeMm3": 12023.99907143571,
+        "centroidMm": [
+          30.033580008691764,
+          -19.07154184911968,
+          70.9950783845229
+        ]
+      }
+    },
+    {
+      "label": "internal array export retains native subtract chain",
+      "expectedSolidCount": 1,
+      "exactVolumeMm3": 12,
+      "exactCentroidMm": [
+        1.5,
+        1.5,
+        2
+      ],
+      "stepBodies": [
+        {
+          "volumeMm3": 12,
+          "centroidMm": [
+            1.5,
+            1.4999999999999998,
+            2
+          ]
+        }
+      ],
+      "stl": {
+        "triangleCount": 12,
+        "volumeMm3": 12,
+        "centroidMm": [
+          1.5,
+          1.5,
+          2
+        ]
+      }
+    }
+  ]
+}

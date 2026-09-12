@@ -1,8 +1,10 @@
 # KinetiCAD developer handover
 
-Updated 12 September 2026 for the bounded four-bar path-designer stage following
-baseline `8e954ab` on `codex/built-in-demo-gallery`. Local automated and scoped
-Chrome checks are complete. Start with [Current status](docs/CURRENT-STATUS.md) and the
+Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](docs/HISTORY-AND-SELECTION.md) and [dependency security review](docs/DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+
+Updated 12 September 2026 for Undo/Redo, object selection, release preparation
+and the earlier four-bar/hinge improvements on `codex/built-in-demo-gallery`.
+Local verification scope is recorded below. Start with [Current status](docs/CURRENT-STATUS.md) and the
 [documentation index](docs/README.md).
 
 ## Project identity and continuation
@@ -34,8 +36,8 @@ limitations are not current instructions. Current source, dated evidence and
 The source includes six editable gallery demos, a separate adjustable
 crank-slider, bounded six-axis Stewart control, complete native/imported STEP
 projects and recovery, persistent numeric sketch dimensions, and direct
-simulation of connected assembly Boolean results. The current stage adds a
-local **Draw a path** four-bar designer. The three Engineering tests tabs remain
+simulation of connected assembly Boolean results. The source also includes a local **Draw a path** four-bar designer, bounded
+Undo/Redo, and whole-solid canvas selection. The three Engineering tests tabs remain
 separate scoped models: Motor & load, Friction & contact, Elastic beam.
 
 Desktop WebGPU is required for CAD. Phone/tablet access to both CAD routes is
@@ -43,13 +45,20 @@ blocked; public information pages remain readable. There is no mobile CAD or
 WebGL fallback. File controls have labels and hover/keyboard help. Creator and
 social links are included on the landing page and shared footer.
 
-**Current local acceptance: 348/348 tests across 51 files, with no failures or
-skips, and a passing full workspace typecheck/build.** Source inputs remained
-unchanged during the serialized run. The [stage catalog](docs/FOUR-BAR-TEST-CATALOG.md)
-and [acceptance record](docs/four-bar-validation.json) preserve the exact checks
-and source identities; the older [298-test catalog](docs/TEST-CATALOG.md) remains
-historical. The [four-bar guide](docs/FOUR-BAR-PATH-VERIFICATION.md) separates
-mathematics/search, native CAD, solver and interface evidence.
+The [current test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md) and
+[history/selection verification](docs/HISTORY-AND-SELECTION.md) identify the
+latest combined regression/build/browser evidence. Undo's first checkpoint
+passed 369/369 tests before selection work. Earlier 298/348/351-test records
+remain historical and must not be relabelled as final acceptance.
+
+The [revolute picking follow-up](docs/REVOLUTE-PICKING-VERIFICATION.md) records an
+actual Chrome translated-arc pivot error reduced from **54.08 mm** to
+**less than 1.31e-8 mm**, plus the **37° Z-rotated** case. The translated saved
+project passed native Load and Play/Pause/Resume/Reset; the rotated saved
+project passed Load and full refresh, then Save produced an assembly exactly
+equal to the original corrected download, including transforms and pivots.
+Previously saved incorrect joints must be picked again; this correction does
+not automatically migrate them.
 
 [Actual Chrome checks](docs/evidence/four-bar/browser.json) passed the 60 mm
 preset search/build, native Save/Load and refresh, saved-target restoration,
@@ -103,7 +112,7 @@ configured Replit runtime remains part of the publication handoff.
 | `artifacts/kineticad/src/features/` | Ordered feature regeneration, caches, assembly Boolean preparation |
 | `artifacts/kineticad/src/three/` | WebGPU scene/layers, topology selection, joint overlays and simulation meshes |
 | `artifacts/kineticad/src/physics/` | Assembly planning, Rapier worker/runner, demo controllers and engineering experiments |
-| `artifacts/kineticad/src/state/` | Typed assembly/project state, editor actions and derived body identities |
+| `artifacts/kineticad/src/state/` | Typed document state, bounded Undo/Redo transactions, editor actions and body identities |
 | `artifacts/kineticad/src/project/` | Complete document validation, STEP asset restoration and IndexedDB recovery |
 | `artifacts/kineticad/src/sketch/` | Plane geometry and validated numeric sketch edits |
 | `artifacts/kineticad/src/mechanisms/` | Bounded crank-slider/four-bar geometry, local path search and generated-workspace contracts |
@@ -211,11 +220,35 @@ Preserve historical numerical reports; rerun into a new named record.
 
 Use [NEXT-IMPLEMENTATION-TODO.md](docs/NEXT-IMPLEMENTATION-TODO.md), then
 [KNOWN-ISSUES-AND-FOLLOW-UP.md](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md). The current
-four-bar local acceptance is complete; stop for Andrew's testing before starting
-another feature. The prior Boolean Load-dialog gate is
+Undo/Redo → selection → documentation sequence is authorised and tested in
+separate checkpoints. Review the final release checklist before publication. The prior Boolean Load-dialog gate is
 closed by the linked fixed-joint record.
 Old issues are queued for later investigation, not assumed still broken merely
 because they appear in the original handover. Ordinary assembly force/contact/
 friction and general deformation remain future stages. Keep each change bounded
 and tested before proceeding; do not upgrade packages or publish as part of this
 documentation handoff.
+
+## History and picking implementation contracts
+
+`state/documentHistory.ts` stores immutable serialised source snapshots with
+50-entry/16 MiB bounds. `store.ts` records committed document actions; derived
+mass/mesh updates, frames, selection and editor previews do not create entries.
+Group multi-part imports and movement gestures explicitly. External assembly
+replacement, hydration and demo boundaries clear history. Imported source assets
+must remain available after deletion; restore prepares them and rejects stale
+async publication. Do not clear the asset registry during Undo.
+
+`three/ObjectPicker.ts` handles whole-object selection separately from topology
+picking. Use visible native meshes and display Boolean meshes, including
+compounds, while retaining single-solid restrictions for physical bodies.
+Selection outlines use transformed CAD polylines, not shared-material mutations.
+Boolean results derive their placement from inputs and do not receive a gizmo.
+
+Use `node scripts/src/capture-test-suite.mjs --output-dir <new-directory>` for a
+portable serial suite capture with named test results and source hashes. It
+preserves the two historical JSON reports normally rewritten by tests. Do not
+run parallel CAD suites or change source during a capture. The old four-bar
+`capture-suite.py` is retained as historical evidence, not a clone-ready command.
+See [publication preparation](docs/PUBLIC-RELEASE-CHECKLIST.md) and
+[third-party notices](THIRD-PARTY-NOTICES.md).

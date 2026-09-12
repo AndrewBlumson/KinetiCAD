@@ -1,4 +1,5 @@
-import { MATERIALS } from "@/cad/materials";
+import { MATERIALS, getMaterial } from "@/cad/materials";
+import { resolveBooleanMaterialId } from "@/state/assemblyBodies";
 // Phase 5 — Boolean inspector for the assembly-level Union/Subtract/Intersect
 // editor. Lives in its own store slice (`booleanEditor`) and routed by
 // Modeller's RightInspectorBody when the editor is open OR when a committed
@@ -28,6 +29,8 @@ const OP_OPTIONS: Array<{ value: BooleanOperation["type"]; label: string }> = [
 
 export default function BooleanInspector() {
   const editor = useKinetiCADStore((s) => s.booleanEditor);
+  const selection = useKinetiCADStore(s => s.selection);
+  const beginEdit = useKinetiCADStore(s => s.beginEditBoolean);
   const assembly = useKinetiCADStore((s) => s.assembly);
   const featurePreview = useKinetiCADStore((s) => s.featurePreview);
   const setParams = useKinetiCADStore((s) => s.setBooleanEditorParams);
@@ -38,7 +41,22 @@ export default function BooleanInspector() {
   const cancel = useKinetiCADStore((s) => s.cancelBooleanEditor);
   const deleteBoolean = useKinetiCADStore((s) => s.deleteBooleanFeature);
 
-  if (!editor.open) return null;
+  if (!editor.open) {
+    const feature = selection?.kind === 'boolean' ? assembly.booleanFeatures.find(item => item.id === selection.booleanId) : undefined;
+    if (!feature) return null;
+    const materialId = resolveBooleanMaterialId(feature, assembly.parts);
+    return <div className="space-y-4 px-3 py-3 text-xs" aria-label="Selected Boolean result">
+      <h2 className="font-medium text-foreground">{feature.resultPartName}</h2>
+      <dl className="space-y-2 text-muted-foreground">
+        <div><dt>Operation</dt><dd className="capitalize text-foreground">{feature.operation.type}</dd></div>
+        <div><dt>Material</dt><dd className="text-foreground">{materialId ? getMaterial(materialId).name : 'Mixed inputs — choose a result material to simulate'}</dd></div>
+        <div><dt>Source parts</dt><dd className="text-foreground">{feature.inputPartIds.map(id => assembly.parts.find(part => part.id === id)?.name ?? 'Missing part').join(', ')}</dd></div>
+      </dl>
+      <p className="leading-relaxed text-muted-foreground">This shape is made from its source parts. Change those parts to move or resize it, or edit the operation below.</p>
+      <button type="button" className="w-full rounded bg-primary px-3 py-2 font-medium text-primary-foreground hover:opacity-90"
+        onClick={() => beginEdit(feature.id)}>Edit Boolean operation</button>
+    </div>;
+  }
 
   const { params } = editor;
   const opType = params.operation.type;

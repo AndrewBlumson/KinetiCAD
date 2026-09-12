@@ -1,0 +1,35 @@
+
+> @workspace/kineticad@0.0.0 build /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad
+> vite build --config vite.config.ts
+
+vite v7.3.2 building client environment for production...
+transforming...
+src/components/ui/sonner.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+src/components/ui/dropdown-menu.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 1905 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadClient.ts is dynamically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/project/projectPersistence.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/three/Scene.tsx but also statically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/components/demos/DemoWorkspace.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/components/inspectors/SketchDimensionsEditor.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/three/Scene.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/views/Modeller.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/views/Simulator.tsx, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/public/index.html                                     3.22 kB │ gzip:   1.41 kB
+dist/public/assets/fourBarSearchWorker-Bjg0GgIa.js        12.84 kB
+dist/public/assets/cadWorker-DsJUQGTL.js                 280.13 kB
+dist/public/assets/engineeringBenchWorker-BXJ-vM4z.js  2,061.22 kB
+dist/public/assets/physicsWorker-1PSc4FIA.js           2,075.77 kB
+dist/public/assets/index-CngT6Bu8.css                    115.77 kB │ gzip:  19.33 kB
+dist/public/assets/booleanResultLayerRef-CcoSAQ8J.js       0.74 kB │ gzip:   0.42 kB
+dist/public/assets/forceMeasurements-DR3o3jOp.js           3.99 kB │ gzip:   1.84 kB
+dist/public/assets/BeamAnalysisPanel-dqE5GmK3.js           9.66 kB │ gzip:   3.91 kB
+dist/public/assets/Simulator-DQdpsKzv.js                  56.93 kB │ gzip:  17.50 kB
+dist/public/assets/Modeller-BqUxto5w.js                  165.32 kB │ gzip:  44.37 kB
+dist/public/assets/index-CUSGVAYM.js                     190.09 kB │ gzip:  60.48 kB
+dist/public/assets/App-Bvq0W8N_.js                       497.79 kB │ gzip: 143.23 kB
+dist/public/assets/Scene-D917cl3W.js                     669.40 kB │ gzip: 189.89 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.34s

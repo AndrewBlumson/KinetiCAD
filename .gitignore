@@ -10,6 +10,29 @@ out-tsc
 
 # dependencies
 node_modules
+.kineticad-test-capture.lock
+
+# Local credentials (keep only reviewed, value-free templates)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa
+id_ed25519
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+!*.pem.example
+!*.key.example
+!*.pem.template
+!*.key.template
 
 # IDEs and editors
 /.idea

@@ -96,6 +96,7 @@ export type PartMeshLayer = {
   ) => void;
   /** Total tracked part meshes (for diagnostics / tests). */
   size: () => number;
+  hasPendingGeometry: () => boolean;
   /** Returns the live Three.js mesh for a part, or null if not visible. */
   getPartMesh: (partId: string) => THREE.Mesh | null;
   /**
@@ -132,6 +133,7 @@ type Entry = {
   lastMaterialId: string | null;
   /** Token of the most recent sync started for this part. */
   inFlightToken: number;
+  pending: boolean;
   /** Cleared by removeEntry — late async completions check this before mutating. */
   alive: boolean;
   /** Cached topology for picking. Null when the mesh is hidden / empty / failed. */
@@ -241,6 +243,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       lastHash: null,
       lastMaterialId: null,
       inFlightToken: 0,
+      pending: false,
       alive: true,
       topology: null,
     };
@@ -318,7 +321,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       // Volume + COM + geometric inertia depend only on shape.
       // We cache the full geometric mass properties by tip hash so a material-only change
       // never needs an OCCT round-trip — just multiply by the new density.
-      if ((hashChanged || materialChanged) && _onMassPropsUpdate) {
+      if ((hashChanged || materialChanged || part.massKg == null || part.volumeCm3 == null) && _onMassPropsUpdate) {
         entry.lastMaterialId = part.materialId;
         const cb = _onMassPropsUpdate;
         const mat = getMaterial(part.materialId);
@@ -360,6 +363,8 @@ export function createPartMeshLayer(): PartMeshLayer {
       entry.lastMaterialId = null;
       entry.topology = null;
       _topologyVersion++;
+    } finally {
+      if (entry.inFlightToken === token) entry.pending = false;
     }
   };
 
@@ -384,12 +389,14 @@ export function createPartMeshLayer(): PartMeshLayer {
 
       if (hiddenPartIds.has(part.id)) {
         entry.inFlightToken = ++nextToken;
+        entry.pending = false;
         entry.mesh.visible = false;
         continue;
       }
 
       if (part.features.length === 0) {
         entry.inFlightToken = ++nextToken;
+        entry.pending = false;
         entry.mesh.visible = false;
         entry.lastHash = null;
         if (entry.topology) {
@@ -431,6 +438,7 @@ export function createPartMeshLayer(): PartMeshLayer {
 
       if (!part.visible) {
         entry.inFlightToken = ++nextToken;
+        entry.pending = false;
         entry.mesh.visible = false;
         continue;
       }
@@ -438,6 +446,7 @@ export function createPartMeshLayer(): PartMeshLayer {
       // Kick off (or replace) an in-flight regen for this part.
       const token = ++nextToken;
       entry.inFlightToken = token;
+      entry.pending = true;
       void regenAndApply(part, kernel, entry, token);
     }
 
@@ -491,6 +500,7 @@ export function createPartMeshLayer(): PartMeshLayer {
     group,
     sync,
     size,
+    hasPendingGeometry: () => Array.from(entries.values()).some(entry => entry.pending),
     getPartMesh,
     getPartTopology,
     forEachVisible,

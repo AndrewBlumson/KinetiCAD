@@ -182,7 +182,7 @@ File times are Node’s per-file summaries, including initialization and teardow
    Assertion helpers: [verify](../artifacts/kineticad/tests/assembly-export.test.mjs#L61).
 
 14. **[invalid/empty output aborts; subsequent raw asset export and native feature chain remain intact](../artifacts/kineticad/tests/assembly-export.test.mjs#L108)** — PASS, 179.564 ms.
-   Checks include: <code>assert.rejects(api[method](missing), /missing or empty part deleted/)</code>; <code>assert.rejects(api[method]({ parts: [{ ...part(&#x27;hidden&#x27;), visible: false }], booleanFeatures: [] }), /no visible committed solids/)</code>; <code>assert.rejects(api[method](assembly(&#x27;intersect&#x27;, { gap: 30 })), /Visible intersect.*empty-result/)</code>.
+   Checks include: <code>assert.rejects(api&#91;method&#93;(missing), /missing or empty part deleted/)</code>; <code>assert.rejects(api[method]({ parts: [{ ...part(&#x27;hidden&#x27;), visible: false }], booleanFeatures: [] }), /no visible committed solids/)</code>; <code>assert.rejects(api[method](assembly(&#x27;intersect&#x27;, { gap: 30 })), /Visible intersect.*empty-result/)</code>.
    Assertion helpers: [verify](../artifacts/kineticad/tests/assembly-export.test.mjs#L61).
 
 ### assembly-simulation.test.mjs

@@ -1,0 +1,1080 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-12T20:52:58.681052+00:00",
+  "completedAt": "2026-09-12T20:53:03.394407+00:00",
+  "head": "80690884ceb9b46b991dfc0269bd39a631fe1cf1",
+  "status": "bounded-scan-completed-not-publication-approval",
+  "securityClean": false,
+  "publicationApproved": false,
+  "scope": {
+    "included": "Current git-tracked plus non-ignored untracked source/docs/evidence; locally reachable history via git rev-list --objects --all. Output report excludes itself.",
+    "excludedDirectoryNames": [
+      ".cache",
+      ".git",
+      ".local",
+      "build",
+      "coverage",
+      "dist",
+      "node_modules",
+      "out-tsc",
+      "tmp"
+    ],
+    "textSizeLimitBytes": 10485760,
+    "limitations": [
+      "Pattern matching is not proof of absence of all secrets or private data.",
+      "External GitHub refs/issues/actions/releases, unreachable Git objects, Replit secrets/hosting, CDN binaries and unrelated user directories were not inspected.",
+      "Browser images/media are inventoried and hashed only; root owns visual review.",
+      "New or changed files after this scan require a subsequent review.",
+      "Dependency advisories remain separately disclosed; this scan does not resolve them."
+    ],
+    "patternCategories": [
+      "private-key headers",
+      "GitHub/provider/API token formats",
+      "AWS access-key IDs",
+      "credential-bearing service URLs",
+      "JWT-shaped values",
+      "long quoted literal secret assignments",
+      "sensitive filenames",
+      "email and local-path provenance metadata"
+    ]
+  },
+  "workingTree": {
+    "trackedFileNames": 611,
+    "untrackedFileNames": 221,
+    "selectedFileNames": 832,
+    "regularFilesHashed": 832,
+    "textFilesScanned": 810,
+    "bytesHashed": 16657217,
+    "snapshotSha256": "81c6f70329c35191da021f6e03790f7d8a959cbea9cf290637143c1438c238e2",
+    "secretCandidateCount": 0,
+    "secretCandidates": [],
+    "credentialFileNames": [],
+    "ignoredSensitiveFileNames": [],
+    "skipped": [],
+    "symlinks": [],
+    "archives": [],
+    "binaryOrOversizeFiles": [
+      {
+        "path": "artifacts/kineticad/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/public/opengraph.jpg",
+        "sha256": "00c17e15b69e2156198f6237c87d5e8841740a302ec3edf8db65e5f59cb1f654",
+        "bytes": 8883,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.stl",
+        "sha256": "b9545ad6e2d9b00840ee87c667205c4d3ff005f3e7cb0873d64387bfa39612d7",
+        "bytes": 684,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.stl",
+        "sha256": "47714cfca00d8bdfd25c04847dca212414f936a4dc069466a7a4eb73fa9116e9",
+        "bytes": 12084,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/apple-touch-icon.png",
+        "sha256": "eb1a6633aeea354a0f64b9e6f454804a3dd0b2e8560a8e0f50f1df355f3409b0",
+        "bytes": 25850,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.png",
+        "sha256": "33d1648c06176b670822951365746e7c48c747e5143cc52df66ce18ef6d130b8",
+        "bytes": 1528,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/logo.webp",
+        "sha256": "5357c3a68665f9cbc4f724a27aee91936a46ff5482ed0c264c98fc2618ff6c63",
+        "bytes": 37220,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/opengraph.jpg",
+        "sha256": "88680d5a62f9985edfe6d74608498cbe4be6d930d9bc9d77ad271057380e0a91",
+        "bytes": 46009,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/orrery.mp4",
+        "sha256": "68500f7352e753d89a8474019311e626634fb8bb38cc2c97beb8e5c3b71d3322",
+        "bytes": 1649886,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/boolean-reopen/after-load-and-refresh.png",
+        "sha256": "741b00761783ad7994edd74e38f23bba3f0b8a4df1cf8c5ae3f358be5c0a6a0e",
+        "bytes": 107777,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/completed-cycle.png",
+        "sha256": "d5c80751f87f2a568534b51b3d28d6eb33d10bd1205cd4d32b6b9d9da65f7086",
+        "bytes": 137598,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-observed-preview.png",
+        "sha256": "9d8280dab7690997945ce6a8d3572364dc3b45a9799a387bca166d7956d95c24",
+        "bytes": 86337,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-saved-project.png",
+        "sha256": "f17bc0ea1a9d7416ddebb503f1d1681fdc26e7345db9d4bb95cce7ac93fcc825",
+        "bytes": 131093,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/loaded-refreshed-paused.png",
+        "sha256": "a138ad63df3667528bcb999b99f6aaa6872a4a6433db0df88289f45d950d7a04",
+        "bytes": 137816,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-complete.png",
+        "sha256": "32af303471a16336c2ff0a4f6df8083277acda059edd3d150a7c30564a07da8e",
+        "bytes": 142912,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-search.png",
+        "sha256": "df0c2b4dff28f57943914a332172d8aa991190b916e9be280d7c7eb59c0b828b",
+        "bytes": 92341,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/boolean-selected.png",
+        "sha256": "606c746ad44f766a80cd918529c1c4ca4f1c0d37735975d521ab5571dcd6cc6e",
+        "bytes": 113879,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/landing-features.png",
+        "sha256": "5b65b2bb0b420d1dcf5e4b14efea4548c8ed3a4da41961208c07e4e1ef69e9e8",
+        "bytes": 118298,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-import-recovered.png",
+        "sha256": "c3600140937a983eecf18abd1310be82b33932902f6f030973ad2cc1d18e3e90",
+        "bytes": 104791,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.stl",
+        "sha256": "9a8098bd3229b61e00f6bd9595c8312ec381e6e3f18d8450046532b29e0b97f1",
+        "bytes": 124484,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.stl",
+        "sha256": "26d0c0f5c74c607f78386f2ef613488236361c38a4b74992fa48449ecf08cce7",
+        "bytes": 7684,
+        "reason": "binary-or-non-utf8"
+      }
+    ]
+  },
+  "history": {
+    "reachableCommitCount": 14,
+    "reachableUniqueBlobs": 681,
+    "textBlobsScanned": 663,
+    "binaryOrOversizeBlobs": 18,
+    "blobInventorySha256": "83451f93f276ddf0ebb9e781d93a9a60b4c5737daf57786fbeee2b4daf464a56",
+    "secretCandidateCount": 0,
+    "secretCandidates": [],
+    "sensitiveHistoricalFileNames": [],
+    "uniqueAuthorEmailCategories": {
+      "github-noreply": 1,
+      "other-address": 1
+    },
+    "localPathMetadataBlobs": [
+      {
+        "blob": "9c5719bb427d069a91b81027dd35ac2faa4cb7f2",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "0c61454c4d6bf2009ef6a4157b6cc38ba26c2d11",
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "270a000f7539e3d16a408b525f6625491f0a3980",
+        "path": "artifacts/kineticad/tests/verify-demo-physics.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "df713c040fc353101fc832df120811a75a54c7c9",
+        "path": "artifacts/kineticad/tests/verify-material-force.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "8bcfd21d72ee5c40369b6173dd1813356e0dd035",
+        "path": "artifacts/kineticad/tests/verify-stewart-controller.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "d0653aec73533dbd24f0a0b3eda6a8cd85c6fb26",
+        "path": "artifacts/kineticad/tests/verify-stewart-physics.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "b2cee2e1db8c8a3688fdd2dd7448dfe904ce1426",
+        "path": "docs/MATERIAL-FORCE-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "a7ec8d7228217c39547c7bb356de39226c19d879",
+        "path": "docs/MATHEMATICS-AND-PHYSICS.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "d238f07e8a8a706e7956671a4f717114a519649b",
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "551d805eaef81e332ef8772b51d4e37afa4da818",
+        "path": "docs/TEST-CATALOG.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "6b282156aee529362938c65eb822ddedad716417",
+        "path": "docs/boolean-simulation-validation.json",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "e5471430e6963951669684f0ecdd72bc30047e0f",
+        "path": "docs/crank-slider-build-2026-09-12.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "f27c89df07bcd54b4eafcf60f069137c9c8967c2",
+        "path": "docs/crank-slider-tests-2026-09-12.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "54226ace04fc7b7ded566f265eacf52973c9cad2",
+        "path": "docs/evidence/four-bar/capture-suite.py",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "8ee720d5866d9c88a93e5b6bee3855e83590c8ba",
+        "path": "docs/evidence/four-bar/export-check.json",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "fb993400b9cf52f3e0ec4d12296b4a26f0c1b8ab",
+        "path": "docs/evidence/four-bar/suite-events.jsonl",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "e5a573b3719482fa8777d7877d57265c49822555",
+        "path": "docs/evidence/four-bar/workspace-build.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "18bf74af9e57136c4fd9ee2832ea372ee558c575",
+        "path": "docs/finalAppBuild-2026-09-12.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "4d24f634b9aed15c179bdc1db347e4bc49f82313",
+        "path": "docs/four-bar-validation.json",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "d26cb75a62f540f9d4bc5fe20476275e4eca8040",
+        "path": "docs/sketch-dimensions-validation.json",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "1ad2f9c50c264c11bb4f35472b478f47a19f7117",
+        "path": "docs/test-inventory-results.json",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "8e6846f3cd4eb708af25dc90c008503725a59f56",
+        "path": "docs/tests-2026-09-12.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "15fc89eb9f52454699f097ef89d9a8b223bfce25",
+        "path": "docs/workspaceBuild-2026-09-12.log",
+        "containsMachineSpecificPath": true
+      },
+      {
+        "blob": "f2788e55697d1b60951f02a56b99a70932ecd894",
+        "path": "replit.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "9791f11b57864746390c780267d0f098b196ea61",
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "54334298582eb433523472d60573c56443545f10",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "5226be5d1c4983e70d89a49920900f6842d70c8b",
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "a3880e7c363dfd695639c979a1ebef7bec1212a1",
+        "path": "docs/MATHEMATICS-AND-PHYSICS.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "9c354b2392c068ee2381bfbb7d072e57cdd6f790",
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "38b9b6adaf758d73868067f09f5d2095d236fc0f",
+        "path": "replit.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "dffa8ec6e2cf85a6ab2f5b5feb445aa248d23261",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "4e848ea942f4cb6882794b0a28864e9ac289d88a",
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "09d52b5db9f950ab2e2f4247870a0f7b4bf9cecf",
+        "path": "replit.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "d810521a8e86281184af60e9fe881242960cdf60",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "ac96041377073917fc053df7a04b5ce2076a3d5c",
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "1711e12de948d0f4a409b674cef7745bb457b1f9",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "d3b993b47535d32ee6df922fdcdb13aeefcfb911",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "0598d0de0f4abd79a87a38fd2ae49b7fc4efe18c",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "e083bd9f4657e055f36da724bba2e1f9f2fbfa35",
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "fb313e5acc20342ab0521e0e191651408321414d",
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "9343b5da0c708d219abed802f405176c8d6814c0",
+        "path": "replit.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "450b1095ba020af97583b963aa8f8947f585e18e",
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "b59e73b34ffd1be2013181e57c929e7551b86807",
+        "path": "README.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "4a7a7cf8f87d6729f86abfea062abbd5a667c0ba",
+        "path": "artifacts/kineticad/tests/verify-demo-physics.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "e1b7adab6a7d73ea7a4a3d05e835c0201d76c081",
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "2709b83092bad73134e92392e636b5e9c6ad3c75",
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "containsMachineSpecificPath": false
+      },
+      {
+        "blob": "ea242050ddf76b149ebd919c36b7ae014a25bd6e",
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "containsMachineSpecificPath": false
+      }
+    ],
+    "emailBearingBlobs": [
+      {
+        "blob": "a3a55929c58e069ae1ad1e07eca7302f17b20632",
+        "path": "artifacts/landing/src/components/SiteFooter.tsx"
+      },
+      {
+        "blob": "6c212cd65103b1e714b0d76eba1c70c1878ee2dc",
+        "path": "artifacts/landing/src/pages/PrivacyPage.tsx"
+      },
+      {
+        "blob": "2479f860d202c2c10a3bcb65345ae716e624f44b",
+        "path": "artifacts/landing/src/pages/TermsPage.tsx"
+      }
+    ]
+  },
+  "cadFixtureMetadata": {
+    "stepFiles": [
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-intersect.step",
+        "sha256": "bf01283072f00177bdf30992e050d7cd2f41ceacf76bc4639225bc9d94280475",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.step",
+        "sha256": "358d075014c4c4611fe80a281dbe5875e69b6057d6173cfe96afc84962d24a9d",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-union.step",
+        "sha256": "077478b935c3a80b166a40dfdaa1f57fcbf6c80ff8ea6cb6a130060b2294b22f",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.step",
+        "sha256": "8b2b943df869fca819cc102fc31340cc28efbaef6ea2a98bedce9018b1bc6dc8",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/recovery-block.step",
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.step",
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.step",
+        "sha256": "3993aed155347986ee03beddc69daee15e5e266539533b76ec529b7ca27a8163",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "projectAssetOccurrences": 7,
+    "projectFilesWithAssets": 7,
+    "uniqueDecodedStepAssets": [
+      {
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "bytes": 19025,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "bytes": 297767,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "issues": [],
+    "binaryStlHeaders": [
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.stl",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.stl",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.stl",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.stl",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false
+      }
+    ]
+  },
+  "provenanceReview": {
+    "filesWithLocalPathMetadata": [
+      {
+        "path": "README.md",
+        "sha256": "32c992ad7faeac3877cba5331f0d4b016bfdde7903b35c931cdc00c6d1f94c0c",
+        "matches": 4,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "sha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+        "matches": 3,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-demo-physics.mjs",
+        "sha256": "47bea82425f284a292dbbf210ee053cce28f0a0c5b49e8c6cbb6029981f87a6e",
+        "matches": 1,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-material-force.mjs",
+        "sha256": "59fbfb6653d3ce5114cf831683200cf5f00d1228d682e46677d69c75084d7fd0",
+        "matches": 2,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-controller.mjs",
+        "sha256": "808e21e09461e12c2203d50d07c1c6d0d0c03fd01d4dd51ed6a463a57db2cebb",
+        "matches": 1,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-physics.mjs",
+        "sha256": "af8c97b90a36220d2b071f41598d7b6e8bf8ca93ca2fb7aa3915d20301193fc1",
+        "matches": 1,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "docs/MATERIAL-FORCE-VERIFICATION.md",
+        "sha256": "71bf4b8f2b9c619b6963e1036fadffeac0b7729b0f41e189df300d92078c2b89",
+        "matches": 1,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "docs/MATHEMATICS-AND-PHYSICS.md",
+        "sha256": "005407996feaff6a82dd8900d449755dc90c9c46839773963ba9855e59a4cec4",
+        "matches": 4,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "sha256": "9a930a430ff6c5ea8187309224047f7383736c15daa9f8f81cd65dd5412efb70",
+        "matches": 4,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "docs/TEST-CATALOG.md",
+        "sha256": "f847a96c2721ef31195f0d0beca8a8757697794d775c3a24f78616ec8d380d08",
+        "matches": 5,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "docs/boolean-simulation-validation.json",
+        "sha256": "05dfd305b0cf08b6c990d4cbb90b11681c935f91b050153ed9dbecaa456e0dcf",
+        "matches": 1,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/crank-slider-build-2026-09-12.log",
+        "sha256": "346079c34da4b01b25a1935444f955441b2ccd09e0cacea7de1bc485364dbb04",
+        "matches": 3,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/crank-slider-tests-2026-09-12.log",
+        "sha256": "f358b5c2d96c348ecdb594120d4e8d7eb434993a7067e39c4120f3b25131123c",
+        "matches": 69,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/four-bar/capture-suite.py",
+        "sha256": "46d0298ae4ac3e6249aa0e8541d6c4573f92d6fe0d9f23ad1eab3438eb32f45e",
+        "matches": 2,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/four-bar/export-check.json",
+        "sha256": "350ab21e1ef8e1b568e235c01a6a0ae0c27e6b7af09bd60d57c604f677a7ad8c",
+        "matches": 6,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/four-bar/suite-events.jsonl",
+        "sha256": "3535ec25a655834b9a6da401a89fb95c4e1a8472522f7c1546343a37a89349e1",
+        "matches": 2030,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/four-bar/workspace-build.log",
+        "sha256": "2c1de92a383e26fc81040984ded13dc20d0dc59ca03b9fea215bbeafde6d1057",
+        "matches": 12,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final-build.txt",
+        "sha256": "f5c131e2caf50c2e9ad7491fbf79b7798b09ebf4b93e990fdd9314d3dd08e4b4",
+        "matches": 17,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final-landing-build.txt",
+        "sha256": "5dd24fbce1ad61bd30bd49af096fa76a7668c7e35c7be9005ff180b402188ace",
+        "matches": 1,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final-typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final/run-start.json",
+        "sha256": "dccab39b8ef287484a3ee0d54442eff4dc81465b57c5bf8d0dc0e858061cbe31",
+        "matches": 4,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final/suite-events.jsonl",
+        "sha256": "f30356b5406c4728bd549514eede360c228f5ae364869aa62744bbb382218e0f",
+        "matches": 2212,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/final/summary.json",
+        "sha256": "4b11c7f8edeafe01e0c8ebcb3c65648f0217bf6fca825e2a47f39b3801636ce5",
+        "matches": 4,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/run-start.json",
+        "sha256": "36cb4603be4896988d38113449de30310c2f66f852b9276ae0721c20a569e13d",
+        "matches": 4,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/suite-events.jsonl",
+        "sha256": "e6a68d7d03dc6815644722f29b0e0364b774ff5f6b306bfcf57b7d711b75230d",
+        "matches": 2212,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/summary.json",
+        "sha256": "f3cd899953ad0384249349fa275c7204709c0717b9b572ede87b853da280f5ae",
+        "matches": 4,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-build.txt",
+        "sha256": "4177787940a6ed2c041919c33b821fde5f2fd451e4d3e1870b971f72f51b541b",
+        "matches": 15,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-suite.txt",
+        "sha256": "70bda537345c480378f8aedce6bb5266b2dad4cd8c58afca9f8dc13c9e52a171",
+        "matches": 80,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/revolute-picking/before-fix-tests.txt",
+        "sha256": "2234cd8471bd7ec24f01cc3add2134a24b559d945d6f332f407a4d7b283dc318",
+        "matches": 9,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/revolute-picking/build.txt",
+        "sha256": "6630432476323baaf9b0ddb4d687551ced0533af3133f2eacd619a0a938170f7",
+        "matches": 10,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/revolute-picking/suite.txt",
+        "sha256": "09c52313c49d24a4e52a7ccae61492b7908c0d8d5beaff4925ff3770e3bc6a85",
+        "matches": 80,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/evidence/revolute-picking/typecheck.txt",
+        "sha256": "cb429f2dc102c2d9d0247341c812798062c4bbae913924b6c83bb007999d14a3",
+        "matches": 2,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/finalAppBuild-2026-09-12.log",
+        "sha256": "fb9d27ce71dbc2c904e7955be79f5dd4cc4f246489b503bafa2a99a7f932c1cd",
+        "matches": 1,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/four-bar-validation.json",
+        "sha256": "fce9b227f42cc18e8a7a9fecf7e19003efda96c47cf30d0bd679166025ab7689",
+        "matches": 2,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/sketch-dimensions-validation.json",
+        "sha256": "483483f68b183998b46191db6d1a91582d078581d9ff6eb1694c17db1572ab77",
+        "matches": 1,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/test-inventory-results.json",
+        "sha256": "702e1c4a31d524c612a46fee8c48d9dc7c0c86a23c5927b88c8b71cfc3a43e91",
+        "matches": 3471,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/tests-2026-09-12.log",
+        "sha256": "445e3800fd47f31369d14d7e2aff467e66ce291f8504710d242af92a161a5db5",
+        "matches": 60,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "docs/workspaceBuild-2026-09-12.log",
+        "sha256": "831af264d3c43b8a76420778df532b1197759cf5cd89b123e132dcb0403a215b",
+        "matches": 3,
+        "containsMachineSpecificPath": true,
+        "pathContext": "machine-specific checkout/temp provenance"
+      },
+      {
+        "path": "replit.md",
+        "sha256": "9d1a8ebc6a8a7e88afd1d04a1ea8628a19b00c015d34ad9ac6619bf3c5187c1e",
+        "matches": 4,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      },
+      {
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "sha256": "1d35e6c6c16e47a22725ade5e9d85adce32e83004560b39c53391f4ac82b336a",
+        "matches": 3,
+        "containsMachineSpecificPath": false,
+        "pathContext": "generic temporary or virtual filesystem paths/instructions"
+      }
+    ],
+    "emailBearingFiles": [
+      {
+        "path": "artifacts/landing/src/components/SiteFooter.tsx",
+        "matches": 2,
+        "classification": "intentional-public-business-contact"
+      },
+      {
+        "path": "artifacts/landing/src/pages/PrivacyPage.tsx",
+        "matches": 1,
+        "classification": "intentional-public-business-contact"
+      },
+      {
+        "path": "artifacts/landing/src/pages/TermsPage.tsx",
+        "matches": 1,
+        "classification": "intentional-public-business-contact"
+      },
+      {
+        "path": "licenses/manifest.json",
+        "matches": 2,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/clsx/2.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/loose-envify/1.4.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/object-assign/4.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-day-picker/9.14.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-icons/5.6.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/regexparam/3.0.0/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      }
+    ],
+    "disposition": "Historical checkout/temp paths, upstream copyright email notices and intentional public business contact details are retained. No matched values are reproduced here. Review listed source/evidence contexts before publication; visual media review is separate.",
+    "rawEvidenceRewritten": false,
+    "remainingChecks": [
+      "Root visual review of inventoried image/video assets and existing brand/media origin; this scan does not inspect pixels or establish rights.",
+      "Review the final intended file set/archive after all active documentation/evidence writers finish.",
+      "Preserve historical local-path provenance and original evidence hashes; do not silently rewrite raw reports.",
+      "Recheck external GitHub/Replit publication surfaces and the disclosed frozen dependency/licence decisions separately."
+    ],
+    "imageMetadataMarkerCheck": {
+      "method": "Byte-marker check only; not a complete EXIF/XMP/text-chunk parser or image-content review.",
+      "files": [
+        {
+          "path": "artifacts/kineticad/public/opengraph.jpg",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "artifacts/landing/public/apple-touch-icon.png",
+          "embeddedMetadataMarkers": [
+            "tEXt"
+          ]
+        },
+        {
+          "path": "artifacts/landing/public/favicon.png",
+          "embeddedMetadataMarkers": [
+            "tEXt"
+          ]
+        },
+        {
+          "path": "artifacts/landing/public/logo.webp",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "artifacts/landing/public/opengraph.jpg",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/boolean-reopen/after-load-and-refresh.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/completed-cycle.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/final-observed-preview.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/final-saved-project.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/loaded-refreshed-paused.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/preset-complete.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/four-bar/preset-search.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/history-selection/boolean-selected.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/history-selection/landing-features.png",
+          "embeddedMetadataMarkers": []
+        },
+        {
+          "path": "docs/evidence/history-selection/undo-import-recovered.png",
+          "embeddedMetadataMarkers": []
+        }
+      ]
+    },
+    "machineSpecificPathFileCount": 29,
+    "parsedPngTextMetadata": [
+      {
+        "path": "artifacts/landing/public/apple-touch-icon.png",
+        "textChunks": [
+          {
+            "keyword": "date:create",
+            "valueSha256": "0b49ea4688b026f0e4b8510fa23d2924792d3f739924194e9ad45227300bab49",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          },
+          {
+            "keyword": "date:modify",
+            "valueSha256": "0b49ea4688b026f0e4b8510fa23d2924792d3f739924194e9ad45227300bab49",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          },
+          {
+            "keyword": "date:timestamp",
+            "valueSha256": "715071a033ffb4fc06aefd69b85cbf9e858cc8c1c5b54b894afd82585a83ae64",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          }
+        ]
+      },
+      {
+        "path": "artifacts/landing/public/favicon.png",
+        "textChunks": [
+          {
+            "keyword": "date:create",
+            "valueSha256": "63903577a0da8e3ef8a559a1247deefcb5e5904732378901d86db3e061d4c92e",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          },
+          {
+            "keyword": "date:modify",
+            "valueSha256": "63903577a0da8e3ef8a559a1247deefcb5e5904732378901d86db3e061d4c92e",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          },
+          {
+            "keyword": "date:timestamp",
+            "valueSha256": "a635e206e32b7c5c902b895cbf6099aa3daa2047a22380fc674d8e5c2eccb176",
+            "hasLocalPath": false,
+            "hasEmail": false,
+            "hasCredentialPattern": false
+          }
+        ]
+      }
+    ]
+  },
+  "notices": {
+    "command": "node licenses/collect-notices.mjs --check",
+    "exitCode": 0,
+    "stdout": "Verified 147 package versions and 145 original notice files.\nVerified 11 supplemental notice hashes; 18 package versions use upstream references, with 1 explicit source-version limitation.",
+    "stderrPresent": false,
+    "manifestSha256": "42eda3175ce76c49bb3e2315cb10d188234be2ca13d5c781ddc67519571f225c",
+    "supplementalManifestSha256": "cf32f6dfd1c45160400a33e4a8761098e06ff428ee445c3efc49245b7c87bc45"
+  },
+  "concurrency": {
+    "inputSnapshotUnchangedDuringScan": true,
+    "changedFiles": [],
+    "endingSnapshotSha256": "81c6f70329c35191da021f6e03790f7d8a959cbea9cf290637143c1438c238e2",
+    "finalDocumentationMayStillChange": true
+  },
+  "dependencySecurity": {
+    "review": "docs/DEPENDENCY-SECURITY-REVIEW.md",
+    "evidence": "docs/dependency-security-review.json",
+    "advisoryRecords": 58,
+    "decision": "pending-owner-publication-and-deployment-decision-under-package-freeze",
+    "sourceImportGraphHashesStillCurrent": {
+      "artifacts/kineticad": true,
+      "artifacts/landing": true
+    },
+    "currentInspectedAuditEntriesInActiveClosure": []
+  },
+  "localGitConfiguration": {
+    "remoteSummaries": [
+      {
+        "remoteName": "origin",
+        "host": "github.com",
+        "embeddedCredential": false
+      }
+    ],
+    "sensitiveAuthenticationKeyCount": 0,
+    "valuesOmitted": true
+  },
+  "scannerSha256": "9d2756590f91e9c8df98651012bab96b165c81446cb691afc5357ece8dad4593",
+  "followupInspection": {
+    "checkedAt": "2026-09-12T20:56:33.208950+00:00",
+    "checks": [
+      "Historical local-path/email provenance counts",
+      "Security source import-graph hash comparison",
+      "Local Git remote/auth-key summary without values",
+      "Binary STL header metadata",
+      "PNG textual metadata on the two files with metadata markers"
+    ],
+    "scope": "These read-only follow-ups do not freeze later documentation/evidence changes."
+  }
+}

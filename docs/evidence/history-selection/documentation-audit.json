@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "title": "Markdown documentation links, source anchors and historical handover audit",
+  "generatedAt": "2026-09-12T21:09:23.063Z",
+  "method": {
+    "scope": "All tracked and nonignored untracked .md/.markdown files listed by Git, including project guides and copied upstream license texts. Read-only links audit; the separately authorized HTML-code bracket rendering repair in docs/TEST-CATALOG.md was completed before this snapshot. No historical result, source citation or original May document was rewritten.",
+    "parser": "Installed markdown-it 14.1.1; Markdown links/images, resolved reference links, unused reference definitions, and HTML href/src/id/name. Fenced/inline code is not interpreted as Markdown links.",
+    "localChecks": "Targets exist and belong to the Git-visible intended file set; source #Lx/-Ly ranges exist; Markdown heading/explicit-HTML anchors resolve; test-name links are compared with exact declaration locations in the current 382-result capture.",
+    "historicalHandling": "Historical catalog declaration links are inspected for current locator drift but their recorded references/results are not rewritten. Immutable GitHub commit links are checked against available local Git objects without network requests.",
+    "limits": [
+      "External URLs were counted, not fetched; availability, redirect behavior and external fragments are not established.",
+      "Ordinary source-line links are checked for existence/range, not semantic correctness of every cited claim.",
+      "Test declaration mapping uses the retained final 382-test capture; it is not a new test run.",
+      "Markdown heading slug checks cover the punctuation/Unicode forms present in this checkout; GitHub rendering was not operated.",
+      "Local main and origin/main are local references only; no remote fetch or visibility/publication check was performed."
+    ]
+  },
+  "provenance": {
+    "head": "80690884ceb9b46b991dfc0269bd39a631fe1cf1",
+    "sourceDocSha256": {
+      "CONTRIBUTING.md": "1400c5b859d17844512c8fd997b1a216f50de7dd4669ed21264d918d05e34135",
+      "HANDOVER.md": "8cfc0a55731f0670030268ff68d4554c1da8abbbb338d890ef5e6a0b69002868",
+      "README.md": "e3cc59f05a0335bbd08a7e00d2677568834c699cf13b2e9c84c08be4e25e6ceb",
+      "SECURITY.md": "850303b266f142b9d77b247c0d88a40f607ffac930093382422cc540190b0308",
+      "THIRD-PARTY-NOTICES.md": "a772652e54a37ec621e07b003c0815aff9307c8c0d47495754f3d6980d93baab",
+      "artifacts/kineticad/docs/orrery-build-spec.md": "e9af396e19d526d9e3e4eb108974503d3fef9c9f8ca1b4ff5fabc223f9bb551b",
+      "docs/ASSEMBLY-EXPORT.md": "49dbe3081744fb91c8219050242995be93f5a36acbff7ec3b165cdf61f054e9e",
+      "docs/BOOLEAN-SIMULATION-VERIFICATION.md": "a70bcf667c8baacbe4ba010ce3d3c1ca5ed56f44c4606bb450df9b3354b31c46",
+      "docs/CHROME-ACCEPTANCE-2026-09-12.md": "9f4a438818334e621087ac4236f1ad51eacdc34edd7c43da391d93f08c284e26",
+      "docs/CONTACT-BENCH.md": "4779761d4cd598ae8ee8b722b8cea7b579148cf0cd09260a8bbc1da78dad9535",
+      "docs/CRANK-SLIDER-CHROME-2026-09-12.md": "d8965b913bfee85c8ff53431344e27d2a317e50dde4aff00cbdcf87f3f70fee4",
+      "docs/CRANK-SLIDER-VERIFICATION.md": "6da138ef7e9e801e72c3826afd1779622f0a4fa603a85bb5b2a038134695d458",
+      "docs/CREATOR-PROFILE-AND-DESKTOP-ACCESS.md": "8513384bbc55ae8aaaa1b2269581ef575b6cb950843cb861f6df66a469f9c77a",
+      "docs/CURRENT-STATUS.md": "d931f08fb288884ddee7f75f6d07ff6c17b1b1c166ad0441ba75349076960049",
+      "docs/DEPENDENCY-SECURITY-REVIEW.md": "adea0c856f2c05f7bafa0c20d8e2e325a8e49197c2fbffcee89956bca29422e4",
+      "docs/ELASTIC-BEAM.md": "c93c049804438dcf0fc8ee3fc192b6939f673fd8134bacc44b50a037a6ec46af",
+      "docs/FOUR-BAR-PATH-VERIFICATION.md": "d68887692ad61fb3bab0d137bcd225308297440f775abfa47c31a1056b07db3a",
+      "docs/FOUR-BAR-TEST-CATALOG.md": "3aebf3a06116b20ad698dfb0bf00f741b2b70bfabf3fbe2ab4436a3b77c55e69",
+      "docs/HISTORY-AND-SELECTION.md": "4347a9e1fe442a721cf0749fe017a81831ddf1b89c59fab94f99b478a6f39bb6",
+      "docs/HISTORY-SELECTION-TEST-CATALOG.md": "2c523f774452f7d612f00376de54ed7b88be349fe99ad435182f63d8e2611095",
+      "docs/IMPLEMENTATION-TODO.md": "43d9ffe4f23dabcda1d82cb5c4377860c83957e01dbcb4879a02f966d696fd01",
+      "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md": "f48a56f975b7af7d4238e179c8cbe99312f7847186cac3693fad70fca3a42b18",
+      "docs/MATERIAL-FORCE-VERIFICATION.md": "71bf4b8f2b9c619b6963e1036fadffeac0b7729b0f41e189df300d92078c2b89",
+      "docs/MATHEMATICS-AND-PHYSICS.md": "005407996feaff6a82dd8900d449755dc90c9c46839773963ba9855e59a4cec4",
+      "docs/NEXT-IMPLEMENTATION-TODO.md": "054243cd623add2736644849c223ac8f02e96ae99875f3f6cffa974ec1c667d9",
+      "docs/PHYSICS-VERIFICATION.md": "9a930a430ff6c5ea8187309224047f7383736c15daa9f8f81cd65dd5412efb70",
+      "docs/PROJECT-RECOVERY.md": "ca9bb22d72f59fbac2aff47ad82f77bd1393e9f33f85c22dde74bd7992335f70",
+      "docs/PUBLIC-RELEASE-CHECKLIST.md": "88f7152ef6acdee4d8319ed836c3efd13bf864fb21d094b564376b22f59e64a1",
+      "docs/README.md": "9df1109ea59e88d71ff7f72e7fe43cd4a4d157e990e81a74308e4eb9220b16ba",
+      "docs/REPLIT-HANDOFF.md": "364e4b7a8a3b6c17947761213f90d5ac79efc9f24a1c1453e1b1c277e64b88ca",
+      "docs/REPORT-PROVENANCE.md": "991bd53a4e8c40f7a2a523854f770d2628ec1789ed499dc1ab63efc006588ad4",
+      "docs/REVOLUTE-PICKING-VERIFICATION.md": "e54777fd269afaaf5c15732eebe79af08e3ceb4c459a55251e96728e8fd9c352",
+      "docs/SKETCH-DIMENSIONS-VERIFICATION.md": "83707b5e0c85b2194a0e725b467ca8e58764025d960d3dfaa8b28c9bab1e0199",
+      "docs/STEWART-WORKSPACE-AUDIT.md": "a902b39802bda910742e7c4d335dc2528fc0370ec0c735d80ade71048a8af153",
+      "docs/TEST-CATALOG.md": "4255d8ec973cf7649234164744eec7d2df56310aaf39865f8103935b025fc1c1",
+      "docs/history/HANDOVER-2026-05-17.md": "e0f68f5b802fdcec9d52027d379e402513957263ae48a50c3cee4bdb2d2d12fe",
+      "docs/history/README.md": "841afd1fecb30de6336e4dad55b6d815f76edf9a8c19621de2c2cbc1979e466b",
+      "docs/simulator-capability-audit.md": "6c4f3a3e93b92a8a5aca7679c8c7b942676d95e2f53c9a06e86538aa66e09f45",
+      "licenses/README.md": "4cf68bf0e3eef3481ef7cc4754d4b07dd795b767b474e02b19a06b9a1891f7e2",
+      "licenses/packages/cmdk/1.1.1/LICENSE.md": "b5acfd21b3b61508365224c40ec1b03ec71091248baaf989d4be916551e7d532",
+      "licenses/packages/date-fns-jalali/4.1.0-0/LICENSE.md": "8d3951c38967b964b1fe259bfd200c2647cc04c858b55a4414e3122a60f1ef4b",
+      "licenses/packages/date-fns/4.1.0/LICENSE.md": "8d3951c38967b964b1fe259bfd200c2647cc04c858b55a4414e3122a60f1ef4b",
+      "licenses/packages/date-fns__tz/1.4.1/LICENSE.md": "cc7267726f809c066c35c81a17d7525bccf588ecc826b15ca65a15d34106c804",
+      "licenses/packages/decimal.js-light/2.5.1/LICENCE.md": "fc0397fbd5c128bec7edef4e8d3f45e15db5fd043cdd0a2edfc4f14d47fbc3e4",
+      "licenses/packages/next-themes/0.4.6/license.md": "b5acfd21b3b61508365224c40ec1b03ec71091248baaf989d4be916551e7d532",
+      "licenses/packages/sonner/2.0.7/LICENSE.md": "da9201378c36ffd81f51ad0b305f3f0981e90bc558789210ad65d1161eec3b7d",
+      "licenses/packages/tailwind-merge/3.5.0/LICENSE.md": "d4c70c7ce38cea8778f0aed3fc0bef0a9dbd27f13bd8b6773cbd6d37941971e5",
+      "licenses/packages/vaul/1.1.2/LICENSE.md": "b09b9ccf866cc09b502d9cf4679e2461beb1469709ea0c6a30009766e10b3acf",
+      "replit.md": "51a7418c18dc54d0deb8c48765802b7a674e106a50cb97be95b29b91568f27eb"
+    },
+    "currentTestSourceFilesVerified": 54,
+    "currentTestSourceHashesMatchCapture": true,
+    "changedTestSources": [],
+    "sourceDocsUnchangedDuringAudit": true,
+    "changedDuringAudit": [],
+    "currentTestCapture": "docs/evidence/history-selection/final/tests.jsonl",
+    "currentTestCaptureSha256": "1757a138edeff1d603b7bcee6127332f91a17a1aa2c437a2a9245598fb9aca7e"
+  },
+  "counts": {
+    "markdownFiles": 49,
+    "linkOccurrences": 2365,
+    "localLinks": 2300,
+    "localUniqueTargets": 402,
+    "localMarkdownFragmentLinks": 7,
+    "localSourceLineLinks": 1248,
+    "currentTestDeclarationLinks": 382,
+    "historicalTestDeclarationLinks": 646,
+    "otherSourceLineLinks": 220,
+    "externalLinksNotFetched": 64,
+    "immutableLocalGitLinks": 43,
+    "otherSchemes": 1,
+    "explicitHtmlAnchors": 1
+  },
+  "passed": true,
+  "actionableIssues": [],
+  "warnings": [],
+  "historicalLocatorDrift": [],
+  "markdownFragmentChecks": [
+    {
+      "source": "README.md",
+      "line": 514,
+      "target": "docs/README.md#actual-browser-checks-recorded-by-stage",
+      "resolved": "docs/README.md",
+      "fragment": "actual-browser-checks-recorded-by-stage",
+      "valid": true
+    },
+    {
+      "source": "docs/CURRENT-STATUS.md",
+      "line": 115,
+      "target": "BOOLEAN-SIMULATION-VERIFICATION.md#native-file-reopening-follow-up--12-september-2026",
+      "resolved": "docs/BOOLEAN-SIMULATION-VERIFICATION.md",
+      "fragment": "native-file-reopening-follow-up--12-september-2026",
+      "valid": true
+    },
+    {
+      "source": "docs/MATHEMATICS-AND-PHYSICS.md",
+      "line": 745,
+      "target": "FOUR-BAR-PATH-VERIFICATION.md#reproduction-and-provenance",
+      "resolved": "docs/FOUR-BAR-PATH-VERIFICATION.md",
+      "fragment": "reproduction-and-provenance",
+      "valid": true
+    },
+    {
+      "source": "docs/PHYSICS-VERIFICATION.md",
+      "line": 37,
+      "target": "README.md#actual-browser-checks-recorded-by-stage",
+      "resolved": "docs/README.md",
+      "fragment": "actual-browser-checks-recorded-by-stage",
+      "valid": true
+    },
+    {
+      "source": "docs/README.md",
+      "line": 73,
+      "target": "SKETCH-DIMENSIONS-VERIFICATION.md#actual-chrome-interaction",
+      "resolved": "docs/SKETCH-DIMENSIONS-VERIFICATION.md",
+      "fragment": "actual-chrome-interaction",
+      "valid": true
+    },
+    {
+      "source": "docs/README.md",
+      "line": 74,
+      "target": "BOOLEAN-SIMULATION-VERIFICATION.md#chrome-checks-on-the-actual-application",
+      "resolved": "docs/BOOLEAN-SIMULATION-VERIFICATION.md",
+      "fragment": "chrome-checks-on-the-actual-application",
+      "valid": true
+    },
+    {
+      "source": "docs/REPLIT-HANDOFF.md",
+      "line": 33,
+      "target": "README.md#actual-browser-checks-recorded-by-stage",
+      "resolved": "docs/README.md",
+      "fragment": "actual-browser-checks-recorded-by-stage",
+      "valid": true
+    }
+  ],
+  "immutableGitCitationChecks": [
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 163,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L90-L138",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 170,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L37-L56",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 164,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 164,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 164,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 164,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 167,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L123-L138",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 164,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 170,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L37-L56",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 170,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L37-L56",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 165,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L106-L136",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 168,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L60-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 170,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L37-L56",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 172,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L227-L269",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 166,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L115-L135",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 166,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L115-L135",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 166,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L115-L135",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 166,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L115-L135",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "README.md",
+      "lineCount": 184,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 169,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/HANDOVER.md#L88-L97",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "HANDOVER.md",
+      "lineCount": 312,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 171,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L60-L80",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 171,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L60-L80",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 171,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L60-L80",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    },
+    {
+      "source": "docs/KNOWN-ISSUES-AND-FOLLOW-UP.md",
+      "line": 173,
+      "target": "https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/replit.md#L273-L320",
+      "commit": "d01f8149bbf52fc1091aba82496d968466800643",
+      "path": "replit.md",
+      "lineCount": 364,
+      "valid": true
+    }
+  ],
+  "historicalHandover": {
+    "archivePath": "docs/history/HANDOVER-2026-05-17.md",
+    "sourceCommit": "d01f8149bbf52fc1091aba82496d968466800643",
+    "sourcePath": "HANDOVER.md",
+    "sourceGitBlob": "c3334e0a4ca7d3c0336f9960308d40d809e16545",
+    "archiveGitBlob": "c3334e0a4ca7d3c0336f9960308d40d809e16545",
+    "sourceSha256": "e0f68f5b802fdcec9d52027d379e402513957263ae48a50c3cee4bdb2d2d12fe",
+    "archiveSha256": "e0f68f5b802fdcec9d52027d379e402513957263ae48a50c3cee4bdb2d2d12fe",
+    "sourceBytes": 22426,
+    "archiveBytes": 22426,
+    "exactByteMatch": true,
+    "localMain": "d01f8149bbf52fc1091aba82496d968466800643",
+    "localOriginMain": "d01f8149bbf52fc1091aba82496d968466800643",
+    "noFetchPerformed": true
+  },
+  "resolvedFindings": [
+    {
+      "source": "docs/TEST-CATALOG.md",
+      "line": 185,
+      "issue": "An intended assertion sample inside an HTML code element parsed [method](missing) as a broken Markdown link.",
+      "resolution": "Escaped only the brackets as HTML numeric entities. Intended displayed assertion, historical source citation, result and raw evidence were preserved."
+    },
+    {
+      "source": "licenses/README.md",
+      "issue": "Two Lucide icon source files named copyright.js and copyright.js.map were accidental notice matches and were excluded by the repository dist ignore pattern.",
+      "resolution": "The publication agent corrected the notice collector/inventory and removed those two entries; the actual Lucide ISC LICENSE remains. The final target audit sees no ignored or missing notice target."
+    }
+  ]
+}

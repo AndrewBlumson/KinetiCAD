@@ -8,14 +8,14 @@ assembly has been validated.
 
 ## Current source and verification status — 12 September 2026
 
-The current source includes local draw-a-path four-bar synthesis, complete projects, six demos, bounded
+The current source includes Undo/Redo, visible-solid object selection, local draw-a-path four-bar synthesis, complete projects, six demos, bounded
 six-axis Stewart control, the separate engineering experiments, adjustable
 crank-slider, persistent sketch dimensions and direct connected-Boolean
 simulation. KinetiCAD remains the original Replit/Replit Agent build by Andrew
 and Kevin Blumson; later development and the recorded September numerical and
 Chrome computer-use checks were performed by Codex under Andrew's direction.
 
-Read [Current status](CURRENT-STATUS.md), the [complete current test catalog](FOUR-BAR-TEST-CATALOG.md)
+Read [Current status](CURRENT-STATUS.md), the [complete current test catalog](HISTORY-SELECTION-TEST-CATALOG.md)
 and [mathematics/physics reference](MATHEMATICS-AND-PHYSICS.md) first. The latter
 connects equations, units, expected values, observed errors and tolerances to
 source tests and raw reports. It separates actual-kernel measurements, pure
@@ -23,8 +23,9 @@ analytical checks, mocked orchestration tests and rendered browser observations.
 
 | Gate | Recorded status and scope |
 | --- | --- |
-| Current automated aggregate | See the source-fingerprinted [latest aggregate](four-bar-validation.json) and [individual test catalog](FOUR-BAR-TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
-| Current typecheck/build | Passed; [current source and build record](four-bar-validation.json). Older milestones retain their original source identity. |
+| Current automated aggregate | See the source-fingerprinted [latest aggregate](evidence/history-selection/final/summary.json) and [individual test catalog](HISTORY-SELECTION-TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
+| Current typecheck/build | See the [current source and build record](HISTORY-AND-SELECTION.md). Older milestones retain their original source identity. |
+| Undo/Redo and object selection | Document/source restoration and actual-mesh raycasting, with guarded drag/input transactions; [scope and Chrome checks](HISTORY-AND-SELECTION.md). These are editing correctness checks, not additional load or contact models. |
 | Local four-bar path | Native four-part mechanism, local bounded search, sampled fit gaps and actual solver trace; [maths, geometry and Chrome evidence](FOUR-BAR-PATH-VERIFICATION.md). |
 | Direct Boolean physics | Actual final OCCT shape/mass and Rapier response, transformed/imported inputs, explicit ground and revision-checked joints; [verification](BOOLEAN-SIMULATION-VERIFICATION.md), [measurements](boolean-physics-results.json). |
 | Persistent sketch dimensions | Independent primitive equations, actual OCCT rebuilds and transaction/recovery checks; [stage record](SKETCH-DIMENSIONS-VERIFICATION.md). |

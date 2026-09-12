@@ -326,11 +326,11 @@ export function validateRevolutePicks(args: {
       ? axisLocalARaw
       : [-axisLocalARaw[0], -axisLocalARaw[1], -axisLocalARaw[2]];
   const pivotLocalA = worldToLocalPoint(
-    edgeA.circleCenter ?? polylineCenter(edgeA.polyline),
+    a.centroid,
     partA.transform,
   );
   const pivotLocalB = worldToLocalPoint(
-    edgeB.circleCenter ?? polylineCenter(edgeB.polyline),
+    b.centroid,
     partB.transform,
   );
   if (MATE_PIVOT_DEBUG) {

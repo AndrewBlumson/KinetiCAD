@@ -20,8 +20,8 @@ const SECTIONS: LegalSection[] = [
     num: 3,
     heading: "Your design work stays on your device",
     paras: [
-      "KinetiCAD runs in your web browser. The models and assemblies you create are held in your browser's local storage on your own computer. When you use the Save feature, your work is written to a file that is downloaded to your own device. None of your design work is transmitted to us or stored on our servers. We never see your designs.",
-      "Local storage stays on your device. You can clear it at any time through your browser settings.",
+      "KinetiCAD processes your models and assemblies in your browser. Project recovery uses IndexedDB to retain current and previous complete recovery copies on your device, including imported STEP geometry. Some settings and older project data also use browser local storage. The application does not upload your design work to our servers.",
+      "Save project downloads an editable file to your device, including the project's imported STEP assets. STEP and STL exports also download locally. Files you choose to share may therefore contain your design geometry and project details. Browser recovery is specific to the site and browser profile; clearing site data removes those local copies but does not remove files you have downloaded.",
     ],
   },
   {
@@ -29,6 +29,7 @@ const SECTIONS: LegalSection[] = [
     heading: "Server logs",
     paras: [
       "Like almost all websites, our hosting provider keeps standard server logs when a page is requested. These logs may include your IP address, the date and time of the request, the page requested, and basic browser information. These logs are used only to operate the Service securely and to diagnose technical problems. They are not used to identify or track individual users.",
+      "The pages request fonts from Google Fonts, and the CAD application downloads its OpenCascade WebAssembly component from jsDelivr. These requests contact those providers and expose normal connection information, such as your IP address and browser/request information, under their own policies. They request application assets, not your model or project contents. KinetiCAD does not use an AI service to process your designs or search for mechanisms.",
     ],
   },
   {
@@ -68,7 +69,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="KinetiCAD — Privacy Policy"
-      lastUpdated="18/05/2026"
+      lastUpdated="12/09/2026"
       sections={SECTIONS}
     />
   );

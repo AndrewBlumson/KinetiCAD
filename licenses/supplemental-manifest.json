@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "retrievedDate": "2026-09-12",
+  "scope": "Original upstream notices supplementing absent npm-package texts and externally loaded assets. No dependency code or font binaries were copied. The react-remove-scroll-bar reference has a separately recorded source-version limitation.",
+  "notices": [
+    {
+      "kind": "missing-npm-notice",
+      "packages": [
+        "@radix-ui/number@1.1.1",
+        "@radix-ui/react-compose-refs@1.1.2",
+        "@radix-ui/react-context@1.1.2",
+        "@radix-ui/react-direction@1.1.1",
+        "@radix-ui/react-id@1.1.1",
+        "@radix-ui/react-use-callback-ref@1.1.1",
+        "@radix-ui/react-use-escape-keydown@1.1.1",
+        "@radix-ui/react-use-layout-effect@1.1.1",
+        "@radix-ui/react-use-previous@1.1.1",
+        "@radix-ui/react-use-rect@1.1.1",
+        "@radix-ui/react-use-size@1.1.1",
+        "@radix-ui/rect@1.1.1"
+      ],
+      "revision": "fcef0668a5c827e5a4baac405474d75680f9a4eb",
+      "metadataUrls": [
+        "https://registry.npmjs.org/@radix-ui/number/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-compose-refs/1.1.2",
+        "https://registry.npmjs.org/@radix-ui/react-context/1.1.2",
+        "https://registry.npmjs.org/@radix-ui/react-direction/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-id/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-callback-ref/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-escape-keydown/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-layout-effect/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-previous/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-rect/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/react-use-size/1.1.1",
+        "https://registry.npmjs.org/@radix-ui/rect/1.1.1"
+      ],
+      "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+      "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+      "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+    },
+    {
+      "kind": "missing-npm-notice",
+      "packages": [
+        "embla-carousel-react@8.6.0",
+        "embla-carousel-reactive-utils@8.6.0",
+        "embla-carousel@8.6.0"
+      ],
+      "revision": "0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54",
+      "metadataUrls": [
+        "https://registry.npmjs.org/embla-carousel-react/8.6.0",
+        "https://registry.npmjs.org/embla-carousel-reactive-utils/8.6.0",
+        "https://registry.npmjs.org/embla-carousel/8.6.0"
+      ],
+      "sourceUrl": "https://raw.githubusercontent.com/davidjerleke/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+      "path": "licenses/upstream/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+      "sha256": "992490064b90ec94c302fe5f29dcc14cb44145857064e46f9ffe6c8f511c1093"
+    },
+    {
+      "kind": "missing-npm-notice",
+      "packages": [
+        "input-otp@1.4.2"
+      ],
+      "revision": "81ccdb48c010d800b24942aa231909f0c971b1ca",
+      "metadataUrls": [
+        "https://registry.npmjs.org/input-otp/1.4.2"
+      ],
+      "sourceUrl": "https://raw.githubusercontent.com/guilhermerodz/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+      "path": "licenses/upstream/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+      "sha256": "079031192fea535a245aa64a637d8433c406b82a14f91c3606b1d63e41c00152"
+    },
+    {
+      "kind": "upstream-project-reference",
+      "packages": [
+        "react-remove-scroll-bar@2.3.8"
+      ],
+      "revision": "8ca9ba5ea52de03308fe8ced94f7b159a44d28ff",
+      "metadataUrls": [
+        "https://registry.npmjs.org/react-remove-scroll-bar/2.3.8"
+      ],
+      "limitation": "The installed 2.3.8 package declares MIT but omits its notice. Its npm gitHead b3b1287aad81def2e2ae707274b74531b61ddbaf was unavailable from the declared upstream on 2026-09-12; this is a pinned current project licence reference, not proof of the exact 2.3.8 source tree.",
+      "sourceUrl": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+      "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+      "sha256": "a79aae0c0f21990d9d963bb3c5a79cdcea9a46f8523ba55c58d7fe776b6ebc84"
+    },
+    {
+      "kind": "missing-npm-notice",
+      "packages": [
+        "wouter@3.9.0"
+      ],
+      "revision": "e8726aa807a600688709059a524d3461291e30da",
+      "metadataUrls": [
+        "https://registry.npmjs.org/wouter/3.9.0"
+      ],
+      "sourceUrl": "https://raw.githubusercontent.com/molefrog/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+      "path": "licenses/upstream/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+      "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e"
+    },
+    {
+      "kind": "kernel",
+      "component": "Open CASCADE Technology",
+      "version": "7.6.2",
+      "revision": "V7_6_2",
+      "sourceUrl": "https://raw.githubusercontent.com/Open-Cascade-SAS/OCCT/V7_6_2/LICENSE_LGPL_21.txt",
+      "path": "licenses/upstream/OCCT/7.6.2/LICENSE_LGPL_21.txt",
+      "sha256": "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c"
+    },
+    {
+      "kind": "kernel",
+      "component": "Open CASCADE Technology",
+      "version": "7.6.2",
+      "revision": "V7_6_2",
+      "sourceUrl": "https://raw.githubusercontent.com/Open-Cascade-SAS/OCCT/V7_6_2/OCCT_LGPL_EXCEPTION.txt",
+      "path": "licenses/upstream/OCCT/7.6.2/OCCT_LGPL_EXCEPTION.txt",
+      "sha256": "04580a884ea6cea294402649ff7b5cbb167d47462d1340a4ed33e550db10a81b"
+    },
+    {
+      "kind": "icon-artwork",
+      "component": "Font Awesome Free",
+      "version": "6.5.2",
+      "revision": "6.5.2",
+      "sourceUrl": "https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.5.2/LICENSE.txt",
+      "path": "licenses/upstream/Font-Awesome/6.5.2/LICENSE.txt",
+      "sha256": "9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc"
+    },
+    {
+      "kind": "externally-served-font-reference",
+      "component": "inter",
+      "revision": "809e4d8b8d7e9364a914909bb777679606c178b8",
+      "scope": "Upstream source notice snapshot. Google Fonts serves browser-specific assets; this is not a binary font version pin.",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/inter/OFL.txt",
+      "path": "licenses/upstream/google-fonts/inter/OFL.txt",
+      "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57"
+    },
+    {
+      "kind": "externally-served-font-reference",
+      "component": "spacegrotesk",
+      "revision": "809e4d8b8d7e9364a914909bb777679606c178b8",
+      "scope": "Upstream source notice snapshot. Google Fonts serves browser-specific assets; this is not a binary font version pin.",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/spacegrotesk/OFL.txt",
+      "path": "licenses/upstream/google-fonts/spacegrotesk/OFL.txt",
+      "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72"
+    },
+    {
+      "kind": "externally-served-font-reference",
+      "component": "jetbrainsmono",
+      "revision": "809e4d8b8d7e9364a914909bb777679606c178b8",
+      "scope": "Upstream source notice snapshot. Google Fonts serves browser-specific assets; this is not a binary font version pin.",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/jetbrainsmono/OFL.txt",
+      "path": "licenses/upstream/google-fonts/jetbrainsmono/OFL.txt",
+      "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d"
+    }
+  ]
+}

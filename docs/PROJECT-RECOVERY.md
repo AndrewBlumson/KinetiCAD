@@ -14,6 +14,16 @@ dead imported shape ID are rejected with a request for the original STEP file;
 they never contained the geometry needed to reconstruct that shape. A legacy
 import still alive in the current CAD worker can be upgraded by Save project.
 
+## Undo history and recovery
+
+**Undo/Redo** reverses committed changes within the current session. It does not
+replace project downloads or crash recovery, and its bounded history is not
+stored in the project file. Undo writes the restored current model through the
+same autosave path. Imported assets survive deletion/Undo and are embedded again
+when that restored model is downloaded. Load, recovery, refresh and demo
+transitions start a fresh history. See [history verification](HISTORY-AND-SELECTION.md)
+for actual STEP import → Undo/Redo → Save → Load → refresh equality checks.
+
 ## Dimensions and Boolean result data
 
 The same document format also retains edited native sketch dimensions, finished
@@ -29,7 +39,7 @@ Save and refresh/new-tab recovery passed; the actual downloaded Fixed-joint
 file subsequently reopened through Chrome's native Load chooser and survived
 another refresh. [That capture](evidence/boolean-reopen/browser.json) names its scope.
 See [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md) and the
-[current test catalog](FOUR-BAR-TEST-CATALOG.md). The four-bar stage also retains
+[current test catalog](HISTORY-SELECTION-TEST-CATALOG.md). The four-bar stage also retains
 its drawing, search seed and complete native geometry through actual Chrome
 Save/Load/refresh; see [its evidence](evidence/four-bar/browser.json).
 

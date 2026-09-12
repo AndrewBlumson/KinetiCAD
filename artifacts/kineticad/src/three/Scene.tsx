@@ -91,6 +91,7 @@ import { startSimulationRunner } from "@/physics/simulationRunner";
 import { createFourBarTraceLabel } from './FourBarTraceLabel';
 import { createForceSampleLabels } from './ForceSampleLabels';
 import type { FaceMetadata } from "@/cad/types";
+import { canSelectObjects, createObjectPicker, objectOutlineInWorld, selectedObjectBody, visibleObjectBodies } from './ObjectPicker';
 
 type Status =
   | { kind: "checking-webgpu" }
@@ -155,7 +156,9 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
     let faceHighlightLayer: FaceHighlightLayer | null = null;
     let mateVisualizer: MateVisualizer | null = null;
     let topologyPicker: TopologyPicker | null = null;
+    let objectPicker: ReturnType<typeof createObjectPicker> | null = null;
     let transformGizmo: TransformGizmo | null = null;
+    let transformHistoryToken: number | null = null;
     let unsubscribeSelection: (() => void) | null = null;
     let unsubscribeGizmo: (() => void) | null = null;
     let onGizmoKeydown: ((e: KeyboardEvent) => void) | null = null;
@@ -398,6 +401,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
               simulationRunnerHandle = startSimulationRunner();
             }
           }
+          useKinetiCADStore.getState().setHistoryGeometryPending(!!(partMeshLayer?.hasPendingGeometry() || booleanResultLayer?.hasPendingGeometry()));
           // Demo assemblies vary greatly in size. Frame only after every solid
           // has regenerated; default modelling camera behaviour is unchanged.
           if (needsInitialFrame && reportedAssemblyReady && partMeshLayer && controls) {
@@ -596,7 +600,14 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           },
           onDraggingChanged: (dragging) => {
             gizmoDragging = dragging;
+            const store = useKinetiCADStore.getState();
+            if (dragging && transformHistoryToken === null) transformHistoryToken = store.beginHistoryTransaction('Move or rotate part');
+            if (!dragging && transformHistoryToken !== null) {
+              store.endHistoryTransaction(transformHistoryToken);
+              transformHistoryToken = null;
+            }
             if (controls) controls.enabled = !dragging;
+            if (!dragging) reconcileGizmo();
           },
         });
 
@@ -609,13 +620,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           if (!transformGizmo || !partMeshLayer) return;
           const state = useKinetiCADStore.getState();
           const sel = state.selection;
-          const blocked =
-            state.sketchSession.active ||
-            state.featureEditor.open ||
-            state.booleanEditor.open ||
-            // Don't yank the gizmo away mid-drag — the user is actively
-            // manipulating the previously-attached mesh.
-            gizmoDragging;
+          const blocked = !canSelectObjects(state);
           if (sel?.kind !== "part" || blocked) {
             if (transformGizmo.isAttached()) {
               transformGizmo.detach();
@@ -631,7 +636,8 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             }
             return;
           }
-          const mesh = partMeshLayer.getPartMesh(sel.partId) ?? booleanResultLayer?.getPartMesh(sel.partId);
+          // Derived Boolean results have no independent editable transform.
+          const mesh = partMeshLayer.group.visible ? partMeshLayer.getPartMesh(sel.partId) : null;
           if (!mesh) {
             // Part exists but its mesh isn't ready (no base feature yet,
             // or regen still pending). Detach until it shows up.
@@ -641,6 +647,9 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             }
             return;
           }
+          // Store updates from a drag must preserve its attached object. The
+          // previous blocked branch detached it after the first emitted frame.
+          if (gizmoDragging && lastReconciledGizmoMesh === mesh) return;
           if (lastReconciledGizmoMesh !== mesh) {
             transformGizmo.attach(mesh);
             lastReconciledGizmoMesh = mesh;
@@ -649,6 +658,12 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             transformGizmo.setMode(gizmoMode);
           }
         };
+
+        // Register after TransformControls so a handle's pointer claim is known
+        // before normal object selection records the same pointer-down event.
+        objectPicker = createObjectPicker({ domElement: renderer.domElement, camera,
+          partMeshLayer, booleanResultLayer, store: useKinetiCADStore,
+          isGizmoActive: () => !!transformGizmo?.hasActiveHandle() });
 
         // R/T keyboard shortcuts. Only act when the gizmo is currently
         // attached and the user isn't typing in an input.
@@ -681,8 +696,12 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             state.selection !== prev.selection ||
             state.assembly !== prev.assembly ||
             state.sketchSession.active !== prev.sketchSession.active ||
+            state.sketchDimensionsEditing !== prev.sketchDimensionsEditing ||
             state.featureEditor.open !== prev.featureEditor.open ||
-            state.booleanEditor.open !== prev.booleanEditor.open
+            state.booleanEditor.open !== prev.booleanEditor.open ||
+            state.mateEditor.open !== prev.mateEditor.open ||
+            state.pickingMode !== prev.pickingMode || state.mode !== prev.mode ||
+            state.simulation.running !== prev.simulation.running || state.historyBusy !== prev.historyBusy
           ) {
             reconcileGizmo();
           }
@@ -699,6 +718,18 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           const state = useKinetiCADStore.getState();
           const sel = state.selection;
           if (!partMeshLayer || !edgeHighlightLayer || !faceHighlightLayer) {
+            return;
+          }
+          if (state.mode !== 'modeller' || state.simulation.running) {
+            edgeHighlightLayer.setSelected([]);
+            faceHighlightLayer.setSelected(null, []);
+            return;
+          }
+          if (sel?.kind === 'part' || sel?.kind === 'boolean') {
+            const body = selectedObjectBody(sel, visibleObjectBodies(state, { partMeshLayer,
+              booleanResultLayer: booleanResultLayer ?? undefined }));
+            edgeHighlightLayer.setSelected(body ? objectOutlineInWorld(body) : []);
+            faceHighlightLayer.setSelected(null, []);
             return;
           }
           // Edges selection
@@ -789,7 +820,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
 
         // Selection-change subscription.
         unsubscribeSelection = useKinetiCADStore.subscribe((state, prev) => {
-          if (state.selection !== prev.selection) {
+          if (state.selection !== prev.selection || state.mode !== prev.mode || state.simulation.running !== prev.simulation.running) {
             lastResolvedSelectionRef = state.selection;
             resolveSelectionHighlights();
           }
@@ -1370,6 +1401,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           prevBooleanEditor = state.booleanEditor;
           prevPartVis = partVis;
           prevBooleanVis = booleanVis;
+          state.setHistoryGeometryPending(!!(partMeshLayer?.hasPendingGeometry() || booleanResultLayer?.hasPendingGeometry()));
         });
 
         // Catch up if either editor was somehow already open at mount.
@@ -1407,11 +1439,16 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
       if (previewDebounce) clearTimeout(previewDebounce);
       if (booleanPreviewDebounce) clearTimeout(booleanPreviewDebounce);
       perFrameTopologyCheck = null;
+      if (transformHistoryToken !== null) {
+        useKinetiCADStore.getState().endHistoryTransaction(transformHistoryToken);
+        transformHistoryToken = null;
+      }
       unsubscribeStore?.();
       unsubscribeAssembly?.();
       unsubscribeFeatureEditor?.();
       unsubscribeSelection?.();
       unsubscribeGizmo?.();
+      useKinetiCADStore.getState().setHistoryGeometryPending(false);
       if (onGizmoKeydown) {
         window.removeEventListener("keydown", onGizmoKeydown);
         onGizmoKeydown = null;
@@ -1432,6 +1469,8 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
         topologyPicker.dispose();
         topologyPicker = null;
       }
+      objectPicker?.dispose();
+      objectPicker = null;
       if (edgeHighlightLayer) {
         edgeHighlightLayer.dispose();
         edgeHighlightLayer = null;

@@ -1,0 +1,76 @@
+✖ revolute picks retain local true centres for the translated native circle and partial-arc browser fixture (12.05675ms)
+✖ revolute picks preserve shared world centres under mixed XYZ rotation without inverse-transforming local metadata twice (3.993209ms)
+✖ revolute picks support identity-frame Boolean topology paired with translated native circular topology (1.341666ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 643.249209
+
+✖ failing tests:
+
+test at artifacts/kineticad/tests/overlay-frames.test.mjs:154:1
+✖ revolute picks retain local true centres for the translated native circle and partial-arc browser fixture (12.05675ms)
+  AssertionError [ERR_ASSERTION]: 45,30,10 differs from 0,0,10
+      at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:68)
+      at Array.forEach (<anonymous>)
+      at near (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:43)
+      at TestContext.<anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:163:3)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1095:25)
+      at Test.start (node:internal/test_runner/test:992:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17)
+      at run (node:internal/test_runner/harness:369:12)
+      at test (node:internal/test_runner/harness:378:12) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at artifacts/kineticad/tests/overlay-frames.test.mjs:170:1
+✖ revolute picks preserve shared world centres under mixed XYZ rotation without inverse-transforming local metadata twice (3.993209ms)
+  AssertionError [ERR_ASSERTION]: -35.51423282797984,42.852636124357296,-12.646554632265786 differs from 4,-2,10
+      at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:68)
+      at Array.forEach (<anonymous>)
+      at near (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:43)
+      at TestContext.<anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:181:34)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1095:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:777:18)
+      at Test.postRun (node:internal/test_runner/test:1224:19)
+      at Test.run (node:internal/test_runner/test:1152:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at artifacts/kineticad/tests/overlay-frames.test.mjs:187:1
+✖ revolute picks support identity-frame Boolean topology paired with translated native circular topology (1.341666ms)
+  AssertionError [ERR_ASSERTION]: -49,8,-3 differs from -9,-7,7
+      at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:68)
+      at Array.forEach (<anonymous>)
+      at near (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:8:43)
+      at TestContext.<anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/overlay-frames.test.mjs:192:75)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1095:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:777:18)
+      at Test.postRun (node:internal/test_runner/test:1224:19)
+      at Test.run (node:internal/test_runner/test:1152:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:777:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

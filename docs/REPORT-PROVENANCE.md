@@ -5,10 +5,24 @@ numbers. A later UI, export or logging change does not justify replacing those
 hashes with the current checkout. This note records the bounded source review;
 it is not a new OCCT or physics measurement.
 
+## Current capture and reproducible rerun
+
+The [current catalog](HISTORY-SELECTION-TEST-CATALOG.md) points to every test result and its source declaration. The [Undo/Redo and selection guide](HISTORY-AND-SELECTION.md) separately records the intermediate Undo checkpoint, final build and actual Chrome interactions. Counts belong to their captured source; do not add intermediate and final counts together.
+
+From the repository root, with the pinned dependencies already installed:
+
+```sh
+node scripts/src/capture-test-suite.mjs --output-dir docs/evidence/my-new-run
+```
+
+The output must be new or empty. The runner resolves paths relative to itself, runs all current test files serially and records Node/pnpm versions, source hashes before/after, raw events and per-test results. Source drift, test failure, interrupted execution or failed evidence restoration makes the command fail. It preserves the two historical reports overwritten by the existing export/Boolean tests, retaining fresh outputs under `generated-reports/` and restoring originals byte-for-byte.
+
+Run only one suite at a time and do not edit source during capture. SIGINT/SIGTERM cleanup is handled; SIGKILL or power loss requires manual recovery from `original-reports/` and `run-start.json` before removing a stale `.kineticad-test-capture.lock`. Capturing tests does not run a production build or operate Chrome. Historical `capture-suite.py` files describe old runs and may contain absolute checkout or temporary reporter paths; use the portable runner for new evidence.
+
 ## Four-bar stage acceptance
 
-The latest aggregate is [four-bar-validation.json](four-bar-validation.json),
-with the [complete current catalog](FOUR-BAR-TEST-CATALOG.md), raw event stream,
+The four-bar stage aggregate is [four-bar-validation.json](four-bar-validation.json),
+with its [complete stage catalog](FOUR-BAR-TEST-CATALOG.md), raw event stream,
 source/fixture fingerprints and a separate build record. The stage adds the
 local linkage search and records its numerical, CAD and Chrome checks in
 [FOUR-BAR-PATH-VERIFICATION.md](FOUR-BAR-PATH-VERIFICATION.md). Historical

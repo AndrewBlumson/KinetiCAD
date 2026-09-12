@@ -38,6 +38,8 @@ export type TransformGizmo = {
   detach: () => void;
   isAttached: () => boolean;
   attachedTo: () => THREE.Object3D | null;
+  /** A handle owns this pointer even if no model displacement has occurred. */
+  hasActiveHandle: () => boolean;
   setMode: (mode: GizmoMode) => void;
   getMode: () => GizmoMode;
   dispose: () => void;
@@ -99,7 +101,7 @@ export function createTransformGizmo(
   };
 
   const onDragging = (e: { value: boolean }): void => {
-    opts.onDraggingChanged(Boolean(e.value));
+    if (e.value) opts.onDraggingChanged(true);
     // On drag end, flush any deferred emit so the final value can't get
     // dropped between rAF and the dragging-changed event.
     if (!e.value) {
@@ -111,6 +113,8 @@ export function createTransformGizmo(
         pendingEmit = false;
         emit();
       }
+      // Close the history transaction only after the final position is saved.
+      opts.onDraggingChanged(false);
     }
   };
 
@@ -133,6 +137,15 @@ export function createTransformGizmo(
     }
   };
 
+  const cancelInteraction = (): void => {
+    if (raf !== 0) { cancelAnimationFrame(raf); raf = 0; }
+    pendingEmit = false;
+    // Three's pointer-up handler returns early once the controls are disabled.
+    // End the gesture explicitly when a document/editor change detaches it, so
+    // orbit controls and the model-history transaction cannot remain locked.
+    if (tc.dragging) tc.dragging = false;
+  };
+
   const attach = (obj: THREE.Object3D): void => {
     if (isDisposed) return;
     if (attached === obj) {
@@ -152,14 +165,17 @@ export function createTransformGizmo(
   const detach = (): void => {
     if (!attached) {
       refreshVisual();
+      cancelInteraction();
       return;
     }
     attached = null;
     tc.detach();
     refreshVisual();
+    cancelInteraction();
   };
 
   const setMode = (m: GizmoMode): void => {
+    if (m === 'hidden') cancelInteraction();
     mode = m;
     if (m !== "hidden" && attached) tc.setMode(m);
     refreshVisual();
@@ -167,6 +183,7 @@ export function createTransformGizmo(
 
   const dispose = (): void => {
     isDisposed = true;
+    cancelInteraction();
     tc.removeEventListener("objectChange", onObjectChange);
     tc.removeEventListener(
       "dragging-changed",
@@ -189,6 +206,7 @@ export function createTransformGizmo(
     detach,
     isAttached: () => attached !== null,
     attachedTo: () => attached,
+    hasActiveHandle: () => tc.enabled && attached !== null && (tc.dragging || tc.axis !== null),
     setMode,
     getMode: () => mode,
     dispose,

@@ -1,0 +1,562 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-12T21:09:23.243049+00:00",
+  "completedAt": "2026-09-12T21:09:27.655939+00:00",
+  "head": "80690884ceb9b46b991dfc0269bd39a631fe1cf1",
+  "status": "bounded-scan-completed-not-publication-approval",
+  "securityClean": false,
+  "publicationApproved": false,
+  "scope": {
+    "included": "Current git-tracked plus non-ignored untracked source/docs/evidence; locally reachable history via git rev-list --objects --all. Output report excludes itself.",
+    "excludedDirectoryNames": [
+      ".cache",
+      ".git",
+      ".local",
+      "build",
+      "coverage",
+      "dist",
+      "node_modules",
+      "out-tsc",
+      "tmp"
+    ],
+    "textSizeLimitBytes": 10485760,
+    "limitations": [
+      "Pattern matching is not proof of absence of all secrets or private data.",
+      "External GitHub refs/issues/actions/releases, unreachable Git objects, Replit secrets/hosting, CDN binaries and unrelated user directories were not inspected.",
+      "Browser images/media are inventoried and hashed only; root owns visual review.",
+      "New or changed files after this scan require a subsequent review.",
+      "Dependency advisories remain separately disclosed; this scan does not resolve them."
+    ]
+  },
+  "workingTree": {
+    "trackedFileNames": 838,
+    "untrackedFileNames": 0,
+    "selectedFileNames": 837,
+    "regularFilesHashed": 837,
+    "textFilesScanned": 815,
+    "bytesHashed": 16846895,
+    "snapshotSha256": "f93c066f9c5ca7a3f84162322cce5be47db1ee4e0238cf2b3283f575294e4e1d",
+    "secretCandidateCount": 0,
+    "secretCandidates": [],
+    "credentialFileNames": [],
+    "ignoredSensitiveFileNames": [],
+    "skipped": [],
+    "symlinks": [],
+    "archives": [],
+    "binaryOrOversizeFiles": [
+      {
+        "path": "artifacts/kineticad/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/public/opengraph.jpg",
+        "sha256": "00c17e15b69e2156198f6237c87d5e8841740a302ec3edf8db65e5f59cb1f654",
+        "bytes": 8883,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.stl",
+        "sha256": "b9545ad6e2d9b00840ee87c667205c4d3ff005f3e7cb0873d64387bfa39612d7",
+        "bytes": 684,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.stl",
+        "sha256": "47714cfca00d8bdfd25c04847dca212414f936a4dc069466a7a4eb73fa9116e9",
+        "bytes": 12084,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/apple-touch-icon.png",
+        "sha256": "eb1a6633aeea354a0f64b9e6f454804a3dd0b2e8560a8e0f50f1df355f3409b0",
+        "bytes": 25850,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.png",
+        "sha256": "33d1648c06176b670822951365746e7c48c747e5143cc52df66ce18ef6d130b8",
+        "bytes": 1528,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/logo.webp",
+        "sha256": "5357c3a68665f9cbc4f724a27aee91936a46ff5482ed0c264c98fc2618ff6c63",
+        "bytes": 37220,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/opengraph.jpg",
+        "sha256": "88680d5a62f9985edfe6d74608498cbe4be6d930d9bc9d77ad271057380e0a91",
+        "bytes": 46009,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/orrery.mp4",
+        "sha256": "68500f7352e753d89a8474019311e626634fb8bb38cc2c97beb8e5c3b71d3322",
+        "bytes": 1649886,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/boolean-reopen/after-load-and-refresh.png",
+        "sha256": "741b00761783ad7994edd74e38f23bba3f0b8a4df1cf8c5ae3f358be5c0a6a0e",
+        "bytes": 107777,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/completed-cycle.png",
+        "sha256": "d5c80751f87f2a568534b51b3d28d6eb33d10bd1205cd4d32b6b9d9da65f7086",
+        "bytes": 137598,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-observed-preview.png",
+        "sha256": "9d8280dab7690997945ce6a8d3572364dc3b45a9799a387bca166d7956d95c24",
+        "bytes": 86337,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-saved-project.png",
+        "sha256": "f17bc0ea1a9d7416ddebb503f1d1681fdc26e7345db9d4bb95cce7ac93fcc825",
+        "bytes": 131093,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/loaded-refreshed-paused.png",
+        "sha256": "a138ad63df3667528bcb999b99f6aaa6872a4a6433db0df88289f45d950d7a04",
+        "bytes": 137816,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-complete.png",
+        "sha256": "32af303471a16336c2ff0a4f6df8083277acda059edd3d150a7c30564a07da8e",
+        "bytes": 142912,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-search.png",
+        "sha256": "df0c2b4dff28f57943914a332172d8aa991190b916e9be280d7c7eb59c0b828b",
+        "bytes": 92341,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/boolean-selected.png",
+        "sha256": "606c746ad44f766a80cd918529c1c4ca4f1c0d37735975d521ab5571dcd6cc6e",
+        "bytes": 113879,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/landing-features.png",
+        "sha256": "5b65b2bb0b420d1dcf5e4b14efea4548c8ed3a4da41961208c07e4e1ef69e9e8",
+        "bytes": 118298,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-import-recovered.png",
+        "sha256": "c3600140937a983eecf18abd1310be82b33932902f6f030973ad2cc1d18e3e90",
+        "bytes": 104791,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.stl",
+        "sha256": "9a8098bd3229b61e00f6bd9595c8312ec381e6e3f18d8450046532b29e0b97f1",
+        "bytes": 124484,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.stl",
+        "sha256": "26d0c0f5c74c607f78386f2ef613488236361c38a4b74992fa48449ecf08cce7",
+        "bytes": 7684,
+        "reason": "binary-or-non-utf8"
+      }
+    ]
+  },
+  "history": {
+    "reachableCommitCount": 14,
+    "reachableUniqueBlobs": 681,
+    "textBlobsScanned": 663,
+    "binaryOrOversizeBlobs": 18,
+    "blobInventorySha256": "83451f93f276ddf0ebb9e781d93a9a60b4c5737daf57786fbeee2b4daf464a56",
+    "secretCandidateCount": 0,
+    "secretCandidates": [],
+    "sensitiveHistoricalFileNames": [],
+    "uniqueAuthorEmailCategories": {
+      "github-noreply": 1,
+      "other-address": 1
+    }
+  },
+  "cadFixtureMetadata": {
+    "stepFiles": [
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-intersect.step",
+        "sha256": "bf01283072f00177bdf30992e050d7cd2f41ceacf76bc4639225bc9d94280475",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.step",
+        "sha256": "358d075014c4c4611fe80a281dbe5875e69b6057d6173cfe96afc84962d24a9d",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-union.step",
+        "sha256": "077478b935c3a80b166a40dfdaa1f57fcbf6c80ff8ea6cb6a130060b2294b22f",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.step",
+        "sha256": "8b2b943df869fca819cc102fc31340cc28efbaef6ea2a98bedce9018b1bc6dc8",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/recovery-block.step",
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.step",
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.step",
+        "sha256": "3993aed155347986ee03beddc69daee15e5e266539533b76ec529b7ca27a8163",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "projectAssetOccurrences": 7,
+    "projectFilesWithAssets": 7,
+    "uniqueDecodedStepAssets": [
+      {
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "bytes": 19025,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "bytes": 297767,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "issues": []
+  },
+  "provenanceReview": {
+    "filesWithLocalPathMetadata": [
+      {
+        "path": "README.md",
+        "sha256": "e3cc59f05a0335bbd08a7e00d2677568834c699cf13b2e9c84c08be4e25e6ceb",
+        "matches": 4
+      },
+      {
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "sha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+        "matches": 3
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-demo-physics.mjs",
+        "sha256": "47bea82425f284a292dbbf210ee053cce28f0a0c5b49e8c6cbb6029981f87a6e",
+        "matches": 1
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-material-force.mjs",
+        "sha256": "59fbfb6653d3ce5114cf831683200cf5f00d1228d682e46677d69c75084d7fd0",
+        "matches": 2
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-controller.mjs",
+        "sha256": "808e21e09461e12c2203d50d07c1c6d0d0c03fd01d4dd51ed6a463a57db2cebb",
+        "matches": 1
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-physics.mjs",
+        "sha256": "af8c97b90a36220d2b071f41598d7b6e8bf8ca93ca2fb7aa3915d20301193fc1",
+        "matches": 1
+      },
+      {
+        "path": "docs/MATERIAL-FORCE-VERIFICATION.md",
+        "sha256": "71bf4b8f2b9c619b6963e1036fadffeac0b7729b0f41e189df300d92078c2b89",
+        "matches": 1
+      },
+      {
+        "path": "docs/MATHEMATICS-AND-PHYSICS.md",
+        "sha256": "005407996feaff6a82dd8900d449755dc90c9c46839773963ba9855e59a4cec4",
+        "matches": 4
+      },
+      {
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "sha256": "9a930a430ff6c5ea8187309224047f7383736c15daa9f8f81cd65dd5412efb70",
+        "matches": 4
+      },
+      {
+        "path": "docs/TEST-CATALOG.md",
+        "sha256": "4255d8ec973cf7649234164744eec7d2df56310aaf39865f8103935b025fc1c1",
+        "matches": 5
+      },
+      {
+        "path": "docs/boolean-simulation-validation.json",
+        "sha256": "05dfd305b0cf08b6c990d4cbb90b11681c935f91b050153ed9dbecaa456e0dcf",
+        "matches": 1
+      },
+      {
+        "path": "docs/crank-slider-build-2026-09-12.log",
+        "sha256": "346079c34da4b01b25a1935444f955441b2ccd09e0cacea7de1bc485364dbb04",
+        "matches": 3
+      },
+      {
+        "path": "docs/crank-slider-tests-2026-09-12.log",
+        "sha256": "f358b5c2d96c348ecdb594120d4e8d7eb434993a7067e39c4120f3b25131123c",
+        "matches": 69
+      },
+      {
+        "path": "docs/evidence/four-bar/capture-suite.py",
+        "sha256": "46d0298ae4ac3e6249aa0e8541d6c4573f92d6fe0d9f23ad1eab3438eb32f45e",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/four-bar/export-check.json",
+        "sha256": "350ab21e1ef8e1b568e235c01a6a0ae0c27e6b7af09bd60d57c604f677a7ad8c",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/four-bar/suite-events.jsonl",
+        "sha256": "3535ec25a655834b9a6da401a89fb95c4e1a8472522f7c1546343a37a89349e1",
+        "matches": 2030
+      },
+      {
+        "path": "docs/evidence/four-bar/workspace-build.log",
+        "sha256": "2c1de92a383e26fc81040984ded13dc20d0dc59ca03b9fea215bbeafde6d1057",
+        "matches": 12
+      },
+      {
+        "path": "docs/evidence/history-selection/final-build.txt",
+        "sha256": "f5c131e2caf50c2e9ad7491fbf79b7798b09ebf4b93e990fdd9314d3dd08e4b4",
+        "matches": 17
+      },
+      {
+        "path": "docs/evidence/history-selection/final-landing-build.txt",
+        "sha256": "5dd24fbce1ad61bd30bd49af096fa76a7668c7e35c7be9005ff180b402188ace",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/history-selection/final-typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/history-selection/final/run-start.json",
+        "sha256": "dccab39b8ef287484a3ee0d54442eff4dc81465b57c5bf8d0dc0e858061cbe31",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/final/suite-events.jsonl",
+        "sha256": "f30356b5406c4728bd549514eede360c228f5ae364869aa62744bbb382218e0f",
+        "matches": 2212
+      },
+      {
+        "path": "docs/evidence/history-selection/final/summary.json",
+        "sha256": "4b11c7f8edeafe01e0c8ebcb3c65648f0217bf6fca825e2a47f39b3801636ce5",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/run-start.json",
+        "sha256": "36cb4603be4896988d38113449de30310c2f66f852b9276ae0721c20a569e13d",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/suite-events.jsonl",
+        "sha256": "e6a68d7d03dc6815644722f29b0e0364b774ff5f6b306bfcf57b7d711b75230d",
+        "matches": 2212
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/summary.json",
+        "sha256": "f3cd899953ad0384249349fa275c7204709c0717b9b572ede87b853da280f5ae",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-build.txt",
+        "sha256": "4177787940a6ed2c041919c33b821fde5f2fd451e4d3e1870b971f72f51b541b",
+        "matches": 15
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-suite.txt",
+        "sha256": "70bda537345c480378f8aedce6bb5266b2dad4cd8c58afca9f8dc13c9e52a171",
+        "matches": 80
+      },
+      {
+        "path": "docs/evidence/revolute-picking/before-fix-tests.txt",
+        "sha256": "2234cd8471bd7ec24f01cc3add2134a24b559d945d6f332f407a4d7b283dc318",
+        "matches": 9
+      },
+      {
+        "path": "docs/evidence/revolute-picking/build.txt",
+        "sha256": "6630432476323baaf9b0ddb4d687551ced0533af3133f2eacd619a0a938170f7",
+        "matches": 10
+      },
+      {
+        "path": "docs/evidence/revolute-picking/suite.txt",
+        "sha256": "09c52313c49d24a4e52a7ccae61492b7908c0d8d5beaff4925ff3770e3bc6a85",
+        "matches": 80
+      },
+      {
+        "path": "docs/evidence/revolute-picking/typecheck.txt",
+        "sha256": "cb429f2dc102c2d9d0247341c812798062c4bbae913924b6c83bb007999d14a3",
+        "matches": 2
+      },
+      {
+        "path": "docs/finalAppBuild-2026-09-12.log",
+        "sha256": "fb9d27ce71dbc2c904e7955be79f5dd4cc4f246489b503bafa2a99a7f932c1cd",
+        "matches": 1
+      },
+      {
+        "path": "docs/four-bar-validation.json",
+        "sha256": "fce9b227f42cc18e8a7a9fecf7e19003efda96c47cf30d0bd679166025ab7689",
+        "matches": 2
+      },
+      {
+        "path": "docs/sketch-dimensions-validation.json",
+        "sha256": "483483f68b183998b46191db6d1a91582d078581d9ff6eb1694c17db1572ab77",
+        "matches": 1
+      },
+      {
+        "path": "docs/test-inventory-results.json",
+        "sha256": "702e1c4a31d524c612a46fee8c48d9dc7c0c86a23c5927b88c8b71cfc3a43e91",
+        "matches": 3471
+      },
+      {
+        "path": "docs/tests-2026-09-12.log",
+        "sha256": "445e3800fd47f31369d14d7e2aff467e66ce291f8504710d242af92a161a5db5",
+        "matches": 60
+      },
+      {
+        "path": "docs/workspaceBuild-2026-09-12.log",
+        "sha256": "831af264d3c43b8a76420778df532b1197759cf5cd89b123e132dcb0403a215b",
+        "matches": 3
+      },
+      {
+        "path": "replit.md",
+        "sha256": "51a7418c18dc54d0deb8c48765802b7a674e106a50cb97be95b29b91568f27eb",
+        "matches": 4
+      },
+      {
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "sha256": "1d35e6c6c16e47a22725ade5e9d85adce32e83004560b39c53391f4ac82b336a",
+        "matches": 3
+      }
+    ],
+    "emailBearingFiles": [
+      {
+        "path": "SECURITY.md",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/components/SiteFooter.tsx",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/pages/PrivacyPage.tsx",
+        "matches": 1,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/pages/TermsPage.tsx",
+        "matches": 1,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "licenses/manifest.json",
+        "matches": 2,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/clsx/2.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/loose-envify/1.4.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/object-assign/4.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-day-picker/9.14.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-icons/5.6.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/regexparam/3.0.0/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      }
+    ],
+    "disposition": "Historical checkout/temp paths, upstream copyright email notices and intentional public business contact details are retained. No matched values are reproduced here. Review listed source/evidence contexts before publication; visual media review is separate.",
+    "rawEvidenceRewritten": false
+  },
+  "notices": {
+    "command": "node licenses/collect-notices.mjs --check",
+    "exitCode": 0,
+    "stdout": "Verified 147 package versions and 143 original notice files.\nVerified 11 supplemental notice hashes; 18 package versions use upstream references, with 1 explicit source-version limitation.",
+    "stderrPresent": false,
+    "manifestSha256": "3e62c2fe7d20b8732ff7de26330524fd67474928494a1e8118393a892d457398",
+    "supplementalManifestSha256": "cf32f6dfd1c45160400a33e4a8761098e06ff428ee445c3efc49245b7c87bc45"
+  },
+  "concurrency": {
+    "inputSnapshotUnchangedDuringScan": true,
+    "changedFiles": [],
+    "endingSnapshotSha256": "f93c066f9c5ca7a3f84162322cce5be47db1ee4e0238cf2b3283f575294e4e1d",
+    "finalDocumentationMayStillChange": true
+  },
+  "dependencySecurity": {
+    "review": "docs/DEPENDENCY-SECURITY-REVIEW.md",
+    "evidence": "docs/dependency-security-review.json",
+    "advisoryRecords": 58,
+    "decision": "pending-owner-publication-and-deployment-decision-under-package-freeze"
+  }
+}

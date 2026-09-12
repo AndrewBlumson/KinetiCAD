@@ -13,6 +13,11 @@ Export STEP and Export STL download the committed solids visible in the modeller
 
 These are geometry files. STEP carries exact boundary representation; STL carries triangles. Neither format carries KinetiCAD's editable feature history, materials, mates or simulation configuration. **Save project** preserves that information and embeds imported STEP assets. Internal project-asset packaging exports the isolated original imported shape in local coordinates, independent of modeller visibility and Boolean output.
 
+Selecting a part or Boolean result does not filter the export: it still includes
+all committed visible solids under the rules above. Undo/Redo restores the
+committed model that subsequent exports rebuild. Apply/cancel open editors and
+finish restoration before exporting. See [history and selection](HISTORY-AND-SELECTION.md).
+
 ## Simulation uses the final shape directly
 
 A committed assembly Boolean containing one connected solid now simulates
@@ -47,7 +52,7 @@ The original export-stage numerical evidence and source hashes remain in
 [assembly-export-results.json](assembly-export-results.json). The later direct-Boolean
 stage reran the same seven export cases and recorded
 [boolean-simulation-export-results.json](boolean-simulation-export-results.json).
-The complete current [test inventory](FOUR-BAR-TEST-CATALOG.md) includes those seven cases. The planar test shapes have no curved-surface tessellation error; their STL tolerances must not be assumed for arbitrary curved geometry. Browser interaction acceptance is recorded separately by the UI verification task.
+The complete current [test inventory](HISTORY-SELECTION-TEST-CATALOG.md) includes those seven cases. The planar test shapes have no curved-surface tessellation error; their STL tolerances must not be assumed for arbitrary curved geometry. Browser interaction acceptance is recorded separately by the UI verification task.
 
 The actual Chrome downloads for Subtract STEP/STL and subsequent applied Union/Intersect STEP exports are retained in `tests/fixtures/browser-boolean-*`. Their independent numerical check is [browser-boolean-export-results.json](browser-boolean-export-results.json), reproduced with:
 

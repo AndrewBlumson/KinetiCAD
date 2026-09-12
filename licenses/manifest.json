@@ -1,0 +1,3111 @@
+{
+  "schemaVersion": 1,
+  "scope": "Conservative browser-source imports (including CSS) and declared application dependencies, plus their installed non-peer dependency closure. Includes potentially unused/tree-shaken UI packages. Excludes project-local workspace code and unrelated server/build/test tools. Externally hosted fonts and the OCCT kernel are described separately in THIRD-PARTY-NOTICES.md.",
+  "lockfileSha256": "5dedadc56807354a051947da7475ac3e0014583e49678006f3f2a0687b29901b",
+  "seeds": [
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@dimforge/rapier3d-compat"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-accordion"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-alert-dialog"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-aspect-ratio"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-avatar"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-checkbox"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-collapsible"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-context-menu"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-dialog"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-dropdown-menu"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-hover-card"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-label"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-menubar"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-navigation-menu"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-popover"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-progress"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-radio-group"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-scroll-area"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-select"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-separator"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-slider"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-slot"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-switch"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-tabs"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-toast"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-toggle"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-toggle-group"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "@radix-ui/react-tooltip"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "class-variance-authority"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "clsx"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "cmdk"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "comlink"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "embla-carousel-react"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "input-otp"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "lucide-react"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "next-themes"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "opencascade.js"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "react"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "react-day-picker"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "react-dom"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "react-hook-form"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "react-resizable-panels"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "recharts"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "sonner"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "tailwind-merge"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "tailwindcss"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "three"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "three-mesh-bvh"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "tw-animate-css"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "vaul"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "wouter"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "zod"
+    },
+    {
+      "workspace": "artifacts/kineticad",
+      "name": "zustand"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-accordion"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-alert-dialog"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-aspect-ratio"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-avatar"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-checkbox"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-collapsible"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-context-menu"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-dialog"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-dropdown-menu"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-hover-card"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-label"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-menubar"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-navigation-menu"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-popover"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-progress"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-radio-group"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-scroll-area"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-select"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-separator"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-slider"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-slot"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-switch"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-tabs"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-toast"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-toggle"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-toggle-group"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "@radix-ui/react-tooltip"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "class-variance-authority"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "clsx"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "cmdk"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "embla-carousel-react"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "input-otp"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "lucide-react"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "next-themes"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react-day-picker"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react-dom"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react-hook-form"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react-icons"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "react-resizable-panels"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "recharts"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "sonner"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "tailwind-merge"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "tailwindcss"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "vaul"
+    },
+    {
+      "workspace": "artifacts/landing",
+      "name": "wouter"
+    }
+  ],
+  "packageCount": 147,
+  "packages": [
+    {
+      "name": "@babel/runtime",
+      "version": "7.28.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/babel/babel.git",
+        "directory": "packages/babel-runtime"
+      },
+      "homepage": "https://babel.dev/docs/en/next/babel-runtime",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/babel__runtime/7.28.6/LICENSE",
+          "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@date-fns/tz",
+      "version": "1.4.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/date-fns/tz.git"
+      },
+      "homepage": "https://github.com/date-fns/tz#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/date-fns__tz/1.4.1/LICENSE.md",
+          "sha256": "cc7267726f809c066c35c81a17d7525bccf588ecc826b15ca65a15d34106c804"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@dimforge/rapier3d-compat",
+      "version": "0.12.0",
+      "license": "Apache-2.0",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dimforge/rapier.js"
+      },
+      "homepage": "https://rapier.rs",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/dimforge__rapier3d-compat/0.12.0/LICENSE",
+          "sha256": "4c05555705e3efde601fb1252ae48f1d63992af8a8fb8947745b7fa834e8f519"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@floating-ui/core",
+      "version": "1.7.5",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/floating-ui/floating-ui.git",
+        "directory": "packages/core"
+      },
+      "homepage": "https://floating-ui.com",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/floating-ui__core/1.7.5/LICENSE",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@floating-ui/dom",
+      "version": "1.7.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/floating-ui/floating-ui.git",
+        "directory": "packages/dom"
+      },
+      "homepage": "https://floating-ui.com",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/floating-ui__dom/1.7.6/LICENSE",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@floating-ui/react-dom",
+      "version": "2.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/floating-ui/floating-ui.git",
+        "directory": "packages/react-dom"
+      },
+      "homepage": "https://floating-ui.com/docs/react-dom",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/floating-ui__react-dom/2.1.8/LICENSE",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@floating-ui/utils",
+      "version": "0.2.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/floating-ui/floating-ui.git",
+        "directory": "packages/utils"
+      },
+      "homepage": "https://floating-ui.com",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/floating-ui__utils/0.2.11/LICENSE",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/number",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/primitive",
+      "version": "1.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__primitive/1.1.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-accordion",
+      "version": "1.2.12",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-accordion/1.2.12/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-alert-dialog",
+      "version": "1.1.15",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-alert-dialog/1.1.15/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-arrow",
+      "version": "1.1.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-arrow/1.1.7/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-aspect-ratio",
+      "version": "1.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-aspect-ratio/1.1.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-avatar",
+      "version": "1.1.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-avatar/1.1.11/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-checkbox",
+      "version": "1.3.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-checkbox/1.3.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-collapsible",
+      "version": "1.1.12",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-collapsible/1.1.12/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-collection",
+      "version": "1.1.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-collection/1.1.7/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-compose-refs",
+      "version": "1.1.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-context-menu",
+      "version": "2.2.16",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-context-menu/2.2.16/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-context",
+      "version": "1.1.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-context",
+      "version": "1.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-context/1.1.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-dialog",
+      "version": "1.1.15",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-dialog/1.1.15/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-direction",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-dismissable-layer",
+      "version": "1.1.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-dismissable-layer/1.1.11/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-dropdown-menu",
+      "version": "2.1.16",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-dropdown-menu/2.1.16/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-focus-guards",
+      "version": "1.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-focus-guards/1.1.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-focus-scope",
+      "version": "1.1.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-focus-scope/1.1.7/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-hover-card",
+      "version": "1.1.15",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-hover-card/1.1.15/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-id",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-label",
+      "version": "2.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-label/2.1.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-menu",
+      "version": "2.1.16",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-menu/2.1.16/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-menubar",
+      "version": "1.1.16",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-menubar/1.1.16/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-navigation-menu",
+      "version": "1.2.14",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-navigation-menu/1.2.14/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-popover",
+      "version": "1.1.15",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-popover/1.1.15/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-popper",
+      "version": "1.2.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-popper/1.2.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-portal",
+      "version": "1.1.9",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-portal/1.1.9/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-presence",
+      "version": "1.1.5",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-presence/1.1.5/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-primitive",
+      "version": "2.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-primitive/2.1.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-primitive",
+      "version": "2.1.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-primitive/2.1.4/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-progress",
+      "version": "1.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-progress/1.1.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-radio-group",
+      "version": "1.3.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-radio-group/1.3.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-roving-focus",
+      "version": "1.1.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-roving-focus/1.1.11/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-scroll-area",
+      "version": "1.2.10",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-scroll-area/1.2.10/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-select",
+      "version": "2.2.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-select/2.2.6/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-separator",
+      "version": "1.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-separator/1.1.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-slider",
+      "version": "1.3.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-slider/1.3.6/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-slot",
+      "version": "1.2.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-slot/1.2.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-slot",
+      "version": "1.2.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-slot/1.2.4/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-switch",
+      "version": "1.2.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-switch/1.2.6/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-tabs",
+      "version": "1.1.13",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-tabs/1.1.13/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-toast",
+      "version": "1.2.15",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-toast/1.2.15/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-toggle-group",
+      "version": "1.1.11",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-toggle-group/1.1.11/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-toggle",
+      "version": "1.1.10",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-toggle/1.1.10/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-tooltip",
+      "version": "1.2.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-tooltip/1.2.8/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-use-callback-ref",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-use-controllable-state",
+      "version": "1.2.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-use-controllable-state/1.2.2/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-use-effect-event",
+      "version": "0.0.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-use-effect-event/0.0.2/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-use-escape-keydown",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-use-is-hydrated",
+      "version": "0.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-use-is-hydrated/0.1.0/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/react-use-layout-effect",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-use-previous",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-use-rect",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-use-size",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@radix-ui/react-visually-hidden",
+      "version": "1.2.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/radix-ui__react-visually-hidden/1.2.3/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@radix-ui/rect",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/radix-ui/primitives.git"
+      },
+      "homepage": "https://radix-ui.com/primitives",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+          "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "@tabby_ai/hijri-converter",
+      "version": "1.0.5",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/tabby_ai__hijri-converter/1.0.5/LICENSE",
+          "sha256": "6ea4455143423b792278b5d1e25608beb88cf33b7cfb8eaa7fb691fc9527bd5f"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-array",
+      "version": "3.2.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-array"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-array",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-array/3.2.2/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-color",
+      "version": "3.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-color"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-color",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-color/3.1.3/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-ease",
+      "version": "3.0.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-ease"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-ease",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-ease/3.0.2/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-interpolate",
+      "version": "3.0.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-interpolate"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-interpolate",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-interpolate/3.0.4/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-path",
+      "version": "3.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-path"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-path",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-path/3.1.1/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-scale",
+      "version": "4.0.9",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-scale"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-scale",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-scale/4.0.9/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-shape",
+      "version": "3.1.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-shape"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-shape",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-shape/3.1.8/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-time",
+      "version": "3.0.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-time"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-time",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-time/3.0.4/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "@types/d3-timer",
+      "version": "3.0.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/d3-timer"
+      },
+      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-timer",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/types__d3-timer/3.0.2/LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "aria-hidden",
+      "version": "1.2.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/theKashey/aria-hidden.git"
+      },
+      "homepage": "https://github.com/theKashey/aria-hidden#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/aria-hidden/1.2.6/LICENSE",
+          "sha256": "30f0cfddf483d1128e3610205020f2041a6c5e837aa999e0aa82e5576187d4a9"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "class-variance-authority",
+      "version": "0.7.1",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/joe-bell/cva.git",
+      "homepage": "https://github.com/joe-bell/cva#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/class-variance-authority/0.7.1/LICENSE",
+          "sha256": "0ccbf956cffc8dcf515809433cb5242ee67c94513d46e48c261d68d0880de406"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "clsx",
+      "version": "2.1.1",
+      "license": "MIT",
+      "repository": "lukeed/clsx",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "license",
+          "path": "licenses/packages/clsx/2.1.1/license",
+          "sha256": "9a9edad7baae52622bddf3c15b2ef8a33d2c89f2d25408ad13e8a7481c6b0c97"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "cmdk",
+      "version": "1.1.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pacocoursey/cmdk.git",
+        "directory": "cmdk"
+      },
+      "homepage": "https://github.com/pacocoursey/cmdk#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/cmdk/1.1.1/LICENSE.md",
+          "sha256": "b5acfd21b3b61508365224c40ec1b03ec71091248baaf989d4be916551e7d532"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "comlink",
+      "version": "4.4.1",
+      "license": "Apache-2.0",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/GoogleChromeLabs/comlink.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/comlink/4.4.1/LICENSE",
+          "sha256": "bcf29b4fd3ec2cb5f9d40a0866da446f6da62170d2ccedf4aeca9cf9406dd20c"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "csstype",
+      "version": "3.2.3",
+      "license": "MIT",
+      "repository": "https://github.com/frenic/csstype",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/csstype/3.2.3/LICENSE",
+          "sha256": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-array",
+      "version": "3.2.4",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-array.git"
+      },
+      "homepage": "https://d3js.org/d3-array/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-array/3.2.4/LICENSE",
+          "sha256": "3e6849627f74ff73c257a3ae1efb574015d94fc1035c05ec3c15805165efcbc4"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-color",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-color.git"
+      },
+      "homepage": "https://d3js.org/d3-color/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-color/3.1.0/LICENSE",
+          "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-ease",
+      "version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-ease.git"
+      },
+      "homepage": "https://d3js.org/d3-ease/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-ease/3.0.1/LICENSE",
+          "sha256": "b989d9085148d21ff64a75e14462aefa06b2589a55553b07b1460c70081c7d08"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-format",
+      "version": "3.1.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-format.git"
+      },
+      "homepage": "https://d3js.org/d3-format/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-format/3.1.2/LICENSE",
+          "sha256": "2a6d2d5f32ba0b755ddbc1c833f766e30cdbe6ebe9a6d4e3e24427721f0b63d3"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-interpolate",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-interpolate.git"
+      },
+      "homepage": "https://d3js.org/d3-interpolate/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-interpolate/3.0.1/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-path",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-path.git"
+      },
+      "homepage": "https://d3js.org/d3-path/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-path/3.1.0/LICENSE",
+          "sha256": "a09b0d6d76e768fca2085fad05743ee81ddd11946bcda160a3cf5e1081a479aa"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-scale",
+      "version": "4.0.2",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-scale.git"
+      },
+      "homepage": "https://d3js.org/d3-scale/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-scale/4.0.2/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-shape",
+      "version": "3.2.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-shape.git"
+      },
+      "homepage": "https://d3js.org/d3-shape/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-shape/3.2.0/LICENSE",
+          "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-time-format",
+      "version": "4.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-time-format.git"
+      },
+      "homepage": "https://d3js.org/d3-time-format/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-time-format/4.1.0/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-time",
+      "version": "3.1.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-time.git"
+      },
+      "homepage": "https://d3js.org/d3-time/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-time/3.1.0/LICENSE",
+          "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/d3/d3-timer.git"
+      },
+      "homepage": "https://d3js.org/d3-timer/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/d3-timer/3.0.1/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "date-fns-jalali",
+      "version": "4.1.0-0",
+      "license": "MIT",
+      "repository": "https://github.com/date-fns-jalali/date-fns-jalali",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/date-fns-jalali/4.1.0-0/LICENSE.md",
+          "sha256": "8d3951c38967b964b1fe259bfd200c2647cc04c858b55a4414e3122a60f1ef4b"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "date-fns",
+      "version": "4.1.0",
+      "license": "MIT",
+      "repository": "https://github.com/date-fns/date-fns",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/date-fns/4.1.0/LICENSE.md",
+          "sha256": "8d3951c38967b964b1fe259bfd200c2647cc04c858b55a4414e3122a60f1ef4b"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "decimal.js-light",
+      "version": "2.5.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/MikeMcl/decimal.js-light.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENCE.md",
+          "path": "licenses/packages/decimal.js-light/2.5.1/LICENCE.md",
+          "sha256": "fc0397fbd5c128bec7edef4e8d3f45e15db5fd043cdd0a2edfc4f14d47fbc3e4"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "detect-node-es",
+      "version": "1.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/thekashey/detect-node"
+      },
+      "homepage": "https://github.com/thekashey/detect-node",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/detect-node-es/1.1.0/LICENSE",
+          "sha256": "54b32293ea560d22cd9b62af9b2cda1a030d910a48c6601d227c5ff2338d95f8"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "dom-helpers",
+      "version": "5.2.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/react-bootstrap/dom-helpers.git"
+      },
+      "homepage": "https://github.com/react-bootstrap/dom-helpers#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/dom-helpers/5.2.1/LICENSE",
+          "sha256": "1b0a9ba95a67bc484e028b13c61b83fc5aa1ca7957d1e2d43c2b0f70d9e9dd45"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "embla-carousel-react",
+      "version": "8.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/davidjerleke/embla-carousel"
+      },
+      "homepage": "https://www.embla-carousel.com",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/davidjerleke/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sha256": "992490064b90ec94c302fe5f29dcc14cb44145857064e46f9ffe6c8f511c1093",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "embla-carousel-reactive-utils",
+      "version": "8.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/davidjerleke/embla-carousel"
+      },
+      "homepage": "https://www.embla-carousel.com",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/davidjerleke/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sha256": "992490064b90ec94c302fe5f29dcc14cb44145857064e46f9ffe6c8f511c1093",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "embla-carousel",
+      "version": "8.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/davidjerleke/embla-carousel"
+      },
+      "homepage": "https://www.embla-carousel.com",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/davidjerleke/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+          "sha256": "992490064b90ec94c302fe5f29dcc14cb44145857064e46f9ffe6c8f511c1093",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "eventemitter3",
+      "version": "4.0.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/primus/eventemitter3.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/eventemitter3/4.0.7/LICENSE",
+          "sha256": "3aecc12b1cb28832b5f65ab64291de96568c3f236a74d646281b4491f7bcadbf"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "fast-equals",
+      "version": "5.4.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/planttheidea/fast-equals.git"
+      },
+      "homepage": "https://github.com/planttheidea/fast-equals#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/fast-equals/5.4.0/LICENSE",
+          "sha256": "c0af1c3e74a891b408dc4365897482cc8c284365808e3837c56ea3c337ed7a2c"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "get-nonce",
+      "version": "1.0.1",
+      "license": "MIT",
+      "repository": "git@github.com:theKashey/get-nonce.git",
+      "homepage": "https://github.com/theKashey/get-nonce",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/get-nonce/1.0.1/LICENSE",
+          "sha256": "acf3b087b348d2f2e731b9d4131af185aad694c1204ce14a46909483fd42da05"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "input-otp",
+      "version": "1.4.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/guilhermerodz/input-otp.git",
+        "directory": "packages/input-otp"
+      },
+      "homepage": "https://input-otp.rodz.dev/",
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/guilhermerodz/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+          "sha256": "079031192fea535a245aa64a637d8433c406b82a14f91c3606b1d63e41c00152",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "internmap",
+      "version": "2.0.3",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mbostock/internmap.git"
+      },
+      "homepage": "https://github.com/mbostock/internmap/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/internmap/2.0.3/LICENSE",
+          "sha256": "9ea8903938dab5f12c4572d60725069bec2d1b0dc3bcc210b09bae946a5ebb1f"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "js-tokens",
+      "version": "4.0.0",
+      "license": "MIT",
+      "repository": "lydell/js-tokens",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/js-tokens/4.0.0/LICENSE",
+          "sha256": "2213d91c606205c71eb051a199478cdc2adde945893404d7f1421436dd6d5cc1"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "lodash",
+      "version": "4.17.23",
+      "license": "MIT",
+      "repository": "lodash/lodash",
+      "homepage": "https://lodash.com/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/lodash/4.17.23/LICENSE",
+          "sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "loose-envify",
+      "version": "1.4.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/zertosh/loose-envify.git"
+      },
+      "homepage": "https://github.com/zertosh/loose-envify",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/loose-envify/1.4.0/LICENSE",
+          "sha256": "4eb7543b08d955a6d23fcc224601d43ff566e775be918805e26210d7f6eb4893"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "lucide-react",
+      "version": "0.545.0",
+      "license": "ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/lucide-icons/lucide.git",
+        "directory": "packages/lucide-react"
+      },
+      "homepage": "https://lucide.dev",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/lucide-react/0.545.0/LICENSE",
+          "sha256": "3c57143f22dac950efebf84002e360bba5458c7b90fe583b0667aaaef1a7256e"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "mitt",
+      "version": "3.0.1",
+      "license": "MIT",
+      "repository": "developit/mitt",
+      "homepage": "https://github.com/developit/mitt",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/mitt/3.0.1/LICENSE",
+          "sha256": "1cab22f196264195a4caec8ca5630170fdde76ee8f43346e47021d087332d3b0"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "next-themes",
+      "version": "0.4.6",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/pacocoursey/next-themes.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "license.md",
+          "path": "licenses/packages/next-themes/0.4.6/license.md",
+          "sha256": "b5acfd21b3b61508365224c40ec1b03ec71091248baaf989d4be916551e7d532"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "object-assign",
+      "version": "4.1.1",
+      "license": "MIT",
+      "repository": "sindresorhus/object-assign",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "license",
+          "path": "licenses/packages/object-assign/4.1.1/license",
+          "sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "opencascade.js",
+      "version": "2.0.0-beta.94e2944",
+      "license": "LGPL-2.1-only",
+      "repository": "github:donalffons/opencascade.js",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/opencascade.js/2.0.0-beta.94e2944/LICENSE",
+          "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "prop-types",
+      "version": "15.8.1",
+      "license": "MIT",
+      "repository": "facebook/prop-types",
+      "homepage": "https://facebook.github.io/react/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/prop-types/15.8.1/LICENSE",
+          "sha256": "f657f99d3fb9647db92628e96007aabb46e5f04f33e49999075aab8e250ca7ce"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-day-picker",
+      "version": "9.14.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/gpbl/react-day-picker"
+      },
+      "homepage": "https://daypicker.dev",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-day-picker/9.14.0/LICENSE",
+          "sha256": "45d115f88e2b50de2113bafbc5e877f8e85dc9236d5d304a855ed4756f7e4439"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-dom",
+      "version": "19.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/react-dom"
+      },
+      "homepage": "https://react.dev/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-dom/19.1.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-hook-form",
+      "version": "7.71.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/react-hook-form/react-hook-form"
+      },
+      "homepage": "https://react-hook-form.com",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-hook-form/7.71.2/LICENSE",
+          "sha256": "e8eeb472f0a5889c2c51625b86a3f9b8630680adb9f49a125352e2e426392780"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-icons",
+      "version": "5.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com:react-icons/react-icons.git"
+      },
+      "homepage": "https://github.com/react-icons/react-icons#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-icons/5.6.0/LICENSE",
+          "sha256": "a0c1e5484fb4c79e2a683834253864e640e1ca57cb57b807bd5bddb72bbbf74f"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-is",
+      "version": "16.13.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/react-is"
+      },
+      "homepage": "https://reactjs.org/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-is/16.13.1/LICENSE",
+          "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-is",
+      "version": "18.3.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/react-is"
+      },
+      "homepage": "https://reactjs.org/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-is/18.3.1/LICENSE",
+          "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-remove-scroll-bar",
+      "version": "2.3.8",
+      "license": "MIT",
+      "repository": "https://github.com/theKashey/react-remove-scroll-bar",
+      "homepage": null,
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+          "sha256": "a79aae0c0f21990d9d963bb3c5a79cdcea9a46f8523ba55c58d7fe776b6ebc84",
+          "kind": "upstream-project-reference",
+          "limitation": "The installed 2.3.8 package declares MIT but omits its notice. Its npm gitHead b3b1287aad81def2e2ae707274b74531b61ddbaf was unavailable from the declared upstream on 2026-09-12; this is a pinned current project licence reference, not proof of the exact 2.3.8 source tree."
+        }
+      ]
+    },
+    {
+      "name": "react-remove-scroll",
+      "version": "2.7.2",
+      "license": "MIT",
+      "repository": "https://github.com/theKashey/react-remove-scroll",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-remove-scroll/2.7.2/LICENSE",
+          "sha256": "30f0cfddf483d1128e3610205020f2041a6c5e837aa999e0aa82e5576187d4a9"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-resizable-panels",
+      "version": "2.1.9",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bvaughn/react-resizable-panels.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-resizable-panels/2.1.9/LICENSE",
+          "sha256": "8b21167f99f3c016b39473b2984ceb03b54bf796dd9a7c74fcb80cfd513fe8a8"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-smooth",
+      "version": "4.0.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/recharts/react-smooth.git"
+      },
+      "homepage": "https://github.com/recharts/react-smooth#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-smooth/4.0.4/LICENSE",
+          "sha256": "258fe95d585e52a42eb5bec05b103a78400532103c4d01f94bc4cfca59486540"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-style-singleton",
+      "version": "2.2.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/theKashey/react-style-singleton"
+      },
+      "homepage": "https://github.com/theKashey/react-style-singleton#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-style-singleton/2.2.3/LICENSE",
+          "sha256": "30f0cfddf483d1128e3610205020f2041a6c5e837aa999e0aa82e5576187d4a9"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react-transition-group",
+      "version": "4.4.5",
+      "license": "BSD-3-Clause",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/reactjs/react-transition-group.git"
+      },
+      "homepage": "https://github.com/reactjs/react-transition-group#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react-transition-group/4.4.5/LICENSE",
+          "sha256": "b9adc17ad75a847d8743be2843935f0842a0ea4f45e7b0c7e17ed0be98614b9b"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "react",
+      "version": "19.1.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/react"
+      },
+      "homepage": "https://react.dev/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/react/19.1.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "recharts-scale",
+      "version": "0.4.5",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/recharts/recharts-scale.git"
+      },
+      "homepage": "https://github.com/recharts/recharts-scale",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/recharts-scale/0.4.5/LICENSE",
+          "sha256": "9b0d4666d301c53eb4be4e2fec89e5589a7e5da450026153c27e34c2b3115921"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "recharts",
+      "version": "2.15.4",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/recharts/recharts.git"
+      },
+      "homepage": "https://github.com/recharts/recharts",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/recharts/2.15.4/LICENSE",
+          "sha256": "2d3aa48a8d1d3b93093680e8e68d3a64cfb590c3ade377ffcaefc69dac7c2ce5"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "regexparam",
+      "version": "3.0.0",
+      "license": "MIT",
+      "repository": "lukeed/regexparam",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "license",
+          "path": "licenses/packages/regexparam/3.0.0/license",
+          "sha256": "306fa513e39b23a6e8747520de761809d206b99800ef41907b530226574c59ae"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "scheduler",
+      "version": "0.26.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/scheduler"
+      },
+      "homepage": "https://react.dev/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/scheduler/0.26.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "sonner",
+      "version": "2.0.7",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/emilkowalski/sonner.git"
+      },
+      "homepage": "https://sonner.emilkowal.ski/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/sonner/2.0.7/LICENSE.md",
+          "sha256": "da9201378c36ffd81f51ad0b305f3f0981e90bc558789210ad65d1161eec3b7d"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "tailwind-merge",
+      "version": "3.5.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dcastil/tailwind-merge.git"
+      },
+      "homepage": "https://github.com/dcastil/tailwind-merge",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/tailwind-merge/3.5.0/LICENSE.md",
+          "sha256": "d4c70c7ce38cea8778f0aed3fc0bef0a9dbd27f13bd8b6773cbd6d37941971e5"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "tailwindcss",
+      "version": "4.2.1",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/tailwindlabs/tailwindcss.git",
+        "directory": "packages/tailwindcss"
+      },
+      "homepage": "https://tailwindcss.com",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/tailwindcss/4.2.1/LICENSE",
+          "sha256": "60e0b68c0f35c078eef3a5d29419d0b03ff84ec1df9c3f9d6e39a519a5ae7985"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "three-mesh-bvh",
+      "version": "0.7.8",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gkjohnson/three-mesh-bvh.git"
+      },
+      "homepage": "https://github.com/gkjohnson/three-mesh-bvh#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/three-mesh-bvh/0.7.8/LICENSE",
+          "sha256": "b106ef6198a9862ed2b5b873e944ecf3583c631a84a7462d400ecc1910ce7fee"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "three",
+      "version": "0.184.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mrdoob/three.js"
+      },
+      "homepage": "https://threejs.org/",
+      "notices": [
+        {
+          "sourcePath": "examples/fonts/droid/NOTICE",
+          "path": "licenses/packages/three/0.184.0/examples/fonts/droid/NOTICE",
+          "sha256": "38751245389e1e23f73e6f5384b5cbe7fa972cc4410c5adc9c04b082a0b9561a"
+        },
+        {
+          "sourcePath": "examples/fonts/LICENSE",
+          "path": "licenses/packages/three/0.184.0/examples/fonts/LICENSE",
+          "sha256": "35e8279356d7890871c4fce804d157e3f21456a7311ef2caab5cb4705c71b6bd"
+        },
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/three/0.184.0/LICENSE",
+          "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "tiny-invariant",
+      "version": "1.3.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/alexreardon/tiny-invariant.git"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/tiny-invariant/1.3.3/LICENSE",
+          "sha256": "b1c501095de70182748cb8e8d97ac5577701a4ef3b755ba30d59fd87b24bdb0f"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "tslib",
+      "version": "2.8.1",
+      "license": "0BSD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/tslib.git"
+      },
+      "homepage": "https://www.typescriptlang.org/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.txt",
+          "path": "licenses/packages/tslib/2.8.1/LICENSE.txt",
+          "sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "tw-animate-css",
+      "version": "1.4.0",
+      "license": "MIT",
+      "repository": "Wombosvideo/tw-animate-css",
+      "homepage": "https://github.com/Wombosvideo/tw-animate-css#readme",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/tw-animate-css/1.4.0/LICENSE",
+          "sha256": "039184dfa0a822397b3f45a435b5b1e538721587fbade96b9fa80f86cb354109"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "use-callback-ref",
+      "version": "1.3.3",
+      "license": "MIT",
+      "repository": "https://github.com/theKashey/use-callback-ref/",
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/use-callback-ref/1.3.3/LICENSE",
+          "sha256": "30f0cfddf483d1128e3610205020f2041a6c5e837aa999e0aa82e5576187d4a9"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "use-sidecar",
+      "version": "1.1.3",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/theKashey/use-sidecar"
+      },
+      "homepage": "https://github.com/theKashey/use-sidecar",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/use-sidecar/1.1.3/LICENSE",
+          "sha256": "30f0cfddf483d1128e3610205020f2041a6c5e837aa999e0aa82e5576187d4a9"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "use-sync-external-store",
+      "version": "1.6.0",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/use-sync-external-store"
+      },
+      "homepage": null,
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/use-sync-external-store/1.6.0/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "vaul",
+      "version": "1.1.2",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/emilkowalski/vaul.git"
+      },
+      "homepage": "https://vaul.emilkowal.ski/",
+      "notices": [
+        {
+          "sourcePath": "LICENSE.md",
+          "path": "licenses/packages/vaul/1.1.2/LICENSE.md",
+          "sha256": "b09b9ccf866cc09b502d9cf4679e2461beb1469709ea0c6a30009766e10b3acf"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "victory-vendor",
+      "version": "36.9.2",
+      "license": "MIT AND ISC",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/FormidableLabs/victory"
+      },
+      "homepage": "https://commerce.nearform.com/open-source/victory",
+      "notices": [
+        {
+          "sourcePath": "lib-vendor/d3-array/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-array/LICENSE",
+          "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-color/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-color/LICENSE",
+          "sha256": "faa682e3e430941f958d26180458f5934a62f58dac4d70ccdd15608c15d0f884"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-ease/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-ease/LICENSE",
+          "sha256": "b989d9085148d21ff64a75e14462aefa06b2589a55553b07b1460c70081c7d08"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-format/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-format/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-interpolate/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-interpolate/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-path/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-path/LICENSE",
+          "sha256": "0ab21426fad1e8b819ea8ab4c7faf5a24d4fca9c01572fe722490d600bba0d22"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-scale/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-scale/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-shape/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-shape/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-time-format/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-time-format/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-time/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-time/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-timer/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-timer/LICENSE",
+          "sha256": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee"
+        },
+        {
+          "sourcePath": "lib-vendor/d3-voronoi/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/d3-voronoi/LICENSE",
+          "sha256": "ad6cf57648385d6c40a29f73c55e42922dd793823df5ea265ccd834873bf09b9"
+        },
+        {
+          "sourcePath": "lib-vendor/internmap/LICENSE",
+          "path": "licenses/packages/victory-vendor/36.9.2/lib-vendor/internmap/LICENSE",
+          "sha256": "9ea8903938dab5f12c4572d60725069bec2d1b0dc3bcc210b09bae946a5ebb1f"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "wouter",
+      "version": "3.9.0",
+      "license": "Unlicense",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/molefrog/wouter.git"
+      },
+      "homepage": null,
+      "notices": [],
+      "upstreamNotices": [
+        {
+          "path": "licenses/upstream/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/molefrog/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+          "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e",
+          "kind": "missing-npm-notice"
+        }
+      ]
+    },
+    {
+      "name": "zod",
+      "version": "3.25.76",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/colinhacks/zod.git"
+      },
+      "homepage": "https://zod.dev",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/zod/3.25.76/LICENSE",
+          "sha256": "3f1189b28e3866e0d979968d466b78f813f76827cfdca1fbb124cc0a5c8841f8"
+        }
+      ],
+      "upstreamNotices": []
+    },
+    {
+      "name": "zustand",
+      "version": "5.0.12",
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pmndrs/zustand.git"
+      },
+      "homepage": "https://github.com/pmndrs/zustand",
+      "notices": [
+        {
+          "sourcePath": "LICENSE",
+          "path": "licenses/packages/zustand/5.0.12/LICENSE",
+          "sha256": "c1e6e266563517467b1bf874817d23e426f3149252bd7d42758cd697514b8417"
+        }
+      ],
+      "upstreamNotices": []
+    }
+  ]
+}

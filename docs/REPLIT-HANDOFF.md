@@ -1,5 +1,7 @@
 # Replit handoff
 
+Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](HISTORY-AND-SELECTION.md) and [dependency security review](DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+
 Use the existing KinetiCAD Replit project so its domain, secrets and publishing
 settings stay attached to the same app.
 
@@ -15,12 +17,16 @@ recovery, bounded six-axis Stewart controls, the three separate Engineering
 tests, adjustable crank-slider, persistent sketch dimensions and direct
 connected-Boolean simulation. Creator/social details, Replit UK Ambassador
 biography, labelled file controls and desktop-only CAD access are included.
-The source now adds the bounded **Draw a path** four-bar designer. Its fresh
-local run passed **348/348 tests across 51 files**, with no failures or skips,
-unchanged source inputs during execution and a passing full workspace
-typecheck/build. The [new catalog](FOUR-BAR-TEST-CATALOG.md) and
-[acceptance record](four-bar-validation.json) are distinct from the preserved
-298-test baseline.
+The subsequent bounded **Draw a path** four-bar stage passed **348/348 tests
+across 51 files** and a full workspace typecheck/build. Its
+[catalog](FOUR-BAR-TEST-CATALOG.md) and [record](four-bar-validation.json) retain
+that historical scope, distinct from the preserved 298-test baseline.
+
+The latest local release evidence is in the [current test catalog](HISTORY-SELECTION-TEST-CATALOG.md),
+[history/selection verification](HISTORY-AND-SELECTION.md) and
+[public-release checklist](PUBLIC-RELEASE-CHECKLIST.md). Undo's checkpoint passed
+369/369 tests before selection work. Earlier 298/348/351-test records preserve
+their own results; use the final combined source fingerprints for this handoff.
 
 The [baseline test catalog](TEST-CATALOG.md) details that automated run;
 [maths and physics](MATHEMATICS-AND-PHYSICS.md) connects equations, units,
@@ -34,9 +40,17 @@ native Save/Load/refresh, saved-target restoration, Pause/Resume/Reset and
 reference invalidation after a manual material edit. Valid custom paths were
 entered through the keyboard editor. Closed freehand pointer drawing has seven
 component-handler tests; a successful curved mouse gesture was not replayed in
-Chrome. Stop for Andrew's testing before another stage, and obtain the intended
-publication decision separately. See the [four-bar guide](FOUR-BAR-PATH-VERIFICATION.md).
-Do not treat an earlier 166/195/237/298-test milestone as a new-stage rerun.
+Chrome. The subsequent Undo/selection/documentation sequence is authorised;
+publication remains a separate final step. See the [four-bar guide](FOUR-BAR-PATH-VERIFICATION.md).
+Do not treat an earlier 166/195/237/298/348-test milestone as the current rerun.
+
+The [revolute picking guide](REVOLUTE-PICKING-VERIFICATION.md) records actual
+Chrome translated-arc pivot error reduced from **54.08 mm** to
+**less than 1.31e-8 mm**, plus a **37° Z-rotated** case. The translated saved
+project passed native Load and Play/Pause/Resume/Reset; the rotated saved file
+passed Load and full refresh, then Save produced an assembly exactly equal to
+the original corrected download, including transforms and pivots. Existing
+incorrectly saved joints must be picked again; there is no automatic migration.
 
 1. Save outstanding Replit edits, then fetch the GitHub repository and check
    out `codex/built-in-demo-gallery` in Replit's Git interface. Review differences
@@ -98,9 +112,16 @@ Do not treat an earlier 166/195/237/298-test milestone as a new-stage rerun.
    assembly must invalidate the generated reference. Follow the
    [four-bar acceptance scope](FOUR-BAR-PATH-VERIFICATION.md); handler tests do
    not establish browser freehand drawing acceptance.
-10. Check the current landing feature groups, creator/social links, Replit UK
+10. Test Undo/Redo before and after a native edit, transform drag, cascade delete
+   and multi-part STEP import. Reopen a saved Undo-restored project and refresh;
+   geometry/assets must survive, while history starts afresh. Test new-edit Redo
+   branching and that focused text fields keep their own shortcuts. Click native,
+   imported and Boolean solids, confirm orange outlines and nearest visible hits,
+   and verify camera/gizmo drags do not select objects. Edit a Boolean explicitly;
+   its derived geometry must not gain an independent transform.
+11. Check the current landing feature groups, creator/social links, Replit UK
    Ambassador wording and labelled file controls. Preserve the Replit build credit.
-11. Record the final source/bundle identifiers and browser acceptance matrix.
+12. Record the final source/bundle identifiers and browser acceptance matrix.
     Republish from Replit, then repeat the unchanged Windmill gate and relevant
     user flows at the public URL. Local passes do not establish deployment acceptance.
 
@@ -146,3 +167,18 @@ should retain new provenance rather than overwrite old evidence as if it were
 fresh. This applies equally to tests run by Replit Agent, Codex or a human.
 This document is a handoff recipe, not authorization to publish; no deployment
 or dependency changes are included in the current stage.
+
+## Source-publication preparation
+
+Follow the [release checklist](PUBLIC-RELEASE-CHECKLIST.md) and retain the project's
+MIT licence, [third-party notices](../THIRD-PARTY-NOTICES.md), Replit configuration,
+lockfile and evidence. The merge hook installs dependencies only; a Git merge
+no longer triggers database changes. Do not include local environment files,
+credentials, `.git`, dependencies or build output in a source archive.
+
+For a portable fresh evidence run, use
+`node scripts/src/capture-test-suite.mjs --output-dir <new-directory>`. It preserves
+the two historical reports overwritten by tests and records every test name,
+source, duration and result. Use the pinned configured Node 24 runtime in Replit;
+local Node 25 results are not a Node 24 pass. Final publication must still verify
+the existing Replit project's actual branch/build/domain settings.

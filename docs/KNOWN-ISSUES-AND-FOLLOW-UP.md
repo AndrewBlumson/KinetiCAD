@@ -1,18 +1,37 @@
 # Known issues and follow-up audit
 
-12 September 2026. Current implementation reviewed: `8e954ab` on
+12 September 2026. Original audit implementation baseline: `8e954ab` on
 `codex/built-in-demo-gallery`. Original local `main` reviewed: `d01f814`
 (`d01f8149bbf52fc1091aba82496d968466800643`, “Update docs for public GitHub
-release”). No fetch, application changes or deployment were part of this audit.
+release”). No fetch, application changes or deployment were part of that original
+audit. Later dispositions below link the subsequent implementation checkpoints.
 
 This reconciles the original issue notes with current code and recorded evidence.
-It is a queue for later work, not an instruction to begin fixing the items. The
-user requested one stage at a time, with their testing between stages. KinetiCAD
+It is a queue for later work, not an instruction to begin fixing the items.
+Future features require their own agreed scope and evidence. KinetiCAD
 remains the Replit-built project created by Andrew Blumson, co-built with Kevin
 Blumson; the existing Replit project remains its intended publishing destination.
 
 Later on 12 September, the native Boolean file-reopening gate passed and the
-user authorised stage 4, the local four-bar path designer. That bounded implementation is now locally verified in the [four-bar record](FOUR-BAR-PATH-VERIFICATION.md); the original audit's 298-test snapshot remains historical. The older feature requests below remain deferred.
+user authorised stage 4, the local four-bar path designer. That bounded implementation is now locally verified in the [four-bar record](FOUR-BAR-PATH-VERIFICATION.md); the original audit's 298-test snapshot remains historical. Entries still marked open below remain deferred.
+
+A subsequent bounded computer-use check reproduced the translated circular-edge/
+partial-arc hinge error described below. Its true-centre coordinate fix, three
+new regressions and scoped post-fix Chrome checks pass. That historical aggregate
+passed 351/351 tests across 51 files, with no failures/skips; workspace typecheck
+and CAD production build passed. This later source fix is separate from the original
+documentation-only audit.
+
+Document Undo/Redo and general native/Boolean canvas selection have since been
+implemented. Their [feature record](HISTORY-AND-SELECTION.md) and
+[combined test catalog](HISTORY-SELECTION-TEST-CATALOG.md) are the current
+evidence entry points. The final capture passed **382/382 tests across 54 files**,
+with zero failures, cancellations or skips; source inputs remained unchanged and
+historical-report restoration was verified in the
+[capture summary](evidence/history-selection/final/summary.json). Workspace
+typecheck, full production build and scoped production Chrome acceptance passed.
+Public release remains pending the [dependency security review](DEPENDENCY-SECURITY-REVIEW.md)
+and Replit/public-route acceptance.
 
 ## How to read the dispositions
 
@@ -22,10 +41,12 @@ user authorised stage 4, the local four-bar path designer. That bounded implemen
 - **not-freshly-verified:** the relevant complete acceptance check is not recorded for the current stage; this is not a confirmed failure.
 - **binding-limitation:** the installed library/API cannot currently express or expose the required behaviour through the implemented path. A future binding change needs its own investigation and regression checks.
 
-The current [status](CURRENT-STATUS.md), [test catalog](TEST-CATALOG.md) and
-[Boolean-stage validation record](boolean-simulation-validation.json) distinguish
+The current [status](CURRENT-STATUS.md), [test catalog](HISTORY-SELECTION-TEST-CATALOG.md) and
+[history/selection record](HISTORY-AND-SELECTION.md) distinguish
 automated tests, actual Chrome interaction, user review and publication. Test
-counts do not establish every UI path or every possible engineering model.
+counts do not establish every UI path or every possible engineering model. The
+[298-test audit catalog](TEST-CATALOG.md) and
+[Boolean-stage record](boolean-simulation-validation.json) retain their historical scope.
 
 ## Original source trail
 
@@ -71,17 +92,18 @@ behind the completed persistence checkbox.
 
 | Original issue and source | Current disposition and evidence | Concrete future acceptance check |
 | --- | --- | --- |
-| Partial-arc pivot metadata fixed, but real edge-to-mate picking unverified. [README 104][original-step], [HANDOVER 78][original-handover] | **not-freshly-verified.** [Topology extraction](../artifacts/kineticad/src/cad/operations/topology.ts) emits `circleCenter`; [MatePickerCoordinator](../artifacts/kineticad/src/three/MatePickerCoordinator.ts) uses it. Actual [arc CAD tests](../artifacts/kineticad/tests/sketch-arcs.test.mjs) verify trimmed-arc construction on all three sketch planes. They do not prove that a user-picked partial arc reaches the mate with the correct pivot. Neither the full-circle windmill nor the Boolean box face tests closes this gap. | Create a known partial circular rim, including a translated/rotated case. Click that actual edge in the revolute inspector, verify the stored pivot equals the true circle centre rather than the arc's sampled centroid, then Apply, Save/Load and run. Capture joint-axis, closure and angular-speed measurements with declared tolerances. |
+| Partial-arc edge-to-mate picking and true-centre pivots. [README 104][original-step], [HANDOVER 78][original-handover] | **resolved-with-limits.** Actual Chrome reproduced incorrect stored pivots for translated circular/partial-arc edges. [Topology extraction](../artifacts/kineticad/src/cad/operations/topology.ts) supplied the true part-local `circleCenter`; [MatePickerCoordinator](../artifacts/kineticad/src/three/MatePickerCoordinator.ts) incorrectly applied a world-to-local transform directly to that already-local value. The fix converts the world-space true centres (`a.centroid`/`b.centroid`) back to local pivots exactly once. Three new [overlay regressions](../artifacts/kineticad/tests/overlay-frames.test.mjs) failed before and pass after; the file passes 8/8. Post-fix Chrome repeated the translated picks, actual downloaded-project Save/Load and Play/Pause/Resume/Reset; a further 37° Z rotation and repick saved local pivots within **1.31×10⁻⁸ mm** of their true centres, against **10⁻⁶ mm**. See the [revolute-picking record](REVOLUTE-PICKING-VERIFICATION.md) and actual [translated](evidence/revolute-picking/after-fix.kineticad.json)/[rotated](evidence/revolute-picking/rotated-after-fix.kineticad.json) files. That hinge checkpoint passed 351/351 tests, workspace typecheck and CAD build. Browser motion here establishes lifecycle, not a measured speed/closure benchmark. | Preserve the true-centre edge pick → Apply → Save/Load → run regression with explicit transforms and pivot tolerances. The recorded cases do not certify every arc/transform/joint workflow; broader dynamic accuracy needs its own sampled axis/closure/speed measurements. **Earlier saved joints are not repaired automatically:** repick or recreate an affected joint, verify its pivots and save a new copy. The unchanged Windmill speed canary remains separately covered by the full suite. |
 | Hole position picker clears the selected face on the second click. [README 109][original-sketch], [HANDOVER 80][original-handover] | **resolved-with-limits.** The face and point are retained through the two-stage planar-face path. The unchanged [five picker regressions](../artifacts/kineticad/tests/hole-picker.test.mjs) cover top/bottom faces, mixed XYZ transforms, Clear face and replacement selection; [Chrome acceptance](CHROME-ACCEPTANCE-2026-09-12.md) includes actual native/imported Hole creation and editing. | Preserve those regressions when picking changes. Repeat a native and an imported transformed planar face through two actual clicks, change the hole diameter, and reopen the saved result. Do not extend this result to unsupported curved-face drilling. |
 | Multiple closed sketch loops, e.g. a plate outline plus a hole. [README 110/129][original-sketch], [HANDOVER 82][original-handover] | **still-open.** [sketchToWire.ts](../artifacts/kineticad/src/cad/operations/sketchToWire.ts) explicitly rejects multiple closed primitives. Connected single-loop line/arc profiles and numeric edits work, but [editable dimensions](SKETCH-DIMENSIONS-VERIFICATION.md) did not add inner wires or a general sketch constraint solver. | Define outer/inner-loop orientation and containment, including nested/disjoint/self-intersecting cases. Build and edit a plate/ring on XY/XZ/YZ, measure analytic volume/centroid, and verify Save/Load and downstream Hole/Boolean operations without accepting ambiguous profiles. |
 | Sketch on a selected face. [README 111/130][original-sketch], [HANDOVER 84][original-handover] | **still-open.** [PlanePicker](../artifacts/kineticad/src/components/PlanePicker.tsx) creates sketches only on XY/XZ/YZ. Plane-related types do not establish a working face-attachment workflow. | Define a stable face reference and local UV frame, then create a sketch on a rotated/translated planar face. Verify inward/outward extrusion, parent feature edits, invalid/deleted support faces and project reopening. State whether curved faces remain excluded. |
-| No undo/redo. [README 113/133][original-sketch], [HANDOVER 92][original-roadmap-handover] | **still-open.** [Store actions](../artifacts/kineticad/src/state/store.ts) have no document undo/redo history. Cancel, failed-edit rollback, demo return and **Recover previous** serve different purposes. | Specify document transactions before adding history. Exercise sketch/feature edits, imported assets, transforms, materials, joints and cascading deletion; undo/redo each through actual UI, test redo branching after a new edit and confirm history cannot resurrect invalid WASM handles. |
-| Boolean meshes cannot be picked in the 3D view. [README 108/136][original-sketch], [HANDOVER 86][original-handover], [replit.md 55][original-replit] | **resolved-with-limits.** Connected Boolean result topology is selectable in supported joint creation workflows; Fixed also accepts tree selection. [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md) records actual Fixed/Spherical paths, ready-geometry checks and pick-time revisions. General result click-to-select outside mate editing remains unimplemented; disconnected results render but are not physical mate targets. | First close the partial-arc and native-file checks above. For a later general selection stage, define whether clicking opens the Boolean editor or selects an object, verify occlusion and native/result overlap, and avoid implying an independently transformable result when its geometry is derived from inputs. |
+| No undo/redo. [README 113/133][original-sketch], [HANDOVER 92][original-roadmap-handover] | **implemented, with session limits.** [Document history](../artifacts/kineticad/src/state/documentHistory.ts) and [store actions](../artifacts/kineticad/src/state/store.ts) restore committed document edits, including cascading deletion, grouped drags and multi-part STEP imports. History excludes transient selections/previews and simulation frames, checks imported source availability before restoration, and resets motion. It is bounded to 50 changes/16 MiB of serialized snapshots and clears on Load, recovery, reload and demo boundaries. See [history semantics and evidence](HISTORY-AND-SELECTION.md). Cancel and **Recover previous** remain distinct operations. | Preserve undo/redo branching, no-op edits, grouped/cancelled changes, stale asynchronous restoration and original/demo isolation. Retain the actual imported delete → Undo → Save → Load → refresh path with exact assembly/asset comparisons. The history budget is not a bound on total renderer, worker or retained-asset memory; undo stacks are not saved in project files. |
+| Boolean meshes cannot be picked in the 3D view. [README 108/136][original-sketch], [HANDOVER 86][original-handover], [replit.md 55][original-replit] | **resolved-with-limits.** [ObjectPicker](../artifacts/kineticad/src/three/ObjectPicker.ts) now selects the nearest visible native/imported or finished Boolean shape outside editors, with orange CAD-edge outlines and empty-click clearing. Hidden/consumed inputs are excluded; camera and gizmo drags do not select. A disconnected result can be selected as a modelling feature, but cannot become a single physical body or joint target. Boolean editing is an explicit inspector action; derived results have no independent transform. See [selection evidence](HISTORY-AND-SELECTION.md) and the separate [supported joint-picking record](BOOLEAN-SIMULATION-VERIFICATION.md). | Retain real-Three raycasts through holes, visible/hidden overlap, coplanar result preference, compound islands, transformed outlines and drag suppression. Preserve curved-edge mate and native-file reopening regressions; ordinary object selection must not bypass editor or simulation guards. |
 | Inline Boolean input/tool/result thumbnails. [HANDOVER 95][original-roadmap-handover], [replit.md 56][original-replit] | **still-open.** [BooleanInspector](../artifacts/kineticad/src/components/inspectors/BooleanInspector.tsx) uses named input controls and a live scene preview; it does not contain the requested inline geometry thumbnails. | Verify a Union, ordered Subtract and Intersect with similarly named parts. Thumbnails must correspond to the current transformed input/result, handle regeneration failure and remain usable without replacing textual accessible names. |
 
 The completed [numeric sketch-dimension stage](SKETCH-DIMENSIONS-VERIFICATION.md)
 is a separate improvement. Its tested primitive editing and atomic rebuilds do
-not silently mark the multi-loop, face-sketch or undo items complete.
+not silently mark the multi-loop or face-sketch items complete. Document history
+is now covered by its own [implementation and evidence](HISTORY-AND-SELECTION.md).
 
 ## Physics and joint boundaries
 
@@ -96,12 +118,13 @@ not silently mark the multi-loop, face-sketch or undo items complete.
 
 | Original issue or source | Current disposition and evidence | Concrete future acceptance check |
 | --- | --- | --- |
+| Dependency advisory findings from the September publication review | **still-open.** The online audit returned 58 records (56 unique GHSA IDs): 11 critical, 28 high, 16 moderate and 3 low. The [security review](DEPENDENCY-SECURITY-REVIEW.md) distinguishes generation/build tooling, scaffold runtime and browser reachability; these are not 58 demonstrated exploits. Packages and lockfile remain unchanged, and passing functional tests does not establish a security-clean release. | Resolve the documented exposure/remediation decisions before public release. Any authorised dependency change needs fresh affected regressions, the full suite/build and a new audit; preserve the current numerical and source evidence rather than relabelling it. |
 | Cross-browser coverage beyond the original Chrome/Safari observations. [README 119][original-coverage] | **not-freshly-verified.** September interaction reports describe Chrome. Historical Safari observations are not a fresh pass for the new recovery, dimension or Boolean workflows. | Record current browser/OS/GPU versions and run startup, native file exchange/recovery, sketch picking, simulation and worker error handling in each supported browser. State unsupported combinations; do not infer support from a successful TypeScript build. |
 | Performance beyond a few parts. [README 120][original-coverage] | **not-freshly-verified.** Larger demo mechanisms and numerical studies exist, but no current systematic assembly-size, frame-time, memory or cold/warm latency envelope is published. [Demo results](demo-physics-results.json) and [Stewart workspace evidence](STEWART-WORKSPACE-AUDIT.md) validate their stated cases, not a scale limit. | Choose representative native/imported/Boolean fixtures at increasing sizes. Measure load/regeneration/Play latency, frame times, memory and long-running rebuild stability on named hardware, while retaining geometry and physics acceptance. |
 | WebGL2 fallback. [README 121/134][original-coverage], [HANDOVER 93][original-roadmap-handover] | **still-open, deferred.** CAD still requires desktop WebGPU. No WebGL2 renderer fallback exists. See [current status](CURRENT-STATUS.md). This old roadmap entry does not authorise changing the current renderer/support policy. | First obtain a support-scope decision. If a fallback is selected later, verify topology overlays, materials, picking and full model/physics lifecycle in both renderers, plus a clear failure path when neither is available. |
 | Mobile responsive CAD. [README 121/135][original-coverage], [HANDOVER 94][original-roadmap-handover] | **resolved-with-limits; scope changed.** The later explicit product decision is desktop-only CAD. Phone/tablet startup is blocked; the public information pages remain readable. See [device-access checks](CREATOR-PROFILE-AND-DESKTOP-ACCESS.md) and [tracked user request](NEXT-IMPLEMENTATION-TODO.md). Mobile CAD is not a promised unfinished feature. | Preserve direct-route startup blocking and readable public pages. Repeat on physical devices before publication. Reopening mobile CAD support would require a new product decision and an interaction design suitable for touch. |
-| Automated tests and GitHub Actions CI/CD. [HANDOVER 97][original-roadmap-handover] | **resolved-with-limits** for tests; **still-open** for repository CI. The current Node test suite and actual-kernel studies are catalogued in [TEST-CATALOG](TEST-CATALOG.md); manual Chrome acceptance is separately recorded. This is not an installed Playwright/Vitest end-to-end pipeline, and no tracked `.github/workflows` exists in the reviewed checkout. | Establish a reproducible CI job for supported Node/pnpm/build/test versions, retain logs and serialize memory-heavy OCCT runs. Any browser automation job must exercise real UI/file paths and report skips or unavailable GPU support honestly. Do not configure publication without a separate release decision. |
-| Local success versus the published Replit route. Historical deployed checks and [WASM/route notes][original-runtime] | **not-freshly-verified.** Current implementation evidence is local; latest Replit republish/public-route acceptance remains pending. Original deployed results retain their May provenance. See [current status](CURRENT-STATUS.md) and [Replit handoff](REPLIT-HANDOFF.md). | After an authorised republish of the correct source, open the actual public route in a fresh session. Verify `/` and `/app/` routing, CAD WASM startup, demo assets, project recovery/file paths and the unchanged 30 RPM windmill gate. Confirm creator/Replit identity and desktop gating on the deployed site. [StoryPage](../artifacts/landing/src/pages/StoryPage.tsx) still narrates the original five mate types; final release-copy acceptance must distinguish that historical story from the four currently supported joints. |
+| Automated tests and GitHub Actions CI/CD. [HANDOVER 97][original-roadmap-handover] | **resolved-with-limits** for tests; **still-open** for repository CI. The current Node test suite is catalogued in [HISTORY-SELECTION-TEST-CATALOG](HISTORY-SELECTION-TEST-CATALOG.md); actual-kernel studies and Chrome acceptance retain their separately recorded source scopes. This is not an installed Playwright/Vitest end-to-end pipeline, and no tracked `.github/workflows` exists in the reviewed checkout. | Establish a reproducible CI job for supported Node/pnpm/build/test versions, retain logs and serialize memory-heavy OCCT runs. Any browser automation job must exercise real UI/file paths and report skips or unavailable GPU support honestly. Do not configure publication without a separate release decision. |
+| Local success versus the published Replit route. Historical deployed checks and [WASM/route notes][original-runtime] | **not-freshly-verified.** Current implementation evidence is local; latest Replit republish/public-route acceptance remains pending. Original deployed results retain their May provenance. See [current status](CURRENT-STATUS.md) and [Replit handoff](REPLIT-HANDOFF.md). | After an authorised republish of the correct source, open the actual public route in a fresh session. Verify `/` and `/app/` routing, CAD WASM startup, demo assets, project recovery/file paths and the unchanged 30 RPM windmill gate. Confirm creator/Replit identity and desktop gating on the deployed site. Confirm the published Story and capability copy preserve the original build attribution while describing the four currently supported joint types accurately. |
 
 ## Historical regressions that should not be reclassified as open bugs
 
@@ -110,27 +133,32 @@ not silently mark the multi-loop, face-sketch or undo items complete.
 | Unsuffixed `Closed()` broke extrusion; enum coercion broke edge/face classes; builder-owned shape lifetimes broke geometry. [replit.md 64–74][original-runtime] | **resolved-with-limits.** The corrected binding calls, classification and ownership paths remain in current CAD code. Actual [operation tests](../artifacts/kineticad/tests/cad-operations.test.mjs), [STEP recovery tests](../artifacts/kineticad/tests/project-cad-roundtrip.test.mjs) and [picking tests](../artifacts/kineticad/tests/boolean-result-picking.test.mjs) cover relevant current behaviour. These old root causes are not newly observed failures. | Retain actual installed-OCCT solid validity/volume tests and real picking checks, especially after changing the binding or wrapper disposal. A mocked builder alone cannot establish B-rep validity. |
 | Empty-body deployed WASM response; `/app/app/simulator`; malformed `/appseeds/…` URLs. [replit.md 76–80][original-runtime], [277–320][original-routing] | **resolved-with-limits.** The pinned CDN WASM URL and explicit seed URL joining remain in [cadWorker.ts](../artifacts/kineticad/src/cad/cadWorker.ts) and [index.html](../artifacts/kineticad/index.html). Current Chrome reports exercise modeller/simulator navigation. The latest public deployment still needs its own check. | On an authorised Replit publish, verify non-empty WASM bytes and correct MIME/content, internal route navigation/reload, and actual JavaScript/JSON demo responses rather than an HTML fallback. Use the gallery for normal demo isolation; the legacy console seed loader is not equivalent to the durable recovery workflow. |
 
-## Suggested deferred order after the current stage
+## Publication preparation and later work
 
-1. **Close the original partial-arc acceptance gap:** exercise the real edge-to-mate
-   pivot workflow. This is verification first; do not assume a defect before
-   measuring one. The separate Boolean native Load gate has now passed.
-2. **Choose one modelling feature:** undo/redo, multi-loop sketches or face
-   sketches. Each needs its own document/reference model and user test stop.
-3. **Choose one engineering or interchange extension:** supported planar/local
+1. **Use the completed local evidence package:** the history/selection guide and
+   final combined catalog record 382 passing cases and scoped Chrome checks.
+   Resolve the dependency security review's remaining decisions before public
+   release. Earlier hinge and Boolean Load checkpoints remain historical;
+   previously incorrect saved joints still require repicking or recreation.
+2. **Prepare the existing Replit project for publication:** confirm the selected
+   source, configured Node runtime, owner decisions on visibility/support links,
+   and build/test results. After an authorised republish, check the actual public
+   routes and file/worker flows. Local acceptance does not establish deployment.
+3. **Choose a future modelling feature:** multi-loop sketches or face sketches
+   each need a defined document/reference model and independent verification.
+4. **Choose an engineering or interchange extension:** supported planar/local
    frames, rated assembly drives/contact, or STEP hierarchy/names/IGES. Binding
    investigations should precede promised UI capability.
-4. **Establish supported-platform and scale evidence:** fresh browser matrix,
+5. **Establish supported-platform and scale evidence:** fresh browser matrix,
    performance measurements and a reproducible CI job. Preserve desktop-only CAD
    unless the user explicitly changes that policy.
-5. **Release separately:** user review, optional support-link destination, owner
-   decision on repository visibility, authorised Replit republish and actual
-   public-route acceptance. None is implied by this documentation pass.
 
-The local four-bar path designer is now the **implemented, locally verified** stage in
-the [tracked queue](NEXT-IMPLEMENTATION-TODO.md). Broader assembly physics and
-general deformation remain later work. The historical issue audit itself made
-no application fixes, and no public deployment was started by it.
+The local four-bar designer, hinge correction, Undo/Redo and object selection
+are implemented and locally accepted for their recorded scopes; current work
+prepares the Replit handoff while dependency security decisions remain open.
+Broader assembly physics and general deformation remain later work in the
+[tracked queue](NEXT-IMPLEMENTATION-TODO.md). The historical issue audit itself
+made no application fixes, and this documentation refresh does not publish the app.
 
 [original-readme]: https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L90-L138
 [original-step]: https://github.com/AndrewBlumson/KinetiCAD/blob/d01f8149bbf52fc1091aba82496d968466800643/README.md#L88-L104

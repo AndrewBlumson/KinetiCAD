@@ -2,7 +2,7 @@
 
 Started 12 September 2026 from `81fd123`. Repository is private while development continues.
 
-The user requested one item at a time, with a stop after each completed item for their own testing. Do not begin the following item until that testing is complete and the user asks to continue.
+The latest authorised sequence is Undo/Redo, then improved object selection, then repository/publication preparation and documentation. Test each implementation before proceeding to the next. This supersedes the earlier request to wait for user input between those particular items; it does not authorise a public deployment or repository visibility change.
 
 ## 1. Adjustable crank-slider — implemented
 
@@ -58,13 +58,69 @@ The user authorised continuation on 12 September 2026. Package upgrades remain d
 - [x] Verify persistence, failed/stale builds, real Chrome interactions and regressions.
 - [x] Update equations, assumptions, raw evidence and current documentation, then stop for user testing.
 
-Current capture: **348/348 automated tests across 51 files**, full workspace
+Stage 4 capture: **348/348 automated tests across 51 files**, full workspace
 typecheck/build passed. Actual Chrome checks covered search/cancel, presets and
 keyboard coordinates, native model creation, Save/Load/refresh, motion controls,
-export and manual-reference invalidation. Pointer coordinate/closure handling has
-seven component tests; a curved live freehand gesture remains a distinct user
-interaction check. See [four-bar verification](FOUR-BAR-PATH-VERIFICATION.md) and
-[the complete current catalog](FOUR-BAR-TEST-CATALOG.md). Stop here for user testing.
+export and manual-reference invalidation. Actual Chrome also exercised a straight
+start/end drag and open-loop rejection. Seven component tests cover pointer
+coordinate/closure handling; no continuous curved live gesture is claimed,
+because the available mouse tool supports straight drags. See [four-bar verification](FOUR-BAR-PATH-VERIFICATION.md) and
+[the four-bar stage catalog](FOUR-BAR-TEST-CATALOG.md). That capture is separate
+from the targeted hinge-picking follow-up below.
+
+## Follow-up after stage 4 — revolute edge picking verified within the recorded scope
+
+Actual Chrome computer use reproduced an incorrect hinge pivot when picking a
+translated circle and partial circular arc. This is a measured picking defect,
+not a conclusion inferred from an untested UI path. The bounded fix and its
+recorded picking/persistence checks have passed. This does not start the later
+assembly-force or deformation stages.
+
+- [x] Reproduce the translated circular-edge/partial-arc error through the actual Chrome interface.
+- [x] Correct the coordinate conversion in `MatePickerCoordinator`: use each edge's true circle centre already transformed to world coordinates before converting it to a stored part-local pivot. The old path applied a world-to-local transform directly to already-local centre metadata.
+- [x] Add three regressions for translated native picks, shared centres under mixed XYZ rotation and identity-frame Boolean/native picks. All three failed before the fix and pass after it; the full overlay file passes **8/8**.
+- [x] Pass CAD production build and workspace typechecking.
+- [x] Repeat the translated circle/partial-arc picks in actual Chrome after the fix, Save and Load the actual download, and exercise Play/Pause/Resume/Reset. Rotate the arc 37° about Z in the UI, repick and save: local-pivot error is at most **1.31×10⁻⁸ mm**, against a **10⁻⁶ mm** acceptance bound.
+- [x] Complete the final full regression run: **351/351 tests across 51 files**, zero failures/skips. Workspace typecheck and CAD production build pass.
+
+The [revolute-picking record](REVOLUTE-PICKING-VERIFICATION.md) retains the
+reproduction, fix and acceptance evidence, including the actual
+[before-fix](evidence/revolute-picking/before-fix.kineticad.json),
+[after-fix](evidence/revolute-picking/after-fix.kineticad.json) and
+[rotated](evidence/revolute-picking/rotated-after-fix.kineticad.json) downloads.
+The browser motion checks establish lifecycle behaviour; this specific hinge
+case did not record a quantitative speed or joint-closure benchmark. The full
+suite retains the independent unchanged Windmill speed canary.
+
+Existing saved joints keep their
+stored pivots: this fix does **not** automatically repair them. Repick or recreate
+an affected joint, verify its attachment and save a new project copy. This closes
+the reproduced true-centre picking/persistence gap for the recorded fixtures;
+it does not certify every arc/transform/joint workflow.
+
+## 5. Undo/Redo — checkpoint passed
+
+- [x] Add bounded document history, atomic multi-action edits, imported source retention and async restoration guards.
+- [x] Add labelled buttons and model shortcuts while preserving text-input keyboard behaviour.
+- [x] Verify real store/controller regressions, numeric/material edits, native/STEP deletion, cascade restoration and multi-part import.
+- [x] Pass **369/369** tests, workspace typecheck and CAD build before selection work.
+- [x] Actual Chrome Save/Load/full refresh returns identical restored eight-part geometry, hinge and embedded STEP assets.
+
+## 6. Object selection — implemented and locally verified
+
+- [x] Select visible native/imported/Boolean solids by nearest canvas hit, with orange outlines.
+- [x] Keep camera/movement drags separate from clicks; retain editor topology-picking rules.
+- [x] Show derived Boolean details and an explicit edit action without an independent transform.
+- [x] Test in actual Chrome and the complete regression suite; retain [history/selection evidence](HISTORY-AND-SELECTION.md).
+
+## 7. Repository cleanup and documentation
+
+- [x] Refresh current guides, feature copy, source links, test catalog and release handoff.
+- [x] Document the [publication checklist](PUBLIC-RELEASE-CHECKLIST.md), implement ignore-rule/hook cleanup and third-party notices, and record scoped scans.
+- [x] Final local aggregate **382/382 tests across 54 files**, full workspace typecheck/build and actual Chrome selection/history checks pass.
+- [ ] Resolve the [dependency security review](DEPENDENCY-SECURITY-REVIEW.md) before public-release readiness; the user was asked whether to permit a separate security-only update pass. No package version changed.
+- [ ] Refresh the reviewed source archive and record its source identity/hash.
+- [ ] Replit runtime and final public-route checks remain release work.
 
 ## Following stages — not started
 - Assembly motor force limits and load behaviour, then validated contact and bearing friction in separate stages.

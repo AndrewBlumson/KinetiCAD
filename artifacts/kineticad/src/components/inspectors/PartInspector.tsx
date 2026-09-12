@@ -321,6 +321,15 @@ function NumericField({
 }) {
   const [draft, setDraft] = useState<string>(formatNumber(value, decimals));
   const focusedRef = useRef(false);
+  const dirtyRef = useRef(false);
+  const historyToken = useRef<number | null>(null);
+  const finishHistory = () => {
+    if (historyToken.current !== null) {
+      useKinetiCADStore.getState().endHistoryTransaction(historyToken.current);
+      historyToken.current = null;
+    }
+  };
+  useEffect(() => finishHistory, []);
 
   // Sync external value -> draft when the field isn't being edited (so a
   // gizmo drag updates the inspector live, but typing isn't clobbered).
@@ -329,6 +338,7 @@ function NumericField({
   }, [value, decimals]);
 
   const commit = (raw: string) => {
+    dirtyRef.current = false;
     const n = parseFloat(raw);
     if (!Number.isFinite(n)) {
       setDraft(formatNumber(value, decimals));
@@ -339,10 +349,11 @@ function NumericField({
   };
 
   const bump = (dir: 1 | -1, shift: boolean) => {
+    dirtyRef.current = false;
     const mult = shift ? 10 : 1;
     const next = value + dir * step * mult;
     onChange(next);
-    if (!focusedRef.current) setDraft(formatNumber(next, decimals));
+    setDraft(formatNumber(next, decimals));
   };
 
   return (
@@ -354,25 +365,29 @@ function NumericField({
         <input
           type="number"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => { dirtyRef.current = true; setDraft(e.target.value); }}
           onFocus={() => {
             focusedRef.current = true;
           }}
           onBlur={(e) => {
             focusedRef.current = false;
-            commit(e.target.value);
+            if (dirtyRef.current) commit(e.target.value);
+            finishHistory();
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               (e.target as HTMLInputElement).blur();
             } else if (e.key === "ArrowUp") {
               e.preventDefault();
+              if (historyToken.current === null) historyToken.current = useKinetiCADStore.getState().beginHistoryTransaction('Change part transform');
               bump(1, e.shiftKey);
             } else if (e.key === "ArrowDown") {
               e.preventDefault();
+              if (historyToken.current === null) historyToken.current = useKinetiCADStore.getState().beginHistoryTransaction('Change part transform');
               bump(-1, e.shiftKey);
             }
           }}
+          onKeyUp={e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') finishHistory(); }}
           step={step}
           data-testid={testId}
           className="w-full bg-transparent font-technical text-[11px] text-foreground px-1.5 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

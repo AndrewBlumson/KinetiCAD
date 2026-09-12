@@ -15,6 +15,7 @@ import SketchCursor from '@/components/SketchCursor';
 import SketchInspector from '@/components/inspectors/SketchInspector';
 import FeatureInspector from '@/components/inspectors/FeatureInspector';
 import PartInspector from '@/components/inspectors/PartInspector';
+import { UndoRedoControls } from '@/components/UndoRedoControls';
 import BooleanInspector from '@/components/inspectors/BooleanInspector';
 import MateInspector from '@/components/inspectors/MateInspector';
 import PartsPanelItem from '@/components/PartsPanelItem';
@@ -38,6 +39,7 @@ export default function Modeller() {
   const [, navigate] = useLocation();
   const { activeDemo, revision, setFileBusy } = useDemoWorkspace();
   const assembly = useKinetiCADStore((s) => s.assembly);
+  const historyBusy = useKinetiCADStore(s => s.historyBusy);
   const sketchSession = useKinetiCADStore((s) => s.sketchSession);
   const sketchDimensionsEditing = useKinetiCADStore((s) => s.sketchDimensionsEditing);
   const beginSketch = useKinetiCADStore((s) => s.beginSketch);
@@ -69,7 +71,7 @@ export default function Modeller() {
   const fileOperation = useRef(false);
   const recovery = useProjectRecovery();
   const exportEditorOpen = sketchSession.active || sketchDimensionsEditing || featureEditor.open || booleanEditor.open || mateEditor.open;
-  const exportDisabled = exportEditorOpen || projectBusy || exporting || exportingStep || importingStep;
+  const exportDisabled = exportEditorOpen || projectBusy || exporting || exportingStep || importingStep || historyBusy;
   const captureExportAssembly = () => {
     const current = useKinetiCADStore.getState();
     if (fileOperation.current) return null;
@@ -143,8 +145,11 @@ export default function Modeller() {
       }
       // The worker supplies the name directly from the XCAF document tree
       // (or a file-stem fallback).  No local name derivation needed here.
-      for (let i = 0; i < imported.length; i++) {
-        addImportedStepPart(imported[i].name, imported[i].shapeId);
+      const historyToken = useKinetiCADStore.getState().beginHistoryTransaction('Import STEP');
+      try {
+        for (const part of imported) addImportedStepPart(part.name, part.shapeId);
+      } finally {
+        useKinetiCADStore.getState().endHistoryTransaction(historyToken);
       }
       if (!activeDemo) await projectPersistence.flush();
       const durationMs = Math.round(performance.now() - t0);
@@ -327,12 +332,13 @@ export default function Modeller() {
 
   return (
     <div className="relative flex flex-col h-full bg-background text-foreground">
-      {projectBusy && <div role="status" aria-live="polite" className="absolute inset-0 z-[80] flex items-center justify-center bg-background/70 backdrop-blur-sm"><span className="rounded border bg-card px-5 py-4 text-sm">Preparing complete project…</span></div>}
+      {(projectBusy || historyBusy) && <div role="status" aria-live="polite" className="absolute inset-0 z-[80] flex items-center justify-center bg-background/70 backdrop-blur-sm"><span className="rounded border bg-card px-5 py-4 text-sm">{historyBusy ? 'Restoring model…' : 'Preparing complete project…'}</span></div>}
       {/* Top Toolbar */}
-      <header className="flex items-center gap-2 px-3 h-11 overflow-x-auto border-b border-border bg-card shrink-0 select-none">
+      <header className="flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-1 min-h-11 border-b border-border bg-card shrink-0 select-none">
         <span className="font-technical text-xs font-semibold tracking-widest uppercase text-[#FF6B1A]">
           KinetiCAD
         </span>
+        <UndoRedoControls disabled={exportDisabled || planePickerOpen || !!cascadePartId} />
         <DemoButton />
         <CrankSliderButton />
         <PathDesignerButton />
@@ -435,7 +441,7 @@ export default function Modeller() {
               label="Import STEP"
               description={sketchDimensionsEditing ? 'Apply or cancel sketch dimensions before importing.' : 'Add solid geometry from a STEP (.step or .stp) file to this assembly. Original CAD history and joints are not imported.'}
               icon={Upload}
-              disabled={sketchDimensionsEditing}
+              disabled={exportDisabled}
               busy={importingStep}
               onClick={() => stepFileInputRef.current?.click()}
               testId="import-step"
@@ -466,7 +472,7 @@ export default function Modeller() {
               label="Save project"
               description={sketchDimensionsEditing ? 'Apply or cancel sketch dimensions before saving.' : 'Download a complete editable KinetiCAD project, including sketches, features, materials, transforms, joints and embedded STEP geometry.'}
               icon={Download}
-              disabled={sketchDimensionsEditing}
+              disabled={exportDisabled}
               busy={projectBusy}
               onClick={handleSaveModel}
               testId="save-model"
@@ -478,7 +484,7 @@ export default function Modeller() {
                 ? 'Return to your model before loading a project. Load opens an editable KinetiCAD .json file and replaces the current project.'
                 : 'Open a saved KinetiCAD project (.json), replacing the current project with its sketches, features and joints.'}
               icon={Upload}
-              disabled={!!activeDemo || projectBusy || sketchDimensionsEditing}
+              disabled={!!activeDemo || exportDisabled}
               onClick={() => modelFileInputRef.current?.click()}
               testId="load-model"
             />
@@ -494,7 +500,7 @@ export default function Modeller() {
       <DemoWorkspaceBar />
       {!activeDemo && <div className="flex shrink-0 items-center justify-between border-b border-border bg-card px-3 py-1 text-[11px] text-muted-foreground" aria-label="Project recovery status">
         <span>{recovery.status === 'saving' ? 'Saving recovery copy…' : recovery.status === 'error' ? 'Autosave needs attention — download your project' : recovery.savedAt ? 'Recovery copy saved on this device' : 'Autosave ready'}</span>
-        <button type="button" className="underline hover:text-foreground disabled:opacity-40" disabled={projectBusy || sketchDimensionsEditing || !recovery.hasPrevious} title={recovery.hasPrevious ? 'Open the previous complete recovery copy' : 'A previous recovery copy becomes available after a second successful save'} onClick={handleRecoverPrevious}>Recover previous project</button>
+        <button type="button" className="underline hover:text-foreground disabled:opacity-40" disabled={exportDisabled || !recovery.hasPrevious} title={recovery.hasPrevious ? 'Open the previous complete recovery copy' : 'A previous recovery copy becomes available after a second successful save'} onClick={handleRecoverPrevious}>Recover previous project</button>
       </div>}
 
       {/* Main area */}
@@ -922,6 +928,7 @@ function CascadeDeleteDialog({
   onClose: () => void;
 }) {
   const assembly = useKinetiCADStore((s) => s.assembly);
+  const historyBusy = useKinetiCADStore(s => s.historyBusy);
   const getBooleansUsingPart = useKinetiCADStore(
     (s) => s.getBooleansUsingPart,
   );
@@ -1034,6 +1041,7 @@ function ActiveSketchInspector({
   primitiveCount: number;
 }) {
   const assembly = useKinetiCADStore((s) => s.assembly);
+  const historyBusy = useKinetiCADStore(s => s.historyBusy);
   const selection = useKinetiCADStore((s) => s.selection);
   // Phase 6: resolve the target part the same way `finishSketch` does so
   // the inspector preview matches reality.

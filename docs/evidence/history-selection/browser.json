@@ -1,0 +1,110 @@
+{
+  "recordedAt": "2026-09-12T20:52:14.062318+00:00",
+  "method": "Codex computer use through Chrome extension against actual production previews; no injected application state",
+  "routes": {
+    "cad": "http://127.0.0.1:5190/app/",
+    "landing": "http://127.0.0.1:5191/"
+  },
+  "observedScriptUrls": {
+    "cad": "/app/assets/index-CCw19IoO.js",
+    "landing": "/assets/index-KhDtOSTG.js"
+  },
+  "checks": [
+    {
+      "id": "native-selection",
+      "status": "passed",
+      "observation": "Click visible Line loop solid; orange CAD-edge outline, tree row and part inspector selected; no history change"
+    },
+    {
+      "id": "whole-drag-history",
+      "status": "passed",
+      "observation": "Drag blue Z handle:0 to13.409249608307825mm; one Undo removes the whole drag, keyboard Cmd+Shift+Z restores it; selection retains across active drag"
+    },
+    {
+      "id": "numeric-precision",
+      "status": "passed",
+      "observation": "Type X=-44.123456mm and commit with Tab; Save, focus the rounded display and leave without typing, Save again:exact assembly equality and original full precision retained"
+    },
+    {
+      "id": "input-shortcut",
+      "status": "passed",
+      "observation": "Cmd+Z while number input has focus does not undo the model; toolbar Undo after leaving it restores X=-45mm and retains prior drag Z"
+    },
+    {
+      "id": "hidden-and-empty",
+      "status": "passed",
+      "observation": "Hide selected Line loop; click its old location:empty selection and no remaining outline or gizmo; hidden solid does not intercept"
+    },
+    {
+      "id": "boolean-selection",
+      "status": "passed",
+      "observation": "Load existing fixed-joint Boolean fixture via native chooser; switch Modeller and click brass final result:orange edges, Subtract/material/source summary and explicit Edit Boolean operation; no result transform gizmo"
+    },
+    {
+      "id": "boolean-editor-isolation",
+      "status": "passed",
+      "observation": "While Boolean editor is open click the other cube:editor remains active; history and file operations disabled; change material Brass toAluminium, Apply; Undo and canvas repick restores Brass"
+    },
+    {
+      "id": "camera-drag",
+      "status": "passed",
+      "observation": "Orbit the camera while Boolean is selected:selection and original Redo branch retained"
+    },
+    {
+      "id": "demo-boundary",
+      "status": "passed",
+      "observation": "Enter Windmill demo:prior Redo history unavailable; hide post and Undo returns it; Return to my model restores Boolean assembly with fresh empty history"
+    },
+    {
+      "id": "production-landing",
+      "status": "passed",
+      "observation": "Desktop feature cards show Undo/Redo, solid selection and Draw a path; existing creator/social links and Replit UK Ambassador biography retained; no overlapping cards"
+    },
+    {
+      "id": "story-and-privacy",
+      "status": "passed",
+      "observation": "Actual navigation to Story and Privacy shows Replit/Andrew/Kevin attribution, separate later Codex credit, four supported joint types and limited physics claim; current IndexedDB/STEP/font/WASM facts visible"
+    }
+  ],
+  "developerLogs": {
+    "levels": [
+      "error",
+      "warn"
+    ],
+    "limitPerTab": 25,
+    "cad": [],
+    "landing": []
+  },
+  "screenshots": [
+    "boolean-selected.png",
+    "landing-features.png"
+  ],
+  "precisionComparison": {
+    "before": "precision-before-focus.kineticad.json",
+    "after": "precision-after-focus.kineticad.json",
+    "assemblyExactlyEqual": true,
+    "savedPositionMm": [
+      -44.123456,
+      30,
+      13.409249608307825
+    ]
+  },
+  "limitations": [
+    "The earlier Undo checkpoint includes native/STEP delete, cascade and import-reopen flows; these were not all reclicked on this final bundle.",
+    "No newly measured physics trajectory follows from editing, outlines or browser motion lifecycle observations.",
+    "Native input shortcut check establishes no model-history undo while focused; it does not certify every browser native text-edit behaviour.",
+    "No successful curved four-bar drawing gesture is newly claimed.",
+    "No public GitHub visibility change or Replit deployment; Story notice URL points at main and requires final merge/publication.",
+    "These observations are scoped product checks, not a proof of every UI path."
+  ],
+  "bundleSha256": {
+    "artifacts/kineticad/dist/public/assets/index-CCw19IoO.js": "794bc5797256d0653e0560e570d47fc379944687ba62512158f314ea6b259792",
+    "artifacts/landing/dist/public/assets/index-KhDtOSTG.js": "36be0daa1d84f369771080da0bddff2289da3446fcaf7842136cc6c8982de28e"
+  },
+  "evidenceSha256": {
+    "boolean-selected.png": "606c746ad44f766a80cd918529c1c4ca4f1c0d37735975d521ab5571dcd6cc6e",
+    "landing-features.png": "5b65b2bb0b420d1dcf5e4b14efea4548c8ed3a4da41961208c07e4e1ef69e9e8",
+    "precision-before-focus.kineticad.json": "193cb4b2ccc650ccecfc1d85e6d17b5c7c1cd1f856dff72972a411871439cc21",
+    "precision-after-focus.kineticad.json": "193cb4b2ccc650ccecfc1d85e6d17b5c7c1cd1f856dff72972a411871439cc21"
+  }
+}

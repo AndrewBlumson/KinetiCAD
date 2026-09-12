@@ -30,6 +30,8 @@ operating speed or user edit. Browser acceptance is recorded separately.
 
 ## Evidence
 
+The latest aggregate and browser acceptance are in the [history/selection catalog](HISTORY-SELECTION-TEST-CATALOG.md) and [editing verification](HISTORY-AND-SELECTION.md). Undo restores the stopped design document, including material and joint definitions; it does not rewind a live physical trajectory. Orange selection outlines and the enlarged grid are visual aids. They add no collision surface, force, constraint or independently movable Boolean result. The physical exclusions in the table remain unchanged.
+
 Previously recorded implementation baseline: `8e954ab`, **298 passing automated tests**.
 See [every test and its source](TEST-CATALOG.md), [equations and tolerances](MATHEMATICS-AND-PHYSICS.md)
 and [current acceptance status](CURRENT-STATUS.md). KinetiCAD remains the original

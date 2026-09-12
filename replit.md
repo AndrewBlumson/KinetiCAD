@@ -1,5 +1,7 @@
 # KinetiCAD Replit workspace
 
+Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](docs/HISTORY-AND-SELECTION.md) and [dependency security review](docs/DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+
 ## Overview
 
 KinetiCAD was originally built on Replit with Replit Agent by Andrew Blumson,
@@ -12,15 +14,22 @@ This is a pnpm/TypeScript monorepo. Each package manages its own dependencies.
 The CAD application is browser-local; API/database scaffold packages do not imply
 that a paid AI API or server is required for its geometry/physics calculations.
 
-**Current local acceptance: 348/348 tests across 51 files, no failures or skips,
-and a passing full workspace typecheck/build.** The source inputs remained
-unchanged during the run. The bounded local four-bar stage is captured in its
-[catalog](docs/FOUR-BAR-TEST-CATALOG.md) and [acceptance record](docs/four-bar-validation.json);
-the 298-test `8e954ab` baseline remains historical.
+The latest combined results are in the [current test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md)
+and [history/selection guide](docs/HISTORY-AND-SELECTION.md). Undo/Redo passed
+its 369-test checkpoint before object selection; older 298/348/351-test records
+retain their original source identities. The current source includes both
+features and the publication cleanups described in the [release checklist](docs/PUBLIC-RELEASE-CHECKLIST.md).
 [Current status](docs/CURRENT-STATUS.md) and [HANDOVER.md](HANDOVER.md)
 are the resumption entry points. The Boolean fixed-joint project has now passed
 actual native Load, run controls and refresh: [browser record](docs/evidence/boolean-reopen/browser.json).
 New-stage user review and Replit/public-route acceptance remain separate gates.
+The [revolute picking follow-up](docs/REVOLUTE-PICKING-VERIFICATION.md) records
+actual Chrome correction of the translated arc's **54.08 mm** pivot error to
+**less than 1.31e-8 mm**, including a **37° Z-rotated** case. The translated
+saved file passed native Load and Play/Pause/Resume/Reset; the rotated file
+passed Load and full refresh, then Save produced an assembly exactly equal to
+the original corrected download, including transforms and pivots. Existing
+incorrectly saved joints need to be picked again; there is no automatic migration.
 Historical phase logs below are not current backlog or automatic evidence for
 later revisions. Retain pinned packages and the committed lockfile; this stage
 requires no dependency upgrade, paid AI service or deployment change.
@@ -80,7 +89,7 @@ current-source section.
 
 **Historical Phase 12 notes, reconciled 12 September 2026:**
 - Boolean result topology is now available for supported joint creation. General
-  click-to-select outside mate editing remains deferred; editing is through the sidebar.
+  whole-solid canvas selection now outlines the result and shows its source/material summary; choose Edit Boolean operation to edit. A derived result has no independent transform.
 - Inline Boolean input/tool/result thumbnails remain deferred.
 - Do not revive the old mobile/WebGL roadmap: CAD is intentionally desktop WebGPU.
   See [the issue register](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md) for all dispositions.
@@ -220,17 +229,16 @@ also adds the local **Draw a path** four-bar designer described below. Its local
 automated and scoped Chrome checks are complete; these physical models and
 limits remain distinct. Andrew's testing remains the next step.
 
-The current serialized run contains **348 passing tests across 51 files**,
-without failures or skips. Its complete per-test results and source locations
-are in [FOUR-BAR-TEST-CATALOG.md](docs/FOUR-BAR-TEST-CATALOG.md) and
-[four-bar-validation.json](docs/four-bar-validation.json). The earlier 298-test
-[catalog](docs/TEST-CATALOG.md) and [inventory](docs/test-inventory-results.json)
-are preserved as the prior baseline.
+The latest serialized run is catalogued in [HISTORY-SELECTION-TEST-CATALOG.md](docs/HISTORY-SELECTION-TEST-CATALOG.md).
+Earlier four-bar and hinge captures preserve their 348/351-test scope. Complete
+per-test results, original reports, source hashes and actual browser downloads
+are retained alongside the [history/selection record](docs/HISTORY-AND-SELECTION.md).
 [MATHEMATICS-AND-PHYSICS.md](docs/MATHEMATICS-AND-PHYSICS.md) records equations,
 units, independent references, tolerances and observed errors. Preserve the
 original Windmill **π ±5e-7 rad/s after five simulated seconds** gate.
 
-The current full workspace typecheck/build passed. Recorded Chrome
+See the current catalog and build logs for the final workspace build and
+typecheck status; each older stage retains its own acceptance scope. Recorded Chrome
 computer-use checks by Codex are linked by stage in [the docs index](docs/README.md).
 Their source/bundle scope matters. Actual Boolean downloads and refresh/new-tab
 recovery passed. The subsequent [fixed-joint file-dialog check](docs/evidence/boolean-reopen/browser.json)
@@ -577,8 +585,12 @@ restoration of the original workspace. Regenerate fixtures with
 `test:all` runs test files sequentially. Focused scripts include `test:project`,
 `test:controller`, `test:workspace`, `test:engineering`, `test:transforms` and
 `test:beam`, plus the earlier CAD/physics suites. The completed 298-case baseline
-includes seven actual-worker assembly-export regressions. The fresh four-bar
-aggregate passes all 348 tests; use its named catalog for current source-level coverage.
+includes seven actual-worker assembly-export regressions. The earlier four-bar
+aggregate passed all 348 tests. The hinge checkpoint passed **351/351** after
+three revolute picking frame regressions; use the
+[hinge verification](docs/REVOLUTE-PICKING-VERIFICATION.md) and
+[hinge-stage suite output](docs/evidence/revolute-picking/suite.txt) for that follow-up,
+while retaining the four-bar catalog's original 348-test scope.
 New four-bar tests cover pure geometry/search, real worker messages, native OCCT
 and Rapier, project/preflight/readout contracts, drawing handlers and Three.js
 trace-label projection. Handler/matrix tests do not establish browser drawing
@@ -869,3 +881,23 @@ SEO pass:
 ## Current examples: six editable gallery assemblies, adjustable crank-slider and bounded four-bar path designer; local checks complete, user/public acceptance pending
 ## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: top-level Chrome against local app or intended deployment
+
+## September release preparation: history and selection
+
+The authorised usability scope adds document Undo/Redo and nearest-visible-solid
+selection. See [usage, boundaries and checks](docs/HISTORY-AND-SELECTION.md).
+Model history is bounded, in-memory, grouped for drags/imports, and excludes
+solver frames, UI selection and previews. Load/recovery/demo changes start fresh
+history; Save retains the restored current model and its imported assets.
+
+The merge hook now only installs the frozen dependencies; it does not push a
+database schema. CAD needs no DB/paid-AI credentials. Local environment/key files
+are ignored and [third-party notices](THIRD-PARTY-NOTICES.md) preserve dependency
+licences. Repository visibility, main merge and Replit publication remain final
+owner-directed release steps. Use the [release checklist](docs/PUBLIC-RELEASE-CHECKLIST.md).
+
+Portable evidence capture: `node scripts/src/capture-test-suite.mjs --output-dir <new-directory>`.
+It records all serial test results and source fingerprints and preserves the two
+historical reports rewritten by tests. Do not run it concurrently with another
+CAD suite or source edits. The old `docs/evidence/four-bar/capture-suite.py` is
+a historical machine-specific capture, not the supported rerun command.

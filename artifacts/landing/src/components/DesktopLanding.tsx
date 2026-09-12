@@ -21,6 +21,7 @@ const FEATURE_COLS = [
       "Edge fillets, chamfers and depth/through holes",
       "Editable feature history and live previews",
       "Invalid dimension edits keep the last valid model",
+      "Undo and redo committed model changes",
     ],
   },
   {
@@ -31,6 +32,7 @@ const FEATURE_COLS = [
       "Translate and rotate with the 3D gizmo",
       "Exact numeric position and rotation controls",
       "Duplicate, rename and hide parts",
+      "Click solids to select and highlight their edges",
       "Union, subtract and intersect solid parts",
       "Revolute, prismatic, spherical and fixed joints",
       "Pick faces and edges for joint attachments",
@@ -75,6 +77,7 @@ const FEATURE_COLS = [
     label: "// Demos & mechanisms",
     items: [
       "Six editable demos plus an adjustable crank-slider",
+      "Draw a path and find a four-bar linkage locally",
       "Windmill and solar-system orrery",
       "Three-axis driven gimbal and kinetic mobile",
       "Material force lab: same force, different masses",
@@ -105,7 +108,7 @@ const TECH_ITEMS = [
   { label: "OpenCascade", sub: "B-rep kernel on WebAssembly" },
   { label: "Rapier3D", sub: "Rust physics, compiled to WASM" },
   { label: "Three.js r184", sub: "WebGPU renderer for desktop browsers" },
-  { label: "Browser-native", sub: "Zero install · Zero licence" },
+  { label: "Browser-native", sub: "Zero install · Free to use" },
 ];
 
 export function DesktopLanding() {
@@ -206,7 +209,7 @@ export function DesktopLanding() {
               color: "rgba(255,107,26,0.75)",
             }}
           >
-            No install&nbsp;&nbsp;·&nbsp;&nbsp;No licence&nbsp;&nbsp;·&nbsp;&nbsp;No CAD seat
+            No install&nbsp;&nbsp;·&nbsp;&nbsp;No paid CAD licence&nbsp;&nbsp;·&nbsp;&nbsp;No CAD seat
           </p>
           <p className="creator-byline">Created by <a href="#creator">Andrew Blumson</a> at Adevious AI</p>
         </div>

@@ -133,3 +133,62 @@ test('selection enlargement does not displace prismatic or planar anchors', () =
     overlay.dispose();
   }
 });
+
+// These are controlled topology fixtures, not an OCCT or browser execution.
+// They exercise the same final pick validator that the real inspector calls.
+const { getEdgeAxisWorld, validateRevolutePicks } = await import('../src/three/MatePickerCoordinator.ts');
+function circularPick(id, centre, radius, sweep = Math.PI / 2) {
+  const segments = 24;
+  const polyline = new Float32Array(Array.from({ length: segments + 1 }, (_, i) => {
+    const angle = sweep * i / segments;
+    return [centre[0] + radius * Math.cos(angle), centre[1] + radius * Math.sin(angle), centre[2]];
+  }).flat());
+  return { id, type: sweep === 2 * Math.PI ? 'circle' : 'arc', lengthMm: radius * sweep,
+    circleCenter: [...centre], midpoint: [centre[0] + radius * Math.cos(sweep / 2), centre[1] + radius * Math.sin(sweep / 2), centre[2]], polyline };
+}
+const pickTopology = edge => ({ edges: [edge], faces: [], faceForTriangle: new Uint32Array() });
+const validateCircularPair = (partA, edgeA, partB, edgeB) => validateRevolutePicks({
+  partA, edgeA, topologyA: pickTopology(edgeA), partB, edgeB, topologyB: pickTopology(edgeB),
+});
+
+test('revolute picks retain local true centres for the translated native circle and partial-arc browser fixture', () => {
+  const fixture = JSON.parse(readFileSync(new URL('../../../docs/fixtures/sketch-dimensions/edited-four-shapes.kineticad.json', import.meta.url), 'utf8'));
+  const partA = fixture.state.assembly.parts.find(p => p.id === 'qa-0');
+  const partB = fixture.state.assembly.parts.find(p => p.id === 'qa-3');
+  const edgeA = circularPick('ground-top-circle', [0, 0, 10], 10, 2 * Math.PI);
+  const edgeB = circularPick('sector-top-arc', [0, 0, 10], 15);
+  const beforeA = [...edgeA.circleCenter], beforeB = [...edgeB.circleCenter];
+  const result = validateCircularPair(partA, edgeA, partB, edgeB);
+  assert.equal(result.ok, true);
+  near(result.pivotLocalA, [0, 0, 10]);
+  near(result.pivotLocalB, [0, 0, 10]);
+  assert.notEqual(result.pivotLocalA, edgeA.circleCenter, 'stored pivots must not alias topology metadata');
+  assert.notEqual(result.pivotLocalB, edgeB.circleCenter, 'stored pivots must not alias topology metadata');
+  assert.deepEqual(edgeA.circleCenter, beforeA); assert.deepEqual(edgeB.circleCenter, beforeB);
+});
+
+test('revolute picks preserve shared world centres under mixed XYZ rotation without inverse-transforming local metadata twice', () => {
+  const angles = [23, -37, 61], shared = [37, -11, 64], centreA = [4, -2, 10], centreB = [-7, 3, 0];
+  const place = (id, centre) => ({ ...part(id), transform: {
+    positionMm: shared.map((v, i) => v - rotate(centre, angles)[i]), rotationDeg: angles,
+  } });
+  const partA = place('a', centreA), partB = place('b', centreB);
+  const edgeA = circularPick('partial-a', centreA, 15), edgeB = circularPick('partial-b', centreB, 9, Math.PI * .7);
+  const worldA = getEdgeAxisWorld(partA, edgeA.id, pickTopology(edgeA));
+  const worldB = getEdgeAxisWorld(partB, edgeB.id, pickTopology(edgeB));
+  near(worldA.centroid, shared); near(worldB.centroid, shared);
+  const result = validateCircularPair(partA, edgeA, partB, edgeB);
+  assert.equal(result.ok, true); near(result.pivotLocalA, centreA); near(result.pivotLocalB, centreB);
+  near(add(rotate(result.pivotLocalA, angles), partA.transform.positionMm), shared);
+  near(add(rotate(result.pivotLocalB, angles), partB.transform.positionMm), shared);
+  near(result.axisLocalA, [0, 0, 1]);
+});
+
+test('revolute picks support identity-frame Boolean topology paired with translated native circular topology', () => {
+  const resultBody = { ...part('boolean:result'), transform: { positionMm: [0, 0, 0], rotationDeg: [0, 0, 0] } };
+  const native = { ...part('native'), transform: { positionMm: [40, -15, 10], rotationDeg: [0, 0, 0] } };
+  const edgeA = circularPick('result-arc', [31, -22, 17], 12), edgeB = circularPick('native-circle', [-9, -7, 7], 8, 2 * Math.PI);
+  const result = validateCircularPair(resultBody, edgeA, native, edgeB);
+  assert.equal(result.ok, true); near(result.pivotLocalA, [31, -22, 17]); near(result.pivotLocalB, [-9, -7, 7]);
+  near(add(result.pivotLocalB, native.transform.positionMm), result.pivotLocalA);
+});
