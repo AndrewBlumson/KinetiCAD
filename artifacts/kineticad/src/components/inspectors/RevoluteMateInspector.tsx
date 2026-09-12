@@ -7,11 +7,11 @@
 
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
-import { getPartMeshLayer } from "@/three/partMeshLayerRef";
+import { getAssemblyBody } from "@/state/assemblyBodies";
+import { captureBooleanGeometryHash, getAssemblyBodyTopology } from "@/three/booleanResultLayerRef";
 import {
   validateRevolutePicks,
   isCircularEdge,
-  worldToLocalPoint,
   type Vec3,
 } from "@/three/MatePickerCoordinator";
 import MateInspectorShell, {
@@ -48,10 +48,16 @@ export default function RevoluteMateInspector() {
     if (!selection || selection.kind !== "edges") return;
     if (selection.edgeIds.length === 0) return;
 
-    const layer = getPartMeshLayer();
-    if (!layer) return;
-    const topology = layer.getPartTopology(selection.partId);
+    const topology = getAssemblyBodyTopology(selection.partId);
     if (!topology) return;
+    let booleanGeometryHashes: Record<string, string> | undefined;
+    try {
+      booleanGeometryHashes = captureBooleanGeometryHash(selection.partId, editor.params.booleanGeometryHashes);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+      clearSelection();
+      return;
+    }
 
     const edge = topology.edges.find((e) => e.id === selection.edgeIds[0]);
     if (!edge) return;
@@ -62,14 +68,11 @@ export default function RevoluteMateInspector() {
     }
 
     if (editor.stage === "pick-a") {
-      const part = assembly.parts.find((p) => p.id === selection.partId);
+      const part = getAssemblyBody(assembly, selection.partId);
       if (!part) return;
-      // TODO: frame-mismatch when Part A has non-identity world transform;
-      // edge.midpoint is in part-local body space but worldToLocalPoint
-      // treats it as world space — harmless for identity-transform parts
-      // (e.g. the seeded windmill post) but wrong in the general case.
-      // See arc-pivot fix 15/05/2026.
-      const localPoint = worldToLocalPoint(edge.midpoint as Vec3, part.transform);
+      // OCCT topology is already local to this body. Boolean result bodies
+      // use an identity frame because their geometry is baked in world space.
+      const localPoint = [...edge.midpoint] as Vec3;
       // eslint-disable-next-line no-console
       console.log("[mate-create-pivot]", {
         stage: "pick-a",
@@ -81,6 +84,7 @@ export default function RevoluteMateInspector() {
       });
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partA: selection.partId,
         pivotA: { kind: "edge", edgeId: edge.id, localPoint },
       });
@@ -96,12 +100,12 @@ export default function RevoluteMateInspector() {
         clearSelection();
         return;
       }
-      const partA = assembly.parts.find((p) => p.id === editor.params.partA);
+      const partA = getAssemblyBody(assembly, editor.params.partA);
       if (!partA || !editor.params.pivotA || editor.params.pivotA.kind !== "edge") {
         setError("Re-pick the first piece.");
         return;
       }
-      const topologyA = layer.getPartTopology(editor.params.partA!);
+      const topologyA = getAssemblyBodyTopology(editor.params.partA!);
       const edgeA = topologyA?.edges.find(
         (e) => e.id === (editor.params.pivotA as { edgeId: string }).edgeId,
       );
@@ -109,7 +113,7 @@ export default function RevoluteMateInspector() {
         setError("Re-pick the first piece.");
         return;
       }
-      const partB = assembly.parts.find((p) => p.id === selection.partId);
+      const partB = getAssemblyBody(assembly, selection.partId);
       if (!partB) return;
       const result = validateRevolutePicks({
         partA,
@@ -137,6 +141,7 @@ export default function RevoluteMateInspector() {
       });
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partB: selection.partId,
         pivotA: {
           ...(editor.params.pivotA as { kind: "edge"; edgeId: string; localPoint: Vec3 }),
@@ -152,7 +157,7 @@ export default function RevoluteMateInspector() {
   }, [
     selection,
     editor,
-    assembly.parts,
+    assembly,
     setParams,
     setStage,
     setError,
@@ -161,12 +166,12 @@ export default function RevoluteMateInspector() {
 
   if (!editor.open || editor.params.type !== "revolute") return null;
 
-  const partA = assembly.parts.find((p) => p.id === editor.params.partA);
-  const partB = assembly.parts.find((p) => p.id === editor.params.partB);
+  const partA = getAssemblyBody(assembly, editor.params.partA);
+  const partB = getAssemblyBody(assembly, editor.params.partB);
   const canApply =
     editor.stage === "ready" &&
-    !!editor.params.partA &&
-    !!editor.params.partB &&
+    !!partA &&
+    !!partB &&
     !!editor.params.pivotA &&
     !!editor.params.pivotB &&
     !!editor.params.axisLocal;

@@ -1,4 +1,8 @@
-import { lazy, Suspense, useState } from 'react';
+import { getCadKernel } from '@/cad/cadClient';
+import { regenerateBooleanBody } from '@/features/booleanBodies';
+import { getMaterial } from '@/cad/materials';
+import { planAssemblySimulation, assemblyPhysicsSignature } from '@/physics/assemblySimulation';
+import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { useKinetiCADStore } from '@/state/store';
 import { CrankSliderButton, DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import { ForceExperimentControls, ForceExperimentMeasurements } from '@/components/demos/ForceExperimentPanel';
@@ -27,7 +31,11 @@ export default function Simulator() {
   const setSimulationPaused = useKinetiCADStore((s) => s.setSimulationPaused);
   const setSimulationSpeed = useKinetiCADStore((s) => s.setSimulationSpeed);
   const resetSimulation = useKinetiCADStore((s) => s.resetSimulation);
-  const parts = useKinetiCADStore((s) => s.assembly.parts);
+  const assembly = useKinetiCADStore((s) => s.assembly);
+  const parts = assembly.parts;
+  const physicalPlan = useMemo(() => { try { return { plan: planAssemblySimulation(assembly), error: null }; } catch (error) { return { plan: null, error: (error as Error).message }; } }, [assembly]);
+  const booleanCheck = useBooleanPhysicalCheck(assembly);
+  const bodyRows = [...(physicalPlan.plan?.parts ?? []), ...(physicalPlan.plan?.booleans.map(b => ({ id: b.id, name: b.feature.resultPartName })) ?? [])];
   const mates = useKinetiCADStore((s) => s.assembly.mates);
   const hasAssemblyBooleans = useKinetiCADStore((s) => s.assembly.booleanFeatures.length > 0);
   const forceCompleted = useForceMeasurements((s) => s.completed);
@@ -40,7 +48,7 @@ export default function Simulator() {
     && simulation.simulationTimeMs >= Math.floor((duration + 1e-7) / simulation.timeStepMs) * simulation.timeStepMs - 1e-7);
 
   const preparingGeometry = readyRevision !== revision;
-  const canPlay = !hasAssemblyBooleans && parts.some((part) => part.visible && part.features.length > 0) && !preparingGeometry;
+  const canPlay = bodyRows.length > 0 && !physicalPlan.error && !booleanCheck.error && !booleanCheck.loading && !preparingGeometry;
   const isRunning = simulation.running;
   const isPaused = simulation.paused;
 
@@ -102,16 +110,15 @@ export default function Simulator() {
         <EngineeringTestsButton />
         <CrankSliderButton />
         <DemoButton />
-        {preparingGeometry && !hasAssemblyBooleans && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
+        {(preparingGeometry || booleanCheck.loading) && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
         <SimStatus running={isRunning} paused={isPaused} completed={completed} />
       </header>
       <DemoWorkspaceBar />
       {(activeDemo?.id === 'stewart-platform' || activeDemo?.id === 'crank-slider') && simulation.sketchGeometryEdited && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-2 text-xs leading-relaxed text-orange-200">
         This demo’s sketch dimensions have changed. Its original motion presets and reference comparisons are disabled. Reset the demo to restore them.
       </p>}
-      {hasAssemblyBooleans && <p role="status" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-3 text-xs leading-relaxed text-orange-200">
-        Assembly Boolean results are not ready for rigid-body simulation. Export the final assembly as STEP in the Modeller, then import those solids and define their materials and joints. Native cuts within a part already simulate normally.
-      </p>}
+      {(physicalPlan.error || booleanCheck.error) && <p role="alert" className="border-b border-orange-500/30 bg-orange-500/5 px-4 py-3 text-xs text-orange-200">{physicalPlan.error || booleanCheck.error}</p>}
+      {hasAssemblyBooleans && !physicalPlan.error && !booleanCheck.error && <p className="border-b border-border px-4 py-2 text-xs text-muted-foreground">Finished Boolean solids run directly. Construction inputs are excluded; materials and fixed-base choices come from each result’s Boolean editor.</p>}
 
       <div className="flex flex-1 overflow-hidden">
         <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart || isCrankSlider ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
@@ -121,11 +128,11 @@ export default function Simulator() {
               <ul className="mt-2 space-y-1">{parts.map(p => <li key={p.id}>{p.name}</li>)}</ul>
             </details>
           </> : <>
-          <SidebarSection title={hasAssemblyBooleans ? 'CAD parts' : 'Rigid Bodies'}>
-            {parts.length === 0 ? (
-              <EmptyState text="No parts in assembly" />
+          <SidebarSection title="Rigid Bodies">
+            {bodyRows.length === 0 ? (
+              <EmptyState text={physicalPlan.error ? "Resolve the simulation issue shown above" : "No parts in assembly"} />
             ) : (
-              parts.map((p) => (
+              bodyRows.map((p) => (
                 <SidebarRow key={p.id} primary={p.name} secondary={p.id.slice(0, 8)} />
               ))
             )}
@@ -152,12 +159,23 @@ export default function Simulator() {
           </Suspense>
           <SimDashboard
             simulationTimeMs={simulation.simulationTimeMs}
-            bodyCount={hasAssemblyBooleans ? 0 : parts.filter(p => p.visible && p.features.length > 0).length}
-            jointCount={hasAssemblyBooleans ? 0 : mates.length}
+            bodyCount={bodyRows.length}
+            jointCount={mates.length}
           />
         </main>
 
         <aside className={`${isStewart || isCrankSlider ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
+          {hasAssemblyBooleans && <SidebarSection title="Finished solid properties">
+            <div className="px-3 py-2 text-xs space-y-3">{booleanCheck.rows.map(row => <div key={row.id}>
+              <p className="font-semibold">{row.name}</p>
+              <p>{row.material} · {row.fixed ? 'Fixed to world' : 'Free / joint constrained'}</p>
+              <p>Volume: {row.volume.toFixed(3)} mm³</p><p>Mass: {row.mass.toPrecision(6)} kg</p>
+              <details><summary className="cursor-pointer">Centre of mass and inertia</summary>
+                <p>COM (world at start): {row.com.map(v => v.toFixed(3)).join(', ')} mm</p>
+                <p>Principal moments: {row.inertia.map(v => v.toPrecision(6)).join(', ')} kg·mm²</p>
+              </details>
+            </div>)}<p className="text-muted-foreground">Calculated from each finished OpenCascade solid with uniform material density.</p></div>
+          </SidebarSection>}
           {isCrankSlider && <CrankSliderMeasurements />}
           {forceExperiment ? <ForceExperimentControls /> : <>
           {isStewart && <StewartMeasurements />}
@@ -321,4 +339,34 @@ function KvRow({ label, value }: { label: string; value: string }) {
       <span className="text-foreground/80 tabular-nums">{value}</span>
     </div>
   );
+}
+
+
+type BooleanPhysicalRow = { id: string; name: string; material: string; fixed: boolean; volume: number; mass: number; com: number[]; inertia: number[] };
+function useBooleanPhysicalCheck(assembly: import('@/state/schemas').Assembly) {
+  const signature = useMemo(() => assemblyPhysicsSignature(assembly), [assembly]);
+  const [check, setCheck] = useState<{ signature: string; loading: boolean; error: string | null; rows: BooleanPhysicalRow[] }>({ signature: '', loading: false, error: null, rows: [] });
+  useEffect(() => {
+    let alive = true;
+    if (!assembly.booleanFeatures.length) { setCheck({ signature, loading: false, error: null, rows: [] }); return; }
+    setCheck({ signature, loading: true, error: null, rows: [] });
+    void (async () => {
+      const plan = planAssemblySimulation(assembly);
+      const cad = await getCadKernel();
+      const rows: BooleanPhysicalRow[] = [];
+      for (const result of plan.booleans) {
+        const body = await regenerateBooleanBody(result.feature, assembly.parts, cad);
+        const material = getMaterial(result.materialId);
+        rows.push({ id: result.id, name: result.feature.resultPartName, material: material.name,
+          fixed: result.id === plan.groundId, volume: body.massProperties.volumeMm3,
+          mass: body.massProperties.massKg * material.densityGcm3, com: body.massProperties.comLocal,
+          inertia: body.massProperties.principalInertiaKgMm2.map(v => v * material.densityGcm3) });
+      }
+      if (alive) setCheck({ signature, loading: false, error: null, rows });
+    })().catch(error => { if (alive) setCheck({ signature, loading: false, error: error.message, rows: [] }); });
+    return () => { alive = false; };
+    // Signature deliberately excludes per-frame state and derived native mass readouts.
+  }, [signature]);
+  if (!assembly.booleanFeatures.length) return { loading: false, error: null, rows: [] };
+  return check.signature === signature ? check : { loading: true, error: null, rows: [] };
 }

@@ -12,6 +12,7 @@
 import { useState } from "react";
 import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useKinetiCADStore } from "@/state/store";
+import { getEffectiveGroundBodyId } from "@/state/assemblyBodies";
 import type { Feature, Part, SketchPlane } from "@/state/schemas";
 import PartContextMenu from "./PartContextMenu";
 
@@ -39,8 +40,7 @@ export default function PartsPanelItem({
   const duplicatePart = useKinetiCADStore((s) => s.duplicatePart);
   const setGroundPart = useKinetiCADStore((s) => s.setGroundPart);
   const assembly = useKinetiCADStore((s) => s.assembly);
-  const effectiveGroundId =
-    assembly.groundPartId || assembly.parts[0]?.id || "";
+  const effectiveGroundId = getEffectiveGroundBodyId(assembly);
   const isGround = effectiveGroundId === part.id;
 
   const [editingName, setEditingName] = useState(false);

@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useKinetiCADStore } from "@/state/store";
+import { getAssemblyBodyName } from "@/state/assemblyBodies";
 import type { Mate, Part } from "@/state/schemas";
 
 const MATE_GLYPH: Record<Mate["type"], string> = {
@@ -43,7 +44,6 @@ export type MatesPanelItemProps = {
 
 export default function MatesPanelItem({
   mate,
-  parts,
   selected,
   indexAmongType,
   onClick,
@@ -51,11 +51,12 @@ export default function MatesPanelItem({
   const renameMate = useKinetiCADStore((s) => s.renameMate);
   const removeMate = useKinetiCADStore((s) => s.removeMate);
   const sixAxisControl = useKinetiCADStore((s) => !!s.simulation.stewartMotion);
+  const assembly = useKinetiCADStore((s) => s.assembly);
 
   const defaultName = `${MATE_TYPE_LABEL[mate.type]} ${indexAmongType + 1}`;
   const displayName = mate.name && mate.name.trim() ? mate.name : defaultName;
-  const partA = parts.find((p) => p.id === mate.partA)?.name ?? "?";
-  const partB = parts.find((p) => p.id === mate.partB)?.name ?? "?";
+  const partA = getAssemblyBodyName(assembly, mate.partA) ?? "?";
+  const partB = getAssemblyBodyName(assembly, mate.partB) ?? "?";
   const motorLine = sixAxisControl && /^stewart-slider-[1-6]$/.test(mate.id)
     ? 'Six-axis length control'
     : motorSummary(mate);

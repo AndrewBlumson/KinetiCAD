@@ -94,6 +94,8 @@ export type FaceMetadata = {
 };
 
 export type TessellatedMesh = {
+  /** Populated for Boolean results; only one closed solid can be a result body. */
+  solidCount?: number;
   positions: Float32Array;
   normals: Float32Array;
   indices: Uint32Array;
@@ -257,6 +259,17 @@ export type MassPropertiesResult = {
 };
 
 /**
+ * One connected finished assembly Boolean solid. Input transforms are baked
+ * into both the mesh and mass-property frame: use an identity body transform.
+ * Density is exactly 1 g/cm³; apply the chosen uniform material afterwards.
+ * The mass and mesh come from the same live OCCT solid, never the source parts.
+ */
+export type BooleanBodyResult = {
+  mesh: TessellatedMesh;
+  massProperties: MassPropertiesResult;
+};
+
+/**
  * Metadata returned by `importStep` for a single B-rep body extracted
  * from the STEP file. The shape itself stays in the CAD worker's in-memory
  * registry; this record carries the tessellated mesh (already on the main
@@ -319,6 +332,8 @@ export type CadKernelApi = {
    * body shape first and the tool shape second.
    */
   booleanOp: (args: BooleanOpArgs) => Promise<TessellatedMesh>;
+  /** Build one connected Boolean rigid body; empty/disconnected results reject. */
+  buildBooleanBody: (args: BooleanOpArgs) => Promise<BooleanBodyResult>;
   /**
    * Phase 8 — re-execute the upstream feature chain and return the tip
    * shape's volume / mass / centre-of-mass / principal inertia. Used by

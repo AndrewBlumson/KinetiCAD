@@ -1,3 +1,4 @@
+import { setBooleanResultLayer } from "./booleanResultLayerRef";
 // React-owned Three.js scene. Mounts a single canvas, builds the WebGPU
 // renderer, runs the orbit camera and render loop, and renders both the
 // committed part meshes (PartMeshLayer, driven by the regen pipeline) and
@@ -71,6 +72,7 @@ import {
 } from "./FaceHighlightLayer";
 import {
   createTopologyPicker,
+  topologyPositionsInWorld,
   type TopologyPicker,
 } from "./TopologyPicker";
 import {
@@ -380,8 +382,10 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           // topology. An empty workspace is ready too: its runner must observe
           // later Play requests after the user creates geometry.
           if (partMeshLayer && simulationLayer) {
-            const visibleSolids = useKinetiCADStore.getState().assembly.parts
-              .filter((part) => part.visible && part.features.length > 0);
+            const current = useKinetiCADStore.getState();
+            const consumed = new Set(current.assembly.booleanFeatures.filter(b => current.mode === 'simulator' || b.hideInputs).flatMap(b => b.inputPartIds));
+            const visibleSolids = current.assembly.parts
+              .filter((part) => part.visible && part.features.length > 0 && !consumed.has(part.id));
             const ready = visibleSolids.every((part) =>
               partMeshLayer!.getPartMesh(part.id) && partMeshLayer!.getPartTopology(part.id));
             if (reportedAssemblyReady !== ready) {
@@ -402,6 +406,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
                 const mesh = partMeshLayer.getPartMesh(part.id);
                 if (mesh) { mesh.updateWorldMatrix(true, false); bounds.expandByObject(mesh); }
               }
+              for (const result of booleanResultLayer?.getVisiblePartMeshes() ?? []) bounds.expandByObject(result.mesh);
               if (!bounds.isEmpty()) {
                 const centre = bounds.getCenter(new THREE.Vector3());
                 const radius = bounds.getSize(new THREE.Vector3()).length() * 0.5;
@@ -427,7 +432,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           // assembly retains the design pose while simulation meshes move.
           mateVisualizer?.updatePoses((partId) => simulationLayer?.group.visible
             ? simulationLayer.group.getObjectByName(`sim:${partId}`) ?? null
-            : partMeshLayer?.getPartMesh(partId) ?? null);
+            : partMeshLayer?.getPartMesh(partId) ?? booleanResultLayer?.getPartMesh(partId) ?? null);
 
           if (cameraTween && controls) {
             const t = Math.min(
@@ -459,7 +464,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           }
 
           forceLabels.update(useKinetiCADStore.getState().simulation.forceExperiment?.partIds ?? [], camera,
-            (id) => simulationLayer?.group.visible ? simulationLayer.group.getObjectByName(`sim:${id}`) ?? null : partMeshLayer?.getPartMesh(id) ?? null);
+            (id) => simulationLayer?.group.visible ? simulationLayer.group.getObjectByName(`sim:${id}`) ?? null : partMeshLayer?.getPartMesh(id) ?? booleanResultLayer?.getPartMesh(id) ?? null);
           renderer.render(scene, camera);
           frameCounter += 1;
         };
@@ -534,6 +539,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
         // React inspectors (mate inspectors, etc.) can read per-part topology
         // without coupling to the WebGPU scene context.
         setPartMeshLayer(partMeshLayer);
+        setBooleanResultLayer(booleanResultLayer);
         // The render loop starts the runner after the first solid meshes are
         // ready. Both refs are published before the runner captures ownership.
         edgeHighlightLayer.setResolution(canvasResW, canvasResH);
@@ -546,6 +552,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           domElement: renderer.domElement,
           camera,
           partMeshLayer,
+          booleanResultLayer,
           edgeLayer: edgeHighlightLayer,
           faceLayer: faceHighlightLayer,
           store: useKinetiCADStore,
@@ -619,7 +626,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             }
             return;
           }
-          const mesh = partMeshLayer.getPartMesh(sel.partId);
+          const mesh = partMeshLayer.getPartMesh(sel.partId) ?? booleanResultLayer?.getPartMesh(sel.partId);
           if (!mesh) {
             // Part exists but its mesh isn't ready (no base feature yet,
             // or regen still pending). Detach until it shows up.
@@ -691,8 +698,9 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           }
           // Edges selection
           if (sel?.kind === "edges") {
-            const topology = partMeshLayer.getPartTopology(sel.partId);
-            if (!topology) {
+            const topology = partMeshLayer.getPartTopology(sel.partId) ?? booleanResultLayer?.getPartTopology(sel.partId);
+            const mesh = partMeshLayer.getPartMesh(sel.partId) ?? booleanResultLayer?.getPartMesh(sel.partId);
+            if (!topology || !mesh) {
               // Topology not loaded yet (regen in flight, or part hidden by
               // live preview). Clear visuals but keep the selection — it
               // may resolve once the regen finishes.
@@ -706,7 +714,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
             for (const id of sel.edgeIds) {
               const e = lookup.get(id);
               if (e) {
-                polylines.push(e.polyline);
+                polylines.push(topologyPositionsInWorld(e.polyline, mesh));
                 anyResolved = true;
               }
             }
@@ -727,8 +735,8 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
           }
           // Face / point-on-face selection
           if (sel?.kind === "face" || sel?.kind === "point-on-face") {
-            const topology = partMeshLayer.getPartTopology(sel.partId);
-            const mesh = partMeshLayer.getPartMesh(sel.partId);
+            const topology = partMeshLayer.getPartTopology(sel.partId) ?? booleanResultLayer?.getPartTopology(sel.partId);
+            const mesh = partMeshLayer.getPartMesh(sel.partId) ?? booleanResultLayer?.getPartMesh(sel.partId);
             if (!topology || !mesh) {
               edgeHighlightLayer.setSelected([]);
               faceHighlightLayer.setSelected(null, []);
@@ -756,9 +764,10 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
               useKinetiCADStore.getState().clearSelection();
               return;
             }
-            const boundary = extractBoundaryPolylines(face, positions, indices);
+            const worldPositions = topologyPositionsInWorld(positions, mesh);
+            const boundary = extractBoundaryPolylines(face, worldPositions, indices);
             faceHighlightLayer.setSelected(
-              { triangles: face.triangles, positions, indices },
+              { triangles: face.triangles, positions: worldPositions, indices },
               boundary,
             );
             edgeHighlightLayer.setSelected([]);
@@ -786,14 +795,17 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
         // is a Map identity check + a number compare, ~free unless we need
         // to actually rebuild buffers. Also re-check the gizmo attachment
         // because the part mesh handle is recreated on regen completion.
+        let lastHighlightAssembly = useKinetiCADStore.getState().assembly;
         perFrameTopologyCheck = (): void => {
           if (!partMeshLayer) return;
-          const v = partMeshLayer.topologyVersion();
+          const v = partMeshLayer.topologyVersion() + (booleanResultLayer?.topologyVersion() ?? 0);
           const sel = useKinetiCADStore.getState().selection;
           if (
+            lastHighlightAssembly !== useKinetiCADStore.getState().assembly ||
             v !== lastResolvedTopologyVersion ||
             sel !== lastResolvedSelectionRef
           ) {
+            lastHighlightAssembly = useKinetiCADStore.getState().assembly;
             lastResolvedTopologyVersion = v;
             lastResolvedSelectionRef = sel;
             resolveSelectionHighlights();
@@ -1440,6 +1452,7 @@ export default function Scene({ frameOnLoad = false, onAssemblyReady, showSketch
         // Clear the module-level ref before disposing so any late inspector
         // re-renders during teardown can't poke at a half-disposed layer.
         setPartMeshLayer(null);
+        setBooleanResultLayer(null);
         partMeshLayer.dispose();
         partMeshLayer = null;
       }

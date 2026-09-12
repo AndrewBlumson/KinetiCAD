@@ -486,6 +486,45 @@ function executeUpstreamChain(
   }
 }
 
+/** The preview and physical-body APIs evaluate identical complete Boolean geometry. */
+function buildBooleanShape(oc: any, args: BooleanOpArgs): any {
+  if (!Array.isArray(args.inputs) || args.inputs.length < 2 || args.inputs.length > 8) {
+    throw new Error('boolean-failed: need 2–8 input parts.');
+  }
+  if (!['union', 'subtract', 'intersect'].includes(args.operation?.type)) {
+    throw new Error('boolean-failed: unsupported Boolean operation.');
+  }
+  if (new Set(args.inputs.map((input) => input.partId)).size !== args.inputs.length) {
+    throw new Error('boolean-failed: input parts must be distinct.');
+  }
+  if (args.operation.type === 'subtract' && (args.inputs.length !== 2 || args.inputs[1].partId !== args.operation.toolPartId)) {
+    throw new Error('subtract-needs-tool: expected the retained body first and the selected cutter second.');
+  }
+  const owned = new Set<any>();
+  const inputs: any[] = [];
+  try {
+    for (const input of args.inputs) {
+      if (!input.features?.length) throw new Error(`boolean-failed: input part ${input.partId} has no features.`);
+      const tx = input.transform;
+      if (tx && (tx.positionMm.length !== 3 || tx.rotationDeg.length !== 3
+        || [...tx.positionMm, ...tx.rotationDeg].some((value) => !Number.isFinite(value)))) {
+        throw new Error(`boolean-failed: input part ${input.partId} has an invalid transform.`);
+      }
+      const base = executeUpstreamChain(oc, input.features, input.sketches);
+      owned.add(base);
+      // T · Rx · Ry · Rz is shared with renderer and both assembly exporters.
+      const identity = !tx || [...tx.positionMm, ...tx.rotationDeg].every((value) => value === 0);
+      const world = identity ? base : transformPartShape(oc, base, tx);
+      owned.add(world);
+      inputs.push(world);
+    }
+    // applyBoolean returns a caller-owned result and never consumes inputs.
+    return applyBoolean(oc, inputs, args.operation);
+  } finally {
+    for (const shape of owned) shape.delete?.();
+  }
+}
+
 /** Rebuild one immutable export snapshot; every temporary wrapper has one owner. */
 function buildAssemblyExportShapes(oc: any, args: AssemblyExportArgs): { shapes: any[]; dispose: () => void } {
   const plan = planAssemblyExport(args);
@@ -794,81 +833,60 @@ const api: CadKernelApi = {
     if (!ocInstance) throw new Error("CAD kernel failed to initialise");
     const oc = ocInstance;
 
-    if (!Array.isArray(args.inputs) || args.inputs.length < 2) {
-      throw new Error(
-        `boolean-failed: need ≥2 inputs, got ${args.inputs?.length ?? 0}.`,
-      );
-    }
-    if (args.operation.type === "subtract" && args.inputs.length !== 2) {
-      throw new Error(
-        `subtract-needs-tool: expected 2 inputs (body + tool), got ${args.inputs.length}.`,
-      );
-    }
-
-    // Build every input shape from its upstream chain, then apply each
-    // input's rigid-body transform via BRepBuilderAPI_Transform_2 BEFORE
-    // running the boolean. We track base + transformed shapes separately
-    // so the finally cleanup frees both regardless of which step throws.
-    const baseShapes: any[] = [];
-    const transformedShapes: any[] = [];
     let result: any = null;
     try {
-      for (const input of args.inputs) {
-        if (!input.features || input.features.length === 0) {
-          throw new Error(
-            `boolean-failed: input part ${input.partId} has no features.`,
-          );
-        }
-        const base = executeUpstreamChain(oc, input.features, input.sketches);
-        baseShapes.push(base);
-
-        // Phase 6: apply the part's transform. Identity short-circuits
-        // (saves an OCCT call per part on the common case).
-        const tx = input.transform;
-        const isIdentity =
-          tx &&
-          tx.positionMm[0] === 0 &&
-          tx.positionMm[1] === 0 &&
-          tx.positionMm[2] === 0 &&
-          tx.rotationDeg[0] === 0 &&
-          tx.rotationDeg[1] === 0 &&
-          tx.rotationDeg[2] === 0;
-
-        if (!tx || isIdentity) {
-          transformedShapes.push(base);
-          continue;
-        }
-
-        // Compose M = T · Rx · Ry · Rz so that, applied to a point p, the
-        // result is T(Rx(Ry(Rz(p)))) — i.e. rotation first (Z then Y then
-        // X) and translation last. This matches three.js's
-        // mesh.matrixWorld with rotation order "XYZ" so the live mesh
-        // position and the OCCT-baked geometry stay in lockstep.
-        transformedShapes.push(transformPartShape(oc, base, tx));
-      }
-
-      // Worker trusts the orchestrator's ordering: for subtract the body
-      // shape is at index 0 and the tool shape at index 1.
-      result = applyBoolean(oc, transformedShapes, args.operation);
+      result = buildBooleanShape(oc, args);
       const mesh = buildMesh(oc, result);
+      const ocAny = oc as any;
+      const explorer = new ocAny.TopExp_Explorer_2(result, ocAny.TopAbs_ShapeEnum.TopAbs_SOLID, ocAny.TopAbs_ShapeEnum.TopAbs_SHAPE);
+      let solidCount = 0;
+      try {
+        while (explorer.More()) { solidCount += 1; explorer.Next(); }
+      } finally { explorer.delete?.(); }
+      mesh.solidCount = solidCount;
       return transferMesh(mesh);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error("[CAD WORKER] booleanOp failed:", err);
       if (err instanceof Error) throw err;
       throw new Error(`boolean-failed: ${String(err)}`);
+    } finally { result?.delete?.(); }
+  },
+
+  async buildBooleanBody(args: BooleanOpArgs) {
+    await ensureKernel();
+    if (!ocInstance) throw new Error("CAD kernel failed to initialise");
+    const oc = ocInstance as any;
+    let result: any = null, explorer: any = null, solid: any = null;
+    try {
+      result = buildBooleanShape(oc, args);
+      explorer = new oc.TopExp_Explorer_2(result, oc.TopAbs_ShapeEnum.TopAbs_SOLID, oc.TopAbs_ShapeEnum.TopAbs_SHAPE);
+      let count = 0;
+      while (explorer.More()) {
+        const candidate = explorer.Current();
+        count += 1;
+        if (count === 1) solid = candidate;
+        else candidate.delete?.();
+        explorer.Next();
+      }
+      if (count !== 1) {
+        throw new Error(count === 0
+          ? 'boolean-body-failed: the finished result has no closed solid to simulate.'
+          : `boolean-body-failed: the finished result contains ${count} disconnected solids. Direct simulation requires one connected solid; the pieces are not welded together.`);
+      }
+      // Integrate before tessellating; both outputs own the exact same solid
+      // in the baked world frame. Invalid topology/mass is a hard failure here.
+      const massProperties = computeMassProperties(oc, solid, 1);
+      const mesh = buildMesh(oc, solid);
+      mesh.solidCount = 1;
+      return Comlink.transfer({ mesh, massProperties }, collectTransferables(mesh));
+    } catch (err) {
+      console.error('[CAD WORKER] buildBooleanBody failed:', err);
+      if (err instanceof Error) throw err;
+      throw new Error(`boolean-body-failed: ${String(err)}`);
     } finally {
-      if (result) result.delete?.();
-      for (let i = 0; i < transformedShapes.length; i++) {
-        // Skip if transformed === base (identity short-circuit) — the
-        // base loop below will handle it.
-        if (transformedShapes[i] !== baseShapes[i]) {
-          transformedShapes[i]?.delete?.();
-        }
-      }
-      for (const s of baseShapes) {
-        s?.delete?.();
-      }
+      solid?.delete?.();
+      explorer?.delete?.();
+      result?.delete?.();
     }
   },
 

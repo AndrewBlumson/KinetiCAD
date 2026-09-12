@@ -1,3 +1,4 @@
+import { booleanBodyId, getAssemblyBodyName } from "@/state/assemblyBodies";
 import { lazy, Suspense, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 import { toast } from 'sonner';
@@ -306,7 +307,7 @@ export default function Modeller() {
   };
   const onBooleanClick = (booleanId: string) => {
     selectBoolean(booleanId);
-    beginEditBoolean(booleanId);
+    if (!useKinetiCADStore.getState().mateEditor.open) beginEditBoolean(booleanId);
   };
   const onMateClick = (mateId: string) => {
     selectMate(mateId);
@@ -720,8 +721,9 @@ function booleanOpGlyph(op: BooleanOperation): string {
 }
 
 function mateLabel(mate: Mate, parts: Part[]): string {
-  const a = parts.find((p) => p.id === mate.partA)?.name ?? '?';
-  const b = parts.find((p) => p.id === mate.partB)?.name ?? '?';
+  const assembly = useKinetiCADStore.getState().assembly;
+  const a = parts.find((p) => p.id === mate.partA)?.name ?? getAssemblyBodyName(assembly, mate.partA) ?? '?';
+  const b = parts.find((p) => p.id === mate.partB)?.name ?? getAssemblyBodyName(assembly, mate.partB) ?? '?';
   const typeLabel =
     mate.type.charAt(0).toUpperCase() + mate.type.slice(1);
   const name = mate.name && mate.name.trim() ? mate.name : typeLabel;
@@ -922,14 +924,13 @@ function CascadeDeleteDialog({
   const getBooleansUsingPart = useKinetiCADStore(
     (s) => s.getBooleansUsingPart,
   );
-  const getMatesUsingPart = useKinetiCADStore((s) => s.getMatesUsingPart);
   const deletePartCascade = useKinetiCADStore((s) => s.deletePartCascade);
 
   const part = assembly.parts.find((p) => p.id === partId);
   const dependents = getBooleansUsingPart(partId);
-  const dependentMates = getMatesUsingPart(partId);
-  const willResetGround =
-    (assembly.groundPartId || assembly.parts[0]?.id) === partId;
+  const removedBodyIds = new Set([partId, ...dependents.map(result => booleanBodyId(result.id))]);
+  const dependentMates = assembly.mates.filter(mate => removedBodyIds.has(mate.partA) || removedBodyIds.has(mate.partB));
+  const willResetGround = removedBodyIds.has(assembly.groundPartId);
 
   if (!part) {
     // Part vanished out from under us (e.g. another action deleted it) —
@@ -970,12 +971,13 @@ function CascadeDeleteDialog({
           ) : (
             <>
               <div className="font-technical text-[11px] text-foreground leading-snug">
-                The following items reference this part and will also be deleted:
+                These Boolean results and joints use this part or its resulting geometry and will also be deleted:
               </div>
               <ul className="flex flex-col gap-0.5 max-h-32 overflow-y-auto">
                 {dependents.map((b) => (
                   <li
-                    key={b.id}
+                    key={`boolean:${b.id}`}
+                    title={b.resultPartName}
                     className="font-technical text-[11px] text-[#FF6B6B] truncate"
                   >
                     • {b.resultPartName}
@@ -983,7 +985,8 @@ function CascadeDeleteDialog({
                 ))}
                 {dependentMates.map((m) => (
                   <li
-                    key={m.id}
+                    key={`mate:${m.id}`}
+                    title={mateLabel(m, assembly.parts)}
                     className="font-technical text-[11px] text-[#FF6B6B] truncate"
                   >
                     • {mateLabel(m, assembly.parts)}
@@ -994,8 +997,8 @@ function CascadeDeleteDialog({
           )}
           {willResetGround ? (
             <div className="font-technical text-[11px] text-muted-foreground italic leading-snug">
-              This part is the ground anchor; the next part will become the
-              default ground.
+              The ground anchor will be cleared. Choose a remaining body as
+              ground if needed.
             </div>
           ) : null}
         </div>

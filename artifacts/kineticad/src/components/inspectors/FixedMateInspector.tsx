@@ -1,9 +1,11 @@
 // Fixed mate inspector — bonds two parts at their current relative
-// transform. No pivot pick; users click parts in the tree (selection.kind
-// === 'part') to set partA then partB.
+// transform. No pivot pick; users click native parts or Boolean results in
+// the tree to set partA then partB.
 
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
+import { getAssemblyBody, booleanBodyId } from "@/state/assemblyBodies";
+import { captureBooleanGeometryHash } from "@/three/booleanResultLayerRef";
 import MateInspectorShell, { NameField } from "./MateInspectorShell";
 
 export default function FixedMateInspector() {
@@ -23,17 +25,27 @@ export default function FixedMateInspector() {
 
   useEffect(() => {
     if (!editor.open || editor.params.type !== "fixed") return;
-    if (!selection || selection.kind !== "part") return;
+    if (!selection || (selection.kind !== "part" && selection.kind !== "boolean")) return;
+    const bodyId = selection.kind === "boolean" ? booleanBodyId(selection.booleanId) : selection.partId;
+    if (!getAssemblyBody(assembly, bodyId)) return;
+    let booleanGeometryHashes: Record<string, string> | undefined;
+    try {
+      booleanGeometryHashes = captureBooleanGeometryHash(bodyId, editor.params.booleanGeometryHashes);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+      clearSelection();
+      return;
+    }
 
     if (editor.stage === "pick-a") {
-      setParams({ ...editor.params, partA: selection.partId });
+      setParams({ ...editor.params, partA: bodyId, booleanGeometryHashes });
       setStage("pick-b");
       setError(null);
       clearSelection();
       return;
     }
     if (editor.stage === "pick-b" || editor.stage === "ready") {
-      if (selection.partId === editor.params.partA) {
+      if (bodyId === editor.params.partA) {
         setError("Pick a different part.");
         // Must clear selection here — leaving it set kept the validation
         // effect re-firing on every render and (without the store-side
@@ -41,21 +53,21 @@ export default function FixedMateInspector() {
         clearSelection();
         return;
       }
-      setParams({ ...editor.params, partB: selection.partId });
+      setParams({ ...editor.params, partB: bodyId, booleanGeometryHashes });
       setStage("ready");
       setError(null);
       clearSelection();
     }
-  }, [selection, editor, setParams, setStage, setError, clearSelection]);
+  }, [selection, editor, assembly, setParams, setStage, setError, clearSelection]);
 
   if (!editor.open || editor.params.type !== "fixed") return null;
 
-  const partA = assembly.parts.find((p) => p.id === editor.params.partA);
-  const partB = assembly.parts.find((p) => p.id === editor.params.partB);
+  const partA = getAssemblyBody(assembly, editor.params.partA);
+  const partB = getAssemblyBody(assembly, editor.params.partB);
   const canApply =
     editor.stage === "ready" &&
-    !!editor.params.partA &&
-    !!editor.params.partB;
+    !!partA &&
+    !!partB;
 
   const heading =
     editor.mode === "edit" ? `Edit ${editor.params.name}` : "Fixed Mate";
@@ -64,7 +76,7 @@ export default function FixedMateInspector() {
     <MateInspectorShell
       heading={heading}
       canApply={canApply}
-      validationHint="Click Part A in the tree, then Part B."
+      validationHint="Click a part or Boolean result in the tree, then a different body."
     >
       <NameField />
       <Row label="Part A" value={partA?.name ?? "—"} />

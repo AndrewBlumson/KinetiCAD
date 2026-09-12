@@ -186,10 +186,22 @@ Visual shafts and bearing housings do not add contact constraints. The separate
 contact bench and force-limited actuator bench validate their declared simple
 setups; they do not enable general CAD collisions or finite-force Stewart.
 
-Assemblies with assembly-level Boolean results cannot start simulation: Play
-is disabled and the runner rejects them instead of moving the uncut input parts.
-To simulate the final result, export STEP, import those solids, then assign
-materials and joints. Native per-part additive/subtractive features still simulate.
+Connected assembly Boolean results now simulate directly. A union joins shapes,
+a subtraction removes a cutter, and an intersection keeps their shared volume.
+The finished solid supplies both the rendered mesh and integrated mass properties;
+construction inputs are excluded even when shown in the Modeller. Each result has
+a uniform material and an explicit fixed/free choice in its Boolean editor.
+Subtraction can inherit the retained body's material. Mixed-material unions or
+intersections require a material choice, not a density average.
+
+Attach new joints to the finished result. Existing input joints are not silently
+remapped, and editing a result invalidates its old attachment picks. Save/Load
+and recovery preserve result materials, fixed-base IDs and joint geometry revisions.
+Empty/disconnected results, shared source parts between physical results, missing
+materials and ambiguous input grounding/joints block simulation with guidance.
+These checks do not introduce contact response or structural deformation.
+See [Boolean simulation verification](docs/BOOLEAN-SIMULATION-VERIFICATION.md)
+for independent numerical checks, Chrome coverage and supported limits.
 
 Rapier 0.12's JavaScript joint constructors use one shared local axis for both
 bodies. A revolute joint is accepted only when that axis points in the same
@@ -286,7 +298,7 @@ Arc-edge pivots: the underlying fix is in. topology.ts now emits the true geomet
 
 Other known issues:
 
-- Boolean result meshes can be selected only from the BOOLEANS sidebar, not by clicking in the 3D view
+- Boolean operation editing uses the BOOLEANS sidebar. Connected result faces/edges can also be picked in the 3D view while creating supported joints.
 - Sketch profiles cannot contain multiple closed loops, for example a plate with a hole
 - Sketches can be created only on the global XY, XZ and YZ planes; sketch on a selected face is not implemented
 - Legacy Planar mates remain inspectable; new creation is unavailable and existing Planar mates prevent simulation from starting
@@ -311,7 +323,7 @@ Pull requests are welcome. The most useful contributions:
 - IGES import and export for wider CAD interop
 - Undo/redo via Zustand history middleware
 - WebGL2 fallback for browsers without WebGPU
-- 3D click-to-select on boolean result meshes
+- General 3D selection and transform editing of Boolean results outside joint creation
 
 The remaining mechanism-workbench direction is future work: persistent sketch
 constraints and a local four-bar linkage optimiser that fits a user-drawn path

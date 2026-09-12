@@ -1,0 +1,142 @@
+{
+  "recordedAt": "2026-09-12T17:45:22.049450+00:00",
+  "baselineCommit": "4bb3bb3dc3d7766c49a175dd2baef52a3c95e8dc",
+  "scope": "Direct simulation of connected assembly Boolean results using exact final OCCT mass properties and real Rapier rigid bodies. Explicit result materials, fixed bases, geometry-revision-checked joints and complete project persistence.",
+  "tests": {
+    "tests": 298,
+    "pass": 298,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "duration_ms": 141315.970125
+  },
+  "addedTestsSinceBaseline": 61,
+  "builds": {
+    "workspace": true,
+    "landingRoot": true
+  },
+  "sourceSha256": {
+    "artifacts/kineticad/src/cad/cadWorker.ts": "272364444f857d1499db202fea3fac6be9e9f7037bf2ef3cbfdc3e1c830c80ac",
+    "artifacts/kineticad/src/cad/types.ts": "c96199c2f527df30879dfa72567e945e616389f3667fe55ee40ecb2f74f313f6",
+    "artifacts/kineticad/src/components/MatesPanelItem.tsx": "e6ad735dc4bade5530347d7c2bf07c2eabc73419dfda6a7c63b8a82d0ab34ba0",
+    "artifacts/kineticad/src/components/PartsPanelItem.tsx": "8604f15b02b07728cc7f7f555c9115fd68ce2e880172c878bcad83702d3bf75b",
+    "artifacts/kineticad/src/components/inspectors/BooleanInspector.tsx": "424bf79988bf6fc1df28acffa9fad3d5fd1d3f450d8fe6faf9009c5601f9205c",
+    "artifacts/kineticad/src/components/inspectors/FixedMateInspector.tsx": "446ca8b8e7154321b9f643c6914ba9f4c60f82ec462318753798b16b01d05ad7",
+    "artifacts/kineticad/src/components/inspectors/PartInspector.tsx": "79ae8bdcb2827c0615bfa76f9b92986431853873a6e9e68dd0561aaa121e53ab",
+    "artifacts/kineticad/src/components/inspectors/PlanarMateInspector.tsx": "014c1a75f2973122ee13a2af7fa9b13a413161421671580d3f4bef6355546cac",
+    "artifacts/kineticad/src/components/inspectors/PrismaticMateInspector.tsx": "7c94702c7b680cfc926eee5162c9129d9d72e360c2bd72ba81f009e9a2bf4983",
+    "artifacts/kineticad/src/components/inspectors/RevoluteMateInspector.tsx": "b3690b555d57355500938034c9257e0ac6e6b196e3ab78e76f0ff458c3212142",
+    "artifacts/kineticad/src/components/inspectors/SphericalMateInspector.tsx": "ba969734153c1b9fcbaeae8073b98de47aa3fb92b21e4867a90508c72de63bce",
+    "artifacts/kineticad/src/features/assemblyRegen.ts": "1dde70d9cd57823cc53d9a90d7c3b27ce742315e19e493b9eb0e95224d63a08b",
+    "artifacts/kineticad/src/features/booleanBodies.ts": "8171a660a56adab1d46bf2d33a240a0aff263c5f4db3c7ddaeb36a7aae1afc8c",
+    "artifacts/kineticad/src/physics/assemblySimulation.ts": "afcd2f32adf3c67097536f05a5b9d69d42fafc494d289a39a880656444df26bd",
+    "artifacts/kineticad/src/physics/simulationRunner.ts": "a8ddb904a1e0a7bd8fedb4098bb06837327c94e71158e97ebb7f68bfa3cce382",
+    "artifacts/kineticad/src/project/projectDocument.ts": "78ffe430a5207fd613cb32baa7e02dd9be24b9dd693a20b76d1f8a3ae01287ea",
+    "artifacts/kineticad/src/state/assemblyBodies.ts": "3a6dc265b4de1635732a30b828c1ca9df7d6915d2b70a61d8eedb6a511f63dae",
+    "artifacts/kineticad/src/state/schemas.ts": "3950057d727ce677c16aed0a359414406d1484f5a2e58943903a271dfbadad6b",
+    "artifacts/kineticad/src/state/store.ts": "639d868a1aba5530504d4f215bcefe8b1309100503a9630f8a55ccdbcc939dc1",
+    "artifacts/kineticad/src/three/BooleanResultLayer.ts": "ae0a20dafb3adc9246da39b35f488c30f7903a3d74d2a19977b9568ca723dc90",
+    "artifacts/kineticad/src/three/Scene.tsx": "92f013bb2ca314faee1e648afddbe03a9204bb2768dd8f1c06809f9f7a5e0273",
+    "artifacts/kineticad/src/three/SimulationLayer.ts": "94fcfcf6135201ec34c54c03f741c7f782cc5016fd624105ae5d1120113c37a3",
+    "artifacts/kineticad/src/three/TopologyPicker.ts": "ffa775e6e50916d0e966fbd7fbb4b336de4c35d442b6ae53a29c99f678504ebf",
+    "artifacts/kineticad/src/three/booleanResultLayerRef.ts": "f93e95c7fb9a9aa4fbf7c8dda3651c8a5bc81deeac2065879ce47b5660b8bea1",
+    "artifacts/kineticad/src/views/Modeller.tsx": "26c98828b6e476268c497514443bfe6d3b2879c4535ffa9103eac2e229941c98",
+    "artifacts/kineticad/src/views/Simulator.tsx": "06004d0309fde140285c603366dbb62899aed7b64818b017956a509836d3cff1",
+    "artifacts/kineticad/tests/assembly-simulation.test.mjs": "0ab73a1fbc294554baed2562de7e7fbd25e16e3f33580663206dcf548276e7da",
+    "artifacts/kineticad/tests/boolean-bodies.test.mjs": "64cf060d6d3a5c9e4c6b9abe6fd374da04b6e5c42fa4c5b9cb9b0e6d9518b531",
+    "artifacts/kineticad/tests/boolean-mate-store.test.mjs": "b85fab1b9f23a3637521a41fc689d34cebabb99a1438d229bcd20df45f3defc7",
+    "artifacts/kineticad/tests/boolean-physics.test.mjs": "ef31f3d482760e755076650a4d36ab84a99ca73057e0179f444f843c47ea2c55",
+    "artifacts/kineticad/tests/boolean-result-picking.test.mjs": "190fa597c005d8f1eba12227bea8b26fb0f500c26963e4ce7b0d362b1e1c5b2c",
+    "artifacts/kineticad/tests/project-persistence.test.mjs": "4d2d6d7f14fb74a0eb85eb09d7f262a254d46e2131b6e98d18103362331919ec",
+    "artifacts/kineticad/tests/simulation-runner.test.mjs": "ddab84c6253e69eb32875e2cf97cdce94804a670eb3e50e140796e0bf57c49e8",
+    "artifacts/landing/src/components/DesktopLanding.tsx": "f2116870c4bb23e38c548b78b5f4127214f2b6760e293473d45a1f1a2111bbf2"
+  },
+  "logs": {
+    "regressions": {
+      "sha256": "f7f6a961366fefa3c29d92a0c55cea0c25c1efc3a92ff2b61134b74b7728e91c",
+      "tail": [
+        "\u2714 insufficient subdivision and an enlarged unsafe range fail explicitly (4.069583ms)",
+        "\u2714 independent Rodrigues progress matches exact quaternion axis-angle interpolation at intermediate poses (2.272708ms)",
+        "\u2714 all 64 extreme home-to-target paths are enclosed between progress samples (240.376458ms)",
+        "\u2714 exact target solid placements close spherical endpoints and encode independent rod extension (4.022792ms)",
+        "\u2139 tests 298",
+        "\u2139 suites 0",
+        "\u2139 pass 298",
+        "\u2139 fail 0",
+        "\u2139 cancelled 0",
+        "\u2139 skipped 0",
+        "\u2139 todo 0",
+        "\u2139 duration_ms 141315.970125"
+      ]
+    },
+    "workspaceBuild": {
+      "sha256": "21ac9eb6b2e7b6d438aed5e9877f28aece0906137b370dddfc8361b5d90ce795",
+      "tail": [
+        "artifacts/kineticad build: dist/public/assets/BeamAnalysisPanel-Dn0ZqQZ2.js           9.66 kB \u2502 gzip:   3.91 kB",
+        "artifacts/kineticad build: dist/public/assets/Simulator-DVZat-6e.js                  47.89 kB \u2502 gzip:  14.82 kB",
+        "artifacts/kineticad build: dist/public/assets/Modeller-J1DkJuKE.js                  165.47 kB \u2502 gzip:  44.42 kB",
+        "artifacts/kineticad build: dist/public/assets/index-co6Wbdn8.js                     190.09 kB \u2502 gzip:  60.48 kB",
+        "artifacts/kineticad build: dist/public/assets/App-2pnYqt8g.js                       451.43 kB \u2502 gzip: 127.15 kB",
+        "artifacts/kineticad build: dist/public/assets/Scene-DL-8K2kR.js                     667.83 kB \u2502 gzip: 189.40 kB",
+        "artifacts/kineticad build: (!) Some chunks are larger than 500 kB after minification. Consider:",
+        "artifacts/kineticad build: - Using dynamic import() to code-split the application",
+        "artifacts/kineticad build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks",
+        "artifacts/kineticad build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+        "artifacts/kineticad build: \u2713 built in 5.05s",
+        "artifacts/kineticad build: Done"
+      ]
+    },
+    "landingRootBuild": {
+      "sha256": "8e92ab72482c4d58cdcd982f3cf6d38ab15684223f6149095b644f568dd839cb",
+      "tail": [
+        "> @workspace/landing@0.0.0 build /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/landing",
+        "> vite build --config vite.config.ts",
+        "",
+        "vite v7.3.2 building client environment for production...",
+        "transforming...",
+        "\u2713 1701 modules transformed.",
+        "rendering chunks...",
+        "computing gzip size...",
+        "dist/public/index.html                   3.51 kB \u2502 gzip:  1.18 kB",
+        "dist/public/assets/index-BRxMUYcr.css   66.53 kB \u2502 gzip: 12.17 kB",
+        "dist/public/assets/index-DaLPDVqP.js   226.27 kB \u2502 gzip: 71.92 kB",
+        "\u2713 built in 1.91s"
+      ]
+    }
+  },
+  "browser": {
+    "preview": "http://localhost:5188/app/",
+    "report": "BOOLEAN-SIMULATION-VERIFICATION.md",
+    "initialNativeFixtureLoad": "passed",
+    "booleanUnionSubtractIntersectSimulation": "passed",
+    "materialGroundBodyCountAndMassReadouts": "passed",
+    "fixedAndSphericalJointCreation": "passed",
+    "changedGeometryRejectsOldJointIncludingReapply": "passed",
+    "pauseResumeResetAndFreefallVisuals": "passed",
+    "actualProjectDownloads": 3,
+    "downloadedFileShippedParserAndPlanner": "passed",
+    "refreshRecoveryIncludingSphericalJoint": "passed",
+    "landingFeatureCard": "passed",
+    "capturedConsoleWarningsOrErrors": 0,
+    "nativeDevToolsWindow": "not separately opened; captured Chrome console inspected",
+    "downloadedFileNativeDialogReopen": "pending user availability; native Chrome input was interrupted and extension file selection was not allowed",
+    "newTabRecoveryOnFinalBuild": "passed",
+    "newNativePartPreservesFreeBooleanGround": "passed; checked in actual inspector and removed disposable empty part"
+  },
+  "physicsReport": "boolean-physics-results.json",
+  "exports": "boolean-simulation-export-results.json",
+  "fixturesSha256": {
+    "docs/fixtures/boolean-simulation/browser-fixed-brass.kineticad.json": "aa7e81d6a5053b380d7bbb06d9ff0d04e849dc562bef9364163540f9fd52a8fb",
+    "docs/fixtures/boolean-simulation/browser-fixed-joint.kineticad.json": "93422fa6c10992e6d60ed0c48d15edb0a5273ae15131c52055d7deb0e92966c8",
+    "docs/fixtures/boolean-simulation/browser-spherical-joint.kineticad.json": "8b95fd2e2530e9240c8dc6eddef9607ad8c87dd15504e27f0bc8560985b3f2f2",
+    "docs/fixtures/boolean-simulation/freefall-subtract.kineticad.json": "b16b7ebad41fe6d407ace2fc7b9cbb85d85a4972dc2b7c4ef1e92bbd27026ce1"
+  },
+  "physicalLimits": [
+    "One connected rigid solid per Boolean result",
+    "One homogeneous material per result",
+    "Ideal joints; no assembly contact, bearing friction, motor-load limits or deformation",
+    "Existing unsupported joint-frame and planar-mate restrictions retained"
+  ],
+  "publicDeployment": false,
+  "userAcceptance": "pending; final native file-reopen UI check also remains pending"
+}

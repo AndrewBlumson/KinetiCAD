@@ -8,6 +8,8 @@ import { parseProjectDocument, parseProjectState, encodeBytes, sha256, shapeIdFo
 import { makeSnapshot } from '../src/project/projectRepository.ts';
 import { createDemoSession } from '../src/demos/demoSession.ts';
 import { createProjectDocument } from '../src/project/projectAssets.ts';
+import { computeBooleanHash } from '../src/features/assemblyRegen.ts';
+import { planAssemblySimulation } from '../src/physics/assemblySimulation.ts';
 
 const fixture = () => JSON.parse(readFileSync(new URL('../public/demos/windmill.json', import.meta.url))).state;
 const document = (state = fixture()) => parseProjectDocument({ format: 'kineticad-project', version: 1, stateVersion: 9, state, assets: [] });
@@ -21,6 +23,46 @@ function harness(initial = {}) {
   return { saved, repository, persistence, restores, reports };
 }
 const name = (snapshot) => JSON.parse(snapshot.payload).state.assembly.name;
+
+function booleanProjectState() {
+  const state = fixture();
+  const witness = structuredClone(state.assembly.parts[0]); witness.id = 'witness'; witness.name = 'External base';
+  const result = {id:'finished-housing',type:'boolean',resultPartName:'Housing',hideInputs:false,materialId:'titanium-grade5',
+    inputPartIds:state.assembly.parts.map(p=>p.id),operation:{type:'union'}};
+  state.assembly.parts.push(witness);state.assembly.booleanFeatures=[result];state.assembly.groundPartId='boolean:finished-housing';
+  state.assembly.mates=[{id:'finished-joint',name:'Finished attachment',type:'fixed',partA:'boolean:finished-housing',partB:'witness',
+    booleanGeometryHashes:{'boolean:finished-housing':computeBooleanHash(result,state.assembly.parts)}}];
+  return state;
+}
+
+test('complete project downloads and both recovery generations retain Boolean material, result ground and joint revisions',async()=>{
+  const state=booleanProjectState();
+  const packaged=await createProjectDocument({...state,setMode(){}},async()=>{throw new Error('Native histories need no STEP packaging');});
+  const loaded=parseProjectDocument(JSON.parse(JSON.stringify(packaged)));
+  assert.deepEqual(loaded.state.assembly,state.assembly);assert.equal(planAssemblySimulation(loaded.state.assembly).booleans[0].materialId,'titanium-grade5');
+  const h=harness();await h.persistence.storage.getItem('project');
+  h.persistence.storage.setItem('project',{state,version:9});await h.persistence.flush();
+  const next=structuredClone(state);next.assembly.booleanFeatures[0].materialId='brass-c36000';next.assembly.groundPartId='';
+  h.persistence.storage.setItem('project',{state:next,version:9});await h.persistence.flush();
+  assert.equal(JSON.parse(h.saved.current.payload).state.assembly.booleanFeatures[0].materialId,'brass-c36000');
+  assert.equal(JSON.parse(h.saved.previous.payload).state.assembly.groundPartId,'boolean:finished-housing');
+  const restarted=harness(h.saved);const recovered=await restarted.persistence.storage.getItem('project');
+  assert.deepEqual(recovered.state.assembly,next.assembly);
+  const previous=await restarted.persistence.recoverPrevious();
+  assert.deepEqual(previous.state.assembly,state.assembly);
+});
+
+test('Boolean project parsing rejects invalid materials/body references and retains stale revisions for explicit repicking',()=>{
+  for(const mutate of[
+    s=>{s.assembly.booleanFeatures[0].materialId='unknown-alloy';},
+    s=>{s.assembly.groundPartId='boolean:missing';},
+    s=>{s.assembly.mates[0].partA='boolean:missing';},
+    s=>{s.assembly.mates[0].booleanGeometryHashes={'boolean:finished-housing':123};},
+  ]){const state=booleanProjectState();mutate(state);assert.throws(()=>document(state));}
+  const state=booleanProjectState();state.assembly.parts[0].transform.positionMm[0]+=1;
+  const loaded=document(state);assert.deepEqual(loaded.state.assembly.mates[0].booleanGeometryHashes,state.assembly.mates[0].booleanGeometryHashes);
+  assert.throws(()=>planAssemblySimulation(loaded.state.assembly),/Finished attachment.*changed since/);
+});
 
 test('native history, transforms, materials and mates survive with runtime stopped', () => {
   const state = fixture(); state.assembly.parts[1].transform = { positionMm: [17, -9, 11], rotationDeg: [13, 29, -41] };

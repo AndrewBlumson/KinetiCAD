@@ -3,7 +3,8 @@
 
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
-import { getPartMeshLayer } from "@/three/partMeshLayerRef";
+import { getAssemblyBody } from "@/state/assemblyBodies";
+import { captureBooleanGeometryHash, getAssemblyBodyTopology } from "@/three/booleanResultLayerRef";
 import MateInspectorShell, { NameField } from "./MateInspectorShell";
 
 export default function SphericalMateInspector() {
@@ -26,10 +27,16 @@ export default function SphericalMateInspector() {
   useEffect(() => {
     if (!editor.open || editor.params.type !== "spherical") return;
     if (!selection || selection.kind !== "point-on-face") return;
-    const layer = getPartMeshLayer();
-    if (!layer) return;
-    const topology = layer.getPartTopology(selection.partId);
+    const topology = getAssemblyBodyTopology(selection.partId);
     if (!topology) return;
+    let booleanGeometryHashes: Record<string, string> | undefined;
+    try {
+      booleanGeometryHashes = captureBooleanGeometryHash(selection.partId, editor.params.booleanGeometryHashes);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+      clearSelection();
+      return;
+    }
     const face = topology.faces.find((f) => f.id === selection.faceId);
     if (!face || !face.planeBasis) {
       // point-on-face is only emitted on planar faces; defensive guard.
@@ -51,6 +58,7 @@ export default function SphericalMateInspector() {
     if (editor.stage === "pick-a") {
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partA: selection.partId,
         pivotA: { kind: "face", faceId: face.id, localPoint },
       });
@@ -68,6 +76,7 @@ export default function SphericalMateInspector() {
       }
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partB: selection.partId,
         pivotB: { kind: "face", faceId: face.id, localPoint },
       });
@@ -86,12 +95,12 @@ export default function SphericalMateInspector() {
 
   if (!editor.open || editor.params.type !== "spherical") return null;
 
-  const partA = assembly.parts.find((p) => p.id === editor.params.partA);
-  const partB = assembly.parts.find((p) => p.id === editor.params.partB);
+  const partA = getAssemblyBody(assembly, editor.params.partA);
+  const partB = getAssemblyBody(assembly, editor.params.partB);
   const canApply =
     editor.stage === "ready" &&
-    !!editor.params.partA &&
-    !!editor.params.partB &&
+    !!partA &&
+    !!partB &&
     !!editor.params.pivotA &&
     !!editor.params.pivotB;
 
@@ -99,7 +108,13 @@ export default function SphericalMateInspector() {
     editor.mode === "edit" ? `Edit ${editor.params.name}` : "Spherical Mate";
 
   return (
-    <MateInspectorShell heading={heading} canApply={canApply}>
+    <MateInspectorShell
+      heading={heading}
+      canApply={canApply}
+      statusText={editor.stage === "ready" ? undefined : editor.stage === "pick-b"
+        ? "On a different body, click a flat face, then click the attachment point on it."
+        : "Click a flat face, then click the attachment point on it."}
+    >
       <NameField />
       <Row label="Part A" value={partA?.name ?? "—"} />
       <Row label="Part B" value={partB?.name ?? "—"} />

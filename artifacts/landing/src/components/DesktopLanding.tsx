@@ -37,7 +37,7 @@ const FEATURE_COLS = [
       "Rotation in RPM; sliding speed in mm/s",
       "Fixed bases and editable joint settings",
     ],
-    note: "Assembly Boolean results currently need STEP export and reimport before simulation. Native cuts within a part already simulate directly.",
+    note: "Connected Boolean results simulate directly with their finished material, mass and joints. Construction inputs are excluded; disconnected results need separate bodies.",
   },
   {
     id: "simulation",

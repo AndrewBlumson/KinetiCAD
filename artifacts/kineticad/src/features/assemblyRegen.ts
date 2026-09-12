@@ -17,14 +17,22 @@
 //     in the worker's `inputs` array and the tool part second (the worker
 //     trusts this ordering).
 
-import type { CadKernelApi, TessellatedMesh } from "@/cad/types";
+import type { BooleanOpArgs, CadKernelApi, TessellatedMesh } from "@/cad/types";
 import type { BooleanFeature, Part } from "@/state/schemas";
 import type { Remote } from "comlink";
 import { computeFeatureHash } from "./featureRegen";
-import { getCachedMesh, setCachedMesh } from "./featureCache";
+import { getCacheGeneration } from "./featureCache";
 
-/** Cache key prefix so boolean entries can't collide with feature entries. */
-const BOOLEAN_CACHE_PREFIX = "boolean:";
+// Worker-owned imported shape IDs must never hit another worker's cache.
+type MeshCache = { generation: number; settled: Map<string, TessellatedMesh>; pending: Map<string, Promise<TessellatedMesh>> };
+const meshCaches = new WeakMap<Remote<CadKernelApi>, MeshCache>();
+
+function stableGeometry(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableGeometry).join(',')}]`;
+  const object = value as Record<string, unknown>;
+  return `{${Object.keys(object).sort().map((key) => `${JSON.stringify(key)}:${stableGeometry(object[key])}`).join(',')}}`;
+}
 
 /**
  * Stable hash for a part's full feature chain. We reuse `computeFeatureHash`
@@ -48,7 +56,7 @@ export function computePartChainHash(part: Part): string {
 /**
  * Compute the cache key for a boolean feature. Includes:
  *   - operation type (and tool-part id for subtract)
- *   - the chain hash of every input part, in `inputPartIds` order
+ *   - the complete source geometry and exact transform of every input part
  *
  * Because `inputPartIds` order is significant for subtract (orchestrator
  * places body first, tool second when sending to worker) we preserve the
@@ -58,33 +66,54 @@ export function computeBooleanHash(
   feature: BooleanFeature,
   parts: ReadonlyArray<Part>,
 ): string {
-  const partsById = new Map(parts.map((p) => [p.id, p]));
-  const inputHashes = feature.inputPartIds.map((id) => {
-    const p = partsById.get(id);
-    return p ? computePartChainHash(p) : `missing:${id}`;
+  const partsById = new Map(parts.map((part) => [part.id, part]));
+  // Full source geometry prevents short-hash collisions from reusing a different
+  // physical solid. Preserve every numeric transform bit; 0.00001mm edits matter.
+  return stableGeometry({
+    operation: feature.operation,
+    inputs: feature.inputPartIds.map((id) => {
+      const part = partsById.get(id);
+      return part ? { id, features: part.features, transform: part.transform,
+        sketches: part.sketches.map(({ id, plane, primitives }) => ({ id, plane, primitives })) }
+        : { missing: id };
+    }),
   });
-  // Phase 6: each input's transform participates in the cache key so a
-  // gizmo drag (or PartInspector edit) on any input invalidates this
-  // boolean's cached mesh. Using fixed precision keeps the key stable
-  // across rounding noise.
-  const inputTransforms = feature.inputPartIds.map((id) => {
-    const p = partsById.get(id);
-    if (!p) return "missing";
-    const t = p.transform;
-    return `${t.positionMm.map((v) => v.toFixed(4)).join("/")}|${t.rotationDeg
-      .map((v) => v.toFixed(4))
-      .join("/")}`;
+}
+
+/** Deep immutable worker snapshot, with the selected subtract cutter last. */
+export function createBooleanOpArgs(feature: BooleanFeature, parts: ReadonlyArray<Part>): BooleanOpArgs {
+  if (feature.inputPartIds.length < 2 || feature.inputPartIds.length > 8
+    || new Set(feature.inputPartIds).size !== feature.inputPartIds.length) {
+    throw new Error('boolean-failed: need 2–8 distinct input parts.');
+  }
+  const partsById = new Map(parts.map((part) => [part.id, part]));
+  for (const id of feature.inputPartIds) {
+    const part = partsById.get(id);
+    if (!part) throw new Error(`boolean-failed: input part ${id} no longer exists.`);
+    if (!part.features.length) throw new Error(`boolean-failed: input part "${part.name}" has no features.`);
+    const tx = part.transform;
+    if (!tx || tx.positionMm.length !== 3 || tx.rotationDeg.length !== 3
+      || [...tx.positionMm, ...tx.rotationDeg].some((value) => !Number.isFinite(value))) {
+      throw new Error(`boolean-failed: input part "${part.name}" has an invalid transform.`);
+    }
+  }
+  let orderedIds = feature.inputPartIds;
+  if (feature.operation.type === 'subtract') {
+    const tool = feature.operation.toolPartId;
+    if (orderedIds.length !== 2 || !orderedIds.includes(tool)) {
+      throw new Error('subtract-needs-tool: expected exactly two inputs including the selected cutter.');
+    }
+    orderedIds = [orderedIds.find((id) => id !== tool)!, tool];
+  } else if (feature.operation.type !== 'union' && feature.operation.type !== 'intersect') {
+    throw new Error('boolean-failed: unsupported Boolean operation.');
+  }
+  return structuredClone({
+    operation: feature.operation,
+    inputs: orderedIds.map((id) => {
+      const part = partsById.get(id)!;
+      return { partId: id, features: part.features, sketches: part.sketches, transform: part.transform };
+    }),
   });
-  const opTag =
-    feature.operation.type === "subtract"
-      ? `subtract:${feature.operation.toolPartId}`
-      : feature.operation.type;
-  // Hash via a small concat + the existing FNV path through computeFeatureHash
-  // would over-couple us; just a plain string is fine here since the inputs
-  // are already hex hashes.
-  return `${opTag}|${feature.inputPartIds.join(",")}|${inputHashes.join(
-    ",",
-  )}|tx:${inputTransforms.join(";")}`;
 }
 
 export type BooleanRegenResult = {
@@ -118,86 +147,27 @@ export async function regenerateBoolean(
   kernel: Remote<CadKernelApi>,
 ): Promise<BooleanRegenResult> {
   const hash = computeBooleanHash(feature, parts);
-  const cacheKey = BOOLEAN_CACHE_PREFIX + hash;
-
-  const cached = getCachedMesh(cacheKey);
-  if (cached) return { mesh: cached, hash, error: null, stack: null };
-
-  const partsById = new Map(parts.map((p) => [p.id, p]));
-
-  // Validate inputs exist and have features.
-  for (const id of feature.inputPartIds) {
-    const p = partsById.get(id);
-    if (!p) {
-      return {
-        mesh: null,
-        hash,
-        error: `boolean-failed: input part ${id} no longer exists.`,
-        stack: null,
-      };
-    }
-    if (p.features.length === 0) {
-      return {
-        mesh: null,
-        hash,
-        error: `boolean-failed: input part "${p.name}" has no features.`,
-        stack: null,
-      };
-    }
-  }
-
-  // Order inputs. For subtract the body shape goes first and the tool
-  // shape second; the worker trusts this ordering.
-  let orderedIds: string[] = feature.inputPartIds;
-  if (feature.operation.type === "subtract") {
-    const tool = feature.operation.toolPartId;
-    if (!feature.inputPartIds.includes(tool)) {
-      return {
-        mesh: null,
-        hash,
-        error: `subtract-needs-tool: tool part ${tool} is not in the input list.`,
-        stack: null,
-      };
-    }
-    if (feature.inputPartIds.length !== 2) {
-      return {
-        mesh: null,
-        hash,
-        error: `subtract-needs-tool: expected exactly 2 inputs, got ${feature.inputPartIds.length}.`,
-        stack: null,
-      };
-    }
-    const body = feature.inputPartIds.find((id) => id !== tool);
-    if (!body) {
-      return {
-        mesh: null,
-        hash,
-        error: `subtract-needs-tool: cannot identify body part.`,
-        stack: null,
-      };
-    }
-    orderedIds = [body, tool];
-  }
-
-  const inputs = orderedIds.map((id) => {
-    const p = partsById.get(id)!;
-    return {
-      partId: p.id,
-      features: [...p.features],
-      sketches: [...p.sketches],
-      transform: {
-        positionMm: [...p.transform.positionMm] as [number, number, number],
-        rotationDeg: [...p.transform.rotationDeg] as [number, number, number],
-      },
-    };
-  });
-
   try {
-    const mesh = await kernel.booleanOp({
-      inputs,
-      operation: feature.operation,
-    });
-    setCachedMesh(cacheKey, mesh);
+    const args = createBooleanOpArgs(feature, parts);
+    const generation = getCacheGeneration();
+    let cache = meshCaches.get(kernel);
+    if (!cache || cache.generation !== generation) {
+      cache = { generation, settled: new Map(), pending: new Map() };
+      meshCaches.set(kernel, cache);
+    }
+    let mesh = cache.settled.get(hash);
+    if (!mesh) {
+      let operation = cache.pending.get(hash);
+      if (!operation) {
+        const owner = cache;
+        operation = kernel.booleanOp(args).then((value) => {
+          if (generation === getCacheGeneration() && meshCaches.get(kernel) === owner) owner.settled.set(hash, value);
+          return value;
+        }).finally(() => { owner.pending.delete(hash); });
+        cache.pending.set(hash, operation);
+      }
+      mesh = await operation;
+    }
     return { mesh, hash, error: null, stack: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

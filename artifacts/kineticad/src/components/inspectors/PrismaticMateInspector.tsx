@@ -4,7 +4,8 @@
 
 import { useEffect } from "react";
 import { useKinetiCADStore } from "@/state/store";
-import { getPartMeshLayer } from "@/three/partMeshLayerRef";
+import { getAssemblyBody } from "@/state/assemblyBodies";
+import { captureBooleanGeometryHash, getAssemblyBodyTopology } from "@/three/booleanResultLayerRef";
 import {
   validatePrismaticPicks,
   isPlanarFace,
@@ -37,10 +38,16 @@ export default function PrismaticMateInspector() {
   useEffect(() => {
     if (!editor.open || editor.params.type !== "prismatic") return;
     if (!selection || selection.kind !== "face") return;
-    const layer = getPartMeshLayer();
-    if (!layer) return;
-    const topology = layer.getPartTopology(selection.partId);
+    const topology = getAssemblyBodyTopology(selection.partId);
     if (!topology) return;
+    let booleanGeometryHashes: Record<string, string> | undefined;
+    try {
+      booleanGeometryHashes = captureBooleanGeometryHash(selection.partId, editor.params.booleanGeometryHashes);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+      clearSelection();
+      return;
+    }
     const face = topology.faces.find((f) => f.id === selection.faceId);
     if (!face) return;
     if (!isPlanarFace(face)) {
@@ -52,6 +59,7 @@ export default function PrismaticMateInspector() {
     if (editor.stage === "pick-a") {
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partA: selection.partId,
         pivotA: { kind: "face", faceId: face.id, localPoint: face.centroid },
       });
@@ -67,12 +75,12 @@ export default function PrismaticMateInspector() {
         clearSelection();
         return;
       }
-      const partA = assembly.parts.find((p) => p.id === editor.params.partA);
+      const partA = getAssemblyBody(assembly, editor.params.partA);
       if (!partA || !editor.params.pivotA || editor.params.pivotA.kind !== "face") {
         setError("Re-pick the first face.");
         return;
       }
-      const topologyA = layer.getPartTopology(editor.params.partA!);
+      const topologyA = getAssemblyBodyTopology(editor.params.partA!);
       const faceA = topologyA?.faces.find(
         (f) => f.id === (editor.params.pivotA as { faceId: string }).faceId,
       );
@@ -80,7 +88,7 @@ export default function PrismaticMateInspector() {
         setError("Re-pick the first face.");
         return;
       }
-      const partB = assembly.parts.find((p) => p.id === selection.partId);
+      const partB = getAssemblyBody(assembly, selection.partId);
       if (!partB) return;
       const result = validatePrismaticPicks({
         partA,
@@ -97,6 +105,7 @@ export default function PrismaticMateInspector() {
       }
       setParams({
         ...editor.params,
+        booleanGeometryHashes,
         partB: selection.partId,
         pivotB: { kind: "face", faceId: face.id, localPoint: face.centroid },
         axisLocal: result.axisLocalA,
@@ -108,7 +117,7 @@ export default function PrismaticMateInspector() {
   }, [
     selection,
     editor,
-    assembly.parts,
+    assembly,
     setParams,
     setStage,
     setError,
@@ -117,12 +126,12 @@ export default function PrismaticMateInspector() {
 
   if (!editor.open || editor.params.type !== "prismatic") return null;
 
-  const partA = assembly.parts.find((p) => p.id === editor.params.partA);
-  const partB = assembly.parts.find((p) => p.id === editor.params.partB);
+  const partA = getAssemblyBody(assembly, editor.params.partA);
+  const partB = getAssemblyBody(assembly, editor.params.partB);
   const canApply =
     editor.stage === "ready" &&
-    !!editor.params.partA &&
-    !!editor.params.partB &&
+    !!partA &&
+    !!partB &&
     !!editor.params.pivotA &&
     !!editor.params.pivotB &&
     !!editor.params.axisLocal;

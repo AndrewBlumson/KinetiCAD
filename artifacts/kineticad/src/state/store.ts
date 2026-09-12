@@ -1,3 +1,5 @@
+import { booleanBodyId } from "./assemblyBodies";
+import { computeBooleanHash } from "@/features/assemblyRegen";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { projectPersistence, setProjectMigration } from '../project/projectPersistence';
@@ -222,6 +224,8 @@ const defaultFeatureEditor: FeatureEditor = { open: false };
  * Not persisted: a half-edited boolean should not survive a reload.
  */
 export type BooleanEditorParams = {
+  materialId?: string;
+  groundResult?: boolean;
   operation: BooleanOperation;
   inputPartIds: string[];
   resultPartName: string;
@@ -265,6 +269,7 @@ export type MateType = Mate["type"];
 export type MateEditorStage = "pick-a" | "pick-b" | "ready";
 
 export type MateEditorParams = {
+  booleanGeometryHashes?: Record<string, string>;
   type: MateType;
   partA: string | null;
   partB: string | null;
@@ -1279,6 +1284,8 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
               inputPartIds: [...feature.inputPartIds],
               resultPartName: feature.resultPartName,
               hideInputs: feature.hideInputs,
+              materialId: feature.materialId,
+              groundResult: state.assembly.groundPartId === booleanBodyId(feature.id),
             },
             livePreview: true,
           },
@@ -1339,6 +1346,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           inputPartIds: [...params.inputPartIds],
           resultPartName: trimmed,
           hideInputs: params.hideInputs,
+          ...(params.materialId ? { materialId: params.materialId } : {}),
         };
 
         let updatedBooleans: BooleanFeature[];
@@ -1351,7 +1359,10 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         }
 
         set({
-          assembly: { ...state.assembly, booleanFeatures: updatedBooleans },
+          assembly: { ...state.assembly, booleanFeatures: updatedBooleans,
+            groundPartId: params.groundResult ? booleanBodyId(newFeature.id)
+              : (state.assembly.groundPartId === booleanBodyId(newFeature.id) || params.inputPartIds.includes(state.assembly.groundPartId)) ? "" : state.assembly.groundPartId,
+          },
           booleanEditor: defaultBooleanEditor,
           featurePreview: defaultFeaturePreview,
           selection: { kind: "boolean", booleanId: newFeature.id },
@@ -1371,7 +1382,10 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           );
           if (next.length === s.assembly.booleanFeatures.length) return {};
           return {
-            assembly: { ...s.assembly, booleanFeatures: next },
+            assembly: { ...s.assembly, booleanFeatures: next,
+              mates: s.assembly.mates.filter(m => m.partA !== booleanBodyId(booleanId) && m.partB !== booleanBodyId(booleanId)),
+              groundPartId: s.assembly.groundPartId === booleanBodyId(booleanId) ? "" : s.assembly.groundPartId,
+            },
             booleanEditor:
               s.booleanEditor.open && s.booleanEditor.featureId === booleanId
                 ? defaultBooleanEditor
@@ -1404,13 +1418,13 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           features: [],
           materialId: DEFAULT_MATERIAL_ID,
         };
-        // Phase 9.5 — auto-promote the first part to ground so the
-        // persisted `groundPartId` is always populated. Previously the
-        // UI relied on a `parts[0]` fallback for display, but that
+        // Native-only workspaces retain the default ground promotion.
+        // In a Boolean assembly, an empty ground is an explicit free world.
+        // Previously the UI relied on a `parts[0]` fallback for display, but that
         // fallback was never written back to the store, so reloads (or
         // re-orderings) silently moved the ground anchor.
         const groundPartId =
-          state.assembly.groundPartId === ""
+          state.assembly.groundPartId === "" && state.assembly.booleanFeatures.length === 0
             ? part.id
             : state.assembly.groundPartId;
         set({
@@ -1436,7 +1450,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           materialId: DEFAULT_MATERIAL_ID,
         };
         const groundPartId =
-          state.assembly.groundPartId === ''
+          state.assembly.groundPartId === '' && state.assembly.booleanFeatures.length === 0
             ? part.id
             : state.assembly.groundPartId;
         set({
@@ -1682,17 +1696,18 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           );
           // Phase 7: cascade-delete every mate that references the deleted
           // part on either side.
+          const removedBodies = new Set([partId, ...[...removedBooleanIds].map(booleanBodyId)]);
           const remainingMates = s.assembly.mates.filter(
-            (m) => m.partA !== partId && m.partB !== partId,
+            (m) => !removedBodies.has(m.partA) && !removedBodies.has(m.partB),
           );
           const removedMateIds = new Set(
             s.assembly.mates
-              .filter((m) => m.partA === partId || m.partB === partId)
+              .filter((m) => removedBodies.has(m.partA) || removedBodies.has(m.partB))
               .map((m) => m.id),
           );
           // Reset ground if it pointed to the deleted part.
           const groundPartId =
-            s.assembly.groundPartId === partId ? "" : s.assembly.groundPartId;
+            removedBodies.has(s.assembly.groundPartId) ? "" : s.assembly.groundPartId;
           // Drop any selection / editor that targeted the deleted part or a
           // cascade-deleted boolean / mate.
           const sel = s.selection;
@@ -1799,6 +1814,7 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
         if (!mate) return;
         const params: MateEditorParams = {
           type: mate.type,
+          booleanGeometryHashes: mate.booleanGeometryHashes,
           partA: mate.partA,
           partB: mate.partB,
           pivotA: "pivotA" in mate ? mate.pivotA : null,
@@ -1972,6 +1988,19 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           }
         }
 
+        const booleanGeometryHashes: Record<string, string> = {};
+        for (const result of state.assembly.booleanFeatures) {
+          const bodyId = booleanBodyId(result.id);
+          if (params.partA === bodyId || params.partB === bodyId) {
+            const currentHash = computeBooleanHash(result, state.assembly.parts);
+            if (params.booleanGeometryHashes?.[bodyId] !== currentHash) {
+              set({ mateEditor: { ...editor, error: `${result.resultPartName} changed after its attachment was picked. Pick the attachment again, or delete this joint and create it again.` } });
+              return;
+            }
+            booleanGeometryHashes[bodyId] = currentHash;
+          }
+        }
+        if (Object.keys(booleanGeometryHashes).length) mate.booleanGeometryHashes = booleanGeometryHashes;
         const isEdit = editor.mode === "edit" && editor.mateId;
         const updatedMates: Mate[] = isEdit
           ? state.assembly.mates.map((m) => (m.id === editor.mateId ? mate : m))
@@ -2251,9 +2280,10 @@ export const useKinetiCADStore = create<KinetiCADStore>()(
           // persisted state predates the auto-promote behavior in
           // `createPart`. The UI / sim used to fall back to `parts[0]`
           // when groundPartId was "", which silently rewired the anchor
-          // on re-orders / deletions.
+          // on re-orders / deletions. Boolean assemblies deliberately use
+          // an empty ground for free motion; never promote a consumed input.
           const asm = state.assembly as Assembly;
-          if (asm.groundPartId === "" && asm.parts.length > 0) {
+          if (asm.groundPartId === "" && asm.parts.length > 0 && asm.booleanFeatures.length === 0) {
             state.assembly = { ...asm, groundPartId: asm.parts[0].id };
           }
         }

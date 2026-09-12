@@ -16,7 +16,7 @@ The user requested one item at a time, with a stop after each completed item for
 
 See the [numerical verification](CRANK-SLIDER-VERIFICATION.md), [Chrome matrix](CRANK-SLIDER-CHROME-2026-09-12.md) and [source/build evidence](crank-slider-validation.json).
 
-## 2. Persistent editable sketch dimensions — ready for user testing
+## 2. Persistent editable sketch dimensions — implemented
 
 Authorised by the user on 12 September 2026. The dev server is running on port 5184.
 
@@ -25,7 +25,7 @@ Authorised by the user on 12 September 2026. The dev server is running on port 5
 - [x] Preserve the sketch dimensions through Save/Load and recovery without changing the existing project format.
 - [x] Verify geometric equations against independently measured OpenCascade solids and test failed/stale edits.
 - [x] Exercise the actual Chrome editor, exports/reload and input errors, then run regression/build checks. **237/237 tests and the full build passed.**
-- [ ] User testing: implementation stops at this stage until the user asks to continue.
+- [x] User authorised continuation on 12 September 2026; this records permission to continue, not formal engineering acceptance.
 
 See [sketch dimensions verification](SKETCH-DIMENSIONS-VERIFICATION.md) for measured results, tolerances, browser checks and limitations.
 
@@ -36,9 +36,18 @@ CAD typecheck and production build passed. Actual Chrome preview on port 5185
 showed the complete crank-slider bed within the grid, with no captured runtime errors.
 This visual-only change does not advance the next CAD stage or add physics claims.
 
-## Following stages — not started
+## 3. Direct simulation of finished assembly Boolean shapes — implemented; final UI reopening check pending
 
-- Direct simulation of finished assembly Boolean shapes.
+- [x] Prepare each connected final solid and its mass properties from the same OpenCascade shape.
+- [x] Define finished material, fixed base and result joints; exclude construction inputs.
+- [x] Verify independent geometry/inertia equations and actual solver motion, including rejected ambiguous cases.
+- [x] Exercise the actual Chrome editing, simulation, Save, refresh/recovery, stale-joint rejection and lifecycle controls. Parse the actual downloaded files with the shipped loader.
+- [ ] Reopen a newly downloaded result-joint project through the native Chrome Load dialog. Native access is pending user availability; this is distinct from the passing refresh/recovery and file-parser checks.
+- [x] Run final regression/build checks and document measured scope: **298/298 tests and the full build passed.** Stop for user review; the native file-reopening check above remains pending.
+
+See [Boolean simulation verification](BOOLEAN-SIMULATION-VERIFICATION.md) for numerical tolerances, actual Chrome observations and the remaining manual check. No following stage has started.
+
+## Following stages — not started
 - A local draw-a-path mechanism optimiser with an explicit supported mechanism family.
 - Assembly motor force limits and load behaviour, then validated contact and bearing friction in separate stages.
 - Broader structural deformation, with a separately defined and independently verified physical model.

@@ -81,6 +81,8 @@ export type BooleanFeature = {
   resultPartName: string;
   /** When true, the input parts are hidden from the scene; the result mesh stands in for them. */
   hideInputs: boolean;
+  /** Uniform material of the finished solid. Omit to inherit an unambiguous input material. */
+  materialId?: string;
 };
 
 /**
@@ -199,12 +201,15 @@ export type PlanarMate = {
   pivotB: PlanarPivot;
 };
 
-export type Mate =
+export type Mate = (
   | RevoluteMate
   | PrismaticMate
   | SphericalMate
   | FixedMate
-  | PlanarMate;
+  | PlanarMate) & {
+  /** Exact Boolean geometry at attachment time; edited results require fresh picks. */
+  booleanGeometryHashes?: Record<string, string>;
+};
 
 export type Assembly = {
   id: string;

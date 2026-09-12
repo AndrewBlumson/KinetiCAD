@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Anchor, Eye, EyeOff } from "lucide-react";
 import { useKinetiCADStore } from "@/state/store";
+import { getEffectiveGroundBodyId } from "@/state/assemblyBodies";
 import { MATERIAL_LIST, getMaterial } from "@/cad/materials";
 
 export type PartInspectorProps = {
@@ -51,8 +52,7 @@ export default function PartInspector({ onRequestDelete }: PartInspectorProps) {
     (f) => f.type === "extrude" || f.type === "revolve" || f.type === 'imported-step',
   );
   const tx = part.transform;
-  const effectiveGroundId =
-    assembly.groundPartId || assembly.parts[0]?.id || "";
+  const effectiveGroundId = getEffectiveGroundBodyId(assembly);
   const isGround = effectiveGroundId === part.id;
 
   const currentMaterial = getMaterial(part.materialId);

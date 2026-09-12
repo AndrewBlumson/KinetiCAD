@@ -1,3 +1,4 @@
+import { MATERIALS } from "@/cad/materials";
 // Phase 5 — Boolean inspector for the assembly-level Union/Subtract/Intersect
 // editor. Lives in its own store slice (`booleanEditor`) and routed by
 // Modeller's RightInspectorBody when the editor is open OR when a committed
@@ -241,6 +242,20 @@ export default function BooleanInspector() {
         />
       </Field>
 
+      <Field label="Finished solid material">
+        <select aria-label="Finished solid material" value={params.materialId ?? ""}
+          onChange={e => setParams({ ...params, materialId: e.target.value || undefined })}
+          className="h-8 w-full px-2 rounded bg-secondary border border-border text-xs">
+          <option value="">Inherit input material</option>
+          {Object.values(MATERIALS).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+        </select>
+        <p className="text-xs text-muted-foreground">When inheriting, subtraction uses the retained body’s material. A union or intersection of different materials needs one material chosen here for the whole finished solid.</p>
+      </Field>
+      <label className="flex items-center gap-2 text-xs">
+        <input type="checkbox" checked={!!params.groundResult} onChange={e => setParams({ ...params, groundResult: e.target.checked })} />
+        Fix result to world
+      </label>
+      <p className="text-xs text-muted-foreground">Unchecked results are not fixed directly to the world; joints can still constrain them. Applying replaces any fixed input with this choice. Inputs are construction geometry and are never counted again in simulation. Attach joints to the finished result.</p>
       <label className="flex items-center gap-2 cursor-pointer select-none">
         <input
           type="checkbox"
@@ -252,7 +267,7 @@ export default function BooleanInspector() {
           className="accent-[#FF6B1A] w-3.5 h-3.5"
         />
         <span className="font-technical text-[11px] text-foreground">
-          Hide inputs
+          Hide inputs in Modeller
         </span>
       </label>
 

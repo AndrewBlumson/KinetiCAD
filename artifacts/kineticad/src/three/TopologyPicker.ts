@@ -28,6 +28,7 @@ import type {
   Selection,
 } from "@/state/store";
 import type { PartMeshLayer, PartTopology } from "./PartMeshLayer";
+import type { BooleanResultLayer } from "./BooleanResultLayer";
 import type { EdgeHighlightLayer } from "./EdgeHighlightLayer";
 import type { FaceHighlightLayer } from "./FaceHighlightLayer";
 import type { StoreApi } from "zustand";
@@ -61,16 +62,41 @@ type FaceHit = {
   point: THREE.Vector3;
 };
 
+/** Highlight layers live at scene identity, while native CAD arrays are local. */
+export function topologyPositionsInWorld(positions: Float32Array, mesh: THREE.Mesh): Float32Array {
+  mesh.updateWorldMatrix(true, false);
+  const result = new Float32Array(positions.length), point = new THREE.Vector3();
+  for (let i = 0; i < positions.length; i += 3) {
+    point.fromArray(positions, i).applyMatrix4(mesh.matrixWorld).toArray(result, i);
+  }
+  return result;
+}
+
 export function createTopologyPicker(opts: {
   domElement: HTMLElement;
   camera: THREE.Camera;
   partMeshLayer: PartMeshLayer;
+  booleanResultLayer?: BooleanResultLayer;
   edgeLayer: EdgeHighlightLayer;
   faceLayer: FaceHighlightLayer;
   store: StoreApi<KinetiCADStore>;
 }): TopologyPicker {
   const { domElement, camera, partMeshLayer, edgeLayer, faceLayer, store } =
     opts;
+
+  // Result faces/edges are mate targets. Native feature editors cannot modify
+  // assembly-level result bodies and must not acquire those selections.
+  const resultLayer = () => opts.booleanResultLayer && store.getState().mateEditor?.open ? opts.booleanResultLayer : undefined;
+  const getMesh = (id: string) => partMeshLayer.getPartMesh(id) ?? resultLayer()?.getPartMesh(id) ?? null;
+  const getTopology = (id: string) => partMeshLayer.getPartTopology(id) ?? resultLayer()?.getPartTopology(id) ?? null;
+  const forEachVisible = (fn: (id: string, mesh: THREE.Mesh, topology: PartTopology) => void) => {
+    const visit = (id: string, mesh: THREE.Mesh, topology: PartTopology) => {
+      mesh.updateWorldMatrix(true, false);
+      fn(id, mesh, topology);
+    };
+    if (partMeshLayer.group?.visible !== false) partMeshLayer.forEachVisible(visit);
+    resultLayer()?.forEachVisible(visit);
+  };
 
   let widthPx = domElement.clientWidth || window.innerWidth;
   let heightPx = domElement.clientHeight || window.innerHeight;
@@ -148,8 +174,10 @@ export function createTopologyPicker(opts: {
     p0: number,
     p1: number,
     p2: number,
+    matrix: THREE.Matrix4,
   ): { x: number; y: number; behind: boolean } => {
     out.set(p0, p1, p2);
+    out.applyMatrix4(matrix);
     out.project(camera);
     return {
       x: ((out.x + 1) * widthPx) / 2,
@@ -166,6 +194,7 @@ export function createTopologyPicker(opts: {
   const polylineDistancePx = (
     poly: Float32Array,
     cursor: { x: number; y: number },
+    matrix: THREE.Matrix4,
   ): number => {
     let best = Infinity;
     if (poly.length < 6) return best;
@@ -174,6 +203,7 @@ export function createTopologyPicker(opts: {
       poly[0],
       poly[1],
       poly[2],
+      matrix,
     );
     for (let i = 1; i < poly.length / 3; i++) {
       const curr = projectToPx(
@@ -181,6 +211,7 @@ export function createTopologyPicker(opts: {
         poly[3 * i],
         poly[3 * i + 1],
         poly[3 * i + 2],
+        matrix,
       );
       if (prev && !prev.behind && !curr.behind) {
         const d = pointToSegmentDistance(
@@ -220,7 +251,7 @@ export function createTopologyPicker(opts: {
       pickFilter?.edgeTypes && pickFilter.edgeTypes.length > 0
         ? FILTERED_EDGE_PROXIMITY_PX
         : EDGE_PROXIMITY_PX;
-    partMeshLayer.forEachVisible((partId, _mesh, topology: PartTopology) => {
+    forEachVisible((partId, mesh, topology: PartTopology) => {
       for (const edge of topology.edges) {
         // Tally pre-filter so the diagnostic shows what actually exists
         // in the scene, not just what the filter accepts. If 'circle'/'arc'
@@ -234,7 +265,7 @@ export function createTopologyPicker(opts: {
           (slot.typeHistogram[edge.type] ?? 0) + 1;
         if (!edgeAllowed(edge)) continue;
         slot.considered++;
-        const d = polylineDistancePx(edge.polyline, cursor);
+        const d = polylineDistancePx(edge.polyline, cursor, mesh.matrixWorld);
         if (d < slot.bestDistAll) slot.bestDistAll = d;
         if (d < proximity && (!slot.value || d < slot.value.dist)) {
           slot.value = { dist: d, hit: { partId, edge } };
@@ -257,7 +288,7 @@ export function createTopologyPicker(opts: {
 
     const meshes: THREE.Mesh[] = [];
     const partIdByMeshUuid = new Map<string, string>();
-    partMeshLayer.forEachVisible((partId, mesh) => {
+    forEachVisible((partId, mesh) => {
       meshes.push(mesh);
       partIdByMeshUuid.set(mesh.uuid, partId);
     });
@@ -271,7 +302,7 @@ export function createTopologyPicker(opts: {
 
     const partId = partIdByMeshUuid.get(first.object.uuid);
     if (!partId) return null;
-    const topology = partMeshLayer.getPartTopology(partId);
+    const topology = getTopology(partId);
     if (!topology) return null;
     if (triangleIndex >= topology.faceForTriangle.length) return null;
 
@@ -289,7 +320,8 @@ export function createTopologyPicker(opts: {
 
     if (pickingMode === "edges") {
       const hit = findEdgeHit(css);
-      edgeLayer.setHover(hit ? hit.edge.polyline : null);
+      const mesh = hit ? getMesh(hit.partId) : null;
+      edgeLayer.setHover(hit && mesh ? topologyPositionsInWorld(hit.edge.polyline, mesh) : null);
       faceLayer.setHover(null);
       return;
     }
@@ -300,19 +332,19 @@ export function createTopologyPicker(opts: {
       edgeLayer.setHover(null);
       return;
     }
-    const mesh = partMeshLayer.getPartMesh(hit.partId);
+    const mesh = getMesh(hit.partId);
     const positions = (
       mesh?.geometry.getAttribute("position") as THREE.BufferAttribute | null
     )?.array as Float32Array | undefined;
     const indices = (mesh?.geometry.getIndex() as THREE.BufferAttribute | null)
       ?.array as Uint32Array | undefined;
-    if (!positions || !indices) {
+    if (!mesh || !positions || !indices) {
       faceLayer.setHover(null);
       return;
     }
     faceLayer.setHover({
       triangles: hit.face.triangles,
-      positions,
+      positions: topologyPositionsInWorld(positions, mesh),
       indices,
     });
     edgeLayer.setHover(null);
@@ -394,7 +426,7 @@ export function createTopologyPicker(opts: {
       // Raycaster points are in world space, while OCCT face frames are in
       // part-local coordinates. Undo the complete mesh transform before UV
       // projection so moved/rotated parts retain the clicked CAD position.
-      const mesh = partMeshLayer.getPartMesh(hit.partId);
+      const mesh = getMesh(hit.partId);
       if (!mesh) return;
       const localPoint = mesh.worldToLocal(hit.point.clone());
       const dx0 = localPoint.x - basis.origin[0];

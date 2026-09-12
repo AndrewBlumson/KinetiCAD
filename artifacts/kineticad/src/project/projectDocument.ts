@@ -35,7 +35,7 @@ const pivot = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('face'), faceId: id, localPoint: vec3 }),
   z.object({ kind: z.literal('edge'), edgeId: id, localPoint: vec3 }),
 ]);
-const mateBase = { id, name: z.string().optional(), partA: id, partB: id };
+const mateBase = { booleanGeometryHashes: z.record(z.string(), z.string()).optional(), id, name: z.string().optional(), partA: id, partB: id };
 const mate = z.discriminatedUnion('type', [
   z.object({ ...mateBase, type: z.literal('fixed') }),
   z.object({ ...mateBase, type: z.literal('spherical'), pivotA: pivot, pivotB: pivot }),
@@ -53,7 +53,7 @@ const stateSchema = z.object({
       features: z.array(feature),
     })).max(4096),
     mates: z.array(mate).max(16384),
-    booleanFeatures: z.array(z.object({ id, type: z.literal('boolean'), resultPartName: z.string(), hideInputs: z.boolean(), inputPartIds: z.array(id).min(2).max(8),
+    booleanFeatures: z.array(z.object({ id, type: z.literal('boolean'), resultPartName: z.string(), hideInputs: z.boolean(), materialId: id.optional(), inputPartIds: z.array(id).min(2).max(8),
       operation: z.discriminatedUnion('type', [z.object({ type: z.literal('union') }), z.object({ type: z.literal('intersect') }), z.object({ type: z.literal('subtract'), toolPartId: id })]),
     })),
   }),
@@ -79,7 +79,9 @@ export function parseProjectState(value: unknown): ProjectState {
   unique(assembly.mates.map((m) => m.id), 'joint');
   unique(assembly.booleanFeatures.map((b) => b.id), 'boolean');
   const parts = new Set(assembly.parts.map((p) => p.id));
-  if (assembly.groundPartId && !parts.has(assembly.groundPartId)) throw new Error('Ground part is missing.');
+  const bodies = new Set([...parts, ...assembly.booleanFeatures.map(b => `boolean:${b.id}`)]);
+  if (bodies.size !== parts.size + assembly.booleanFeatures.length) throw new Error('Part and Boolean body IDs collide.');
+  if (assembly.groundPartId && !bodies.has(assembly.groundPartId)) throw new Error('Ground part is missing.');
   for (const part of assembly.parts) {
     if (!Object.hasOwn(MATERIALS, part.materialId)) throw new Error(`${part.name}: unknown material ${part.materialId}. Choose a supported material before saving.`);
     unique(part.sketches.map((s) => s.id), 'sketch'); unique(part.features.map((f) => f.id), 'feature');
@@ -87,10 +89,11 @@ export function parseProjectState(value: unknown): ProjectState {
     for (const f of part.features) if ('sketchId' in f && !sketches.has(f.sketchId)) throw new Error(`${part.name}: a feature references a missing sketch.`);
   }
   for (const m of assembly.mates) {
-    if (!parts.has(m.partA) || !parts.has(m.partB) || m.partA === m.partB) throw new Error('A joint references missing or identical parts.');
+    if (!bodies.has(m.partA) || !bodies.has(m.partB) || m.partA === m.partB) throw new Error('A joint references missing or identical parts.');
     if ('axisLocal' in m && Math.abs(Math.hypot(...m.axisLocal) - 1) > 1e-5) throw new Error('A joint axis is not a unit vector.');
   }
   for (const b of assembly.booleanFeatures) {
+    if (b.materialId && !Object.hasOwn(MATERIALS, b.materialId)) throw new Error(`${b.resultPartName}: unknown result material.`);
     unique(b.inputPartIds, 'boolean input');
     if (b.inputPartIds.some((id) => !parts.has(id)) || (b.operation.type === 'subtract' && !b.inputPartIds.includes(b.operation.toolPartId))) throw new Error('A boolean references a missing part.');
   }

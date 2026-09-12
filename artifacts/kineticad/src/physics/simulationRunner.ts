@@ -1,3 +1,6 @@
+import { getBooleanResultLayer } from "@/three/booleanResultLayerRef";
+import { regenerateBooleanBody } from "@/features/booleanBodies";
+import { planAssemblySimulation, assemblyPhysicsSignature } from "./assemblySimulation";
 // Phase 8 — drives the physics simulation lifecycle.
 //
 // Subscribes to `simulation.running` + `simulation.paused` + `mode` in
@@ -88,6 +91,8 @@ export function startSimulationRunner(): RunnerHandle {
   let pausedResult: StepResult | null = null;
   const ownedPartLayer = getPartMeshLayer();
   const ownedSimLayer = getSimulationLayer();
+  const ownedBooleanLayer = getBooleanResultLayer();
+  let worldSignature: string | null = null;
   const isCurrent = (token: number) => !disposed && token === buildToken
     && getPartMeshLayer() === ownedPartLayer && getSimulationLayer() === ownedSimLayer
     && useKinetiCADStore.getState().simulation.running;
@@ -112,6 +117,7 @@ export function startSimulationRunner(): RunnerHandle {
   const tearDownWorld = async () => {
     buildToken += 1;
     worldReady = false;
+    worldSignature = null;
     pendingTimeMs = 0;
     pausedResult = null;
     clearForceMeasurements();
@@ -131,6 +137,7 @@ export function startSimulationRunner(): RunnerHandle {
     if (partLayer) {
       partLayer.group.visible = true;
     }
+    if (getBooleanResultLayer() === ownedBooleanLayer && ownedBooleanLayer) ownedBooleanLayer.group.visible = true;
     try {
       await queuePhysics((physics) => physics.destroy());
     } catch (err) {
@@ -185,9 +192,11 @@ export function startSimulationRunner(): RunnerHandle {
 
   const buildAndStart = async (myToken: number): Promise<void> => {
     const state = useKinetiCADStore.getState();
-    if (state.assembly.booleanFeatures?.length) {
-      throw new Error('Assembly Boolean results need their own rigid-body and joint definitions. Export the final assembly as STEP and import those solids to simulate them.');
-    }
+    const plan = planAssemblySimulation(state.assembly);
+    const signature = assemblyPhysicsSignature(state.assembly);
+    const checkSnapshot = () => {
+      if (assemblyPhysicsSignature(useKinetiCADStore.getState().assembly) !== signature) throw new Error('The assembly changed while preparing simulation. Run again to use the updated geometry and joints.');
+    };
     const partLayer = getPartMeshLayer();
     const simLayer = getSimulationLayer();
     if (!partLayer || !simLayer) {
@@ -203,10 +212,10 @@ export function startSimulationRunner(): RunnerHandle {
     const cad = await getCadKernel();
     if (!isCurrent(myToken)) return;
     const descriptors: PartDescriptor[] = [];
-    const groundId = state.assembly.groundPartId || state.assembly.parts[0]?.id;
+    const groundId = plan.groundId;
 
     const partsById = new Map<string, Part>(
-      state.assembly.parts.map((p) => [p.id, p]),
+      plan.parts.map((p) => [p.id, p]),
     );
 
     const meshSnapshots = new Map<
@@ -223,7 +232,7 @@ export function startSimulationRunner(): RunnerHandle {
         indices: new Uint32Array(idxAttr.array as Uint32Array),
       });
     });
-    const missing = state.assembly.parts.filter((part) => part.visible && part.features.length > 0 && !meshSnapshots.has(part.id));
+    const missing = plan.parts.filter((part) => part.visible && part.features.length > 0 && !meshSnapshots.has(part.id));
     if (missing.length) throw new Error(`Geometry is not ready for: ${missing.map((part) => part.name).join(', ')}.`);
 
     for (const [partId, snap] of meshSnapshots) {
@@ -283,6 +292,20 @@ export function startSimulationRunner(): RunnerHandle {
 
     if (!isCurrent(myToken)) return;
 
+    const booleanBodies = [];
+    for (const result of plan.booleans) {
+      const prepared = await regenerateBooleanBody(result.feature, state.assembly.parts, cad);
+      if (!isCurrent(myToken)) return;
+      checkSnapshot();
+      const props = massPropertiesForMaterial(volumeDataFromMassProperties(prepared.massProperties, 1), getMaterial(result.materialId).densityGcm3);
+      descriptors.push({ id: result.id, transform: { positionMm: [0,0,0], rotationDeg: [0,0,0] },
+        meshPositions: prepared.mesh.positions, meshIndices: prepared.mesh.indices,
+        massKg: props.massKg, comLocal: props.comLocal, principalInertiaKgMm2: props.principalInertiaKgMm2,
+        principalInertiaLocalFrame: props.principalInertiaLocalFrame, isGround: groundId === result.id });
+      booleanBodies.push({ ...result, mesh: prepared.mesh });
+    }
+    checkSnapshot();
+
     if (state.simulation.stewartMotion) {
       await verifyBundledStewartGeometry(state.assembly, import.meta.env?.BASE_URL ?? '/');
       if (!isCurrent(myToken)) return;
@@ -293,12 +316,7 @@ export function startSimulationRunner(): RunnerHandle {
     const result = await queuePhysics<BuildWorldResult | null>((physics) => {
       if (!isCurrent(myToken)) return Promise.resolve(null);
       const latest = useKinetiCADStore.getState();
-      if (latest.assembly.booleanFeatures?.length) {
-        throw new Error('An assembly Boolean was added while preparing the simulation. Export its result as STEP and import the solids before simulating.');
-      }
-      if (latest.simulation.stewartMotion && latest.assembly !== state.assembly) {
-        throw new Error('The assembly changed while the six-axis controller was preparing. Reset and run again.');
-      }
+      checkSnapshot();
       dispatchedMates = latest.assembly.mates;
       dispatchedExperiment = latest.simulation.forceExperiment;
       if (latest.simulation.stewartMotion && (dispatchedExperiment || latest.simulation.gravity.some(g => g !== 0))) {
@@ -348,12 +366,16 @@ export function startSimulationRunner(): RunnerHandle {
       `[PHYSICS] world ready — ${result.bodyCount} bodies, ${result.jointCount} joints`,
     );
 
+    checkSnapshot();
+    worldSignature = signature;
     worldReady = true;
     beginForceMeasurements(dispatchedExperiment, descriptors);
     // Edits arriving during the build RPC had no ready world to update.
     // Replay that delta before any RAF step can enter the worker FIFO.
     pushChangedMotorUpdates(useKinetiCADStore.getState().assembly.mates, dispatchedMates);
-    simLayer.sync(partLayer);
+    simLayer.sync(partLayer, plan.consumed);
+    for (const body of booleanBodies) simLayer.addBooleanBody(body.id, body.mesh, body.materialId);
+    if (ownedBooleanLayer) ownedBooleanLayer.group.visible = false;
     partLayer.group.visible = false;
     simLayer.setVisible(true);
     startRunLoop(myToken);
@@ -364,7 +386,15 @@ export function startSimulationRunner(): RunnerHandle {
     void buildAndStart(token).catch((error) => failRun(error, token));
   };
 
+  let observedAssembly = useKinetiCADStore.getState().assembly;
   const unsubscribe = useKinetiCADStore.subscribe((state) => {
+    if (observedAssembly !== state.assembly) {
+      observedAssembly = state.assembly;
+      if (worldSignature && worldSignature !== assemblyPhysicsSignature(state.assembly) && state.simulation.running) {
+        state.setSimulationRunning(false);
+        return;
+      }
+    }
     const running = state.simulation.running;
     const paused = state.simulation.paused;
     if (running !== lastRunning) {

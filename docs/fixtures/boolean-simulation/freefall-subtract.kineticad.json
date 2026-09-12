@@ -1,0 +1,185 @@
+{
+  "format": "kineticad-project",
+  "version": 1,
+  "stateVersion": 9,
+  "state": {
+    "mode": "modeller",
+    "assembly": {
+      "id": "boolean-export-subtract",
+      "name": "Boolean export subtract benchmark",
+      "groundPartId": "",
+      "parts": [
+        {
+          "id": "body",
+          "name": "Body 20 x 20 x 10",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              0,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "body-sketch",
+              "name": "Rectangle 20 x 20",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    0,
+                    0
+                  ],
+                  "width": 20,
+                  "height": 20
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "body-extrude",
+              "type": "extrude",
+              "sketchId": "body-sketch",
+              "depthMm": 10,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        },
+        {
+          "id": "tool",
+          "name": "Tool offset X 10 mm",
+          "visible": true,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              10,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "tool-sketch",
+              "name": "Rectangle 20 x 20",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    0,
+                    0
+                  ],
+                  "width": 20,
+                  "height": 20
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "tool-extrude",
+              "type": "extrude",
+              "sketchId": "tool-sketch",
+              "depthMm": 10,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        },
+        {
+          "id": "hidden",
+          "name": "Hidden cube - must not export",
+          "visible": false,
+          "materialId": "steel-1018",
+          "transform": {
+            "positionMm": [
+              60,
+              0,
+              0
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ]
+          },
+          "sketches": [
+            {
+              "id": "hidden-sketch",
+              "name": "Rectangle 10 x 10",
+              "plane": "XY",
+              "primitives": [
+                {
+                  "type": "rectangle",
+                  "corner": [
+                    0,
+                    0
+                  ],
+                  "width": 10,
+                  "height": 10
+                }
+              ]
+            }
+          ],
+          "features": [
+            {
+              "id": "hidden-extrude",
+              "type": "extrude",
+              "sketchId": "hidden-sketch",
+              "depthMm": 10,
+              "direction": "forward",
+              "extrudeMode": "new-body"
+            }
+          ]
+        }
+      ],
+      "mates": [],
+      "booleanFeatures": [
+        {
+          "id": "boolean-result",
+          "type": "boolean",
+          "resultPartName": "Subtract visible result",
+          "hideInputs": true,
+          "materialId": "brass-c36000",
+          "inputPartIds": [
+            "tool",
+            "body"
+          ],
+          "operation": {
+            "type": "subtract",
+            "toolPartId": "tool"
+          }
+        }
+      ]
+    },
+    "simulation": {
+      "running": false,
+      "paused": false,
+      "simulationTimeMs": 0,
+      "timeStepMs": 16.666666666666668,
+      "gravity": [
+        0,
+        0,
+        -9810
+      ],
+      "speedMultiplier": 1,
+      "durationMs": 100
+    }
+  },
+  "assets": []
+}

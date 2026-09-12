@@ -16,10 +16,13 @@
 // the source layer; we never call dispose on the clones' geometry).
 
 import * as THREE from "three";
+import type { TessellatedMesh } from "@/cad/types";
+import { getMaterial } from "@/cad/materials";
 import type { PartMeshLayer } from "./PartMeshLayer";
 
 export type SimulationLayer = {
   group: THREE.Group;
+  addBooleanBody: (id: string, mesh: TessellatedMesh, materialId: string) => void;
   /**
    * Rebuild the layer from the current PartMeshLayer entries. Called
    * when the user clicks Play; gathers a snapshot of every visible
@@ -54,6 +57,7 @@ export type SimulationLayer = {
 
 type Entry = {
   mesh: THREE.Mesh;
+  owned?: boolean;
 };
 
 export function createSimulationLayer(): SimulationLayer {
@@ -69,6 +73,7 @@ export function createSimulationLayer(): SimulationLayer {
     // we don't dispose it — Three.js refcount lives on the source.
     for (const [, entry] of entries) {
       group.remove(entry.mesh);
+      if (entry.owned) { entry.mesh.geometry.dispose(); (entry.mesh.material as THREE.Material).dispose(); }
     }
     entries.clear();
 
@@ -86,6 +91,18 @@ export function createSimulationLayer(): SimulationLayer {
       group.add(clone);
       entries.set(partId, { mesh: clone });
     });
+  };
+
+  const addBooleanBody: SimulationLayer["addBooleanBody"] = (id, data, materialId) => {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3));
+    geometry.setAttribute("normal", new THREE.BufferAttribute(data.normals, 3));
+    geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+    const material = getMaterial(materialId);
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: material.colour, metalness: material.metalness, roughness: material.roughness }));
+    mesh.name = `sim:${id}`;
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    group.add(mesh); entries.set(id, { mesh, owned: true });
   };
 
   const setTransform: SimulationLayer["setTransform"] = (
@@ -106,6 +123,7 @@ export function createSimulationLayer(): SimulationLayer {
   const clear: SimulationLayer["clear"] = () => {
     for (const [, entry] of entries) {
       group.remove(entry.mesh);
+      if (entry.owned) { entry.mesh.geometry.dispose(); (entry.mesh.material as THREE.Material).dispose(); }
     }
     entries.clear();
   };
@@ -116,5 +134,5 @@ export function createSimulationLayer(): SimulationLayer {
     // dispose them here.
   };
 
-  return { group, sync, setTransform, setVisible, clear, dispose };
+  return { group, sync, addBooleanBody, setTransform, setVisible, clear, dispose };
 }
