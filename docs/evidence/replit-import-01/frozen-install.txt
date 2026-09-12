@@ -1,0 +1,23 @@
+Scope: all 10 workspace projects
+Lockfile is up to date, resolution step is skipped
+
+   ╭─────────────────────────────────────────╮
+   │                                         │
+   │   Update available! 10.26.1 → 12.4.1.   │
+   │   Changelog: https://pnpm.io/v/12.4.1   │
+   │    To update, run: pnpm add -g pnpm     │
+   │                                         │
+   ╰─────────────────────────────────────────╯
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +104 -88
++++++++++++++++++++++++++++++++++++++++++++-------------------------------------
+Progress: resolved 104, reused 25, downloaded 59, added 10
+Progress: resolved 104, reused 25, downloaded 79, added 87
+Progress: resolved 104, reused 25, downloaded 79, added 89, done
+.../esbuild@0.28.1/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.28.1/node_modules/esbuild postinstall: Done
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+. preinstall: Done
+Done in 5.5s using pnpm v10.26.1

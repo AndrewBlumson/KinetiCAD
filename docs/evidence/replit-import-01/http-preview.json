@@ -1,0 +1,218 @@
+{
+  "capturedAt": "2026-09-12T23:01:43.904Z",
+  "environment": "Replit development shared proxy; not public production acceptance",
+  "byteCountNote": "Text responses record UTF-8 decoded body length. For binary images, decodedTextBytes is only the text-decoding length and must not be interpreted as the original asset size.",
+  "origin": "http://localhost:80",
+  "passed": 26,
+  "total": 26,
+  "checks": [
+    {
+      "path": "/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52603,
+      "passed": true
+    },
+    {
+      "path": "/story",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52603,
+      "passed": true
+    },
+    {
+      "path": "/terms",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52603,
+      "passed": true
+    },
+    {
+      "path": "/privacy",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52603,
+      "passed": true
+    },
+    {
+      "path": "/app/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52278,
+      "passed": true
+    },
+    {
+      "path": "/app/simulator",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 52278,
+      "passed": true
+    },
+    {
+      "path": "/api/healthz",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 15,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/windmill.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 6493,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/orrery.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 44743,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/gyroscope.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 19570,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/kinetic-mobile.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 33699,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/material-studio.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 33703,
+      "passed": true
+    },
+    {
+      "path": "/app/demos/stewart-platform.json",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 68306,
+      "passed": true
+    },
+    {
+      "path": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/xml",
+      "bytes": 752,
+      "passed": true
+    },
+    {
+      "path": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/plain",
+      "bytes": 68,
+      "passed": true
+    },
+    {
+      "path": "/favicon.png",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/png",
+      "decodedTextBytes": 2775,
+      "passed": true
+    },
+    {
+      "path": "/apple-touch-icon.png",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/png",
+      "decodedTextBytes": 46740,
+      "passed": true
+    },
+    {
+      "path": "/logo.webp",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/webp",
+      "decodedTextBytes": 67590,
+      "passed": true
+    },
+    {
+      "path": "/app/favicon.svg",
+      "method": "GET",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 163,
+      "passed": true
+    },
+    {
+      "path": "/src/main.tsx",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 1494,
+      "passed": true
+    },
+    {
+      "path": "/app/src/main.tsx",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 5444,
+      "passed": true
+    },
+    {
+      "path": "/@vite/client",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 179619,
+      "passed": true
+    },
+    {
+      "path": "/app/@vite/client",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 179743,
+      "passed": true
+    },
+    {
+      "path": "/",
+      "method": "HEAD",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "path": "/app/",
+      "method": "HEAD",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 0,
+      "passed": true
+    },
+    {
+      "path": "/app/simulator",
+      "method": "HEAD",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 0,
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "capturedAt": "2026-09-12T23:02:02.212Z",
+  "origin": "https://kineticad.co.uk",
+  "scope": "Before publication; no publishing action has been performed in this import verification",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "entryAssets": [
+        "/assets/index-CnYyFwDr.js",
+        "/assets/index-CrOJUb1b.css"
+      ]
+    },
+    {
+      "path": "/app/",
+      "status": 200,
+      "entryAssets": [
+        "/app/assets/index-DoZSoV00.js",
+        "/app/assets/index-hkIzq9dv.css"
+      ]
+    }
+  ]
+}

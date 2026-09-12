@@ -1,0 +1,106 @@
+{
+  "capturedAt": "2026-09-12T23:01:43.997Z",
+  "sourceCommit": "d245ee6046a0990f590cda21ac1d805b135bbb3b",
+  "builds": {
+    "landing": {
+      "entryAssets": [
+        "/assets/index-ByrLL69G.js",
+        "/assets/index-Ohs13mxb.css"
+      ],
+      "files": {
+        "assets/index-ByrLL69G.js": {
+          "bytes": 232406,
+          "sha256": "90387f426c83666dd9f1b8c4cadcf5e6120c9a088b99632deab5cab4cca668fe"
+        },
+        "assets/index-Ohs13mxb.css": {
+          "bytes": 66573,
+          "sha256": "ce6c6d8e61174075746cf124387f2ba5533b6acff5882997277e9479afd63351"
+        },
+        "index.html": {
+          "bytes": 3547,
+          "sha256": "8141a02ab53fe18e52e782bba2efc76b7a1cacb50792a8b31a265c260a98f9b0"
+        }
+      }
+    },
+    "kineticad": {
+      "entryAssets": [
+        "/app/assets/index-C9rIVqTg.js",
+        "/app/assets/index-C3_6QeTF.css"
+      ],
+      "files": {
+        "assets/App-B4CaNlzj.js": {
+          "bytes": 504342,
+          "sha256": "795b805e79a09b79c71625167aee5771887c6a51358ab040b061af636bcdf1d0"
+        },
+        "assets/BeamAnalysisPanel-CNaetzM4.js": {
+          "bytes": 9662,
+          "sha256": "098ca2c566bb2b38fb9fbffc82fc66686b5f33e398e3924bd9565bc17c9a9cb5"
+        },
+        "assets/Modeller-2GCszpqS.js": {
+          "bytes": 169471,
+          "sha256": "829f47d06dd7023233cf637fcfdd529151ff5147fa5141375ad1fe3dc86c4d55"
+        },
+        "assets/Scene-BxuyV7K4.js": {
+          "bytes": 674208,
+          "sha256": "9c0dcd4036fdcce404627a2d064b578456982bc206840be47b56b0846311c618"
+        },
+        "assets/Simulator-Cg4e-QE5.js": {
+          "bytes": 56925,
+          "sha256": "eb22dff8e33220cafcadb514afdbc291d383af12df4aa0065b463081250a2560"
+        },
+        "assets/booleanResultLayerRef-CcoSAQ8J.js": {
+          "bytes": 743,
+          "sha256": "e57110b8f7c880fed007c3dee4886b4030d219207bb3fac42f1caad6300923f6"
+        },
+        "assets/cadWorker-DsJUQGTL.js": {
+          "bytes": 280125,
+          "sha256": "426b2bb8f2a3fbd02d5dcbe367db54168546dcf3e14bd5e805bd8c9fb1e1f2ef"
+        },
+        "assets/engineeringBenchWorker-BXJ-vM4z.js": {
+          "bytes": 2061215,
+          "sha256": "47c8265e1c347adc0f865e9700a647fd7c743f9bd8ad5643aadbd743887ea829"
+        },
+        "assets/forceMeasurements-DGHAcBwh.js": {
+          "bytes": 3985,
+          "sha256": "5fe8d0ab41f042196683bd4de20aac1e8aaca38402c7accf19e9075d97ed14fb"
+        },
+        "assets/fourBarSearchWorker-Bjg0GgIa.js": {
+          "bytes": 12842,
+          "sha256": "6eedb443c82e21b1ae43a79ea3b53d36d35545bc77ad7c8e570ea2e75e456f26"
+        },
+        "assets/index-C3_6QeTF.css": {
+          "bytes": 115972,
+          "sha256": "52397ca9f96b3f9784e440c94eef1e7a8ff013e46a9bc394298d0e0350b9936f"
+        },
+        "assets/index-C9rIVqTg.js": {
+          "bytes": 190093,
+          "sha256": "308d7dd3359cafebd1bb33510c099c800f8d41adb50e027c44b073e3c7bc6e54"
+        },
+        "assets/physicsWorker-1PSc4FIA.js": {
+          "bytes": 2075767,
+          "sha256": "b302c2f6e6473b64e5a82048c8db29e7675201fcaad5b358c6fbda2f758c53bf"
+        },
+        "index.html": {
+          "bytes": 3214,
+          "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+        },
+        "seed-registry.js": {
+          "bytes": 3196,
+          "sha256": "93c87d6e7307ec28a6f2915a9237b0f80f5a1cbb1eb96c87b5d0eb34cb708d0f"
+        },
+        "seed-windmill.js": {
+          "bytes": 6924,
+          "sha256": "f64b22338e08e10325ccb98711d8ec3349e7a8040c2f95f12807562249107314"
+        },
+        "seeds/orrery.js": {
+          "bytes": 41673,
+          "sha256": "6edadb689f414bfa20a5d81a0f732e8db3f8dd86bc39e97aae8304ad0e360585"
+        },
+        "seeds/windmill.js": {
+          "bytes": 6413,
+          "sha256": "13ce6f6a3a03340bf55efaf4baedaa96604a4c5a288b050a57771b40b870ab79"
+        }
+      }
+    }
+  }
+}

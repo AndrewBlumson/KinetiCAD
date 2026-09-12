@@ -1,0 +1,38 @@
+{
+  "source": "d245ee6046a0990f590cda21ac1d805b135bbb3b",
+  "route": "https://50706794-6eeb-4cc6-844c-2561065ab2f0-00-1g74qszs2y2u5.spock.replit.dev/app",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "navigatorGpu": true,
+  "requestAdapter": {
+    "result": null,
+    "error": null,
+    "adapterInfo": null
+  },
+  "webgpuRequired": {
+    "computedVisible": true,
+    "rect": {
+      "x": 605.84375,
+      "y": 515.875,
+      "width": 212.3125,
+      "height": 16.5
+    },
+    "topmostAtCenter": {
+      "tag": "H1",
+      "text": "Start with somethingthat moves.",
+      "class": "mt-2 text-2xl font-semibold tracking-tight text-white"
+    }
+  },
+  "visualCorrection": {
+    "screenshot": "200epb",
+    "priorScreenshot": "g91ijf",
+    "shows": "central Start with something that moves welcome panel; WebGPU-required fallback is DOM-visible but obscured/not exposed in the screenshot"
+  },
+  "runtimeLogs": [
+    "WebGPU is experimental on this platform",
+    "Failed to create WebGPU Context Provider"
+  ],
+  "cadTesting": "blocked; no further CAD actions performed"
+}

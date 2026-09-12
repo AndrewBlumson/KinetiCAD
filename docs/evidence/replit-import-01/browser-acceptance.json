@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-09-12T23:02:43.286Z",
+  "sourceCommit": "d245ee6046a0990f590cda21ac1d805b135bbb3b",
+  "environment": "Replit automated browser, development preview only",
+  "verdict": "unable",
+  "report": "Environment-blocked after a bounded WebGPU probe; no application edits, installs, workflow changes, publishing, auth, or external-user actions were performed.\n\nCAD journey status (actual UI actions): 0 imports, 0 material edits, 0 Undo/Redo actions, 0 saves/downloads, 0 refresh/recovery checks, 0 malformed-file chooser attempts, 0 autosave/recovery attempts, and 0 simulator Play/Pause/Reset or final save/reopen checks. No native file chooser step ran, and no actual .kineticad.json download was produced. I did not inject file data, use WebGL, fake images, or substitute state.\n\nBlocker on the requested desktop /app route: after launching from /, the modeller initialized but the browser logged `WebGPU is experimental on this platform` and `[warn] Failed to create WebGPU Context Provider`; the visible workspace showed `WebGPU required` and `KinetiCAD requires WebGPU. Open in Chrome on an M-series Mac.` Worker resources were requested for `src/cad/cadWorker.ts?worker` and `src/physics/physicsWorker.ts?worker`; no missing-WASM error was observed. Because no WebGPU adapter/context was available, the requested CAD data-integrity journey was not attempted and is untested, not passed.\n\nPublic/device fallback checks completed on the same Replit preview:\n- `/` loaded successfully and exposed Launch KinetiCAD.\n- `/story`, `/terms`, and `/privacy` loaded successfully with their headings/content and shared footer navigation, including profile/support/company/website/email links. No route or browser errors were observed there.\n- Phone 390x844 touch context: `/app` and `/app/simulator` both showed the expected `Open KinetiCAD on a desktop or laptop` block, explicitly stating CAD/simulator are unavailable on phones or tablets, with a working back-home link and no browser errors.\n- Tablet 834x1112 touch context: `/app` and `/app/simulator` both showed the same expected block with no browser errors.\n\nRoute/browser evidence: current preview host was `https://50706794-6eeb-4cc6-844c-2561065ab2f0-00-1g74qszs2y2u5.spock.replit.dev`; no published site or guessed Vite port was used. No repository evidence files were written because the CAD run was blocked before any requested capture/download workflow could run.\n\nScreenshots captured: desktop WebGPU-required state `g91ijf`; `/story` `12a7k9`; `/terms` `5fvdh0`; `/privacy` `pd1o8m`; phone `/app` `va127f`; phone `/app/simulator` `mudghr`; tablet `/app` `dzrzce`; tablet `/app/simulator` `d68166`.",
+  "screenshots": [
+    {
+      "description": "Desktop /app visibly rendered the empty modeller with the central WebGPU-required blocker.",
+      "id": "g91ijf"
+    },
+    {
+      "description": "Successful /story route with story content and footer navigation.",
+      "id": "12a7k9"
+    },
+    {
+      "description": "Successful /terms route with legal content and footer navigation.",
+      "id": "5fvdh0"
+    },
+    {
+      "description": "Successful /privacy route with policy content and footer navigation.",
+      "id": "pd1o8m"
+    },
+    {
+      "description": "390x844 phone /app desktop-required block.",
+      "id": "va127f"
+    },
+    {
+      "description": "390x844 phone /app/simulator desktop-required block.",
+      "id": "mudghr"
+    },
+    {
+      "description": "834x1112 tablet /app desktop-required block.",
+      "id": "dzrzce"
+    },
+    {
+      "description": "834x1112 tablet /app/simulator desktop-required block.",
+      "id": "d68166"
+    }
+  ],
+  "publicationPerformed": false
+}
