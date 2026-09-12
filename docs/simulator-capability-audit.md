@@ -7,6 +7,9 @@ operating speed or user edit. Browser acceptance is recorded separately.
 | Feature | Implemented and measured | Boundary of the claim |
 | --- | --- | --- |
 | CAD mass and inertia | OCCT B-rep volume, centre of mass and full centroidal inertia; principal-axis frame passed to Rapier; analytic mass regressions cover known solids and rotated frames. | Uniform density per part. Invalid mass/inertia rejects the simulation. A material name does not establish stiffness, strength or friction. |
+| Connected assembly Boolean results | Final OCCT mesh, volume, COM and full inertia from the same connected solid; explicit homogeneous material/ground, actual-kernel freefall/equal-force/pendulum checks and revision-checked result joints. | Construction inputs are excluded. Empty/disconnected output, shared source parts, ambiguous material/ground and stale attachments reject simulation. This does not enable CAD contacts. |
+| Adjustable crank-slider | Editable native mechanism, exact rigid-link reference and actual solver position/velocity/interval-acceleration readouts, constrained parameter range and timestep checks. | Ideal velocity drive; no motor torque, bearing friction or contact-load rating. Raw one-step derivative errors are documented separately from interval readouts. |
+| Persistent sketch dimensions | Primitive equations, actual OCCT regeneration, saved dimensions and reject-without-commit transactions are checked. | No automatic constraint solving or multiple-loop sketch support. Validated numeric geometry is not a strength/load test. |
 | Revolute joint | One free rotation, stored local anchors and axis; ideal velocity drive; positive/negative RPM and motor release/reactivation tested. The windmill retains its unchanged ±5e-7 rad/s acceptance gate. | Finite-gain ideal drive, without a torque rating, angular travel stop, bearing friction or backlash. |
 | Prismatic joint | One free translation; velocity units mm/s; passive gravity response and live motor release tested. | Ordinary assembly sliders have no force rating or travel stops. The bounded Stewart controller is a separate exception with explicit stroke limits. |
 | Spherical joint | Three free rotations with coincident anchors; all twelve Stewart spherical closures measured throughout its test runs. | Ideal joint; bearing angular retention, friction, wear and load rating are not modeled. Stewart's geometric workspace imposes a separate conservative angular envelope. |
@@ -25,6 +28,16 @@ operating speed or user edit. Browser acceptance is recorded separately.
 | Cantilever calculator | Independent Euler–Bernoulli rectangular cantilever equations, explicit E and elastic limit, signed end load, and clearly scaled analytical curve. Benchmark dimensions or an eligible unchanged rectangle/extrude are accepted. | No CAD mesh deformation. Homogeneous isotropic linear elasticity; stated slenderness, small-deflection and stress bounds; no shear deformation, self-weight, buckling, plasticity or 3D stress concentration model. |
 
 ## Evidence
+
+Current implementation baseline: `8e954ab`, **298 passing automated tests**.
+See [every test and its source](TEST-CATALOG.md), [equations and tolerances](MATHEMATICS-AND-PHYSICS.md)
+and [current acceptance status](CURRENT-STATUS.md). KinetiCAD remains the original
+Replit build; later Codex computer-use checks are recorded by stage. The latest
+native downloaded-Boolean-file Load check remains pending.
+
+- [Connected Boolean measurements](boolean-physics-results.json) and [browser scope](BOOLEAN-SIMULATION-VERIFICATION.md).
+- [Crank-slider equations and measured errors](CRANK-SLIDER-VERIFICATION.md).
+- [Sketch-dimension checks](SKETCH-DIMENSIONS-VERIFICATION.md).
 
 - [Six-axis numerical results](stewart-controller-results.json) and
   [workspace/clearance evidence](stewart-workspace-results.json).

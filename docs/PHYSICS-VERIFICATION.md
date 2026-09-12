@@ -1,4 +1,4 @@
-# Physics verification for the demo gallery
+# KinetiCAD physics verification
 
 This build retains the original windmill regression gate and adds numerical
 checks of the CAD-to-physics pipeline. A moving picture or a successful build
@@ -8,41 +8,47 @@ assembly has been validated.
 
 ## Current source and verification status — 12 September 2026
 
-The current source includes complete project persistence, bounded six-axis
-Stewart control and three separate Engineering tests tabs: **Motor & load**,
-**Friction & contact**, and **Elastic beam**. These capabilities have different
-physical models; a passing test of one does not validate the others.
+Implementation baseline `8e954ab` includes complete projects, six demos, bounded
+six-axis Stewart control, the separate engineering experiments, adjustable
+crank-slider, persistent sketch dimensions and direct connected-Boolean
+simulation. KinetiCAD remains the original Replit/Replit Agent build by Andrew
+and Kevin Blumson; later development and the recorded September numerical and
+Chrome computer-use checks were performed by Codex under Andrew's direction.
+
+Read [Current status](CURRENT-STATUS.md), the [complete test catalog](TEST-CATALOG.md)
+and [mathematics/physics reference](MATHEMATICS-AND-PHYSICS.md) first. The latter
+connects equations, units, expected values, observed errors and tolerances to
+source tests and raw reports. It separates actual-kernel measurements, pure
+analytical checks, mocked orchestration tests and rendered browser observations.
 
 | Gate | Recorded status and scope |
 | --- | --- |
-| Aggregate tests | Passed: 166/166 cases, zero failures, serialized in 101.047 seconds; includes assembly exports, pause timing, hole picking and Boolean simulation guard tests. |
-| Six-demo CAD and baseline physics | Passed: 50 valid B-reps and 49 joints; [geometry](demo-geometry-results.json), [physics](demo-physics-results.json) |
-| Equal-force materials | Passed: three force/timestep runs and 72 exact clearance pairs; [force](material-force-results.json), [clearance](material-clearance-results.json) |
-| Six-axis Stewart controller | Passed: 16 actual-CAD solver scenarios; [controller](stewart-controller-results.json) |
-| Bounded Stewart geometry | Passed: pose/path enclosures and 910 exact B-rep pair checks at ten poses; [workspace](stewart-workspace-results.json) |
-| Original Stewart lift regression | Passed: six-second ideal heave plus 182 endpoint intersections; [physics](stewart-physics-results.json), [clearance](stewart-clearance-results.json) |
-| Finite-force actuator bench | Passed: hold, lift, overload, timestep refinement and free-base reaction; [measurements](actuator-bench-results.json) |
-| Guided contact bench | Passed: eight measured scenarios and nine regression tests; [measurements](contact-bench-results.json) |
-| Elastic cantilever calculation | Passed: seven analytical/eligibility tests; [results](beam-analysis-results.json) |
-| Complete project recovery | Native/imported STEP save, worker restart, downstream feature and recovery-failure checks pass; [contract and tests](PROJECT-RECOVERY.md) |
-| Committed assembly STEP/STL export | Passed: seven actual-worker cases including booleans, visibility and compounds; [measurements](assembly-export-results.json) |
-| Latest build and browser acceptance | Final acceptance is recorded separately; earlier browser reports apply only to their identified bundles and cases. |
-| Republished public route | Pending |
+| Current automated aggregate | **298/298 passing**, zero failures/skips; [individual results](test-inventory-results.json) and [catalog](TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
+| Current typecheck/build | Passed at `8e954ab`; [implementation record](boolean-simulation-validation.json). This documentation refresh changes no application source. |
+| Direct Boolean physics | Actual final OCCT shape/mass and Rapier response, transformed/imported inputs, explicit ground and revision-checked joints; [verification](BOOLEAN-SIMULATION-VERIFICATION.md), [measurements](boolean-physics-results.json). |
+| Persistent sketch dimensions | Independent primitive equations, actual OCCT rebuilds and transaction/recovery checks; [stage record](SKETCH-DIMENSIONS-VERIFICATION.md). |
+| Adjustable crank-slider | 16 recorded actual-CAD motion scenarios and 864 sampled pair intersections; [errors and limits](CRANK-SLIDER-VERIFICATION.md). These scenario counts are not extra unit tests. |
+| Six-demo CAD/physics snapshots | 50 valid B-reps and 49 joints; [geometry](demo-geometry-results.json), [physics](demo-physics-results.json). Retain their measured source identities. |
+| Materials/Stewart snapshots | [Equal-force](material-force-results.json), [material clearance](material-clearance-results.json), [16 six-axis runs](stewart-controller-results.json), [910 exact workspace pairs](stewart-workspace-results.json), [original lift](stewart-physics-results.json). Historical run provenance is separate from the current aggregate. |
+| Separate engineering models | [Finite-force actuator](actuator-bench-results.json), [guided contact](contact-bench-results.json), [analytical beam](beam-analysis-results.json). Their scoped regression tests pass in the aggregate. |
+| Complete projects and exports | [Recovery contract](PROJECT-RECOVERY.md), [export contract](ASSEMBLY-EXPORT.md), [Boolean-stage export run](boolean-simulation-export-results.json). |
+| Actual Chrome acceptance | Codex computer-use observations are linked by stage in [the docs index](README.md#actual-browser-checks-recorded-by-stage); no claim that every path was reclicked on one final bundle. |
+| Latest Boolean downloaded-file reopening | **Pending native Load-dialog check.** Actual downloads, shipped parser validation, refresh and new-tab recovery passed. |
+| User acceptance / republished Replit route | Pending. Local measurements do not establish public deployment acceptance. |
 
-The 166-case aggregate includes the final hole-picking and assembly-Boolean
-simulation guard regressions. The full workspace build passed. Real Chrome
-acceptance of the completed controls and native/STEP workflows is recorded in
-the [current browser matrix](CHROME-ACCEPTANCE-2026-09-12.md), with bundle and
-source fingerprints in [the release validation record](release-validation.json).
-Numerical, rendered and public deployment acceptance remain separate.
-[Report provenance](REPORT-PROVENANCE.md) records which measured source hashes
-still match, the geometry metadata restoration and the intentionally historical
-export/browser revisions.
+The earlier 166-, 195- and 237-test milestones remain dated evidence, not the
+latest aggregate. Original source hashes and browser bundle identities are
+preserved; a later documentation update does not make an older measurement a
+fresh run. [Report provenance](REPORT-PROVENANCE.md) explains those boundaries.
 
-The current CAD report contains 48 single solids and two unchanged legacy
-compounds; all 35 bodies in the four added demos are single solids. The original
-Windmill maximum error remains **8.7422783e-8 rad/s**, below the unchanged
-**±5e-7 rad/s** gate. No new bench tolerance replaces that motor criterion.
+The recorded six-demo CAD report contains 48 single solids and two unchanged
+legacy compounds; all 35 bodies in the four added demos are single solids.
+The original Windmill gate remains **30 RPM = π rad/s ±5e-7 after five simulated
+seconds**. The recorded worker regression error is **8.7422783e-8 rad/s**;
+no later bench tolerance replaces that motor criterion.
+
+The detailed experiment sections below retain their recorded measurements.
+Consult each report's source identity before applying a number to future code.
 
 ### Six-axis Stewart: ideal actuator control
 
@@ -193,7 +199,7 @@ to arbitrary curved surfaces. [Assembly export](ASSEMBLY-EXPORT.md) explains
 that Hide inputs off retains overlapping originals alongside results. Final
 Boolean-export browser acceptance is recorded separately.
 
-### Material force lab: current numerical evidence
+### Material force lab: recorded numerical evidence
 
 The eight samples have identical CAD meshes and volume
 **10,050.283064729765 mm³**. Each receives 0.001 N along world +Y at its
@@ -293,11 +299,12 @@ controller and workspace evidence are recorded separately above.
 - Fixed simulation increments; display frame timing controls the number of
   increments requested, not their duration. The clock counts time actually
   advanced by the solver. Pause and model changes invalidate stale responses.
-- Assemblies containing assembly-level Boolean results cannot start simulation.
-  The UI disables Play and the runner rejects both immediate and late additions;
-  it must not simulate the uncut original operands. Export the final STEP solids,
-  import them, then assign materials and joints to simulate that geometry. Native
-  per-part additive/subtractive feature chains remain supported.
+- Connected assembly Boolean results simulate directly using the final OCCT
+  mesh and integrated mass properties. Construction inputs are excluded regardless
+  of their Modeller visibility. Each result has a homogeneous finished material,
+  an explicit fixed/free choice and new result-level joint attachments. Empty or
+  disconnected results, ambiguous input grounding, stale attachments and shared
+  inputs between physical results fail explicitly. See [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md).
 - Unsupported planar joints and incompatible initial joint frames fail the
   world build. They must not be silently omitted from a running simulation.
 - Optional duration limits hold the final whole configured step; further
@@ -312,7 +319,12 @@ not evidence of a manufacturable connection between those solids.
 ## Repeatable checks
 
 Run from the repository root after `pnpm install --frozen-lockfile`. Run the
-OpenCascade suites one at a time on a memory-constrained computer.
+OpenCascade suites one at a time on a memory-constrained computer. The standalone
+verifiers below write tracked numerical JSON. Run them in an isolated checkout
+or preserve original report bytes, archive fresh output as a new dated run and
+restore the original files. The aggregate can also emit reports; this audit
+retained its fresh output separately. [Report provenance](REPORT-PROVENANCE.md)
+defines that preservation workflow.
 
 ```sh
 node scripts/src/generate-demo-library.mjs --check
@@ -590,6 +602,11 @@ preview is not the final graphics acceptance environment.
    stopping distances and the displayed integration bounds. Check pause/reset
    and tab switching. Verify the beam reference, load/section scaling and
    visible out-of-range warnings, including an eligible native CAD part.
-10. Record exact source/bundle identities and this browser matrix. Repeat the
+10. Exercise the adjustable crank-slider controls and reference readouts, numeric
+    sketch edits including rejected changes, and direct Boolean result materials,
+    grounding, joint picking and stale-attachment rejection. Reopen a newly saved
+    Boolean result-joint project through the native Load dialog; this is the
+    remaining latest-stage manual gate.
+11. Record exact source/bundle identities and this browser matrix. Repeat the
     unchanged motor gate and relevant flows at the republished public URL.
     Local numerical or browser evidence does not establish deployment acceptance.

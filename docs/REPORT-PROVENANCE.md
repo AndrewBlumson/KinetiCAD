@@ -1,9 +1,66 @@
-# Numerical report provenance — 12 September 2026
+# Numerical report provenance
 
 Report dates and measured source hashes identify the run that produced the
 numbers. A later UI, export or logging change does not justify replacing those
 hashes with the current checkout. This note records the bounded source review;
 it is not a new OCCT or physics measurement.
+
+## Current interpretation at implementation baseline `8e954ab`
+
+The September documentation audit reran the complete **298-test** suite without
+changing application code. [test-inventory-results.json](test-inventory-results.json)
+records actual per-test events, source locations and source hashes, and retains
+freshly generated measurement payloads separately. Existing dated JSON reports
+were restored to their original bytes. [TEST-CATALOG.md](TEST-CATALOG.md) explains
+which results are real-kernel experiments, pure calculations or mocked lifecycle
+checks. The [maths reference](MATHEMATICS-AND-PHYSICS.md) connects their tolerances.
+
+The earlier source-match observations later in this document are historical.
+In particular, the worker hash `a7c7e843…` in the generic demo, material-force,
+original Stewart-lift and six-axis controller reports **does not match** the
+current `7143f9f0…` physics worker. Their measured values are retained as dated
+snapshots. Do not present them as newly executed on the latest worker merely
+because a later aggregate passes. Controller/kinematics inputs and other scoped
+sources can match independently; those narrower matches do not make the whole
+historical run current.
+
+The crank-slider and Boolean physics reports record the current worker hash.
+The Boolean stage's export report is
+[boolean-simulation-export-results.json](boolean-simulation-export-results.json);
+[assembly-export-results.json](assembly-export-results.json) remains the earlier
+export milestone. Current automated rerun provenance is in the test inventory.
+None of those results claims a newly republished Replit route.
+
+## Evidence ownership and reproducibility
+
+KinetiCAD's original build was made in Replit with Replit Agent by Andrew and
+Kevin Blumson. Later Codex development, automated verification and actual Chrome
+computer-use checks have their own dated records. Credit each activity where it
+was performed; keep original Replit provenance intact.
+
+For a new verification record, retain:
+
+1. Commit/source and fixture hashes, dependency versions, command and timestamp.
+2. The test or scenario name and its independent reference calculation.
+3. Units, requested parameters, tolerance, observed value/error and pass/fail.
+4. Whether the path used the actual OCCT/Rapier worker, a mock or pure arithmetic.
+5. Browser route and bundle identity, interactions actually performed, visible
+   observations and captured console/runtime errors for UI checks.
+6. Unsupported cases, failed/rejected cases and pending gates. Do not turn an
+   uncompleted check into a pass or omit it from the summary.
+
+A source hash identifies bytes; it is not a proof of physical correctness.
+Tests do not certify every possible user model. The original windmill tolerance
+must remain unchanged; any new tolerance must state its numerical/model basis,
+not simply match an observed error. Published acceptance must be measured again
+on the intended Replit route.
+
+## Historical earlier-September provenance review
+
+The remainder preserves the earlier review's scope and findings. References to
+matching “current” hashes below mean current **at that earlier review** and may
+have been superseded, as explicitly noted above. This section is not the current
+source-match ledger.
 
 ## Restored geometry metadata
 

@@ -14,6 +14,23 @@ dead imported shape ID are rejected with a request for the original STEP file;
 they never contained the geometry needed to reconstruct that shape. A legacy
 import still alive in the current CAD worker can be upgraded by Save project.
 
+## Dimensions and Boolean result data
+
+The same document format also retains edited native sketch dimensions, finished
+Boolean material IDs, a result's `boolean:<feature ID>` ground identity, and
+geometry revisions on joints attached to results. Source-part joints are not
+silently rebound to a Boolean result. A saved joint with an obsolete result
+revision remains invalid until its attachment is picked again.
+
+Current source includes regression tests and actual downloaded-file parsing for
+these additions. Numeric sketch Save/Load and browser recovery are covered in
+[its stage record](SKETCH-DIMENSIONS-VERIFICATION.md). The Boolean stage's actual
+Save and refresh/new-tab recovery passed; reopening a newly downloaded
+result-joint file through Chrome's native Load dialog remains pending.
+See [Boolean verification](BOOLEAN-SIMULATION-VERIFICATION.md) and the
+[complete test catalog](TEST-CATALOG.md). A passing parser test is not substituted
+for that final UI path.
+
 ## Restoration contract
 
 - The document schema checks finite geometry and simulation values, unique

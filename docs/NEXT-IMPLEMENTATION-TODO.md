@@ -66,3 +66,17 @@ See [profile and desktop-access verification](CREATOR-PROFILE-AND-DESKTOP-ACCESS
 ## Optional support link — release preparation
 
 Keep the full application free. Add a discreet voluntary “Support KinetiCAD” link once the user chooses a payment provider and supplies their destination. Do not create a payment account or publish an unconfigured donation button. The repository can return to public visibility when the user is ready to release it.
+
+
+## Documentation refresh and historical issue review — 12 September 2026
+
+- [x] Preserve the Replit/Replit Agent origin and distinguish later Codex development, automated checks and actual Chrome computer use.
+- [x] Update current README, developer/Replit handoffs, capability and recovery/export guides; preserve the original May handover separately.
+- [x] Catalogue every automated test and document equations, units, reference methods, tolerances, errors and exclusions.
+- [x] Rerun the complete suite: **298/298 passed across 39 files**. Validate 981 local documentation links, including 503 source-line anchors; preserve the original handover byte-for-byte. Application source and historical measurement reports are unchanged by this refresh.
+- [x] Reconcile older known issues against current source/evidence without implementing new features.
+- [ ] Review the [known-issues and follow-up register](KNOWN-ISSUES-AND-FOLLOW-UP.md) in a later bounded task after the current acceptance gate/user review.
+
+[Current status](CURRENT-STATUS.md) and [the documentation index](README.md) are
+the entry points for returning contributors. Do not use historical phase lists
+or old test totals as current acceptance claims.

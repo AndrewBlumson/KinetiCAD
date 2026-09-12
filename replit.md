@@ -1,8 +1,23 @@
-# Workspace
+# KinetiCAD Replit workspace
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+KinetiCAD was originally built on Replit with Replit Agent by Andrew Blumson,
+co-built with Kevin Blumson, during the Replit 10 Buildathon in May 2026.
+It remains a Replit-built application. Later development, numerical checks and
+actual Chrome computer-use checks were performed by Codex under Andrew’s direction.
+Keep that later credit distinct from the original build attribution.
+
+This is a pnpm/TypeScript monorepo. Each package manages its own dependencies.
+The CAD application is browser-local; API/database scaffold packages do not imply
+that a paid AI API or server is required for its geometry/physics calculations.
+
+**Current implementation: `8e954ab`, 298 passing automated tests and a passing
+full workspace typecheck/build.** [Current status](docs/CURRENT-STATUS.md) and
+[HANDOVER.md](HANDOVER.md) are the resumption entry points. The native downloaded
+Boolean project Load-dialog check, latest user review and Replit/public-route
+acceptance remain pending. Historical phase logs below are not current backlog
+or automatic evidence for later revisions.
 
 ## Stack
 
@@ -19,12 +34,14 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
+- `PORT=5184 BASE_PATH=/app pnpm run build` — typecheck + build all packages for a local CAD check; retain the existing Replit deployment configuration for publication
+- `PORT=5184 BASE_PATH=/app pnpm --filter @workspace/kineticad dev` — start the CAD development server at `/app/`
+- `pnpm --filter @workspace/kineticad test:all` — run all automated tests sequentially
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+See `pnpm-workspace.yaml`, the package manifests and [Replit handoff](docs/REPLIT-HANDOFF.md) for workspace and publishing details.
 
 ---
 
@@ -55,9 +72,12 @@ current-source section.
 - Phase 10 ✅ — Material Library: eight engineering materials, per-part picker, density-driven mass props, volume cache, v8→v9 migrate. (Full notes in the Phase 10 section below.)
 - Phases 11–12 ⏳ — Pending.
 
-**Deferred to Phase 12 polish** (per user, end of Phase 5):
-- 3D click-to-select on boolean result meshes (`BooleanResultLayer` rendered but not wired into `TopologyPicker`; selection only via sidebar).
-- Inline thumbnails in `BooleanInspector` for input parts, Subtract tool slot, and live result.
+**Historical Phase 12 notes, reconciled 12 September 2026:**
+- Boolean result topology is now available for supported joint creation. General
+  click-to-select outside mate editing remains deferred; editing is through the sidebar.
+- Inline Boolean input/tool/result thumbnails remain deferred.
+- Do not revive the old mobile/WebGL roadmap: CAD is intentionally desktop WebGPU.
+  See [the issue register](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md) for all dispositions.
 
 ---
 
@@ -106,19 +126,24 @@ each step would accidentally create a force ramp. Duplicate, missing, fixed
 or invalid force targets fail the build. This is separate from velocity-motor
 force/torque limits, which remain unsupported.
 
-**Motor settings** (in `physicsWorker.ts`):
+**Default assembly motor settings** (in `physicsWorker.ts`; verified workspaces can override them):
 - `setCanSleep(false)` on every dynamic body — a sleeping body ignores motor impulses and appears frozen.
 - `MotorModel.AccelerationBased` — velocity servo with finite gain and solver tracking error. Acceptance depends on the measured residuals and thresholds in `docs/demo-physics-results.json`; the configured target is not evidence of exact tracking.
 - `MOTOR_VELOCITY_GAIN = 10000` — mm-unit inertias (50–500 kg·mm²) are 3–6 orders of magnitude larger than SI tutorial values; the effective gain must scale accordingly. Progression history: 1.0 → 100 → 10000. Comment in `physicsWorker.ts` records this so future readers don't repeat the SI assumption.
 - `body.wakeUp()` must be called on both attached bodies after `updateJointMotor`, or a sleeping idle mechanism ignores the new motor settings.
 - RPM → rad/s: `rpm × 2π / 60`.
-- Current solver: 32 iterations at the configured fixed timestep. The actual
+- Default solver: 32 iterations at the configured fixed timestep. The actual
   CAD orrery/mobile regression failed lower iteration counts; retain the
   measured limits in `docs/demo-physics-results.json` when changing this.
 - Zero or blank commands release the motor, preserving its joint and current
   body velocities. Rapier 0.12 keeps braking when a configured drive is merely
   given zero gain, so release recreates only the unpowered impulse joint from
   its validated local frames. Tests cover coasting, gravity and reactivation.
+
+The adjustable crank-slider uses its separately validated 120 Hz configuration:
+8 outer iterations, 16 internal PGS iterations and motor gain 100000. Its settings
+are not ordinary-world defaults; rebuilding an ordinary world restores defaults.
+See [the crank-slider limits](docs/CRANK-SLIDER-VERIFICATION.md).
 
 **Fixed joint frame math** — `JointData.fixed` with identity anchors on both sides yanks body B's origin onto body A's under solver forces. Correct: at creation time sample `bodyA/bodyB.translation()/rotation()`, compute `frame2` in B's local frame as `T_B^{-1} · T_A` (translation = `q_B^{-1} ⊗ Δp ⊗ q_B`, orientation = `q_B^{-1} ⊗ q_A`). Frame1 stays identity in A. Helpers `quatMul` + `quatRotateVec` live in `physicsWorker.ts`.
 
@@ -179,20 +204,62 @@ Orrery generator: `pnpm --filter @workspace/scripts run generate-orrery-seed` �
 
 ---
 
-## Current source — Complete projects, six-axis Stewart and engineering tests
+## Current source — September 2026 additions
 
 The source now delivers durable native/imported project recovery, bounded
 six-axis Stewart control, separate finite-force motor/load and contact/friction
-benches, and an analytical elastic-beam tool. Their physical models and limits
-are distinct. Current measured reports and the final browser/publication gates
-are in `docs/PHYSICS-VERIFICATION.md`; old phase logs below are historical.
+benches, an analytical elastic-beam tool, an adjustable crank-slider, persistent
+sketch dimensions and direct connected-Boolean simulation. Their physical models
+and limits remain distinct.
 
-The latest serialized `test:all` passed 166/166 cases with zero failures in
-101.047 seconds, including assembly-export and pause-clock regressions. The
-full workspace build and final production bundle passed. Actual Chrome input,
-point-picking and workflow acceptance is in docs/CHROME-ACCEPTANCE-2026-09-12.md.
-Earlier 79-case and Chrome milestones remain evidence for their recorded revisions.
-Preserve the original Windmill ±5e-7 rad/s acceptance limit.
+The current serialized suite contains **298 passing tests**. Its complete
+per-test results and source locations are in [TEST-CATALOG.md](docs/TEST-CATALOG.md)
+and [test-inventory-results.json](docs/test-inventory-results.json).
+[MATHEMATICS-AND-PHYSICS.md](docs/MATHEMATICS-AND-PHYSICS.md) records equations,
+units, independent references, tolerances and observed errors. Preserve the
+original Windmill **π ±5e-7 rad/s after five simulated seconds** gate.
+
+The full workspace typecheck/build passed at `8e954ab`. Recorded Chrome
+computer-use checks by Codex are linked by stage in [the docs index](docs/README.md).
+Their source/bundle scope matters. Actual Boolean downloads and refresh/new-tab
+recovery passed, but native reopening of a newly downloaded result-joint file
+remains pending. Local checks do not establish Replit publication acceptance.
+The 79-, 166-, 195- and 237-test milestones remain historical evidence.
+
+### Numeric editing and current usability
+
+In Modeller, select a part for Position/Rotation controls. Select its sketch,
+choose **Edit dimensions**, and Apply numeric mm/degree changes to circles,
+rectangles, lines or arcs. The full feature chain is rebuilt and validated before
+commit; rejected geometry or invalidated attachment checks retain the saved model.
+This is numeric editing, not an automatic sketch constraint solver.
+
+The separate **Crank-slider** workspace exposes bounded crank radius, rod length
+and RPM, plus measured/reference plots and complete Save/Load settings. Six demo
+cards remain in the gallery. The visual grid is 600 × 600 mm with 10 mm spacing;
+it is neither a floor collider nor a limitation on model coordinates.
+
+All file controls have labels and tooltips. The landing page includes Andrew’s
+sites, X/LinkedIn and Replit UK Ambassador biography. Phone/tablet CAD startup is
+blocked; public information pages remain readable. Optional donation support
+awaits Andrew’s selected provider/destination and does not change free access.
+
+### Connected Boolean rigid bodies
+
+`features/booleanBodies.ts` shares worker-scoped preparation of the final mesh
+and unit-density OCCT mass properties. `physics/assemblySimulation.ts` excludes
+consumed input bodies, resolves a homogeneous result material and validates
+explicit ground/joint references. Empty/disconnected results, reused inputs and
+ambiguous material/ground choices are rejected. Subtraction may inherit the
+retained body material; mixed unions/intersections require an explicit result
+material. Results are world-baked with identity rigid-body transform.
+
+The result ID is `boolean:<feature ID>`. `BooleanResultLayer` exposes connected
+result topology during supported mate creation. Store exact geometry revisions
+at attachment-pick time; old joint name/RPM edits cannot renew stale picks.
+Save/Load and IndexedDB recovery retain the material, result ground and joint
+revisions. Creating/importing parts or migrating a free Boolean assembly must
+not silently give it a fixed base. See [Boolean verification](docs/BOOLEAN-SIMULATION-VERIFICATION.md).
 
 ### Editable demo workspaces
 
@@ -429,17 +496,18 @@ reuse; browser verification must still inspect the displayed result.
 - Incompatible revolute/prismatic frames and Planar mates throw during
   `buildJoint`; `buildWorld` destroys the incomplete world and returns `ok:false`.
   Simulating the remaining bodies after dropping a constraint is not acceptable.
-- Assembly-level Boolean results disable Play and the runner rejects them,
-  including a Boolean added during asynchronous preparation. Simulating original
-  uncut inputs would be incorrect. Export the final STEP solids and re-import,
-  then assign materials/joints. Per-part additive/subtractive features still
-  regenerate their final shape and remain supported in simulation.
+- Connected Boolean results simulate their exact final shape directly, with
+  construction inputs excluded. Invalid geometry, ambiguous material/ground and
+  stale result attachments fail before the world starts. Structural edits during
+  asynchronous preparation invalidate that snapshot; edits during a running
+  world stop it. Do not reinstate the old blanket Boolean blocker or simulate
+  uncut operands as a substitute.
 - A mate referencing an absent body also fails the whole build, including
   when a mated part was hidden and excluded from the simulation meshes.
 
 ### Verification and evidence
 
-From repository root, after `pnpm install`, on Node 24 or newer:
+From repository root, after `pnpm install`, on the configured Node 24 runtime:
 
 ```sh
 pnpm --filter @workspace/kineticad typecheck
@@ -455,10 +523,10 @@ restoration of the original workspace. Regenerate fixtures with
 
 `test:all` runs test files sequentially. Focused scripts include `test:project`,
 `test:controller`, `test:workspace`, `test:engineering`, `test:transforms` and
-`test:beam`, plus the earlier CAD/physics suites. The final 166-case aggregate
-includes seven actual-worker assembly-export regressions. The prior 79-case
-milestone and post-arc mass/regeneration reruns are historical; mathematical
-tests never substitute for actual CAD, solver or rendered acceptance.
+`test:beam`, plus the earlier CAD/physics suites. The current 298-case aggregate
+includes seven actual-worker assembly-export regressions. Use the complete test
+catalog for exact source-level coverage; older totals remain historical.
+Mathematical tests never substitute for actual CAD, solver or rendered acceptance.
 
 The Stewart turning profiles exposed a trimmed-arc construction bug: OCCT's
 circle frame did not explicitly match the sketch's UV axes. `sketchToWire`
@@ -468,7 +536,11 @@ circles are unchanged. Seven actual-OCCT tests check arc endpoints/intermediate
 points, sector volumes and centroids, sphere revolutions, and valid single-solid
 Stewart barrel/rod profiles with positive inertia.
 
-Run the heavier geometry commands sequentially, then the real-CAD worker checks:
+Run the heavier geometry commands sequentially, then the real-CAD worker checks.
+These scripts write tracked numerical reports. Use an isolated checkout or preserve
+old report bytes, archive new measurements as a separately dated run, and restore
+the old records. Do not replace their measured hashes without rerunning; see
+[report provenance](docs/REPORT-PROVENANCE.md).
 
 ```sh
 node --import ./scripts/node_modules/tsx/dist/loader.mjs scripts/src/verify-demo-geometry.mjs --export-descriptors
@@ -737,6 +809,6 @@ SEO pass:
 
 ## Current project format: 1, wrapping state version 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
-## Current examples: in-app Demos gallery (six editable assemblies; public acceptance pending)
+## Current examples: six editable gallery assemblies plus adjustable crank-slider; public acceptance pending
 ## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: top-level Chrome against local app or intended deployment

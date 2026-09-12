@@ -1,7 +1,13 @@
-# KinetiCAD implementation and verification
+# Initial September implementation milestone — historical checklist
 
 Started 12 September 2026. Working branch: `codex/built-in-demo-gallery`.
 Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
+
+This checklist records the completed **166-test milestone** and its original
+execution notes. It is preserved as history, not the active task list or latest
+verification total. For the current 298-test implementation and pending gates,
+see [Current status](CURRENT-STATUS.md), [next stages](NEXT-IMPLEMENTATION-TODO.md)
+and [known issues](KNOWN-ISSUES-AND-FOLLOW-UP.md).
 
 ## Working rules
 
@@ -81,7 +87,7 @@ Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
 - Six-axis actual-CAD tests: 16 accepted runs, maximum final position error 0.000568945 mm and orientation error 0.000899051 degrees. Independent source-solid guards, saved configuration and measurement lifecycle tests pass; runner suite now has 12 passing cases.
 - Chrome production preview: combined motion completed at 6.00 seconds, all six requested and actual pose values agree to displayed precision; individual leg travel readings are shown. All six individual axes, combined and typed negative custom poses have since passed in Chrome; details are in the browser report.
 
-## Current acceptance and scope
+## Acceptance and scope at this milestone
 
 - The complete serial suite passed **166/166 tests**, zero failures, in 101.047 seconds. The full workspace typecheck/build also passed. The final UI-only Boolean guard wording was rebuilt and checked in Chrome; solver behavior did not change after the suite. Source, bundle and log fingerprints are recorded in release-validation.json.
 - Actual Chrome downloads now pass exact OCCT checks for mixed STEP/native edits and committed union/subtract/intersect results; hidden geometry is absent. Binary STL geometry was independently measured.
@@ -89,5 +95,5 @@ Baseline: `f85dfde` (79 passing tests, six validated demo fixtures).
 - Chrome's original Windmill measured 3.1415927410125732 rad/s at 30 RPM, retaining the original pi +/- 5e-7 gate.
 - The first implementation stages for load, contact and deformation are deliberately bounded and independently testable. Finite-force Stewart control, arbitrary CAD contact, bearing friction and general 3D deformation are future capabilities, **not delivered claims**. The app and README state this.
 - Native modeller browser checks have additionally exercised new part, rectangle sketch, extrusion, real edge picking for fillet/chamfer, Boolean editing, and export preview gating. Hole creation was repaired and repeated successfully on native and mixed-axis rotated parts.
-- Current detailed browser evidence: [Chrome acceptance](CHROME-ACCEPTANCE-2026-09-12.md). Publication from Replit and final public-route acceptance remain separate from this local implementation.
+- Detailed browser evidence at this milestone: [Chrome acceptance](CHROME-ACCEPTANCE-2026-09-12.md). Publication from Replit and final public-route acceptance remain separate from this local implementation.
 - Implementation commit `5c94f61` is pushed to `codex/built-in-demo-gallery`. The source ZIP contains 488 files, includes the STEP recovery fixture and verification reports, and passes archive CRC checks. Development remains running on port 5184, with the completed combined Stewart movement open in Chrome.
