@@ -11,7 +11,7 @@ export function CreatorProfile() {
       <div className="creator-profile__intro">
         <p className="creator-profile__eyebrow">The person behind KinetiCAD</p>
         <h2 id="creator-heading">Created by<br /><span>Andrew Blumson.</span></h2>
-        <p className="creator-profile__description">Creator of KinetiCAD and founder of Adevious AI. Explore Andrew’s projects, follow what he’s building, or visit Adevious for bespoke software and practical AI training.</p>
+        <p className="creator-profile__description">Replit UK Ambassador, creator of KinetiCAD and founder of Adevious AI. Explore Andrew’s projects, follow what he’s building, or visit Adevious for bespoke software and practical AI training.</p>
       </div>
       <nav aria-label="Andrew Blumson’s websites and social profiles" className="creator-profile__links">
         {CREATOR_LINKS.map(link => {
