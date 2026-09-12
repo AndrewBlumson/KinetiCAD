@@ -49,6 +49,7 @@ This visual-only change does not advance the next CAD stage or add physics claim
 - [x] Add Andrew's personal website, Adevious AI, X and LinkedIn to a creator section and shared site footer.
 - [x] Keep the public information readable on phones, while blocking CAD startup on phones and tablets, including direct modeller/simulator links.
 - [x] Verify the new device rules, production builds, actual Chrome navigation and desktop simulator startup.
+- [x] Refresh the landing feature list to six groups covering current modelling, assemblies, simulation, materials/projects, demos and separate engineering tests. Correct obsolete planar-joint, playback, revolve-axis and motor-force claims. Landing typecheck/build and actual Chrome checks passed: six cards in three desktop columns, no horizontal overflow or captured runtime errors. Creator details and desktop access rules are preserved.
 - [ ] User review and final published-route acceptance.
 
 See [profile and desktop-access verification](CREATOR-PROFILE-AND-DESKTOP-ACCESS.md). This additional request does not advance the next CAD stage before user testing.

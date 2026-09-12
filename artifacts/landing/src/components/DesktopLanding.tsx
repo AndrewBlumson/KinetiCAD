@@ -11,75 +11,100 @@ const FEATURE_COLS = [
     id: "modelling",
     label: "// Modelling",
     items: [
-      "Sketch on XY / XZ / YZ plane",
-      "Line, rectangle, arc, circle tools",
-      "Endpoint, midpoint & grid snapping",
-      "Extrude (forward / backward / symmetric)",
-      "Revolve around any axis",
-      "Fillet & chamfer by edge selection",
-      "Hole (through-all or depth)",
-      "Boolean union, subtract, intersect",
-      "Transform gizmo — translate & rotate",
-      "Multi-part assembly",
-      "Duplicate, rename, hide parts",
+      "Sketch on XY, XZ and YZ planes",
+      "Line, rectangle, arc and circle tools",
+      "Endpoint, midpoint and grid snapping",
+      "Edit and save dimensions in mm and degrees",
+      "Extrude forward, backward or symmetrically",
+      "Add, cut or create a new body",
+      "Revolve around X, Y or Z",
+      "Edge fillets, chamfers and depth/through holes",
+      "Editable feature history and live previews",
+      "Invalid dimension edits keep the last valid model",
     ],
   },
   {
     id: "assembly",
     label: "// Assembly",
     items: [
-      "Revolute mate",
-      "Prismatic mate",
-      "Spherical mate",
-      "Fixed mate",
-      "Planar mate",
-      "Motorised revolute joints",
-      "Motorised prismatic joints",
-      "Grounded body constraint",
-      "Named mates with editable parameters",
-      "Visual mate-picker — click faces & edges",
+      "Multiple parts in one assembly",
+      "Translate and rotate with the 3D gizmo",
+      "Exact numeric position and rotation controls",
+      "Duplicate, rename and hide parts",
+      "Union, subtract and intersect solid parts",
+      "Revolute, prismatic, spherical and fixed joints",
+      "Pick faces and edges for joint attachments",
+      "Rotation in RPM; sliding speed in mm/s",
+      "Fixed bases and editable joint settings",
     ],
+    note: "Assembly Boolean results currently need STEP export and reimport before simulation. Native cuts within a part already simulate directly.",
   },
   {
     id: "simulation",
     label: "// Simulation",
     items: [
-      "Rapier3D rigid-body physics (Rust → WASM)",
-      "60 Hz simulation loop",
-      "Real mass from material density × volume",
-      "Inertia tensor from computed geometry",
-      "Speed multiplier (0.1× – 10×)",
-      "Pause, resume, reset",
-      "Motor force applied per joint per frame",
-      "Gravity along –Z (mechanical convention)",
+      "Fixed-step rigid-body simulation",
+      "Mass, balance point and inertia from solid geometry",
+      "Material density affects mass and motion",
+      "Timing independent of display frame rate",
+      "0.25×, 0.5×, 1× and 2× playback",
+      "Pause, resume, reset and timed runs",
+      "Measured motion and reference plots",
+      "Downward gravity or zero-gravity studies",
     ],
+    note: "Assembly simulation uses ideal joints and speed-controlled motors. Part-to-part contact, bearing friction and motor force limits are not yet modelled here.",
   },
   {
-    id: "io",
-    label: "// Materials & I/O",
+    id: "projects",
+    label: "// Materials & projects",
     items: [
-      "8-material library with real density",
-      "Aluminium 6061",
-      "Steel",
-      "Brass",
-      "Titanium",
-      "Nylon",
-      "PLA",
-      "ABS",
-      "Acrylic",
-      "STEP import",
-      "STEP export (round-trip capable)",
-      "STL export",
-      "Save assembly → JSON",
-      "Load assembly ← JSON",
+      "8 materials with density presets",
+      "Aluminium 6061, Steel 1018 and Brass C36000",
+      "Titanium Grade 5, Nylon 6, PLA, ABS and Acrylic",
+      "Per-part material, mass and volume readouts",
+      "Import and export STEP solid geometry",
+      "Export STL meshes, including Boolean results",
+      "Save and load complete editable projects",
+      "Imported STEP shapes included in project files",
+      "Automatic recovery and a previous saved copy",
     ],
+    note: "Recovery stays on this device. Download a project to keep or transfer its editable history, materials and joints alongside the geometry.",
+  },
+  {
+    id: "demos",
+    label: "// Demos & mechanisms",
+    items: [
+      "Six editable demos plus an adjustable crank-slider",
+      "Windmill and solar-system orrery",
+      "Three-axis driven gimbal and kinetic mobile",
+      "Material force lab: same force, different masses",
+      "Bounded six-axis Stewart platform motion",
+      "Crank-slider size and motor-speed controls",
+      "Position, speed and mean-acceleration comparisons",
+      "Try and edit demos while keeping your own model",
+    ],
+    note: "Demo comparisons show measured motion against stated reference equations. Reset a demo to restore its original geometry and settings.",
+  },
+  {
+    id: "engineering",
+    label: "// Engineering tests",
+    items: [
+      "Separate experiments with adjustable inputs",
+      "Motor & load: lift, hold and overload",
+      "Friction & contact: sliding, support and stopping",
+      "Elastic beam: bending stress and deflection",
+      "Use eligible CAD beams or dimensioned examples",
+      "Compare measured and calculated behaviour",
+      "View numerical errors and validity limits",
+    ],
+    note: "These experiments are separate from assembly simulation. The beam calculation does not deform the CAD mesh or provide general finite-element analysis.",
   },
 ];
 
 const TECH_ITEMS = [
   { label: "OpenCascade", sub: "B-rep kernel on WebAssembly" },
   { label: "Rapier3D", sub: "Rust physics, compiled to WASM" },
-  { label: "Three.js r184", sub: "WebGPU renderer (M-series Chrome)" },
+  { label: "Three.js r184", sub: "WebGPU renderer for desktop browsers" },
   { label: "Browser-native", sub: "Zero install · Zero licence" },
 ];
 
@@ -266,7 +291,7 @@ export function DesktopLanding() {
       {/* ══════════════════════════════
           FEATURES
       ══════════════════════════════ */}
-      <section style={{ position: "relative", zIndex: 1, padding: "80px 64px" }}>
+      <section id="features" aria-label="KinetiCAD features" style={{ position: "relative", zIndex: 1, padding: "80px clamp(24px, 4.5vw, 64px)" }}>
         <div
           style={{
             display: "flex",
@@ -302,13 +327,7 @@ export function DesktopLanding() {
           </span>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "20px",
-          }}
-        >
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {FEATURE_COLS.map((col) => (
             <div
               key={col.id}
@@ -336,9 +355,9 @@ export function DesktopLanding() {
                 {col.label}
               </h2>
               <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                {col.items.map((item, i) => (
+                {col.items.map((item) => (
                   <li
-                    key={i}
+                    key={item}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
@@ -364,6 +383,15 @@ export function DesktopLanding() {
                   </li>
                 ))}
               </ul>
+              {col.note && <p style={{
+                margin: "auto 0 0",
+                paddingTop: "16px",
+                borderTop: "1px solid rgba(255,107,26,0.14)",
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "12px",
+                lineHeight: 1.55,
+                color: "rgba(245,245,245,0.55)",
+              }}>{col.note}</p>}
             </div>
           ))}
         </div>
