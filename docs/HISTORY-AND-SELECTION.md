@@ -120,4 +120,9 @@ prove every possible CAD model or manufactured mechanism correct.
 
 ## Publication status
 
-Local feature verification is complete. Public visibility, Replit deployment and dependency-security acceptance are separate: the [security review](DEPENDENCY-SECURITY-REVIEW.md) records 58 advisory records in the pinned dependency graph. Package versions were left unchanged at the user's request; that is not a security clearance. See the [release checklist](PUBLIC-RELEASE-CHECKLIST.md).
+Local feature verification at this checkpoint is complete. Subsequent targeted
+dependency updates and their separate Node 24 checks are recorded in the
+[security maintenance](SECURITY-MAINTENANCE-2026-09-12.md), whose online audit
+reports zero advisories with none muted. The original 58-finding review remains
+historical evidence. Public visibility and the actual Replit checkpoint and
+deployment are separate decisions; see the [release checklist](PUBLIC-RELEASE-CHECKLIST.md).

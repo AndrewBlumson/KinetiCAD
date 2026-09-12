@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { replitAllowedHosts } from "../shared/viteAllowedHosts.mts";
+
+const allowedHosts = replitAllowedHosts(process.env);
 
 const rawPort = process.env.PORT;
 
@@ -62,7 +65,7 @@ export default defineConfig({
     port,
     strictPort: true,
     host: "0.0.0.0",
-    allowedHosts: true,
+    allowedHosts,
     fs: {
       strict: true,
     },
@@ -70,6 +73,6 @@ export default defineConfig({
   preview: {
     port,
     host: "0.0.0.0",
-    allowedHosts: true,
+    allowedHosts,
   },
 });

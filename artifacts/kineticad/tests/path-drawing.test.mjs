@@ -10,7 +10,7 @@ import vm from 'node:vm';
 import { validateTargetPath } from '../src/mechanisms/fourBarSynthesis.ts';
 
 const require = createRequire(import.meta.url);
-const { transformSync } = require('esbuild');
+const { transformSync } = createRequire(require.resolve('vite/package.json'))('esbuild'); // Use Vite's declared compiler, never a parent checkout's binary.
 const compiled = transformSync(readFileSync(new URL('../src/components/mechanisms/PathDrawing.tsx', import.meta.url), 'utf8'), {
   loader: 'tsx', format: 'cjs', target: 'es2022', jsx: 'transform', jsxFactory: 'jsx', jsxFragment: 'Fragment',
 }).code;

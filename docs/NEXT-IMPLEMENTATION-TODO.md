@@ -2,7 +2,7 @@
 
 Started 12 September 2026 from `81fd123`. Repository is private while development continues.
 
-The latest authorised sequence is Undo/Redo, then improved object selection, then repository/publication preparation and documentation. Test each implementation before proceeding to the next. This supersedes the earlier request to wait for user input between those particular items; it does not authorise a public deployment or repository visibility change.
+Undo/Redo, improved object selection and repository/documentation preparation are implemented. Targeted dependency security maintenance follows those feature stages. Keep automated acceptance, Chrome interaction, source transfer and Replit publication as separate checks.
 
 ## 1. Adjustable crank-slider — implemented
 
@@ -12,20 +12,17 @@ The latest authorised sequence is Undo/Redo, then improved object selection, the
 - [x] Check support geometry, joint closure, limiting dimensions, both drive directions and timestep refinement.
 - [x] Verify Save/Load, parameter edits, pause/reset and actual Chrome interaction.
 - [x] Run regressions and build; record measured errors and model limits. **195/195 tests passed; full build passed.**
-- [x] User authorised continuation to sketch dimensions on 12 September 2026; this records permission to continue, not a claim of formal engineering acceptance.
 
 See the [numerical verification](CRANK-SLIDER-VERIFICATION.md), [Chrome matrix](CRANK-SLIDER-CHROME-2026-09-12.md) and [source/build evidence](crank-slider-validation.json).
 
 ## 2. Persistent editable sketch dimensions — implemented
 
-Authorised by the user on 12 September 2026. The dev server is running on port 5184.
 
 - [x] Add numeric editing for existing circle, rectangle, line and arc geometry, with explicit millimetres/degrees.
 - [x] Keep the last valid model if an edit breaks the part's feature chain or dependent assembly geometry.
 - [x] Preserve the sketch dimensions through Save/Load and recovery without changing the existing project format.
 - [x] Verify geometric equations against independently measured OpenCascade solids and test failed/stale edits.
 - [x] Exercise the actual Chrome editor, exports/reload and input errors, then run regression/build checks. **237/237 tests and the full build passed.**
-- [x] User authorised continuation on 12 September 2026; this records permission to continue, not formal engineering acceptance.
 
 See [sketch dimensions verification](SKETCH-DIMENSIONS-VERIFICATION.md) for measured results, tolerances, browser checks and limitations.
 
@@ -49,14 +46,13 @@ See [Boolean simulation verification](BOOLEAN-SIMULATION-VERIFICATION.md) for nu
 
 ## 4. Local draw-a-path linkage — implemented
 
-The user authorised continuation on 12 September 2026. Package upgrades remain deferred.
 
 - [x] Search locally in a cancellable worker for a bounded planar four-bar crank-rocker.
 - [x] Show the drawn path and sampled fit errors; do not promise an exact fit or global optimum.
 - [x] Build connected native editable CAD parts and four revolute joints after a successful solid preflight.
 - [x] Measure actual Rapier motion against independently calculated linkage geometry.
 - [x] Verify persistence, failed/stale builds, real Chrome interactions and regressions.
-- [x] Update equations, assumptions, raw evidence and current documentation, then stop for user testing.
+- [x] Update equations, assumptions, raw evidence and current documentation, record the completed verification scope.
 
 Stage 4 capture: **348/348 automated tests across 51 files**, full workspace
 typecheck/build passed. Actual Chrome checks covered search/cancel, presets and
@@ -117,8 +113,11 @@ it does not certify every arc/transform/joint workflow.
 
 - [x] Refresh current guides, feature copy, source links, test catalog and release handoff.
 - [x] Document the [publication checklist](PUBLIC-RELEASE-CHECKLIST.md), implement ignore-rule/hook cleanup and third-party notices, and record scoped scans.
-- [x] Final local aggregate **382/382 tests across 54 files**, full workspace typecheck/build and actual Chrome selection/history checks pass.
-- [ ] Resolve the [dependency security review](DEPENDENCY-SECURITY-REVIEW.md) before public-release readiness; the user was asked whether to permit a separate security-only update pass. No package version changed.
+- [x] Earlier feature-stage aggregate **382/382 tests across 54 files**, full workspace typecheck/build and actual Chrome selection/history checks pass.
+- [x] Apply targeted dependency security fixes; final audit reports **zero advisories, none muted**. See [maintenance](SECURITY-MAINTENANCE-2026-09-12.md).
+- [x] Pass **402/402 tests across 57 files in 80.936 seconds** on Node 24.19.0 ARM64, workspace/root-route landing builds, clean-copy frozen install/typecheck and **35/35 HTTP checks**.
+- [x] Complete scoped patched-build Chrome acceptance: imported-project material Undo/Redo, exact recovery after saved status and full refresh, native downloaded-file reopening, public-page navigation and the external support link. See [browser evidence](evidence/security-maintenance/browser.json); earlier feature records retain their own scope.
+- [ ] Pull verified GitHub main into the existing Replit project after confirming the source in [remote main history](https://github.com/AndrewBlumson/KinetiCAD/commits/main/); test and create its own checkpoint before publishing.
 - [ ] Refresh the reviewed source archive and record its source identity/hash.
 - [ ] Replit runtime and final public-route checks remain release work.
 
@@ -127,7 +126,7 @@ it does not certify every arc/transform/joint workflow.
 - Broader structural deformation, with a separately defined and independently verified physical model.
 - Final public release, Replit publication and public-route acceptance.
 
-## Additional user request — creator profile and desktop access
+## Creator profile and desktop access
 
 - [x] Add Andrew's personal website, Adevious AI, X and LinkedIn to a creator section and shared site footer.
 - [x] Keep the public information readable on phones, while blocking CAD startup on phones and tablets, including direct modeller/simulator links.
@@ -135,11 +134,13 @@ it does not certify every arc/transform/joint workflow.
 - [x] Refresh the landing feature list to six groups covering current modelling, assemblies, simulation, materials/projects, demos and separate engineering tests. Correct obsolete planar-joint, playback, revolve-axis and motor-force claims. Landing typecheck/build and actual Chrome checks passed: six cards in three desktop columns, no horizontal overflow or captured runtime errors. Creator details and desktop access rules are preserved.
 - [ ] User review and final published-route acceptance.
 
-See [profile and desktop-access verification](CREATOR-PROFILE-AND-DESKTOP-ACCESS.md). This additional request does not advance the next CAD stage before user testing.
+See [profile and desktop-access verification](CREATOR-PROFILE-AND-DESKTOP-ACCESS.md). These profile changes are separate from further CAD development.
 
 ## Optional support link — release preparation
 
-Keep the full application free. Add a discreet voluntary “Support KinetiCAD” link once the user chooses a payment provider and supplies their destination. Do not create a payment account or publish an unconfigured donation button. The repository can return to public visibility when the user is ready to release it.
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment. Repository visibility remains private until a separate visibility change.
 
 
 ## Documentation refresh and historical issue review — 12 September 2026

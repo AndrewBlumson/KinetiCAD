@@ -15,7 +15,7 @@ simulation. KinetiCAD remains the original Replit/Replit Agent build by Andrew
 and Kevin Blumson; later development and the recorded September numerical and
 Chrome computer-use checks were performed by Codex under Andrew's direction.
 
-Read [Current status](CURRENT-STATUS.md), the [complete current test catalog](HISTORY-SELECTION-TEST-CATALOG.md)
+Read [Current status](CURRENT-STATUS.md), the [complete current test catalog](SECURITY-MAINTENANCE-TEST-CATALOG.md)
 and [mathematics/physics reference](MATHEMATICS-AND-PHYSICS.md) first. The latter
 connects equations, units, expected values, observed errors and tolerances to
 source tests and raw reports. It separates actual-kernel measurements, pure
@@ -23,8 +23,8 @@ analytical checks, mocked orchestration tests and rendered browser observations.
 
 | Gate | Recorded status and scope |
 | --- | --- |
-| Current automated aggregate | See the source-fingerprinted [latest aggregate](evidence/history-selection/final/summary.json) and [individual test catalog](HISTORY-SELECTION-TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
-| Current typecheck/build | See the [current source and build record](HISTORY-AND-SELECTION.md). Older milestones retain their original source identity. |
+| Current automated aggregate | **402/402 cases across 57 files in 80.936 seconds on Node 24 ARM64**, with 527 source inputs unchanged; [release aggregate](evidence/security-maintenance/release/summary.json), [individual test catalog](SECURITY-MAINTENANCE-TEST-CATALOG.md). This includes the earlier stages; do not add their totals. |
+| Current typecheck/build | Workspace checks and the final landing [typecheck](evidence/security-maintenance/story-typecheck.txt)/[build](evidence/security-maintenance/story-build.txt) passed; [maintenance record](SECURITY-MAINTENANCE-2026-09-12.md). Older milestones retain their original source identity. |
 | Undo/Redo and object selection | Document/source restoration and actual-mesh raycasting, with guarded drag/input transactions; [scope and Chrome checks](HISTORY-AND-SELECTION.md). These are editing correctness checks, not additional load or contact models. |
 | Local four-bar path | Native four-part mechanism, local bounded search, sampled fit gaps and actual solver trace; [maths, geometry and Chrome evidence](FOUR-BAR-PATH-VERIFICATION.md). |
 | Direct Boolean physics | Actual final OCCT shape/mass and Rapier response, transformed/imported inputs, explicit ground and revision-checked joints; [verification](BOOLEAN-SIMULATION-VERIFICATION.md), [measurements](boolean-physics-results.json). |
@@ -34,9 +34,18 @@ analytical checks, mocked orchestration tests and rendered browser observations.
 | Materials/Stewart snapshots | [Equal-force](material-force-results.json), [material clearance](material-clearance-results.json), [16 six-axis runs](stewart-controller-results.json), [910 exact workspace pairs](stewart-workspace-results.json), [original lift](stewart-physics-results.json). Historical run provenance is separate from the current aggregate. |
 | Separate engineering models | [Finite-force actuator](actuator-bench-results.json), [guided contact](contact-bench-results.json), [analytical beam](beam-analysis-results.json). Their scoped regression tests pass in the aggregate. |
 | Complete projects and exports | [Recovery contract](PROJECT-RECOVERY.md), [export contract](ASSEMBLY-EXPORT.md), [Boolean-stage export run](boolean-simulation-export-results.json). |
-| Actual Chrome acceptance | Codex computer-use observations are linked by stage in [the docs index](README.md#actual-browser-checks-recorded-by-stage); no claim that every path was reclicked on one final bundle. |
+| Actual Chrome acceptance | Latest [scoped local checks](evidence/security-maintenance/browser.json): imported material Undo/Redo, saved recovery followed by refresh, native reopening of a downloaded project, support-link and landing navigation, and Windmill Play/Pause/Reset. Earlier observations remain linked by stage in [the docs index](README.md#actual-browser-checks-recorded-by-stage); no claim that every path was reclicked on one final bundle. |
 | Latest Boolean downloaded-file reopening | **Passed for the saved Fixed-joint file.** Native Chrome chooser, two bodies, brass fixed result, Play/Pause/Reset and refresh are in [the follow-up capture](evidence/boolean-reopen/browser.json). |
-| User acceptance / republished Replit route | Pending. Local measurements do not establish public deployment acceptance. |
+| GitHub source / republished Replit route | Verify the remote commit for the GitHub source handoff. Replit installation and publication remain pending; local measurements do not establish public deployment acceptance. |
+
+The latest browser Windmill run reached 24.77 simulated seconds, paused and reset
+to zero; it exercised controls rather than independently remeasuring the angular
+speed gate. Captured warning/error logs were empty for those recorded checks.
+The [35 local HTTP checks](evidence/security-maintenance/http-smoke.json) and
+[zero-finding release dependency audit](evidence/security-maintenance/audit-release.json)
+are separate engineering/security evidence, not additional physical experiments.
+The HTTP record retains the landing bundle identity from before the final
+legal/Story text changes; the later build and browser record cover that update.
 
 The earlier 166-, 195-, 237- and 298-test milestones remain dated evidence, not the
 latest aggregate. Original source hashes and browser bundle identities are

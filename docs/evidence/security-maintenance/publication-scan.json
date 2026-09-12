@@ -1,0 +1,764 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-12T22:18:25.863542+00:00",
+  "completedAt": "2026-09-12T22:18:31.990004+00:00",
+  "head": "731c7d3f440b123e87036d10c1db1e2f17e006ea",
+  "status": "bounded-scan-completed-not-publication-approval",
+  "securityClean": false,
+  "publicationApproved": false,
+  "scope": {
+    "included": "Current git-tracked plus non-ignored untracked source/docs/evidence; locally reachable history via git rev-list --objects --all. Output report excludes itself.",
+    "excludedDirectoryNames": [
+      ".cache",
+      ".git",
+      ".local",
+      "build",
+      "coverage",
+      "dist",
+      "node_modules",
+      "out-tsc",
+      "tmp"
+    ],
+    "textSizeLimitBytes": 10485760,
+    "limitations": [
+      "Pattern matching is not proof of absence of all secrets or private data.",
+      "External GitHub refs/issues/actions/releases, unreachable Git objects, Replit secrets/hosting, CDN binaries and unrelated user directories were not inspected.",
+      "Browser images/media are inventoried and hashed only; root owns visual review.",
+      "New or changed files after this scan require a subsequent review.",
+      "Dependency advisories remain separately disclosed; this scan does not resolve them."
+    ]
+  },
+  "workingTree": {
+    "trackedFileNames": 838,
+    "untrackedFileNames": 100,
+    "selectedFileNames": 937,
+    "regularFilesHashed": 937,
+    "textFilesScanned": 911,
+    "bytesHashed": 24472518,
+    "snapshotSha256": "c2f6ce88685a5c61792adf20c3243cb84ab0747feb8d414e2fdba171d6ed1929",
+    "secretCandidateCount": 1,
+    "secretCandidates": [
+      {
+        "path": "artifacts/kineticad/tests/vite-allowed-hosts.test.mjs",
+        "findings": [
+          {
+            "category": "credential-bearing-url",
+            "line": 42
+          }
+        ]
+      }
+    ],
+    "credentialFileNames": [],
+    "ignoredSensitiveFileNames": [],
+    "skipped": [],
+    "symlinks": [],
+    "archives": [],
+    "binaryOrOversizeFiles": [
+      {
+        "path": "artifacts/kineticad/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/public/opengraph.jpg",
+        "sha256": "00c17e15b69e2156198f6237c87d5e8841740a302ec3edf8db65e5f59cb1f654",
+        "bytes": 8883,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.stl",
+        "sha256": "b9545ad6e2d9b00840ee87c667205c4d3ff005f3e7cb0873d64387bfa39612d7",
+        "bytes": 684,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.stl",
+        "sha256": "47714cfca00d8bdfd25c04847dca212414f936a4dc069466a7a4eb73fa9116e9",
+        "bytes": 12084,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/apple-touch-icon.png",
+        "sha256": "eb1a6633aeea354a0f64b9e6f454804a3dd0b2e8560a8e0f50f1df355f3409b0",
+        "bytes": 25850,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.ico",
+        "sha256": "1028bd0d634eec664dc7049f409d2d68376797f12df8edc9bf0d01acdefa3051",
+        "bytes": 1550,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/favicon.png",
+        "sha256": "33d1648c06176b670822951365746e7c48c747e5143cc52df66ce18ef6d130b8",
+        "bytes": 1528,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/logo.webp",
+        "sha256": "5357c3a68665f9cbc4f724a27aee91936a46ff5482ed0c264c98fc2618ff6c63",
+        "bytes": 37220,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/opengraph.jpg",
+        "sha256": "88680d5a62f9985edfe6d74608498cbe4be6d930d9bc9d77ad271057380e0a91",
+        "bytes": 46009,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "artifacts/landing/public/orrery.mp4",
+        "sha256": "68500f7352e753d89a8474019311e626634fb8bb38cc2c97beb8e5c3b71d3322",
+        "bytes": 1649886,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/boolean-reopen/after-load-and-refresh.png",
+        "sha256": "741b00761783ad7994edd74e38f23bba3f0b8a4df1cf8c5ae3f358be5c0a6a0e",
+        "bytes": 107777,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/completed-cycle.png",
+        "sha256": "d5c80751f87f2a568534b51b3d28d6eb33d10bd1205cd4d32b6b9d9da65f7086",
+        "bytes": 137598,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-observed-preview.png",
+        "sha256": "9d8280dab7690997945ce6a8d3572364dc3b45a9799a387bca166d7956d95c24",
+        "bytes": 86337,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/final-saved-project.png",
+        "sha256": "f17bc0ea1a9d7416ddebb503f1d1681fdc26e7345db9d4bb95cce7ac93fcc825",
+        "bytes": 131093,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/loaded-refreshed-paused.png",
+        "sha256": "a138ad63df3667528bcb999b99f6aaa6872a4a6433db0df88289f45d950d7a04",
+        "bytes": 137816,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-complete.png",
+        "sha256": "32af303471a16336c2ff0a4f6df8083277acda059edd3d150a7c30564a07da8e",
+        "bytes": 142912,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/four-bar/preset-search.png",
+        "sha256": "df0c2b4dff28f57943914a332172d8aa991190b916e9be280d7c7eb59c0b828b",
+        "bytes": 92341,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/boolean-selected.png",
+        "sha256": "606c746ad44f766a80cd918529c1c4ca4f1c0d37735975d521ab5571dcd6cc6e",
+        "bytes": 113879,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/landing-features.png",
+        "sha256": "5b65b2bb0b420d1dcf5e4b14efea4548c8ed3a4da41961208c07e4e1ef69e9e8",
+        "bytes": 118298,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-import-recovered.png",
+        "sha256": "c3600140937a983eecf18abd1310be82b33932902f6f030973ad2cc1d18e3e90",
+        "bytes": 104791,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/security-maintenance/creator-support.png",
+        "sha256": "048e19c7d27bcddefad021f4ba0badd55aa3c381968aa627bf0cb3fdafc7cecc",
+        "bytes": 67695,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/security-maintenance/imported-redo.png",
+        "sha256": "246cefdf99a8e50c64edec11bb5e9d8b2b823f27e8c651f2aa4a1977c1acfe18",
+        "bytes": 107546,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/security-maintenance/imported-reopened.png",
+        "sha256": "a481f360a2af11b2c57b2012394b10182eb71c8e4f1d2a3b61570111919e2e28",
+        "bytes": 99264,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/evidence/security-maintenance/windmill-paused.png",
+        "sha256": "b85d7a94348b925f9cc0b95492d2dff178a748fcd5eb2ffb55ae310eec2913bc",
+        "bytes": 97204,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.stl",
+        "sha256": "9a8098bd3229b61e00f6bd9595c8312ec381e6e3f18d8450046532b29e0b97f1",
+        "bytes": 124484,
+        "reason": "binary-or-non-utf8"
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.stl",
+        "sha256": "26d0c0f5c74c607f78386f2ef613488236361c38a4b74992fa48449ecf08cce7",
+        "bytes": 7684,
+        "reason": "binary-or-non-utf8"
+      }
+    ]
+  },
+  "history": {
+    "reachableCommitCount": 15,
+    "reachableUniqueBlobs": 844,
+    "textBlobsScanned": 823,
+    "binaryOrOversizeBlobs": 21,
+    "blobInventorySha256": "076b271df2fe3a8b60e3bcc27181d59041281077614d5346ea3a155aed4d4ad8",
+    "secretCandidateCount": 0,
+    "secretCandidates": [],
+    "sensitiveHistoricalFileNames": [],
+    "uniqueAuthorEmailCategories": {
+      "github-noreply": 1,
+      "other-address": 1
+    }
+  },
+  "cadFixtureMetadata": {
+    "stepFiles": [
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-intersect.step",
+        "sha256": "bf01283072f00177bdf30992e050d7cd2f41ceacf76bc4639225bc9d94280475",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-subtract.step",
+        "sha256": "358d075014c4c4611fe80a281dbe5875e69b6057d6173cfe96afc84962d24a9d",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-boolean-union.step",
+        "sha256": "077478b935c3a80b166a40dfdaa1f57fcbf6c80ff8ea6cb6a130060b2294b22f",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/browser-edited-export.step",
+        "sha256": "8b2b943df869fca819cc102fc31340cc28efbaef6ea2a98bedce9018b1bc6dc8",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "artifacts/kineticad/tests/fixtures/recovery-block.step",
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/four-bar/browser-custom-loop.step",
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "path": "docs/fixtures/sketch-dimensions/edited-cylinder.step",
+        "sha256": "3993aed155347986ee03beddc69daee15e5e266539533b76ec529b7ca27a8163",
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "projectAssetOccurrences": 7,
+    "projectFilesWithAssets": 7,
+    "uniqueDecodedStepAssets": [
+      {
+        "sha256": "8ebd0dc51eab7eb4369054ebfe5abe22ef1e054b51316df245be9488c9d93f7e",
+        "bytes": 19025,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      },
+      {
+        "sha256": "0e2c1187b178ce78f41f8405d4088961537b06afeadac2c35efde94ba98a12ca",
+        "bytes": 297767,
+        "textDecoded": true,
+        "headerHasLocalPath": false,
+        "headerHasEmail": false,
+        "secretPatternMatches": 0
+      }
+    ],
+    "issues": []
+  },
+  "provenanceReview": {
+    "filesWithLocalPathMetadata": [
+      {
+        "path": "README.md",
+        "sha256": "329169e6261c47f8f8252d9f413589e59de05e20f87de444ac4159b3b0f372cc",
+        "matches": 4
+      },
+      {
+        "path": "artifacts/kineticad/src/cad/cadWorker.ts",
+        "sha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+        "matches": 3
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-demo-physics.mjs",
+        "sha256": "47bea82425f284a292dbbf210ee053cce28f0a0c5b49e8c6cbb6029981f87a6e",
+        "matches": 1
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-material-force.mjs",
+        "sha256": "59fbfb6653d3ce5114cf831683200cf5f00d1228d682e46677d69c75084d7fd0",
+        "matches": 2
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-controller.mjs",
+        "sha256": "808e21e09461e12c2203d50d07c1c6d0d0c03fd01d4dd51ed6a463a57db2cebb",
+        "matches": 1
+      },
+      {
+        "path": "artifacts/kineticad/tests/verify-stewart-physics.mjs",
+        "sha256": "af8c97b90a36220d2b071f41598d7b6e8bf8ca93ca2fb7aa3915d20301193fc1",
+        "matches": 1
+      },
+      {
+        "path": "docs/MATERIAL-FORCE-VERIFICATION.md",
+        "sha256": "71bf4b8f2b9c619b6963e1036fadffeac0b7729b0f41e189df300d92078c2b89",
+        "matches": 1
+      },
+      {
+        "path": "docs/MATHEMATICS-AND-PHYSICS.md",
+        "sha256": "005407996feaff6a82dd8900d449755dc90c9c46839773963ba9855e59a4cec4",
+        "matches": 4
+      },
+      {
+        "path": "docs/PHYSICS-VERIFICATION.md",
+        "sha256": "3d3dce7f55fe154c4b485c3d72847ae3a372280ccfbc00b4438414468a6adb39",
+        "matches": 4
+      },
+      {
+        "path": "docs/TEST-CATALOG.md",
+        "sha256": "4255d8ec973cf7649234164744eec7d2df56310aaf39865f8103935b025fc1c1",
+        "matches": 5
+      },
+      {
+        "path": "docs/boolean-simulation-validation.json",
+        "sha256": "05dfd305b0cf08b6c990d4cbb90b11681c935f91b050153ed9dbecaa456e0dcf",
+        "matches": 1
+      },
+      {
+        "path": "docs/crank-slider-build-2026-09-12.log",
+        "sha256": "346079c34da4b01b25a1935444f955441b2ccd09e0cacea7de1bc485364dbb04",
+        "matches": 3
+      },
+      {
+        "path": "docs/crank-slider-tests-2026-09-12.log",
+        "sha256": "f358b5c2d96c348ecdb594120d4e8d7eb434993a7067e39c4120f3b25131123c",
+        "matches": 69
+      },
+      {
+        "path": "docs/evidence/four-bar/capture-suite.py",
+        "sha256": "46d0298ae4ac3e6249aa0e8541d6c4573f92d6fe0d9f23ad1eab3438eb32f45e",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/four-bar/export-check.json",
+        "sha256": "350ab21e1ef8e1b568e235c01a6a0ae0c27e6b7af09bd60d57c604f677a7ad8c",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/four-bar/suite-events.jsonl",
+        "sha256": "3535ec25a655834b9a6da401a89fb95c4e1a8472522f7c1546343a37a89349e1",
+        "matches": 2030
+      },
+      {
+        "path": "docs/evidence/four-bar/workspace-build.log",
+        "sha256": "2c1de92a383e26fc81040984ded13dc20d0dc59ca03b9fea215bbeafde6d1057",
+        "matches": 12
+      },
+      {
+        "path": "docs/evidence/history-selection/final-build.txt",
+        "sha256": "f5c131e2caf50c2e9ad7491fbf79b7798b09ebf4b93e990fdd9314d3dd08e4b4",
+        "matches": 17
+      },
+      {
+        "path": "docs/evidence/history-selection/final-landing-build.txt",
+        "sha256": "5dd24fbce1ad61bd30bd49af096fa76a7668c7e35c7be9005ff180b402188ace",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/history-selection/final-typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/history-selection/final/run-start.json",
+        "sha256": "dccab39b8ef287484a3ee0d54442eff4dc81465b57c5bf8d0dc0e858061cbe31",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/final/suite-events.jsonl",
+        "sha256": "f30356b5406c4728bd549514eede360c228f5ae364869aa62744bbb382218e0f",
+        "matches": 2212
+      },
+      {
+        "path": "docs/evidence/history-selection/final/summary.json",
+        "sha256": "4b11c7f8edeafe01e0c8ebcb3c65648f0217bf6fca825e2a47f39b3801636ce5",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/run-start.json",
+        "sha256": "36cb4603be4896988d38113449de30310c2f66f852b9276ae0721c20a569e13d",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/suite-events.jsonl",
+        "sha256": "e6a68d7d03dc6815644722f29b0e0364b774ff5f6b306bfcf57b7d711b75230d",
+        "matches": 2212
+      },
+      {
+        "path": "docs/evidence/history-selection/source-drift-checkpoint/summary.json",
+        "sha256": "f3cd899953ad0384249349fa275c7204709c0717b9b572ede87b853da280f5ae",
+        "matches": 4
+      },
+      {
+        "path": "docs/evidence/history-selection/typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-build.txt",
+        "sha256": "4177787940a6ed2c041919c33b821fde5f2fd451e4d3e1870b971f72f51b541b",
+        "matches": 15
+      },
+      {
+        "path": "docs/evidence/history-selection/undo-suite.txt",
+        "sha256": "70bda537345c480378f8aedce6bb5266b2dad4cd8c58afca9f8dc13c9e52a171",
+        "matches": 80
+      },
+      {
+        "path": "docs/evidence/revolute-picking/before-fix-tests.txt",
+        "sha256": "2234cd8471bd7ec24f01cc3add2134a24b559d945d6f332f407a4d7b283dc318",
+        "matches": 9
+      },
+      {
+        "path": "docs/evidence/revolute-picking/build.txt",
+        "sha256": "6630432476323baaf9b0ddb4d687551ced0533af3133f2eacd619a0a938170f7",
+        "matches": 10
+      },
+      {
+        "path": "docs/evidence/revolute-picking/suite.txt",
+        "sha256": "09c52313c49d24a4e52a7ccae61492b7908c0d8d5beaff4925ff3770e3bc6a85",
+        "matches": 80
+      },
+      {
+        "path": "docs/evidence/revolute-picking/typecheck.txt",
+        "sha256": "cb429f2dc102c2d9d0247341c812798062c4bbae913924b6c83bb007999d14a3",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/security-maintenance/clean-copy-typecheck.txt",
+        "sha256": "bb403f38bbba530530d6a569a6c8b268e805d17f04c0bc644691e05702882dc6",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/security-maintenance/final-landing-root-build.txt",
+        "sha256": "678facf2e01ae2478cfd278f75755b369c36aa649a14a8437dad95514b1adfe6",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/final-workspace-build.txt",
+        "sha256": "e7843cf4ebe17096240a3f9e5764a0fa8152ad6e04e53e9de20f24f1bd27acd7",
+        "matches": 17
+      },
+      {
+        "path": "docs/evidence/security-maintenance/final/run-start.json",
+        "sha256": "c8334c157d87ac6847965fa18ce89f5841e7aef6f7ee313b0b4609faf008ada1",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/final/suite-events.jsonl",
+        "sha256": "6eff8a54f81c3eb18f8d3dc2ed723a0d2fb648dc63fef7801135209d151ebc52",
+        "matches": 2324
+      },
+      {
+        "path": "docs/evidence/security-maintenance/final/summary.json",
+        "sha256": "004e85557fff7727ff037221015d687689f8b9cc2e4afe700ded65afca4eb4ef",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/http-smoke.json",
+        "sha256": "99226f4ca5e04569a4a1a2c469bf992f131f3cee7acc93350e4e0411aa8f64c6",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/interrupted-before-support/run-start.json",
+        "sha256": "69e7d29c17dc9f23c82548d82c430737e32cfb2c29e1b938166a03d6a7cc685e",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/interrupted-before-support/suite-events.jsonl",
+        "sha256": "c4c14e000a554ddf208a135e8bc48f60eccf08fa410cbecbe9fbb221bb5b083a",
+        "matches": 1074
+      },
+      {
+        "path": "docs/evidence/security-maintenance/interrupted-before-support/summary.json",
+        "sha256": "c05bbc22a85ce15b44102aee08c1b0cab7371cdf2c8eec7052208f0628f36b17",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/landing-root-build.txt",
+        "sha256": "128d42f9aae9cff36cf889e7da86de57be8a02c86869e9e7d9d37a7b89484e89",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/node24-suite/run-start.json",
+        "sha256": "ca5fca3cfb2a76eea9f15f2369f6fb962d9ea8a9e54b1ea0bfa1ffcbba80e6f9",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/node24-suite/suite-events.jsonl",
+        "sha256": "dd04fb1cf3fa912090ff064459ca757638b08efe6824682f87f6a2f62e17c480",
+        "matches": 2295
+      },
+      {
+        "path": "docs/evidence/security-maintenance/node24-suite/summary.json",
+        "sha256": "782fa6658c99c7744db6e0b7e70b971b38868ab0de6767a2160a4486aa3fc12a",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/orval-codegen.txt",
+        "sha256": "df199f96f813e1877931d84ec440d1b20a33ba43167dbce6c5db43685bad0a34",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/security-maintenance/passed-before-backup-cleanup/run-start.json",
+        "sha256": "86340c2d09d20a2fb988be347aa1ebaa6e1d990195bb0a98b5adb5f8340356cf",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/passed-before-backup-cleanup/suite-events.jsonl",
+        "sha256": "4b8616861c4351cc0d1c19484ac75c012a15422650659cbb5ed29d9c4824a54d",
+        "matches": 2324
+      },
+      {
+        "path": "docs/evidence/security-maintenance/passed-before-backup-cleanup/summary.json",
+        "sha256": "2f9b0f5450f09181b0d4237adc700792df04b62a884df2d263e9b7de40c1febb",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/release/run-start.json",
+        "sha256": "900958e001cb7dd076b5203348083aa98b19cbb2a4d4c922b0f203f007218896",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/release/suite-events.jsonl",
+        "sha256": "98d69b250df3a112e5795c4c84015495bac5edb4cda4da58dab0a9394e7dd1ee",
+        "matches": 2324
+      },
+      {
+        "path": "docs/evidence/security-maintenance/release/summary.json",
+        "sha256": "ad1b99fa42be298e23b438f07c8e4b0986d1f23238d48376824e9aaa081aea0c",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/source-changed-before-story-freeze/run-start.json",
+        "sha256": "3830e590761a953bfe2d19a63b4d1fb0d41f7d6f86609025a4995df5d379e8f1",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/source-changed-before-story-freeze/suite-events.jsonl",
+        "sha256": "ef8693352514ba8f9e6fa99f4174b9163528db66ed304bde9ca8df0ae7e86c16",
+        "matches": 2324
+      },
+      {
+        "path": "docs/evidence/security-maintenance/source-changed-before-story-freeze/summary.json",
+        "sha256": "26fae1d99e8c7f81a3635fd7e49b0dd7729f18a65bb69e5ca337c816e28e577f",
+        "matches": 6
+      },
+      {
+        "path": "docs/evidence/security-maintenance/story-build.txt",
+        "sha256": "e95e4db342dd03075b6b6d9e9a74564594fde3b49b054451d7546c4d37ff4bb9",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/story-typecheck.txt",
+        "sha256": "711c43ed639e68c1aa1cf41b849dbc4216746999c810280c257a83d1e00216b6",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/support-policy-build.txt",
+        "sha256": "a72453d2322d398bb3a0e48fa0e76bd93f41f178a39a292839b3a5b12dd6a741",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/support-policy-typecheck.txt",
+        "sha256": "711c43ed639e68c1aa1cf41b849dbc4216746999c810280c257a83d1e00216b6",
+        "matches": 1
+      },
+      {
+        "path": "docs/evidence/security-maintenance/tools-typecheck.txt",
+        "sha256": "b8a3d9cfabb67fc266a15399f6830cc528ee483be1f59b113ec7c6410e1a1436",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/security-maintenance/typecheck.txt",
+        "sha256": "309290678957240eca53832e84cbd35fe5b307ddf1938a821013159d8a3ecebb",
+        "matches": 2
+      },
+      {
+        "path": "docs/evidence/security-maintenance/workspace-build.txt",
+        "sha256": "49151f090a43acea1d8bea19d00ee4c9c16e4017356e2ea15c1d361f7bf3891d",
+        "matches": 17
+      },
+      {
+        "path": "docs/finalAppBuild-2026-09-12.log",
+        "sha256": "fb9d27ce71dbc2c904e7955be79f5dd4cc4f246489b503bafa2a99a7f932c1cd",
+        "matches": 1
+      },
+      {
+        "path": "docs/four-bar-validation.json",
+        "sha256": "fce9b227f42cc18e8a7a9fecf7e19003efda96c47cf30d0bd679166025ab7689",
+        "matches": 2
+      },
+      {
+        "path": "docs/sketch-dimensions-validation.json",
+        "sha256": "483483f68b183998b46191db6d1a91582d078581d9ff6eb1694c17db1572ab77",
+        "matches": 1
+      },
+      {
+        "path": "docs/test-inventory-results.json",
+        "sha256": "702e1c4a31d524c612a46fee8c48d9dc7c0c86a23c5927b88c8b71cfc3a43e91",
+        "matches": 3471
+      },
+      {
+        "path": "docs/tests-2026-09-12.log",
+        "sha256": "445e3800fd47f31369d14d7e2aff467e66ce291f8504710d242af92a161a5db5",
+        "matches": 60
+      },
+      {
+        "path": "docs/workspaceBuild-2026-09-12.log",
+        "sha256": "831af264d3c43b8a76420778df532b1197759cf5cd89b123e132dcb0403a215b",
+        "matches": 3
+      },
+      {
+        "path": "replit.md",
+        "sha256": "afdc6c4e40c83fc31fc392852a9dfd0276912ab44e64840283d6eac15d9cdef6",
+        "matches": 4
+      },
+      {
+        "path": "scripts/src/verify-demo-geometry.mjs",
+        "sha256": "1d35e6c6c16e47a22725ade5e9d85adce32e83004560b39c53391f4ac82b336a",
+        "matches": 3
+      }
+    ],
+    "emailBearingFiles": [
+      {
+        "path": "SECURITY.md",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/kineticad/tests/vite-allowed-hosts.test.mjs",
+        "matches": 1,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/components/SiteFooter.tsx",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/pages/PrivacyPage.tsx",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "artifacts/landing/src/pages/TermsPage.tsx",
+        "matches": 2,
+        "classification": "source-or-evidence-review"
+      },
+      {
+        "path": "licenses/manifest.json",
+        "matches": 2,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/clsx/2.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/loose-envify/1.4.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/object-assign/4.1.1/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-day-picker/9.14.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/react-icons/5.6.0/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/packages/regexparam/3.0.0/license",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      },
+      {
+        "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+        "matches": 1,
+        "classification": "upstream-attribution"
+      }
+    ],
+    "disposition": "Historical checkout/temp paths, upstream copyright email notices and intentional public business contact details are retained. No matched values are reproduced here. Review listed source/evidence contexts before publication; visual media review is separate.",
+    "rawEvidenceRewritten": false
+  },
+  "notices": {
+    "command": "node licenses/collect-notices.mjs --check",
+    "exitCode": 0,
+    "stdout": "Verified 147 package versions and 143 original notice files.\nVerified 11 supplemental notice hashes; 18 package versions use upstream references, with 1 explicit source-version limitation.",
+    "stderrPresent": false,
+    "manifestSha256": "4d4afc0647c05e811dd46feac7e21dbd901916c0a424fba8d9ff8f78332f9357",
+    "supplementalManifestSha256": "cf32f6dfd1c45160400a33e4a8761098e06ff428ee445c3efc49245b7c87bc45"
+  },
+  "concurrency": {
+    "inputSnapshotUnchangedDuringScan": true,
+    "changedFiles": [],
+    "endingSnapshotSha256": "c2f6ce88685a5c61792adf20c3243cb84ab0747feb8d414e2fdba171d6ed1929",
+    "finalDocumentationMayStillChange": true
+  },
+  "dependencySecurity": {
+    "review": "docs/SECURITY-MAINTENANCE-2026-09-12.md",
+    "evidence": "docs/evidence/security-maintenance/audit-release.json",
+    "advisoryRecords": 0,
+    "decision": "targeted-security-updates-tested; repository-visibility-and-Replit-publication-remain-owner-controlled"
+  },
+  "manualCandidateReview": {
+    "reviewedCandidateCount": 1,
+    "actualCredentialCount": 0,
+    "classification": "Intentional invalid-host rejection fixture",
+    "path": "artifacts/kineticad/tests/vite-allowed-hosts.test.mjs",
+    "line": 42,
+    "reason": "Uses example.com and placeholder user/password to assert credential-bearing origins are rejected; no real credential."
+  }
+}

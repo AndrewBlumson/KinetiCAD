@@ -1,6 +1,6 @@
 # KinetiCAD Replit workspace
 
-Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](docs/HISTORY-AND-SELECTION.md) and [dependency security review](docs/DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+Security maintenance: **402/402 tests across 57 files passed in 80.936 seconds on Node 24.19.0 ARM64**, with unchanged test inputs and historical reports restored. Workspace typecheck/build, the root-route landing build, a clean-copy frozen install/typecheck and **35/35 HTTP checks** passed. The patched dependency audit reports **zero advisories, none muted**. Scoped production Chrome checks passed for imported-project editing, Undo/Redo, native file reopening, recovery and public-page/support navigation. Earlier feature records retain their separate scope. Pull verified GitHub `main` into the existing Replit project; Replit checkpoint publication and public-route acceptance remain separate steps. See [maintenance evidence](docs/SECURITY-MAINTENANCE-2026-09-12.md).
 
 ## Overview
 
@@ -14,7 +14,7 @@ This is a pnpm/TypeScript monorepo. Each package manages its own dependencies.
 The CAD application is browser-local; API/database scaffold packages do not imply
 that a paid AI API or server is required for its geometry/physics calculations.
 
-The latest combined results are in the [current test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md)
+The earlier 382-test feature results are in the [history/selection test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md)
 and [history/selection guide](docs/HISTORY-AND-SELECTION.md). Undo/Redo passed
 its 369-test checkpoint before object selection; older 298/348/351-test records
 retain their original source identities. The current source includes both
@@ -31,8 +31,9 @@ passed Load and full refresh, then Save produced an assembly exactly equal to
 the original corrected download, including transforms and pivots. Existing
 incorrectly saved joints need to be picked again; there is no automatic migration.
 Historical phase logs below are not current backlog or automatic evidence for
-later revisions. Retain pinned packages and the committed lockfile; this stage
-requires no dependency upgrade, paid AI service or deployment change.
+later revisions. Use the reviewed patched lockfile. The current [security maintenance](docs/SECURITY-MAINTENANCE-2026-09-12.md) updates Orval/build tools and targeted transitives, retaining Three.js/OCCT/Rapier. No paid AI service is required.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment.
 
 ## Stack
 
@@ -227,9 +228,9 @@ benches, an analytical elastic-beam tool, an adjustable crank-slider, persistent
 sketch dimensions and direct connected-Boolean simulation. The current stage
 also adds the local **Draw a path** four-bar designer described below. Its local
 automated and scoped Chrome checks are complete; these physical models and
-limits remain distinct. Andrew's testing remains the next step.
+limits remain distinct. [Scoped production Chrome checks](docs/evidence/security-maintenance/browser.json) also passed imported-project material Undo/Redo, saved-status recovery after refresh, native downloaded-file reopening, public-page navigation and the external support link preserving the current model.
 
-The latest serialized run is catalogued in [HISTORY-SELECTION-TEST-CATALOG.md](docs/HISTORY-SELECTION-TEST-CATALOG.md).
+The earlier 382-test run is catalogued in [HISTORY-SELECTION-TEST-CATALOG.md](docs/HISTORY-SELECTION-TEST-CATALOG.md); the latest [402-test summary](docs/evidence/security-maintenance/release/summary.json) records the patched Node 24 ARM64 run.
 Earlier four-bar and hinge captures preserve their 348/351-test scope. Complete
 per-test results, original reports, source hashes and actual browser downloads
 are retained alongside the [history/selection record](docs/HISTORY-AND-SELECTION.md).
@@ -302,8 +303,7 @@ it is neither a floor collider nor a limitation on model coordinates.
 
 All file controls have labels and tooltips. The landing page includes Andrew’s
 sites, X/LinkedIn and Replit UK Ambassador biography. Phone/tablet CAD startup is
-blocked; public information pages remain readable. Optional donation support
-awaits Andrew’s selected provider/destination and does not change free access.
+blocked; public information pages remain readable. **Support KinetiCAD** links to [Buy Me a Coffee](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. The optional external link adds no payment widget, payment code or feature gate; the app remains free and MIT-licensed.
 
 ### Connected Boolean rigid bodies
 
@@ -878,13 +878,13 @@ SEO pass:
 
 ## Current project format: 1, wrapping state version 9
 ## MOTOR_VELOCITY_GAIN: 10000 (physicsWorker.ts)
-## Current examples: six editable gallery assemblies, adjustable crank-slider and bounded four-bar path designer; local checks complete, user/public acceptance pending
+## Current examples: six editable gallery assemblies, adjustable crank-slider and bounded four-bar path designer; automated and scoped local Chrome checks complete; Replit/public acceptance separate
 ## Legacy seed registry: window.loadSeed('windmill') | window.loadSeed('orrery')
 ## WebGPU testing: top-level Chrome against local app or intended deployment
 
 ## September release preparation: history and selection
 
-The authorised usability scope adds document Undo/Redo and nearest-visible-solid
+The implemented usability improvements add document Undo/Redo and nearest-visible-solid
 selection. See [usage, boundaries and checks](docs/HISTORY-AND-SELECTION.md).
 Model history is bounded, in-memory, grouped for drags/imports, and excludes
 solver frames, UI selection and previews. Load/recovery/demo changes start fresh
@@ -893,8 +893,7 @@ history; Save retains the restored current model and its imported assets.
 The merge hook now only installs the frozen dependencies; it does not push a
 database schema. CAD needs no DB/paid-AI credentials. Local environment/key files
 are ignored and [third-party notices](THIRD-PARTY-NOTICES.md) preserve dependency
-licences. Repository visibility, main merge and Replit publication remain final
-owner-directed release steps. Use the [release checklist](docs/PUBLIC-RELEASE-CHECKLIST.md).
+licences. GitHub main push and Replit publication remain separate release steps; repository visibility and the MIT licence are unchanged. Use the [release checklist](docs/PUBLIC-RELEASE-CHECKLIST.md).
 
 Portable evidence capture: `node scripts/src/capture-test-suite.mjs --output-dir <new-directory>`.
 It records all serial test results and source fingerprints and preserves the two

@@ -5,8 +5,7 @@ are implemented on `codex/built-in-demo-gallery`, following the local four-bar
 designer and revolute-picking correction. The current
 [feature and browser record](HISTORY-AND-SELECTION.md) and
 [combined test catalog](HISTORY-SELECTION-TEST-CATALOG.md) collect this stage's
-completed local acceptance. Public release remains pending the
-[dependency security review](DEPENDENCY-SECURITY-REVIEW.md) and Replit acceptance.
+completed feature-stage acceptance. Subsequent [security maintenance](SECURITY-MAINTENANCE-2026-09-12.md) passed **402/402 tests across 57 files in 80.936 seconds on Node 24.19.0 ARM64**, plus builds, clean-copy frozen install/typecheck and 35/35 HTTP checks. The patched audit reports zero advisories with none muted. Scoped production Chrome acceptance also passed. Pull verified GitHub main into the existing Replit project; its checkpoint publication and public-route acceptance remain separate.
 Earlier hinge and four-bar records retain their original source identities.
 Check report fingerprints before reusing results after source changes.
 
@@ -48,7 +47,7 @@ Position/Rotation controls; select one of its sketches for **Edit dimensions**.
 
 ## Verification and open acceptance
 
-The final Undo/Redo and selection capture passed **382/382 tests across 54 files**,
+The earlier Undo/Redo and selection capture passed **382/382 tests across 54 files**,
 with zero failures, cancellations or skips. The
 [capture summary](evidence/history-selection/final/summary.json) confirms unchanged
 source inputs and verified restoration of historical reports. The
@@ -89,9 +88,7 @@ The [revolute picking guide](REVOLUTE-PICKING-VERIFICATION.md)
 records this scope. Existing incorrectly saved joints need to be picked again;
 there is no automatic migration.
 
-The final local capture used Node **25.4.0** and pnpm **10.28.2**. Replit's
-committed configuration specifies Node **24**; repeat the suite in that actual
-Replit runtime during handoff. The local run is not labelled as a Node 24 run.
+The earlier feature capture used Node **25.4.0** and pnpm **10.28.2**. Current maintenance uses bundled **Node 24.19.0 ARM64**; the default Node 25 x64 does not match its refreshed ARM64 native install. Replit specifies Node 24 and still needs its own Linux install/runtime check.
 
 [Mathematics and physics](MATHEMATICS-AND-PHYSICS.md) records equations, units,
 reference methods, tolerances, observed errors and exclusions. Passing these
@@ -101,12 +98,13 @@ machine's strength and safety.
 
 | Acceptance layer | Status |
 | --- | --- |
-| Automated tests | 382/382 passed across 54 files; zero failures, cancellations or skips; source inputs unchanged and historical-report restoration verified. |
-| Production build | Workspace typecheck and full production build passed; the explicit root-route landing build also passed. |
-| Codex computer use | Scoped history/import restoration, native/Boolean selection, drag history, numeric precision and editor/demo isolation passed; earlier four-bar and hinge observations remain separately attributed. |
+| Automated tests | **402/402 passed across 57 files in 80.936 seconds** on Node 24.19.0 ARM64; source inputs unchanged and historical reports restored. [Summary](evidence/security-maintenance/release/summary.json). |
+| Production build | Node 24 workspace typecheck/build, explicit root-route landing build and clean-copy frozen install/typecheck passed. [Build log](evidence/security-maintenance/final-workspace-build.txt). |
+| HTTP serving | **35/35 checks passed**; [report](evidence/security-maintenance/http-smoke.json). This does not replace Chrome interaction. |
+| Codex computer use | **Scoped production Chrome checks passed:** modified imported STEP native Load, Brass-to-Steel Undo/Redo, saved-status recovery after full refresh, actual downloaded-file reopening retaining material/holes/joint, creator/support review, Story/Terms/Privacy navigation and an external support tab preserving the model. Windmill Play/Pause at 24.77 s and Reset to 0.00 s passed; captured CAD/landing logs contained no warnings or errors. This is a UI lifecycle check; numerical accuracy is covered separately by the release suite. [Record](evidence/security-maintenance/browser.json). Earlier feature-stage checks retain their own scope. |
 | Final Boolean file reopening | **Passed:** actual saved Fixed-joint file reopened through Chrome's native chooser on port 5190; properties, Play/Pause/Reset and another refresh passed |
-| Dependency security | 58 advisory records remain unresolved; see the security review. Passing functional tests does not establish a security-clean release. |
-| Publication preparation | Local feature acceptance is complete for the recorded scope; security decisions, owner review and public-route acceptance remain pending. |
+| Dependency security | Patched online audit: **zero advisories, none muted**. [Response](evidence/security-maintenance/audit-release.json). This is not a security certification. |
+| Publication preparation | Local automated and scoped Chrome acceptance passed. Confirm the verified source in [GitHub main history](https://github.com/AndrewBlumson/KinetiCAD/commits/main/), then follow the Replit checkpoint flow below. Repository remains private and MIT licence unchanged. |
 | Replit republish/public route | Pending; local results do not establish that the public app contains these changes |
 
 The earlier file-dialog limitation was resolved after file-URL access was enabled.
@@ -115,11 +113,9 @@ result, 2,000 mm³ and 0.017 kg. See the [browser capture](evidence/boolean-reop
 and [Boolean follow-up](BOOLEAN-SIMULATION-VERIFICATION.md#native-file-reopening-follow-up--12-september-2026).
 This closes that recorded UI check without enlarging its physical-model scope.
 
-The online dependency audit returned **58 advisory records** (56 unique GHSA IDs),
-including development/generation tooling and scaffold paths with differing
-exposure. Packages remain unchanged. The [security review](DEPENDENCY-SECURITY-REVIEW.md)
-records applicability and remaining decisions; these findings are not 58
-demonstrated exploits, and this source is not described as security-clean.
+The [historical review](DEPENDENCY-SECURITY-REVIEW.md) records the initial 58 findings. Targeted updates reduced the intermediate result to 27 and the final result to zero; none were muted. The [maintenance guide](SECURITY-MAINTENANCE-2026-09-12.md) records the exact graph and limits. Three.js, OCCT and Rapier remain unchanged.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment.
 
 ## What comes later
 
@@ -138,5 +134,6 @@ required for the browser geometry, physics or local search.
 Undo/Redo and object selection follow those earlier checkpoints; the current
 work is publication preparation. Future modelling and engineering extensions
 need their own agreed scope and evidence. Replit import/run/publication instructions are in
-[Replit handoff](REPLIT-HANDOFF.md). An optional donation link awaits Andrew's
-chosen provider and destination; the application remains free.
+[Replit handoff](REPLIT-HANDOFF.md).
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.

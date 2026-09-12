@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { CREATOR_LINKS } from "@/lib/creatorLinks";
+import { KINETICAD_SUPPORT_URL } from '../../../shared/support';
 import "./SiteFooter.css";
 
 const LOGO = `${import.meta.env.BASE_URL}logo.webp`;
@@ -23,6 +24,7 @@ export function SiteFooter() {
               <Link href="/story">Story</Link>
               <Link href="/terms">Terms</Link>
               <Link href="/privacy">Privacy</Link>
+              <a href={KINETICAD_SUPPORT_URL} target="_blank" rel="noopener noreferrer" title="Optional donation on Buy Me a Coffee; KinetiCAD remains free.">Support KinetiCAD<span aria-hidden="true"> ↗</span><span className="site-footer__sr-only"> (opens in a new tab)</span></a>
             </nav>
             <nav className="site-footer__profiles" aria-label="Andrew Blumson profiles">
               {CREATOR_LINKS.map((profile) => (

@@ -1,8 +1,8 @@
 # KinetiCAD developer handover
 
-Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](docs/HISTORY-AND-SELECTION.md) and [dependency security review](docs/DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+Security maintenance: **402/402 tests across 57 files passed in 80.936 seconds on Node 24.19.0 ARM64**, with unchanged test inputs and historical reports restored. Workspace typecheck/build, the root-route landing build, a clean-copy frozen install/typecheck and **35/35 HTTP checks** passed. The patched dependency audit reports **zero advisories, none muted**. Scoped production Chrome checks passed for imported-project editing, Undo/Redo, native file reopening, recovery and public-page/support navigation. Earlier feature records retain their separate scope. Pull verified GitHub `main` into the existing Replit project; Replit checkpoint publication and public-route acceptance remain separate steps. See [maintenance evidence](docs/SECURITY-MAINTENANCE-2026-09-12.md).
 
-Updated 12 September 2026 for Undo/Redo, object selection, release preparation
+Updated 12 September 2026 for targeted security maintenance, Undo/Redo, object selection,
 and the earlier four-bar/hinge improvements on `codex/built-in-demo-gallery`.
 Local verification scope is recorded below. Start with [Current status](docs/CURRENT-STATUS.md) and the
 [documentation index](docs/README.md).
@@ -45,9 +45,9 @@ blocked; public information pages remain readable. There is no mobile CAD or
 WebGL fallback. File controls have labels and hover/keyboard help. Creator and
 social links are included on the landing page and shared footer.
 
-The [current test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md) and
+The [earlier history/selection test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md) and
 [history/selection verification](docs/HISTORY-AND-SELECTION.md) identify the
-latest combined regression/build/browser evidence. Undo's first checkpoint
+completed 382-test feature-stage evidence. The [security maintenance guide](docs/SECURITY-MAINTENANCE-2026-09-12.md) records the subsequent 402-test run and scoped production Chrome acceptance. Undo's first checkpoint
 passed 369/369 tests before selection work. Earlier 298/348/351-test records
 remain historical and must not be relabelled as final acceptance.
 
@@ -72,8 +72,7 @@ The Boolean native downloaded-file reopening gate has now passed for the fixed
 joint fixture: actual Load, Play/Pause/Reset and browser refresh retained its
 Brass material, fixed base and joint. See the [browser record](docs/evidence/boolean-reopen/browser.json).
 This does not claim native file-dialog reopening of every joint fixture.
-Andrew's review of the new stage and public Replit publication/route acceptance
-remain separate gates.
+The [maintenance Chrome record](docs/evidence/security-maintenance/browser.json) covers the patched build: modified imported STEP native Load; Brass-to-Steel material Undo/Redo; saved-status recovery through full refresh; actual downloaded-project reopening retaining material, holes and joint; creator/support review; Story, Terms and Privacy navigation; and an external support tab that preserves the model. Public Replit publication and route acceptance remain separate gates.
 
 ### Bounded four-bar path designer
 
@@ -103,8 +102,7 @@ Pinned primary dependencies: React 19, Vite 7, TypeScript 5.9, Three.js 0.184.0,
 OpenCascade.js `2.0.0-beta.94e2944`, Rapier3D `0.12.0`, Comlink `4.4.1`.
 Use Node 24 as configured in `.replit`, pnpm and the committed lockfile.
 Do not upgrade the geometry or physics kernel as part of a routine handoff.
-The fresh local test inventory used Node 25.4.0/pnpm 10.28.2; testing in the
-configured Replit runtime remains part of the publication handoff.
+The earlier 382-test capture used Node 25.4.0/pnpm 10.28.2. Current maintenance checks use bundled Node 24.19.0 ARM64 and the refreshed native install; the default Node 25 x64 runtime is incompatible with that ARM64 install. Replit still needs its own Linux runtime check.
 
 | Location | Responsibility |
 | --- | --- |
@@ -220,14 +218,17 @@ Preserve historical numerical reports; rerun into a new named record.
 
 Use [NEXT-IMPLEMENTATION-TODO.md](docs/NEXT-IMPLEMENTATION-TODO.md), then
 [KNOWN-ISSUES-AND-FOLLOW-UP.md](docs/KNOWN-ISSUES-AND-FOLLOW-UP.md). The current
-Undo/Redo → selection → documentation sequence is authorised and tested in
+Undo/Redo → selection → documentation sequence is implemented and tested in
 separate checkpoints. Review the final release checklist before publication. The prior Boolean Load-dialog gate is
 closed by the linked fixed-joint record.
 Old issues are queued for later investigation, not assumed still broken merely
 because they appear in the original handover. Ordinary assembly force/contact/
 friction and general deformation remain future stages. Keep each change bounded
-and tested before proceeding; do not upgrade packages or publish as part of this
-documentation handoff.
+and tested before proceeding. Use the reviewed patched lockfile; avoid unrelated dependency changes.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment.
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.
 
 ## History and picking implementation contracts
 

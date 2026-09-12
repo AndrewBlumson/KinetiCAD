@@ -1,8 +1,8 @@
-# Public-release readiness — local preparation complete, release gates open
+# Public-release readiness — maintenance checks passed, final release gates open
 
 12 September 2026. Local audit snapshot: `80690884ceb9b46b991dfc0269bd39a631fe1cf1`
 plus the reviewed working tree. Undo/redo and general object selection are
-implemented. The final local capture passed **382/382 tests across 54 files**,
+implemented. The earlier feature-stage capture passed **382/382 tests across 54 files**,
 with workspace typecheck, full production build and scoped actual Chrome
 acceptance complete. The [feature record](HISTORY-AND-SELECTION.md),
 [test catalog](HISTORY-SELECTION-TEST-CATALOG.md),
@@ -12,13 +12,7 @@ Earlier 351-test hinge results remain historical. Source/document preparation
 is complete for the recorded feature stage; this does **not** declare public
 release or deployment approved.
 
-The later online dependency audit returned **58 advisory records** (11 critical,
-28 high, 16 moderate, 3 low). Packages remain frozen at the owner's request.
-See [dependency security review](DEPENDENCY-SECURITY-REVIEW.md) and its
-[sanitised evidence](dependency-security-review.json). **Security readiness is
-not cleared**; publication and deployment require separate explicit decisions
-after reviewing the affected execution paths. A no-secret scan and passing
-feature tests do not negate dependency advisories.
+The subsequent [security maintenance](SECURITY-MAINTENANCE-2026-09-12.md) reduces the preserved 58-finding baseline to **zero advisories, none muted**. Current Node 24.19.0 ARM64 verification passed **402/402 tests across 57 files in 80.936 seconds**, workspace typecheck/build, the root-route landing build, clean-copy frozen install/typecheck and **35/35 HTTP checks**. Scoped production Chrome checks passed; [the browser record](evidence/security-maintenance/browser.json) covers imported-project material Undo/Redo, saved-status recovery through full refresh, exact native downloaded-file reopening, public-page navigation and the external support link preserving the model. Earlier feature records retain their own scope. These scoped results do not certify application security or a public deployment.
 
 KinetiCAD remains the project originally built by Andrew Blumson and Kevin
 Blumson with Replit Agent. Later Codex development and verification should stay
@@ -87,7 +81,7 @@ No credential values were printed or copied into this document.
 | Evidence includes intentional provenance metadata | The [rescan](evidence/history-selection/publication-scan.json) lists 41 files with local/temp paths: 29 include machine-specific provenance and the remainder use generic temporary/virtual paths. Eleven email-bearing current files are three public business/legal pages and eight upstream copyright/metadata notices. Historical email-bearing blobs belong to those same three public pages. | Preserve originals, measured hashes and dates. No credential-pattern candidates were found; this is not proof that all possible private information is absent. Do not silently scrub/rewrite raw reports or Git history. Review the final intended file set, including intentional business contact details, before publication. |
 | Portable capture command added; historical script retained | [`docs/evidence/four-bar/capture-suite.py`](evidence/four-bar/capture-suite.py) remains a historical machine-specific record. The current [`capture-test-suite.mjs`](../scripts/src/capture-test-suite.mjs) and [`capture-test-reporter.mjs`](../scripts/src/capture-test-reporter.mjs) are checked-in portable tooling used for the final capture. | **Implemented and used locally.** Follow the current feature/test guide. Do not run the historical Python capture unchanged on a fresh clone. The standard `test:all` command remains the direct test entry point; the capture wrapper adds source/report provenance. |
 | Current feature documentation refreshed | [README](../README.md), [handover](../HANDOVER.md), [status](CURRENT-STATUS.md), [known issues](KNOWN-ISSUES-AND-FOLLOW-UP.md), [Replit notes](../replit.md) and the [history guide](HISTORY-AND-SELECTION.md) describe the completed bounded Undo/selection stage and its 382-test acceptance. | **Current stage recorded.** Keep dated 166/195/237/298/348/351 and earlier Undo checkpoint evidence historical. Do not add standalone scenario counts to the suite total or present numeric evidence as a universal proof. Final contribution/security guides, all local links and archive contents receive the final handoff pass. |
-| Frozen dependencies have published advisories | The successful online audit returned 58 records / 56 unique GHSA IDs across 20 package names. The registry marked all dependencies non-development, so the [review](DEPENDENCY-SECURITY-REVIEW.md) separates explicit codegen, build/development tools, API middleware and unreferenced scaffolding using current source paths. | **Open decision gate.** Keep versions unchanged as instructed. Record a publication decision and a separate actual-host deployment decision; do not describe the repository as security-clean. Review Orval's untrusted-input/code-generation risks and any exposed development/API processes first. No exploit or package upgrade was attempted. |
+| Targeted dependency security updates | The [original review](DEPENDENCY-SECURITY-REVIEW.md) retains 58 records. The [patched response](evidence/security-maintenance/audit-release.json) has no advisories or muted entries. Orval 8.32.0, Vite 7.3.6, esbuild 0.28.1 and targeted transitives are recorded in [maintenance](SECURITY-MAINTENANCE-2026-09-12.md); Three.js/OCCT/Rapier remain unchanged. | **Local maintenance acceptance passed.** 402 tests, 35 HTTP checks, Node 24 builds, clean-copy install/typecheck and scoped production Chrome checks pass. Complete actual Replit host/public-route checks; do not describe the audit as universal security proof. |
 
 The dependency licence labels were read from installed locked package metadata
 and original licence files. Missing npm texts were supplemented from pinned
@@ -98,7 +92,7 @@ missing package notices have the release's source revision; the
 source tree. No legal certification was performed. A subsequent registry
 vulnerability audit and bounded source triage are recorded in the security
 review above; they do not establish exploitability or a clean security result.
-No package was upgraded. The exact-distribution checks in the
+The subsequent targeted package updates and [notice refresh](../licenses/security-update-review.json) retain this scope. The exact-distribution checks in the
 [notice guide](../THIRD-PARTY-NOTICES.md) remain open.
 
 Scoped cleanup verification: landing TypeScript check passed, all 154 copied
@@ -128,10 +122,8 @@ or verified the external repository/deployment.
   a `KinetiCAD-demo-gallery-release.json` containing its commit, hash, file count
   and repeated extraction checks. No source ZIP is committed inside the repo.
   These checks do not establish absence of every possible secret.
-- [ ] Test a clean extraction/clone with `pnpm install --frozen-lockfile`, the
-  configured Node 24 runtime and serial OCCT tests. The recorded local Node
-  25.4.0 result is not a Node 24 pass. Record the final complete test count and
-  full workspace typecheck/build result for the finished source.
+- [x] Current clean-copy frozen install/typecheck passed on Node 24.19.0 ARM64; the final serial suite passed 402/402 across 57 files, with full workspace and root-route landing builds. The earlier Node 25.4.0 capture remains historical.
+- [ ] Refresh the earlier source archive for the final maintenance commit; record its hash and repeat extraction/content checks. The prior archive result does not cover this later lockfile.
 - [ ] Reconfirm [Replit handoff](REPLIT-HANDOFF.md) against the actual existing
   project's build/start/base-path settings. Preserve the `/app/` CAD route,
   landing routes, pinned WASM URL, cache handling and domain attachment. A Git
@@ -155,20 +147,15 @@ or verified the external repository/deployment.
 - [ ] Complete the remaining notice/distribution review and verify the rendered
   public-copy/notice links in the finished build. Source cleanup is not a
   deployment or a blanket licence-compliance finding.
-- [ ] Resolve the explicit publication/deployment decisions for the disclosed
-  dependency advisories while honouring the package freeze. Record the actual
-  exposed processes and accepted scope; no security-clean claim is authorised
-  by the housekeeping, feature tests or registry source-path triage.
+- [x] Apply targeted security updates and obtain the zero-advisory audit, with none muted. Preserve the general 1440-minute release-age policy and the 14 exact Orval 8.32.0 exceptions.
+- [x] Finish scoped patched-build Chrome acceptance, retaining the [browser record](evidence/security-maintenance/browser.json) and separate earlier feature records. Neither an audit nor HTTP checks replace rendered application verification.
+- [ ] Confirm the released source in [GitHub main history](https://github.com/AndrewBlumson/KinetiCAD/commits/main/) before pulling it into Replit; do not equate the source push with publication.
 - [ ] Check the actual GitHub repository/settings, intended branch/revision and
   external release artifacts before the owner-directed visibility change. This
   read-only metadata check confirmed private visibility and default branch main;
   issues, Actions, releases and external refs were not inspected or changed.
-- [ ] Handle Replit publication separately, then exercise the actual public route
-  in a fresh desktop session. Local source/test success does not prove that the
-  public site serves the new build. Retain desktop-only CAD behaviour and public
-  information-page access.
+- [ ] Pull verified GitHub main into the existing Replit project, test it, create its own checkpoint/commit and publish that checkpoint. Replit's SHA may differ; record both identities and compare source content. Verify the actual public routes in a fresh desktop session. The GitHub push is source transfer, not deployment; preserve desktop-only CAD and readable information pages.
 
-Final status: **local feature/source/document preparation and recorded acceptance
-complete; release gates remain open**. The dependency decision, Node 24 clean
-handoff, exact-distribution notices, existing media provenance and external
-GitHub/Replit/public-route checks still need their own results.
+Final status: **patched audit, automated checks and scoped production Chrome acceptance passed**. The repository remains private and MIT-licensed. Replit checkpoint publication/public-route acceptance, final archive, exact-distribution notices and remaining media provenance retain their own checks.
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.

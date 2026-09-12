@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T22:04:21.842Z",
+  "passed": true,
+  "sources": {
+    "cadWorkerSha256": "f156882a9ca0067f6d0c4ac8545cab1643629b1408c874d2feb1627a13312f1b",
+    "physicsWorkerSha256": "7143f9f0464f51e0f729d77c3849eb7a8ee4c9a07997545fad0ecb5442d6d342",
+    "massPropertiesSha256": "dafa18c949651652dc7cef7de0879023d00fa0605a59bde3d88a6f3e8fc6834d",
+    "transformSha256": "7392d41ed249bb0ef59bdb8919c191e7bf44956ec90d5ac987f2815f5ea30206"
+  },
+  "tolerances": {
+    "volumeMm3": 0.000001,
+    "massKg": 1e-10,
+    "centroidMm": 0.000001,
+    "tensorKgMm2": 1e-7,
+    "meshRelativeVolume": 0.000005,
+    "meshBoundsMm": 0.00002,
+    "freefallVelocityMmPerSec": 0.5,
+    "forceAccelerationRelative": 0.0002,
+    "fixedPositionMm": 1e-7,
+    "pendulumAngleRad": 0.003,
+    "pendulumSpeedRadPerSec": 0.03,
+    "pendulumClosureMm": 0.01
+  },
+  "scope": "Final connected Boolean solids, uniform density, exact OCCT mass properties, and actual Comlink/Rapier rigid-body response. Input transforms are baked into mesh, COM and principal frame; the descriptor transform is identity. Contact, friction, force-limited motors, automatic mate remapping, arbitrary Boolean assemblies and browser rendering are not established by these tests.",
+  "cases": [
+    {
+      "name": "union-identity",
+      "volumeMm3": 9000,
+      "massKgAtUnitDensity": 0.009,
+      "centreOfMassWorldMm": [
+        7.5,
+        10,
+        15
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.975,
+          0,
+          -1.124100812432971e-16
+        ],
+        [
+          0,
+          0.84375,
+          0
+        ],
+        [
+          -1.124100812432971e-16,
+          0,
+          0.46875
+        ]
+      ],
+      "maxTensorErrorKgMm2": 1.124100812432971e-16,
+      "meshVolumeMm3": 9000,
+      "boundsMm": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          15,
+          20,
+          30
+        ]
+      }
+    },
+    {
+      "name": "subtract-identity",
+      "volumeMm3": 3000,
+      "massKgAtUnitDensity": 0.003,
+      "centreOfMassWorldMm": [
+        2.5,
+        10,
+        15
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.325,
+          0,
+          -4.85722573273506e-17
+        ],
+        [
+          0,
+          0.23124999999999998,
+          0
+        ],
+        [
+          -4.85722573273506e-17,
+          0,
+          0.10625000000000001
+        ]
+      ],
+      "maxTensorErrorKgMm2": 4.85722573273506e-17,
+      "meshVolumeMm3": 3000,
+      "boundsMm": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          5,
+          20,
+          30
+        ]
+      }
+    },
+    {
+      "name": "intersect-identity",
+      "volumeMm3": 3000,
+      "massKgAtUnitDensity": 0.003,
+      "centreOfMassWorldMm": [
+        7.5,
+        10,
+        15
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.325,
+          0,
+          -4.85722573273506e-17
+        ],
+        [
+          0,
+          0.23124999999999998,
+          0
+        ],
+        [
+          -4.85722573273506e-17,
+          0,
+          0.10625000000000001
+        ]
+      ],
+      "maxTensorErrorKgMm2": 4.85722573273506e-17,
+      "meshVolumeMm3": 3000,
+      "boundsMm": {
+        "min": [
+          5,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          20,
+          30
+        ]
+      }
+    },
+    {
+      "name": "off-centre-cut-identity",
+      "volumeMm3": 23040,
+      "massKgAtUnitDensity": 0.023039999999999998,
+      "centreOfMassWorldMm": [
+        10.166666666666666,
+        15.166666666666666,
+        19.999999999999996
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          4.853120000000001,
+          0.015999999999999542,
+          5.082409069924848e-16
+        ],
+        [
+          0.015999999999999542,
+          3.854720000000002,
+          1.7263640336482767e-17
+        ],
+        [
+          5.082409069924848e-16,
+          1.7263640336482767e-17,
+          2.5638400000000017
+        ]
+      ],
+      "maxTensorErrorKgMm2": 2.220446049250313e-15,
+      "meshVolumeMm3": 23040,
+      "boundsMm": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          20,
+          30,
+          40
+        ]
+      }
+    },
+    {
+      "name": "union-mixed-rotation",
+      "volumeMm3": 9000.000000000002,
+      "massKgAtUnitDensity": 0.009000000000000001,
+      "centreOfMassWorldMm": [
+        29.891647431191938,
+        -19.112684466508842,
+        71.13306830966397
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.7276081034073673,
+          -0.021481413698108576,
+          0.19890662422208122
+        ],
+        [
+          -0.02148141369810852,
+          0.8887209651405872,
+          0.12748746440636216
+        ],
+        [
+          0.1989066242220812,
+          0.12748746440636216,
+          0.6711709314520395
+        ]
+      ],
+      "maxTensorErrorKgMm2": 4.9404924595819466e-15,
+      "meshVolumeMm3": 8999.999582022654,
+      "boundsMm": {
+        "min": [
+          10.975502014160156,
+          -34.80030822753906,
+          52.203121185302734
+        ],
+        "max": [
+          48.80779266357422,
+          -3.425060272216797,
+          90.0630111694336
+        ]
+      }
+    },
+    {
+      "name": "subtract-mixed-rotation",
+      "volumeMm3": 3000.000000000001,
+      "massKgAtUnitDensity": 0.003000000000000001,
+      "centreOfMassWorldMm": [
+        27.9557165394856,
+        -22.772582241632115,
+        68.32997718410546
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.20003169130405202,
+          0.007010147093993863,
+          0.07715538947849815
+        ],
+        [
+          0.0070101470939938765,
+          0.2730300251622384,
+          0.0630138754165852
+        ],
+        [
+          0.07715538947849816,
+          0.06301387541658518,
+          0.1894382835337166
+        ]
+      ],
+      "maxTensorErrorKgMm2": 3.7192471324942744e-15,
+      "meshVolumeMm3": 3000.0007764478705,
+      "boundsMm": {
+        "min": [
+          10.975502014160156,
+          -34.80030822753906,
+          52.203121185302734
+        ],
+        "max": [
+          44.93593215942383,
+          -10.744855880737305,
+          84.45683288574219
+        ]
+      }
+    },
+    {
+      "name": "intersect-mixed-rotation",
+      "volumeMm3": 2999.9999999999986,
+      "massKgAtUnitDensity": 0.0029999999999999983,
+      "centreOfMassWorldMm": [
+        29.891647431191927,
+        -19.112684466508842,
+        71.13306830966397
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          0.20003169130404863,
+          0.007010147093994543,
+          0.07715538947849909
+        ],
+        [
+          0.007010147093994529,
+          0.2730300251622352,
+          0.06301387541658508
+        ],
+        [
+          0.07715538947849908,
+          0.06301387541658508,
+          0.189438283533718
+        ]
+      ],
+      "maxTensorErrorKgMm2": 1.1102230246251565e-15,
+      "meshVolumeMm3": 2999.9996559490282,
+      "boundsMm": {
+        "min": [
+          12.911433219909668,
+          -31.140411376953125,
+          55.0062141418457
+        ],
+        "max": [
+          46.87186050415039,
+          -7.084958076477051,
+          87.25992584228516
+        ]
+      }
+    },
+    {
+      "name": "off-centre-cut-mixed-rotation",
+      "volumeMm3": 23040.000000000004,
+      "massKgAtUnitDensity": 0.02304,
+      "centreOfMassWorldMm": [
+        24.30613995214686,
+        -15.207018441528902,
+        74.64781362880227
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          3.5282062359703725,
+          0.07668519257050321,
+          0.7949799812667085
+        ],
+        [
+          0.07668519257050321,
+          4.317137544282402,
+          0.6648248901427027
+        ],
+        [
+          0.7949799812667084,
+          0.664824890142703,
+          3.426336219747156
+        ]
+      ],
+      "maxTensorErrorKgMm2": 5.595524044110789e-14,
+      "meshVolumeMm3": 23039.99907499946,
+      "boundsMm": {
+        "min": [
+          -2.0276715755462646,
+          -37.40040969848633,
+          48.804683685302734
+        ],
+        "max": [
+          50.74372482299805,
+          6.532460689544678,
+          100.41735076904297
+        ]
+      }
+    },
+    {
+      "name": "invalid-result-recovery",
+      "disconnectedRejected": true,
+      "emptyRejected": true,
+      "compoundCadStillSupported": true,
+      "validRetryVolumeMm3": 9000
+    },
+    {
+      "name": "small-translation",
+      "translationMm": 0.00001,
+      "expectedVolumeChangeMm3": 0.006,
+      "measuredVolumeChangeMm3": 0.0059999999994033715
+    },
+    {
+      "name": "imported-step-source",
+      "stepSha256": "5e2510cd579240a251209a41f2ffb80cf7503eed9f712d1e8dcdd99feaf2684c",
+      "sourceShapeId": "step-5e2510cd579240a251209a41f2ffb80cf7503eed9f712d1e8dcdd99feaf2684c-local-0",
+      "sourceVolumeMm3": 24000,
+      "sourceRegistryGeometryUnchanged": true,
+      "volumeMm3": 23040,
+      "massKgAtUnitDensity": 0.023039999999999998,
+      "centreOfMassWorldMm": [
+        24.30613995214686,
+        -15.207018441528902,
+        74.64781362880227
+      ],
+      "inertiaTensorWorldKgMm2": [
+        [
+          3.528206235970374,
+          0.07668519257050277,
+          0.7949799812667154
+        ],
+        [
+          0.07668519257050277,
+          4.317137544282404,
+          0.6648248901427098
+        ],
+        [
+          0.7949799812667157,
+          0.6648248901427096,
+          3.426336219747156
+        ]
+      ],
+      "maxTensorErrorKgMm2": 5.46229728115577e-14,
+      "meshVolumeMm3": 23039.999008385075,
+      "boundsMm": {
+        "min": [
+          -2.0276715755462646,
+          -37.40040969848633,
+          48.804683685302734
+        ],
+        "max": [
+          50.74372482299805,
+          6.532460689544678,
+          100.41735076904297
+        ]
+      }
+    },
+    {
+      "name": "freefall",
+      "durationMs": 1000,
+      "fixedStepMs": 8.333333333333334,
+      "bodies": [
+        {
+          "partId": "boolean:union",
+          "massKg": 0.024299999698996544,
+          "positionMm": [
+            0,
+            0,
+            -4906.28857421875
+          ],
+          "linearVelocityMmPerSec": [
+            0,
+            0,
+            -9810.0009765625
+          ],
+          "angularVelocityRadPerSec": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "partId": "boolean:cut",
+          "massKg": 0.1813247948884964,
+          "positionMm": [
+            0,
+            0,
+            -4906.28857421875
+          ],
+          "linearVelocityMmPerSec": [
+            0,
+            0,
+            -9810.0009765625
+          ],
+          "angularVelocityRadPerSec": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "equal-force",
+      "forceN": 0.001,
+      "fixedStepMs": 8.333333333333334,
+      "durationMs": 1000,
+      "maximumAccelerationRelativeError": 0.00011669921875423483,
+      "bodies": [
+        {
+          "partId": "boolean:union",
+          "massKg": 0.024299999698996544,
+          "positionMm": [
+            0,
+            20.581687927246094,
+            0
+          ],
+          "linearVelocityMmPerSec": [
+            0,
+            41.15200424194336,
+            0
+          ],
+          "angularVelocityRadPerSec": [
+            0,
+            0,
+            0
+          ],
+          "expectedAccelerationMmPerSec2": 41.152263374485585
+        },
+        {
+          "partId": "boolean:subtract",
+          "massKg": 0.008100000210106373,
+          "positionMm": [
+            0,
+            61.74443435668945,
+            0
+          ],
+          "linearVelocityMmPerSec": [
+            0,
+            123.45702362060547,
+            0
+          ],
+          "angularVelocityRadPerSec": [
+            0,
+            0,
+            0
+          ],
+          "expectedAccelerationMmPerSec2": 123.45679012345674
+        },
+        {
+          "partId": "boolean:intersect",
+          "massKg": 0.008100000210106373,
+          "positionMm": [
+            0,
+            61.74440383911133,
+            0
+          ],
+          "linearVelocityMmPerSec": [
+            0,
+            123.45702362060547,
+            0
+          ],
+          "angularVelocityRadPerSec": [
+            0,
+            0,
+            0
+          ],
+          "expectedAccelerationMmPerSec2": 123.45679012345686
+        }
+      ]
+    },
+    {
+      "name": "ground-pause-reset",
+      "fixedBody": {
+        "partId": "boolean:ground",
+        "positionMm": [
+          0,
+          0,
+          0
+        ],
+        "rotationQuat": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "freeBody": {
+        "partId": "boolean:moving",
+        "positionMm": [
+          0,
+          0,
+          -1226.891845703125
+        ],
+        "rotationQuat": [
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "resetMatchesInitial": true
+    },
+    {
+      "name": "passive-pendulum",
+      "durationMs": 50,
+      "leverMm": 100,
+      "inertiaAboutPivotKgMm2": 633.7362713695626,
+      "independentReference": {
+        "angle": 0.12031147435151819,
+        "velocity": 4.807814998285721
+      },
+      "trials": [
+        {
+          "hz": 240,
+          "angleRad": 0.12062341695580753,
+          "angularVelocityRadPerSec": 4.807727336883545,
+          "angleErrorRad": 0.0003119426042893364,
+          "speedErrorRadPerSec": 0.00008766140217630891,
+          "maximumClosureMm": 0.000019248884395688654
+        },
+        {
+          "hz": 480,
+          "angleRad": 0.12046656004453679,
+          "angularVelocityRadPerSec": 4.807770729064941,
+          "angleErrorRad": 0.0001550856930186001,
+          "speedErrorRadPerSec": 0.000044269220779824536,
+          "maximumClosureMm": 0.000012262054307191635
+        }
+      ]
+    }
+  ]
+}

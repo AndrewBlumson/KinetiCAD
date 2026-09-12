@@ -1,0 +1,30 @@
+Scope: all 10 workspace projects
+Progress: resolved 1, reused 0, downloaded 0, added 0
+artifacts/kineticad                      |  WARN  deprecated three-mesh-bvh@0.7.8
+
+   ╭─────────────────────────────────────────╮
+   │                                         │
+   │   Update available! 10.28.2 → 12.4.1.   │
+   │   Changelog: https://pnpm.io/v/12.4.1   │
+   │    To update, run: pnpm add -g pnpm     │
+   │                                         │
+   ╰─────────────────────────────────────────╯
+
+Progress: resolved 92, reused 92, downloaded 0, added 0
+Progress: resolved 504, reused 484, downloaded 11, added 0
+ WARN  1 deprecated subdependencies found: lodash@4.18.0
+Packages: +76 -85
++++++++++++++++++++++++++++++++++++++-------------------------------------------
+Progress: resolved 512, reused 488, downloaded 15, added 43, done
+.../esbuild@0.28.1/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.28.1/node_modules/esbuild postinstall: Done
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+. preinstall: Done
+ WARN  Issues with peer dependencies found
+artifacts/kineticad
+└─┬ opencascade.js 2.0.0-beta.94e2944
+  └── ✕ missing peer ws@^8.5.0
+Peer dependencies that should be installed:
+  ws@^8.5.0
+
+Done in 3.5s using pnpm v10.28.2

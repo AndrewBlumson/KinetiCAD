@@ -1,0 +1,19 @@
+
+> workspace@0.0.0 typecheck /private/var/folders/7z/swzj86hx6n9g4mqw6dq72mz40000gn/T/kineticad-clean-install-gtgp8pl6
+> pnpm run typecheck:libs && pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+
+
+> workspace@0.0.0 typecheck:libs /private/var/folders/7z/swzj86hx6n9g4mqw6dq72mz40000gn/T/kineticad-clean-install-gtgp8pl6
+> tsc --build
+
+Scope: 5 of 10 workspace projects
+artifacts/api-server typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/landing typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/kineticad typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/mockup-sandbox typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/api-server typecheck: Done
+scripts typecheck$ tsc -p tsconfig.json --noEmit
+scripts typecheck: Done
+artifacts/mockup-sandbox typecheck: Done
+artifacts/landing typecheck: Done
+artifacts/kineticad typecheck: Done

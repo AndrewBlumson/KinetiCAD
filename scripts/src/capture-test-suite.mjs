@@ -20,10 +20,18 @@ const scriptPath = fileURLToPath(import.meta.url);
 const root = resolve(dirname(scriptPath), '../..');
 const app = join(root, 'artifacts/kineticad');
 const protectedReports = ['docs/assembly-export-results.json', 'docs/boolean-physics-results.json'];
-const sourceTrees = ['artifacts/kineticad/src', 'artifacts/kineticad/tests', 'scripts/src'];
+// Capture the workspace built by the release commands, including production
+// servers, Vite configuration/public fixtures, generated API clients and Orval's
+// source/configuration. Build outputs and dated evidence are not source inputs.
+const sourceTrees = ['artifacts', 'lib', 'scripts', 'attached_assets'];
 const sourceFiles = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml',
-  'artifacts/kineticad/package.json', 'artifacts/kineticad/tsconfig.json', 'artifacts/kineticad/vite.config.ts',
-  'scripts/package.json', 'scripts/tsconfig.json'];
+  'tsconfig.json', 'tsconfig.base.json', '.npmrc', '.replit', '.replitignore', '.gitignore'];
+const excludedDirectories = new Set(['node_modules', '.git', 'dist', '.vite', '.turbo', 'coverage', 'docs', 'evidence']);
+const excludedFile = name => name === '.DS_Store' || name.endsWith('.tsbuildinfo')
+  || name === '.env' || name.startsWith('.env.');
+const sourceInputScope = { trees: sourceTrees, rootFiles: sourceFiles, excludedDirectories: [...excludedDirectories],
+  excludedFiles: ['.DS_Store', '*.tsbuildinfo', '.env', '.env.*'],
+  limitations: 'Regular source files only; installed dependencies and environment values are not hashed.' };
 const slash = value => value.split(sep).join('/');
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const writeJson = (path, value) => writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
@@ -32,12 +40,19 @@ const inside = (parent, path) => { const r = relative(parent, path); return r ==
 
 function usage() {
   console.log(`Usage: node scripts/src/capture-test-suite.mjs --output-dir <new-or-empty-directory> [--test tests/name.test.mjs ...]
+       node scripts/src/capture-test-suite.mjs --list-inputs
 
 Runs the existing kineticad *.test.mjs files serially with the installed TS loader.
 Paths supplied to --test are relative to artifacts/kineticad; omission runs every
 current top-level test file. No packages are installed. Node and pnpm versions,
 source hashes before/after, full reporter events, per-test results and summary
 are retained in the explicitly selected output directory.
+
+--list-inputs prints the current source-input hashes and discovery scope as JSON.
+It starts no tests, acquires no lock and writes no files. Source inputs include
+artifact/library/script source, public fixtures/assets, generated API clients,
+root manifests/lockfile and build/Replit configuration. Dependencies, dist/cache
+outputs, docs/evidence and environment-file values are excluded.
 
 Output: run-start.json, summary.json, suite-events.jsonl, tests.jsonl,
 stderr.log, reporter.mjs, original-reports/, generated-reports/.
@@ -86,7 +101,7 @@ function fileHashes() {
   function visit(directory) {
     if (!existsSync(directory)) return;
     for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name))) {
-      if (['node_modules', '.git', 'dist', '.DS_Store'].includes(entry.name)) continue;
+      if (excludedFile(entry.name) || (entry.isDirectory() && excludedDirectories.has(entry.name))) continue;
       const path = join(directory, entry.name);
       if (entry.isDirectory()) visit(path);
       else if (entry.isFile()) paths.add(relativeFile(path));
@@ -167,7 +182,7 @@ async function capture(config) {
       gitStatus: commandText('git',['status','--porcelain','--untracked-files=normal']),
       nodeVersion: process.version, nodeExecutable: process.execPath, pnpmVersion: commandText('pnpm',['--version']),
       platform: process.platform, arch: process.arch, repositoryRoot: root, cwd: app, command: [process.execPath, ...args],
-      scope, selectedTestFiles: selected, availableTestFiles: available, sourceInputSha256: beforeHashes,
+      scope, selectedTestFiles: selected, availableTestFiles: available, sourceInputScope, sourceInputSha256: beforeHashes,
       reporterSha256: sha(readFileSync(reporterPath)), captureScriptSha256: sha(readFileSync(scriptPath)),
       historicalReports: originals.map(({ path, bytes, existed }) => ({ path, existed, sha256: bytes ? sha(bytes) : null,
         backup: existed ? `original-reports/${path}` : null })),
@@ -234,5 +249,15 @@ async function capture(config) {
   process.exitCode = passed ? 0 : result.code || 1;
 }
 
-try { const config = options(process.argv.slice(2)); if (config) await capture(config); }
+try {
+  const args = process.argv.slice(2);
+  if (args.length === 1 && args[0] === '--list-inputs') {
+    const sourceInputSha256 = fileHashes();
+    console.log(JSON.stringify({ sourceInputCount: Object.keys(sourceInputSha256).length,
+      scope: sourceInputScope, sourceInputSha256 }, null, 2));
+  } else {
+    const config = options(args);
+    if (config) await capture(config);
+  }
+}
 catch (error) { console.error(`Test capture failed: ${error.message}`); process.exitCode = 1; }

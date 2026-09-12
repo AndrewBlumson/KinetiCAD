@@ -1,6 +1,6 @@
 # KinetiCAD
 
-Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](docs/HISTORY-AND-SELECTION.md) and [dependency security review](docs/DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+Security maintenance: **402/402 tests across 57 files passed in 80.936 seconds on Node 24.19.0 ARM64**, with unchanged test inputs and historical reports restored. Workspace typecheck/build, the root-route landing build, a clean-copy frozen install/typecheck and **35/35 HTTP checks** passed. The patched dependency audit reports **zero advisories, none muted**. Scoped production Chrome checks passed for imported-project editing, Undo/Redo, native file reopening, recovery and public-page/support navigation. Earlier feature records retain their separate scope. Pull verified GitHub `main` into the existing Replit project; Replit checkpoint publication and public-route acceptance remain separate steps. See [maintenance evidence](docs/SECURITY-MAINTENANCE-2026-09-12.md).
 
 Browser-native parametric CAD with B-rep geometry and live physics simulation.
 
@@ -17,11 +17,11 @@ The current source includes six gallery demos, an adjustable crank-slider,
 persistent sketch dimensions, complete STEP project recovery, direct simulation
 of connected Boolean results, a local **Draw a path** linkage designer,
 **Undo/Redo**, and **click-to-select solids**. CAD is desktop-only and requires
-WebGPU. Package upgrades remain deferred.
+WebGPU. Targeted dependency security updates are recorded in the [maintenance guide](docs/SECURITY-MAINTENANCE-2026-09-12.md); Three.js, OCCT and Rapier versions remain unchanged.
 
 Start with [Current status](docs/CURRENT-STATUS.md) and the
-[documentation index](docs/README.md). The [latest test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md)
-lists the final combined regression run; [history and selection](docs/HISTORY-AND-SELECTION.md)
+[documentation index](docs/README.md). The [history/selection test catalog](docs/HISTORY-SELECTION-TEST-CATALOG.md)
+retains its earlier 382-test run; [history and selection](docs/HISTORY-AND-SELECTION.md)
 records the new behaviour and actual Chrome checks. [Maths and physics](docs/MATHEMATICS-AND-PHYSICS.md)
 records equations, units, observed errors, tolerances and model limits. Earlier
 298/348/351-test catalogs and reports retain their original source identities.
@@ -52,6 +52,10 @@ Landing page: https://kineticad.co.uk/ — Story at `/story`, Terms of Service a
 These are the established Replit publication destinations. The repository
 is temporarily private, and the public site is not claimed to contain
 all changes documented here until the final Replit publication checks pass.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment.
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.
 
 ## Demo gallery
 
@@ -206,7 +210,7 @@ The sketch-dimension milestone passed **237/237 tests**, including 33 new dimens
 actual OpenCascade and edit-transaction checks. Chrome checks cover numeric input,
 connected profiles, rejected edits, Save/Load, recovery and actual STEP/STL downloads.
 See [measurements, tolerances and browser evidence](docs/SKETCH-DIMENSIONS-VERIFICATION.md).
-Andrew subsequently authorised the Boolean stage. Its latest status and remaining
+The subsequent Boolean stage is implemented. Its latest status and remaining
 acceptance checks are listed in [Current status](docs/CURRENT-STATUS.md).
 
 ## What works

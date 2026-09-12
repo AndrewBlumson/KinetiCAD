@@ -11,12 +11,13 @@ baseline, Replit provenance, available features and unfinished acceptance gates.
 - [Replit build notes](../replit.md): current engineering guidance followed by original dated build history.
 - [Next implementation stages](NEXT-IMPLEMENTATION-TODO.md): active task order.
 - [Known issues and follow-up](KNOWN-ISSUES-AND-FOLLOW-UP.md): original issues reconciled with current evidence, plus future acceptance checks.
-- [Dependency security review](DEPENDENCY-SECURITY-REVIEW.md): 58 advisory records, source-based exposure triage and unresolved publication decisions; packages remain unchanged.
+- [Security maintenance](SECURITY-MAINTENANCE-2026-09-12.md): zero-advisory patched audit, Node 24 checks, current release gates and the GitHub-to-Replit checkpoint flow.
+- [Historical dependency review](DEPENDENCY-SECURITY-REVIEW.md): the preserved initial 58-record audit and source-based exposure triage.
 
 ## Verification: what was tested and how
 
 - [Current history and selection record](HISTORY-AND-SELECTION.md): Undo/Redo semantics, native/Boolean object selection, source-scoped automated and actual Chrome checks, and remaining publication gates.
-- [Current combined test catalog](HISTORY-SELECTION-TEST-CATALOG.md): 382/382 passing tests across 54 files, with zero failures/cancellations/skips; the [capture summary](evidence/history-selection/final/summary.json) verifies unchanged source inputs and historical-report restoration.
+- [Earlier history/selection test catalog](HISTORY-SELECTION-TEST-CATALOG.md): 382/382 passing tests across 54 files, with zero failures/cancellations/skips; the [capture summary](evidence/history-selection/final/summary.json) verifies unchanged source inputs and historical-report restoration.
 - [Hinge-picking checkpoint](REVOLUTE-PICKING-VERIFICATION.md): actual Chrome reproduction and repair, three new regressions, the historical [351 named passing results](evidence/revolute-picking/suite.txt), and [checkpoint source fingerprints](evidence/revolute-picking/verification.json).
 - [Four-bar stage catalog](FOUR-BAR-TEST-CATALOG.md): the preceding 348 passing tests across 51 files, with source links and actual timings.
 - [Four-bar stage acceptance](four-bar-validation.json): preserved source provenance, unchanged-input check, complete results and [raw events](evidence/four-bar/suite-events.jsonl).
@@ -27,7 +28,7 @@ baseline, Replit provenance, available features and unfinished acceptance gates.
 - [Simulator capability audit](simulator-capability-audit.md): supported physical behaviour versus explicit exclusions.
 - [Report provenance](REPORT-PROVENANCE.md): why dated measurements and hashes are preserved, and how to reproduce rather than relabel them.
 
-The current Undo/Redo and selection capture passed **382/382 tests** across
+The earlier Undo/Redo and selection capture passed **382/382 tests** across
 **54 files**, workspace typecheck and the full production build. The
 [workspace build log](evidence/history-selection/final-build.txt) and
 [explicit root-route landing build](evidence/history-selection/final-landing-build.txt)
@@ -40,9 +41,11 @@ full workspace typecheck/build. Its [feature guide](FOUR-BAR-PATH-VERIFICATION.m
 separates search, native geometry, solver and interface evidence. The older
 298-test catalog retains its historical source scope. Andrew's testing and
 publication acceptance remain separate from local automated and Chrome checks.
-The [dependency security review](DEPENDENCY-SECURITY-REVIEW.md) leaves 58 advisory
-records unresolved; functional acceptance does not establish a security-clean
-release, and public publication remains pending.
+The subsequent maintenance run passed **402/402 tests across 57 files in 80.936 seconds** on Node 24.19.0 ARM64, with unchanged inputs and historical reports restored. Workspace/root-route landing builds, clean-copy frozen install/typecheck and **35/35 HTTP checks** pass. The patched audit reports zero advisories, none muted. Scoped production Chrome checks also passed; see [maintenance](SECURITY-MAINTENANCE-2026-09-12.md). Pull verified GitHub main into the existing Replit project, test it and publish its own checkpoint. A GitHub source push does not publish the website.
+
+Pull the verified GitHub `main` into the existing Replit project, test it there, create Replit's own checkpoint/commit, then publish that checkpoint. Replit may assign a different SHA; compare the source content and record both identities. A GitHub source push is not a website deployment.
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.
 
 ## Feature-specific records
 
@@ -76,10 +79,12 @@ that every feature was clicked again on the latest bundle.
 6. [Revolute-picking follow-up](REVOLUTE-PICKING-VERIFICATION.md): actual translated/rotated curved-edge selection, corrected saved pivots, native reopening and the stated run-control checks. Old incorrectly saved joints require repicking.
 7. [History and selection checks](HISTORY-AND-SELECTION.md): atomic deletion/import history; exact restored native/STEP project data through Load and refresh; native/Boolean canvas selection and outlines; complete gizmo drag Undo/keyboard Redo; numeric precision and input guards; hidden-part, camera-orbit, editor and demo isolation. These completed local observations remain distinct from public-route acceptance.
 
+8. [Security-maintenance Chrome checks](evidence/security-maintenance/browser.json): modified imported STEP native Load; Brass-to-Steel material Undo/Redo; saved-status recovery through full refresh; actual downloaded-file reopening with exact material, holes and joint; creator/support review; Story, Terms and Privacy navigation; and an external support tab preserving the current model. Windmill Play/Pause/Reset passed with no captured CAD/landing warnings or errors; its numerical gate remains separately measured by the suite. Earlier feature-stage observations are not relabelled as fresh checks.
+
 ## Contributing and release preparation
 
 - [Contributor guide](../CONTRIBUTING.md): local setup, sequential verification and evidence conventions.
-- [Security policy](../SECURITY.md) and [dependency review](DEPENDENCY-SECURITY-REVIEW.md): reporting and unresolved advisory scope.
+- [Security policy](../SECURITY.md) and [current maintenance](SECURITY-MAINTENANCE-2026-09-12.md): reporting, patched audit and remaining acceptance scope.
 - [Release checklist](PUBLIC-RELEASE-CHECKLIST.md) and [third-party notices](../THIRD-PARTY-NOTICES.md): source cleanup versus publication and distribution decisions.
 
 ## Historical records

@@ -1,0 +1,98 @@
+{
+  "recordedAt": "2026-09-12T22:15:24.079180+00:00",
+  "status": "passed_for_recorded_scope",
+  "method": "Codex computer use of desktop Chrome through the browser extension, ordinary visible UI actions and native file chooser; DOM observations and screenshots. No application-store injection.",
+  "builds": {
+    "recordedAt": "2026-09-12T22:14:26.453Z",
+    "bundleUrls": {
+      "cad": [
+        "http://127.0.0.1:5192/app/assets/index-C9rIVqTg.js"
+      ],
+      "landing": [
+        "http://127.0.0.1:5193/assets/index-ByrLL69G.js"
+      ]
+    },
+    "cadLogs": [],
+    "landingLogs": []
+  },
+  "checks": [
+    {
+      "name": "Production CAD startup",
+      "result": "Rendered CAD viewport and toolbar with optional Support KinetiCAD link."
+    },
+    {
+      "name": "Modified imported STEP fixture",
+      "fixture": "artifacts/kineticad/tests/fixtures/modified-import-recovery.kineticad.json",
+      "result": "Native Load project opened Native plate and Imported machined block with imported solid, Hole 1 and Fixed 1 joint. Visible volume 3.69 cm3, position [31,-17,23] mm, rotation [19,-37,61] degrees."
+    },
+    {
+      "name": "Material undo and redo",
+      "result": "Brass C36000 displayed 8.50 g/cm3 and 0.031 kg. Steel 1018 displayed 7.87 g/cm3 and 0.029 kg. Undo restored selected Brass; Redo restored selected Steel. Volume and pose stayed the same."
+    },
+    {
+      "name": "Durable recovery after refresh",
+      "result": "Changed to Steel, observed Recovery copy saved on this device, reloaded, selected imported block and confirmed Steel, 0.029 kg, 3.69 cm3, original pose, hole and fixed joint. History empty after reload as documented.",
+      "boundary": "An earlier immediate reload during an unfinished redo recovery write restored the preceding durable Brass state. Recovery is asynchronous: wait for the saved status; use Save project for a portable backup."
+    },
+    {
+      "name": "Actual downloaded project reopen",
+      "result": "Clicked Save project, observed complete-project download notice. Changed current material to Brass, opened the actual downloaded JSON with native Load project chooser, then confirmed restored Steel, imported solid, hole, fixed joint, volume and pose.",
+      "fileName": "kineticad-project-2026-09-12T22-12-08-186Z.kineticad.json",
+      "bytes": 27016,
+      "sha256": "d5d57db599470ef450e097028522816f23b83c129663f270d7aeb23e97ee3e15",
+      "jsonRootKeys": [
+        "format",
+        "version",
+        "stateVersion",
+        "state",
+        "assets"
+      ]
+    },
+    {
+      "name": "Landing and legal pages",
+      "result": "Navigated Home, Story, Privacy and Terms in Chrome. Verified new Story experiment sentence, preserved Replit/Andrew/Kevin attribution, Adevious Ltd optional-support disclosures, provider privacy links and updated terms. Creator section visually shows Replit UK Ambassador, four profile links and voluntary app-support link."
+    },
+    {
+      "name": "External support link",
+      "result": "Clicked app Support KinetiCAD; a separate Chrome tab opened https://buymeacoffee.com/andrewblumson titled andrew blumson. CAD project remained open.",
+      "boundary": "No checkout, payment, subscription, payout configuration or provider-account verification performed."
+    },
+    {
+      "name": "Production simulation canary",
+      "result": "Opened Windmill via six-card Demos gallery; Try simulation, Play, visible rotor motion, Pause at 24.77 simulated seconds with 2 bodies and 1 revolute joint, then Reset to Stopped at 0.00 s.",
+      "boundary": "UI startup and controls canary. Numerical windmill accuracy is established separately by the unchanged automated regression in the release capture."
+    },
+    {
+      "name": "Captured browser console",
+      "result": "Chrome dev logs returned zero warnings and zero errors for both tested CAD and landing tabs.",
+      "boundary": "Limited to log entries captured for these tabs and this check; not every historical browser session."
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "creator-support.png",
+      "sha256": "048e19c7d27bcddefad021f4ba0badd55aa3c381968aa627bf0cb3fdafc7cecc",
+      "bytes": 67695
+    },
+    {
+      "path": "imported-redo.png",
+      "sha256": "246cefdf99a8e50c64edec11bb5e9d8b2b823f27e8c651f2aa4a1977c1acfe18",
+      "bytes": 107546
+    },
+    {
+      "path": "imported-reopened.png",
+      "sha256": "a481f360a2af11b2c57b2012394b10182eb71c8e4f1d2a3b61570111919e2e28",
+      "bytes": 99264
+    },
+    {
+      "path": "windmill-paused.png",
+      "sha256": "b85d7a94348b925f9cc0b95492d2dff178a748fcd5eb2ffb55ae310eec2913bc",
+      "bytes": 97204
+    }
+  ],
+  "limits": [
+    "This maintenance pass did not click every feature again. Earlier full feature and engineering browser checks retain their own dated evidence.",
+    "Local production builds on macOS Chrome; not evidence that Replit has installed, checkpointed or republished this source.",
+    "Passing the recorded tests does not certify every mechanism, physical contact, manufacturing design or security property."
+  ]
+}

@@ -4,6 +4,9 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
+import { replitAllowedHosts } from "../shared/viteAllowedHosts.mts";
+
+const allowedHosts = replitAllowedHosts(process.env);
 
 const rawPort = process.env.PORT;
 
@@ -58,7 +61,7 @@ export default defineConfig({
   server: {
     port,
     host: "0.0.0.0",
-    allowedHosts: true,
+    allowedHosts,
     fs: {
       strict: true,
     },
@@ -66,6 +69,6 @@ export default defineConfig({
   preview: {
     port,
     host: "0.0.0.0",
-    allowedHosts: true,
+    allowedHosts,
   },
 });

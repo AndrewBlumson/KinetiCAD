@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "title": "Bounded current-tree and reachable-history chat-dump audit",
+  "generatedAt": "2026-09-12T21:49:03.561401Z",
+  "provenance": {
+    "head": "731c7d3f440b123e87036d10c1db1e2f17e006ea",
+    "currentGitVisiblePathSetSha256": "f7ccfde02fe7f026fc8f1002bcc6d3000bef4943e9507a2bca3e6a5f13a89fef",
+    "reachableCommits": [
+      "731c7d3f440b123e87036d10c1db1e2f17e006ea",
+      "80690884ceb9b46b991dfc0269bd39a631fe1cf1",
+      "9a73c5286f3d21168ff38bcbac5fbaf8ef205134",
+      "8e954ab89cbc7ab0753b4d3145622c76a0fd63ef",
+      "4bb3bb3dc3d7766c49a175dd2baef52a3c95e8dc",
+      "4fe8a749a68eeaadb462eefc8754b172158da7d2",
+      "6ca731bfb856b4680b11b9fe108f7afa251dbb4a",
+      "d7b5204975bc89f8f8c5f2d6660031fab77ea6c6",
+      "950afb78c14ed563533f3b4316978747ad6a35fe",
+      "2279c6806bdfc3ef2e665fd6346bb526f3f599fe",
+      "81fd123ef5ba8d3be87c8004070473d738c34c0a",
+      "5c94f61ea930c8e1d495dcf333d3dc7e5b0d225c",
+      "f85dfde3b9fb90739cf5882f5bb4a22094fa8324",
+      "08609a6e0faa4eacb5beb45f68d012f2600dfa85",
+      "d01f8149bbf52fc1091aba82496d968466800643"
+    ],
+    "networkFetchPerformed": false
+  },
+  "currentTree": {
+    "scope": "Tracked and nonignored untracked Git-visible regular files at the recorded snapshot; node_modules, ignored local state and .git internals are outside this file set.",
+    "gitVisibleFiles": 902,
+    "utf8TextFilesChecked": 880,
+    "binaryOrNonUtf8FilesSkipped": 22,
+    "filenameMatches": [
+      {
+        "path": "artifacts/kineticad/src/demos/demoSession.ts",
+        "classification": "Application demo ownership/session source, not conversation history."
+      },
+      {
+        "path": "artifacts/kineticad/src/sketch/SketchSession.ts",
+        "classification": "Application sketch interaction source, not conversation history."
+      }
+    ],
+    "serializedRoleOrConversationEventCandidates": [],
+    "pairedUserAssistantDialogueCandidates": [],
+    "explicitTranscriptPhraseCandidates": []
+  },
+  "reachableHistory": {
+    "method": "Independent read-only Codex review of text blobs reachable from local Git references; no commit messages or private conversation text reproduced in this report.",
+    "commitsChecked": 15,
+    "relevantUniqueTextBlobsChecked": 266,
+    "textFormats": [
+      "Markdown",
+      "text",
+      "JSON",
+      "JSONL",
+      "log",
+      "YAML",
+      "HTML",
+      "XML",
+      "CSV"
+    ],
+    "perBlobLimitBytes": 20000000,
+    "blobsExceedingLimit": 0,
+    "candidatePathsAndCommits": []
+  },
+  "signatureFamilies": [
+    "Transcript/conversation/chat/message/rollout/session filenames.",
+    "Serialized user/assistant/system/developer role fields.",
+    "Codex-style response_item/session_meta/event_msg/turn_context event identifiers.",
+    "Paired line-prefixed User/Human and Assistant dialogue markers.",
+    "Explicit chat-history/transcript or conversation-history/transcript labels."
+  ],
+  "result": {
+    "actualChatDumpCandidatesFound": 0,
+    "gitHistoryRewritten": false,
+    "filesRemoved": false,
+    "conversationContentCopiedIntoEvidence": false
+  },
+  "limits": [
+    "This is a bounded signature and candidate-classification audit, not proof that every unstructured prose conversation excerpt is absent.",
+    "Binary/non-UTF8 current files were not interpreted as text; reachable-history text review used the listed formats and limit.",
+    "Unreachable Git objects, ignored local files, external GitHub services, other repositories and the user's Codex history were not scanned.",
+    "Automated Node reporter events, test diagnostics and verification provenance are not user-assistant conversation transcripts.",
+    "This report is an audit artifact whose filename contains chat-history; it contains counts, paths, filters and limitations, not a chat transcript."
+  ]
+}

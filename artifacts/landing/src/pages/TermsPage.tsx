@@ -10,9 +10,11 @@ const SECTIONS: LegalSection[] = [
   },
   {
     num: 2,
-    heading: "The Service is provided free of charge",
+    heading: "Free access and optional support",
     paras: [
       "KinetiCAD is provided to you free of charge. We do not charge for access and there is no account, subscription, or licence fee for using the hosted Service.",
+      "You may choose to support KinetiCAD through the linked Buy Me a Coffee page. Support payments are received by Adevious Ltd and are entirely optional. They do not purchase access, additional features, priority support or a commitment to deliver a particular update. Access to the app is the same whether or not you contribute.",
+      <>Payments take place on Buy Me a Coffee using its checkout and payment providers. Review the amount and any recurring-payment option before confirming there. Its <a href="https://buymeacoffee.com/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Terms of Service (opens in a new tab)</a> apply to use of that platform. For support-payment questions or refund requests, contact support@adevious.co.uk; the platform's payment and refund processes also apply. Nothing in this section limits rights that cannot lawfully be excluded.</>,
     ],
   },
   {
@@ -34,7 +36,7 @@ const SECTIONS: LegalSection[] = [
     num: 5,
     heading: "Open source software",
     paras: [
-      "The KinetiCAD source code is open source and released under the MIT Licence. You are free to use, copy, modify, and distribute the source code under the terms of that licence. The source code is available at the project's public repository.",
+      "KinetiCAD's released source code is licensed under the MIT Licence. You may use, copy, modify and distribute that source under the terms of the licence, including its copyright and permission-notice requirements. Third-party components retain their own licences. Optional support payments do not change these licence terms.",
       "These Terms of Service are separate from the MIT Licence. The MIT Licence governs your use of the source code. These terms govern your use of the hosted Service at kineticad.co.uk, which we operate.",
     ],
   },
@@ -80,7 +82,7 @@ export default function TermsPage() {
   return (
     <LegalPage
       title="KinetiCAD — Terms of Service"
-      lastUpdated="18/05/2026"
+      lastUpdated="12/09/2026"
       sections={SECTIONS}
     />
   );

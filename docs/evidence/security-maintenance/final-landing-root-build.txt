@@ -1,0 +1,13 @@
+
+> @workspace/landing@0.0.0 build /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/landing
+> vite build --config vite.config.ts
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 1702 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/public/index.html                   3.55 kB │ gzip:  1.19 kB
+dist/public/assets/index-BRxMUYcr.css   66.53 kB │ gzip: 12.17 kB
+dist/public/assets/index-DLtGYj3N.js   228.62 kB │ gzip: 72.79 kB
+✓ built in 893ms

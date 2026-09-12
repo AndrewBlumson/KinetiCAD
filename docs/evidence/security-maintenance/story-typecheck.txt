@@ -1,0 +1,4 @@
+
+> @workspace/landing@0.0.0 typecheck /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/landing
+> tsc -p tsconfig.json --noEmit
+

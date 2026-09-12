@@ -1,11 +1,12 @@
 import { Link } from "wouter";
+import type { ReactNode } from "react";
 
 import { SiteFooter } from "@/components/SiteFooter";
 
 export interface LegalSection {
   num: number;
   heading: string;
-  paras: string[];
+  paras: ReactNode[];
 }
 
 interface LegalPageProps {

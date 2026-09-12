@@ -1,0 +1,953 @@
+{
+  "baselineCommit": "731c7d3f440b123e87036d10c1db1e2f17e006ea",
+  "baselineAuditSha256": "18ae494aecd94bc26194c53cb6b73b395a28a1f1097ac2e98b7530e1522bc6b1",
+  "baselineCounts": {
+    "info": 0,
+    "low": 3,
+    "moderate": 16,
+    "high": 28,
+    "critical": 11
+  },
+  "afterFirstOrvalStage": {
+    "info": 0,
+    "low": 3,
+    "moderate": 12,
+    "high": 12,
+    "critical": 0
+  },
+  "baselineRecords": [
+    {
+      "module_name": "brace-expansion",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-f886-m6hf-6m8v",
+      "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+      "vulnerable_versions": ">=2.0.0 <2.0.3",
+      "patched_versions": ">=2.0.3",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            "lib__api-spec>orval>typedoc>minimatch>brace-expansion"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "picomatch",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-3v7f-55p6-f55p",
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "vulnerable_versions": "<2.3.2",
+      "patched_versions": ">=2.3.2",
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [
+            "artifacts__mockup-sandbox>fast-glob>micromatch>picomatch"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "picomatch",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-3v7f-55p6-f55p",
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "vulnerable_versions": ">=4.0.0 <4.0.4",
+      "patched_versions": ">=4.0.4",
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            "artifacts__kineticad>vite>picomatch"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "picomatch",
+      "severity": "high",
+      "github_advisory_id": "GHSA-c2c7-rcm5-vvqj",
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "vulnerable_versions": "<2.3.2",
+      "patched_versions": ">=2.3.2",
+      "findings": [
+        {
+          "version": "2.3.1",
+          "paths": [
+            "artifacts__mockup-sandbox>fast-glob>micromatch>picomatch"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "picomatch",
+      "severity": "high",
+      "github_advisory_id": "GHSA-c2c7-rcm5-vvqj",
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "vulnerable_versions": ">=4.0.0 <4.0.4",
+      "patched_versions": ">=4.0.4",
+      "findings": [
+        {
+          "version": "4.0.3",
+          "paths": [
+            "artifacts__kineticad>vite>picomatch"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "yaml",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-48c2-rrv3-qjmp",
+      "url": "https://github.com/advisories/GHSA-48c2-rrv3-qjmp",
+      "vulnerable_versions": ">=2.0.0 <2.8.3",
+      "patched_versions": ">=2.8.3",
+      "findings": [
+        {
+          "version": "2.8.2",
+          "paths": [
+            "artifacts__kineticad>vite>yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "path-to-regexp",
+      "severity": "high",
+      "github_advisory_id": "GHSA-j3q9-mxjg-w52f",
+      "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+      "vulnerable_versions": ">=8.0.0 <8.4.0",
+      "patched_versions": ">=8.4.0",
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": [
+            "artifacts__api-server>express>router>path-to-regexp"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "path-to-regexp",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-27v5-c462-wpq7",
+      "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7",
+      "vulnerable_versions": ">=8.0.0 <8.4.0",
+      "patched_versions": ">=8.4.0",
+      "findings": [
+        {
+          "version": "8.3.0",
+          "paths": [
+            "artifacts__api-server>express>router>path-to-regexp"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "lodash",
+      "severity": "high",
+      "github_advisory_id": "GHSA-r5fr-rjxr-66jc",
+      "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+      "vulnerable_versions": ">=4.0.0 <=4.17.23",
+      "patched_versions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [
+            "artifacts__kineticad>recharts>lodash"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "lodash",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-f23m-r3pf-42rh",
+      "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+      "vulnerable_versions": "<=4.17.23",
+      "patched_versions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.23",
+          "paths": [
+            "artifacts__kineticad>recharts>lodash"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "postcss",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-qx2v-qp2m-jg93",
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "vulnerable_versions": "<8.5.10",
+      "patched_versions": ">=8.5.10",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            "artifacts__kineticad>vite>postcss"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "qs",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-q8mj-m7cp-5q26",
+      "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+      "vulnerable_versions": ">=6.11.1 <=6.15.1",
+      "patched_versions": ">=6.15.2",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            "artifacts__api-server>express>qs"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "esbuild",
+      "severity": "low",
+      "github_advisory_id": "GHSA-g7r4-m6w7-qqqr",
+      "url": "https://github.com/advisories/GHSA-g7r4-m6w7-qqqr",
+      "vulnerable_versions": ">=0.27.3 <0.28.1",
+      "patched_versions": ">=0.28.1",
+      "findings": [
+        {
+          "version": "0.27.3",
+          "paths": [
+            "artifacts__api-server>esbuild"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "vite",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-v6wh-96g9-6wx3",
+      "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+      "vulnerable_versions": ">=7.0.0 <=7.3.4",
+      "patched_versions": ">=7.3.5",
+      "findings": [
+        {
+          "version": "7.3.2",
+          "paths": [
+            "artifacts__kineticad>vite"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "markdown-it",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-6v5v-wf23-fmfq",
+      "url": "https://github.com/advisories/GHSA-6v5v-wf23-fmfq",
+      "vulnerable_versions": "<=14.1.1",
+      "patched_versions": ">=14.2.0",
+      "findings": [
+        {
+          "version": "14.1.1",
+          "paths": [
+            "lib__api-spec>orval>typedoc>markdown-it"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "linkify-it",
+      "severity": "high",
+      "github_advisory_id": "GHSA-22p9-wv53-3rq4",
+      "url": "https://github.com/advisories/GHSA-22p9-wv53-3rq4",
+      "vulnerable_versions": "<=5.0.0",
+      "patched_versions": ">=5.0.1",
+      "findings": [
+        {
+          "version": "5.0.0",
+          "paths": [
+            "lib__api-spec>orval>typedoc>markdown-it>linkify-it"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "js-yaml",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-h67p-54hq-rp68",
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "vulnerable_versions": ">=4.0.0 <=4.1.1",
+      "patched_versions": ">=4.2.0",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            "lib__api-spec>orval>js-yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "vite",
+      "severity": "high",
+      "github_advisory_id": "GHSA-fx2h-pf6j-xcff",
+      "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+      "vulnerable_versions": ">=7.0.0 <=7.3.4",
+      "patched_versions": ">=7.3.5",
+      "findings": [
+        {
+          "version": "7.3.2",
+          "paths": [
+            "artifacts__kineticad>vite"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "@babel/core",
+      "severity": "low",
+      "github_advisory_id": "GHSA-4x5r-pxfx-6jf8",
+      "url": "https://github.com/advisories/GHSA-4x5r-pxfx-6jf8",
+      "vulnerable_versions": "<=7.29.0",
+      "patched_versions": ">=7.29.6",
+      "findings": [
+        {
+          "version": "7.29.0",
+          "paths": [
+            "artifacts__kineticad>@vitejs/plugin-react>@babel/core"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "brace-expansion",
+      "severity": "high",
+      "github_advisory_id": "GHSA-3jxr-9vmj-r5cp",
+      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+      "vulnerable_versions": ">=2.0.0 <2.1.2",
+      "patched_versions": ">=2.1.2",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            "lib__api-spec>orval>typedoc>minimatch>brace-expansion"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "js-yaml",
+      "severity": "high",
+      "github_advisory_id": "GHSA-52cp-r559-cp3m",
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "vulnerable_versions": ">=4.0.0 <4.3.0",
+      "patched_versions": ">=4.3.0",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            "lib__api-spec>orval>js-yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "body-parser",
+      "severity": "low",
+      "github_advisory_id": "GHSA-v422-hmwv-36x6",
+      "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+      "vulnerable_versions": ">=2.0.0 <2.3.0",
+      "patched_versions": ">=2.3.0",
+      "findings": [
+        {
+          "version": "2.2.2",
+          "paths": [
+            "artifacts__api-server>express>body-parser"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "linkify-it",
+      "severity": "high",
+      "github_advisory_id": "GHSA-v245-v573-v5vm",
+      "url": "https://github.com/advisories/GHSA-v245-v573-v5vm",
+      "vulnerable_versions": "<=5.0.1",
+      "patched_versions": ">=5.0.2",
+      "findings": [
+        {
+          "version": "5.0.0",
+          "paths": [
+            "lib__api-spec>orval>typedoc>markdown-it>linkify-it"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-v2hh-gcrm-f6hx",
+      "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx",
+      "vulnerable_versions": ">=3.0.0 <=3.1.3",
+      "patched_versions": ">=3.1.4",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "postcss",
+      "severity": "high",
+      "github_advisory_id": "GHSA-6g55-p6wh-862q",
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "vulnerable_versions": "<=8.5.11",
+      "patched_versions": ">=8.5.12",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            "artifacts__kineticad>vite>postcss"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "brace-expansion",
+      "severity": "high",
+      "github_advisory_id": "GHSA-mh99-v99m-4gvg",
+      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+      "vulnerable_versions": ">=2.0.0 <2.1.3",
+      "patched_versions": ">=2.1.3",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            "lib__api-spec>orval>typedoc>minimatch>brace-expansion"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "postcss",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-fxqj-rqcc-2cmp",
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "vulnerable_versions": "<=8.5.22",
+      "patched_versions": ">=8.5.23",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            "artifacts__kineticad>vite>postcss"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-7p8r-x3mc-p8w7",
+      "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7",
+      "vulnerable_versions": ">=3.0.0 <3.1.5",
+      "patched_versions": ">=3.1.5",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "brace-expansion",
+      "severity": "high",
+      "github_advisory_id": "GHSA-rgw5-rvv9-x895",
+      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+      "vulnerable_versions": ">=2.0.0 <2.1.4",
+      "patched_versions": ">=2.1.4",
+      "findings": [
+        {
+          "version": "2.0.2",
+          "paths": [
+            "lib__api-spec>orval>typedoc>minimatch>brace-expansion"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "js-yaml",
+      "severity": "high",
+      "github_advisory_id": "GHSA-5p4m-2wfm-xmqj",
+      "url": "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj",
+      "vulnerable_versions": ">=4.0.0 <4.3.1",
+      "patched_versions": ">=4.3.1",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            "lib__api-spec>orval>js-yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "nanoid",
+      "severity": "high",
+      "github_advisory_id": "GHSA-28wg-ghj8-5hjv",
+      "url": "https://github.com/advisories/GHSA-28wg-ghj8-5hjv",
+      "vulnerable_versions": "<3.3.16",
+      "patched_versions": ">=3.3.16",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            "artifacts__kineticad>vite>postcss>nanoid"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "nanoid",
+      "severity": "high",
+      "github_advisory_id": "GHSA-2v37-7h3g-55p8",
+      "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8",
+      "vulnerable_versions": "<3.3.18",
+      "patched_versions": ">=3.3.18",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            "artifacts__kineticad>vite>postcss>nanoid"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "postcss",
+      "severity": "high",
+      "github_advisory_id": "GHSA-r28c-9q8g-f849",
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "vulnerable_versions": "<=8.5.17",
+      "patched_versions": ">=8.5.18",
+      "findings": [
+        {
+          "version": "8.5.8",
+          "paths": [
+            "artifacts__kineticad>vite>postcss"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-q3j6-qgpj-74h6",
+      "url": "https://github.com/advisories/GHSA-q3j6-qgpj-74h6",
+      "vulnerable_versions": ">=3.0.0 <=3.1.0",
+      "patched_versions": ">=3.1.1",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-v39h-62p7-jpjc",
+      "url": "https://github.com/advisories/GHSA-v39h-62p7-jpjc",
+      "vulnerable_versions": ">=3.0.0 <=3.1.1",
+      "patched_versions": ">=3.1.2",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "browserslist",
+      "severity": "high",
+      "github_advisory_id": "GHSA-c83g-rgw3-j3cx",
+      "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+      "vulnerable_versions": "<=4.28.6",
+      "patched_versions": ">=4.28.7",
+      "findings": [
+        {
+          "version": "4.28.1",
+          "paths": [
+            "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "browserslist",
+      "severity": "high",
+      "github_advisory_id": "GHSA-73wf-gq98-2v4g",
+      "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g",
+      "vulnerable_versions": "<=4.28.6",
+      "patched_versions": ">=4.28.7",
+      "findings": [
+        {
+          "version": "4.28.1",
+          "paths": [
+            "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "nanoid",
+      "severity": "high",
+      "github_advisory_id": "GHSA-xwg4-73v4-xw9w",
+      "url": "https://github.com/advisories/GHSA-xwg4-73v4-xw9w",
+      "vulnerable_versions": "<3.3.12",
+      "patched_versions": ">=3.3.12",
+      "findings": [
+        {
+          "version": "3.3.11",
+          "paths": [
+            "artifacts__kineticad>vite>postcss>nanoid"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "high",
+      "github_advisory_id": "GHSA-cxq5-97v7-87j8",
+      "url": "https://github.com/advisories/GHSA-cxq5-97v7-87j8",
+      "vulnerable_versions": "<8.22.0",
+      "patched_versions": ">=8.22.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-p4cg-3328-rvfg",
+      "url": "https://github.com/advisories/GHSA-p4cg-3328-rvfg",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-6mr6-jvcr-2f25",
+      "url": "https://github.com/advisories/GHSA-6mr6-jvcr-2f25",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "qs",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-x5fp-wj9c-mxmx",
+      "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+      "vulnerable_versions": ">=6.14.2 <=6.15.3",
+      "patched_versions": ">=6.16.0",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            "artifacts__api-server>express>qs"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "qs",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-4mjr-xmp4-gh2g",
+      "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+      "vulnerable_versions": ">=2.2.5 <6.16.0",
+      "patched_versions": ">=6.16.0",
+      "findings": [
+        {
+          "version": "6.15.0",
+          "paths": [
+            "artifacts__api-server>express>qs"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-f65p-4m7j-42xc",
+      "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc",
+      "vulnerable_versions": ">=3.0.0 <3.1.6",
+      "patched_versions": ">=3.1.6",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-jqff-g426-hqxp",
+      "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp",
+      "vulnerable_versions": ">=3.0.0 <3.1.6",
+      "patched_versions": ">=3.1.6",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fflate",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-px8p-9vwx-vf98",
+      "url": "https://github.com/advisories/GHSA-px8p-9vwx-vf98",
+      "vulnerable_versions": ">=0.8.0 <0.8.3",
+      "patched_versions": ">=0.8.3",
+      "findings": [
+        {
+          "version": "0.8.2",
+          "paths": [
+            "artifacts__kineticad>@types/three>fflate"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-6437-gxhq-pqv8",
+      "url": "https://github.com/advisories/GHSA-6437-gxhq-pqv8",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-2w86-xfrc-g85r",
+      "url": "https://github.com/advisories/GHSA-2w86-xfrc-g85r",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-3575-w9fc-c2j6",
+      "url": "https://github.com/advisories/GHSA-3575-w9fc-c2j6",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-653q-5476-x79g",
+      "url": "https://github.com/advisories/GHSA-653q-5476-x79g",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-2h9g-j24r-h63g",
+      "url": "https://github.com/advisories/GHSA-2h9g-j24r-h63g",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-8j6p-r8jg-mxqh",
+      "url": "https://github.com/advisories/GHSA-8j6p-r8jg-mxqh",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-88f2-fpv8-89q2",
+      "url": "https://github.com/advisories/GHSA-88f2-fpv8-89q2",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-w727-8j6c-2rj4",
+      "url": "https://github.com/advisories/GHSA-w727-8j6c-2rj4",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "orval",
+      "severity": "critical",
+      "github_advisory_id": "GHSA-fg9p-mrxr-hvq7",
+      "url": "https://github.com/advisories/GHSA-fg9p-mrxr-hvq7",
+      "vulnerable_versions": "<8.21.0",
+      "patched_versions": ">=8.21.0",
+      "findings": [
+        {
+          "version": "8.5.3",
+          "paths": [
+            "lib__api-spec>orval"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "baseline-browser-mapping",
+      "severity": "moderate",
+      "github_advisory_id": "GHSA-w5vr-8v7q-w6rv",
+      "url": "https://github.com/advisories/GHSA-w5vr-8v7q-w6rv",
+      "vulnerable_versions": ">=2.0.0 <2.11.0",
+      "patched_versions": ">=2.11.0",
+      "findings": [
+        {
+          "version": "2.10.0",
+          "paths": [
+            "artifacts__kineticad>@vitejs/plugin-react>@babel/core>@babel/helper-compilation-targets>browserslist>baseline-browser-mapping"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "js-yaml",
+      "severity": "high",
+      "github_advisory_id": "GHSA-2883-xcg3-v3hh",
+      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+      "vulnerable_versions": ">=4.0.0 <4.3.2",
+      "patched_versions": ">=4.3.2",
+      "findings": [
+        {
+          "version": "4.1.1",
+          "paths": [
+            "lib__api-spec>orval>js-yaml"
+          ]
+        }
+      ]
+    },
+    {
+      "module_name": "fast-uri",
+      "severity": "high",
+      "github_advisory_id": "GHSA-4c8g-83qw-93j6",
+      "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6",
+      "vulnerable_versions": ">=3.0.0 <3.1.3",
+      "patched_versions": ">=3.1.3",
+      "findings": [
+        {
+          "version": "3.1.0",
+          "paths": [
+            "lib__api-spec>orval>@scalar/openapi-parser>ajv>fast-uri"
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "All counts are registry reports, not demonstrated exploits.",
+    "Orval8.31 was an intermediate checkpoint; final is8.32 with two additional upstream security fixes.",
+    "Fresh final audit records0known advisories and no muted entries. Unknown/exposure-specific risks are not certified."
+  ]
+}

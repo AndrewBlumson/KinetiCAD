@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-09-12T21:26:05.043Z",
+  "scope": "Notice inventory refresh after targeted dependency security updates. Installed copies and supplemental notice bytes only; not a legal certification, vulnerability audit, verification of all package source provenance, or an independent binary rebuild.",
+  "lockfileSha256": "38a81877333dcbfd051174b0efe7491aa320f7bf93cdd9d53a03f4d5663dbdce",
+  "manifestSha256": "4d4afc0647c05e811dd46feac7e21dbd901916c0a424fba8d9ff8f78332f9357",
+  "supplementalManifestSha256": "cf32f6dfd1c45160400a33e4a8761098e06ff428ee445c3efc49245b7c87bc45",
+  "installedPackageVersions": 147,
+  "currentInstalledNoticeFiles": 143,
+  "supplementalNoticeFiles": 11,
+  "inventoryChange": {
+    "replaced": "lodash@4.17.23",
+    "current": "lodash@4.18.0",
+    "previousNoticeRetained": true,
+    "otherBrowserPackageVersionsChanged": false
+  },
+  "onlineSupplementalChecks": [
+    {
+      "path": "licenses/upstream/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+      "sourceUrl": "https://raw.githubusercontent.com/radix-ui/primitives/fcef0668a5c827e5a4baac405474d75680f9a4eb/LICENSE",
+      "status": 200,
+      "sha256": "0e80a2d229d2fd4fc7e8636142ec5d0ff0bc031f14c15b682e2ac01dfd5b5138",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+      "sourceUrl": "https://raw.githubusercontent.com/davidjerleke/embla-carousel/0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54/LICENSE",
+      "status": 200,
+      "sha256": "992490064b90ec94c302fe5f29dcc14cb44145857064e46f9ffe6c8f511c1093",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+      "sourceUrl": "https://raw.githubusercontent.com/guilhermerodz/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE",
+      "status": 200,
+      "sha256": "079031192fea535a245aa64a637d8433c406b82a14f91c3606b1d63e41c00152",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+      "sourceUrl": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+      "status": 200,
+      "sha256": "a79aae0c0f21990d9d963bb3c5a79cdcea9a46f8523ba55c58d7fe776b6ebc84",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+      "sourceUrl": "https://raw.githubusercontent.com/molefrog/wouter/e8726aa807a600688709059a524d3461291e30da/LICENSE",
+      "status": 200,
+      "sha256": "6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/OCCT/7.6.2/LICENSE_LGPL_21.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/Open-Cascade-SAS/OCCT/V7_6_2/LICENSE_LGPL_21.txt",
+      "status": 200,
+      "sha256": "e237fa56668030e928551ddd60f05df5fe957f75eab874bbd017e085ed722e7c",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/OCCT/7.6.2/OCCT_LGPL_EXCEPTION.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/Open-Cascade-SAS/OCCT/V7_6_2/OCCT_LGPL_EXCEPTION.txt",
+      "status": 200,
+      "sha256": "04580a884ea6cea294402649ff7b5cbb167d47462d1340a4ed33e550db10a81b",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/Font-Awesome/6.5.2/LICENSE.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.5.2/LICENSE.txt",
+      "status": 200,
+      "sha256": "9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/google-fonts/inter/OFL.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/inter/OFL.txt",
+      "status": 200,
+      "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/google-fonts/spacegrotesk/OFL.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/spacegrotesk/OFL.txt",
+      "status": 200,
+      "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72",
+      "matchesRecordedBytes": true
+    },
+    {
+      "path": "licenses/upstream/google-fonts/jetbrainsmono/OFL.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/google/fonts/809e4d8b8d7e9364a914909bb777679606c178b8/ofl/jetbrainsmono/OFL.txt",
+      "status": 200,
+      "sha256": "b2fe5e8987594e9ffd1d2ca52a2f5d73eb8335243893c5d6254b5ad69269591d",
+      "matchesRecordedBytes": true
+    }
+  ],
+  "remainingSourceVersionLimitation": {
+    "package": "react-remove-scroll-bar",
+    "version": "2.3.8",
+    "declaredLicense": "MIT",
+    "npmGitHead": "b3b1287aad81def2e2ae707274b74531b61ddbaf",
+    "metadataSource": "https://registry.npmjs.org/react-remove-scroll-bar/2.3.8",
+    "checks": [
+      {
+        "url": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/b3b1287aad81def2e2ae707274b74531b61ddbaf/LICENSE",
+        "status": 404
+      },
+      {
+        "url": "https://api.github.com/repos/theKashey/react-remove-scroll-bar/commits/b3b1287aad81def2e2ae707274b74531b61ddbaf",
+        "status": 422
+      },
+      {
+        "url": "https://api.github.com/repos/theKashey/react-remove-scroll-bar/git/ref/tags/v2.3.8",
+        "status": 404
+      },
+      {
+        "url": "https://api.github.com/repos/theKashey/react-remove-scroll-bar/git/ref/tags/2.3.8",
+        "status": 404
+      }
+    ],
+    "disposition": "Unresolved. The existing pinned current-project MIT text remains a reference, not proof of the exact published source tree."
+  }
+}

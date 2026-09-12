@@ -15,10 +15,10 @@ const PORT = Number(process.env.PORT) || 3000;
 // (e.g. dist/public/seeds/windmill.js, not dist/public/app/seeds/…).
 const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, ""); // "/app" — no trailing slash
 
-function stripBase(urlPath) {
-  if (!BASE_PATH) return urlPath;
-  if (urlPath === BASE_PATH) return "/";
-  if (urlPath.startsWith(BASE_PATH + "/")) return urlPath.slice(BASE_PATH.length);
+function stripBase(urlPath, basePath) {
+  if (!basePath) return urlPath;
+  if (urlPath === basePath) return "/";
+  if (urlPath.startsWith(basePath + "/")) return urlPath.slice(basePath.length);
   return urlPath;
 }
 
@@ -37,52 +37,88 @@ const MIME = {
   ".txt": "text/plain",
 };
 
-const server = createServer(async (req, res) => {
-  const url = new URL(req.url ?? "/", "http://localhost");
-  const rawPath = url.pathname;
-  const urlPath = stripBase(rawPath); // e.g. "/app/seeds/windmill.js" → "/seeds/windmill.js"
+const NO_STORE = "no-cache, no-store, must-revalidate";
 
-  let filePath = resolve(join(DIST, urlPath));
-  let isIndexFallback = false;
-
-  // Guard against directory traversal — resolved path must stay inside DIST.
-  if (!filePath.startsWith(DIST + "/") && filePath !== DIST) {
-    res.writeHead(403, { "Content-Type": "text/plain" });
-    res.end("Forbidden");
+function errorResponse(req, res, status, message) {
+  if (res.destroyed || res.writableEnded) return;
+  if (res.headersSent) {
+    res.destroy();
     return;
   }
+  res.writeHead(status, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": NO_STORE,
+  });
+  res.end(req.method === "HEAD" ? undefined : message);
+}
 
-  try {
-    const s = await stat(filePath);
-    if (s.isDirectory()) throw new Error("dir");
-  } catch {
-    filePath = join(DIST, "index.html");
-    isIndexFallback = true;
-  }
+// The same handler is exercised without opening a port in the regression suite.
+export function createProductionRequestHandler({ dist = DIST, basePath = BASE_PATH } = {}) {
+  const root = resolve(dist);
+  const base = basePath.replace(/\/+$/, "");
 
-  try {
-    const content = await readFile(filePath);
-    const ext = extname(filePath).toLowerCase();
-    const isHashedAsset = urlPath.startsWith("/assets/");
+  return async (req, res) => {
+    try {
+      let url;
+      try {
+        url = new URL(req.url ?? "/", "http://localhost");
+      } catch {
+        errorResponse(req, res, 400, "Bad request");
+        return;
+      }
+      const urlPath = stripBase(url.pathname, base);
+      let filePath = resolve(join(root, urlPath));
+      let isIndexFallback = false;
 
-    const cacheControl = isHashedAsset
-      ? "public, max-age=31536000, immutable"
-      : "no-cache, no-store, must-revalidate";
+      // Guard against directory traversal — resolved path must stay inside dist.
+      if (!filePath.startsWith(root + "/") && filePath !== root) {
+        errorResponse(req, res, 403, "Forbidden");
+        return;
+      }
 
-    res.writeHead(200, {
-      "Content-Type": MIME[ext] ?? "application/octet-stream",
-      "Cache-Control": cacheControl,
-      ...(isIndexFallback || ext === ".html"
-        ? { Pragma: "no-cache", Expires: "0" }
-        : {}),
-    });
-    res.end(content);
-  } catch {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not found");
-  }
-});
+      try {
+        const s = await stat(filePath);
+        if (!s.isFile()) throw Object.assign(new Error("Not a file"), { code: "ENOENT" });
+      } catch (error) {
+        if (error.code !== "ENOENT" && error.code !== "ENOTDIR") throw error;
+        // Missing JavaScript/data must not receive a cached HTML document.
+        // Extensionless routes still reach the client router, including refreshes.
+        if (extname(urlPath) || /^\/(?:assets|demos|seeds)(?:\/|$)/.test(urlPath)) {
+          errorResponse(req, res, 404, "Not found");
+          return;
+        }
+        filePath = join(root, "index.html");
+        isIndexFallback = true;
+      }
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`KinetiCAD production server on port ${PORT}`);
-});
+      let content;
+      try {
+        content = await readFile(filePath);
+      } catch (error) {
+        if (error.code !== "ENOENT" && error.code !== "ENOTDIR") throw error;
+        errorResponse(req, res, 404, "Not found");
+        return;
+      }
+      if (res.destroyed || res.writableEnded) return;
+      const ext = extname(filePath).toLowerCase();
+      const isHashedAsset = !isIndexFallback && urlPath.startsWith("/assets/") && ext !== ".html";
+      res.writeHead(200, {
+        "Content-Type": MIME[ext] ?? "application/octet-stream",
+        "Cache-Control": isHashedAsset ? "public, max-age=31536000, immutable" : NO_STORE,
+        ...(isIndexFallback || ext === ".html" ? { Pragma: "no-cache", Expires: "0" } : {}),
+      });
+      res.end(req.method === "HEAD" ? undefined : content);
+    } catch {
+      // Async HTTP listeners do not automatically turn rejected promises into
+      // responses. End only this request, including failures after headers sent.
+      errorResponse(req, res, 500, "Internal server error");
+    }
+  };
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const server = createServer(createProductionRequestHandler());
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`KinetiCAD production server on port ${PORT}`);
+  });
+}

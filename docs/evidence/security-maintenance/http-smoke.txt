@@ -1,0 +1,52 @@
+KinetiCAD final security-maintenance HTTP smoke
+Started: 2026-09-12T21:49:40.682Z
+Completed: 2026-09-12T21:49:40.754Z
+Node: v24.19.0 darwin/arm64
+Result: 35/35 checks passed; 0 failed
+Actual HTTP on127.0.0.1:5192(CAD),5193(landing preview),5194(API). Services left available for Chrome.
+
+PASS CAD SPA /app: 200, 3214 bytes, text/html; charset=utf-8, SHA256 7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851
+PASS CAD SPA /app/: 200, 3214 bytes, text/html; charset=utf-8, SHA256 7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851
+PASS CAD SPA /app/simulator: 200, 3214 bytes, text/html; charset=utf-8, SHA256 7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851
+PASS CAD SPA /app/simulator?from=smoke: 200, 3214 bytes, text/html; charset=utf-8, SHA256 7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851
+PASS CAD exact built asset /app/assets/index-C9rIVqTg.js: 200, 190093 bytes, text/javascript, SHA256 308d7dd3359cafebd1bb33510c099c800f8d41adb50e027c44b073e3c7bc6e54
+PASS CAD exact built asset /app/assets/index-C3_6QeTF.css: 200, 115972 bytes, text/css, SHA256 52397ca9f96b3f9784e440c94eef1e7a8ff013e46a9bc394298d0e0350b9936f
+PASS CAD exact built asset /app/assets/cadWorker-DsJUQGTL.js: 200, 280125 bytes, text/javascript, SHA256 426b2bb8f2a3fbd02d5dcbe367db54168546dcf3e14bd5e805bd8c9fb1e1f2ef
+PASS CAD exact built asset /app/assets/physicsWorker-1PSc4FIA.js: 200, 2075767 bytes, text/javascript, SHA256 b302c2f6e6473b64e5a82048c8db29e7675201fcaad5b358c6fbda2f758c53bf
+PASS CAD existing demo JSON: 200, 6493 bytes, application/json, SHA256 4ad41d8a123f53655778421d1fd3a4288e9295298b36cf2b429520754f14d7d9
+PASS CAD legacy seed script: 200, 6413 bytes, text/javascript, SHA256 13ce6f6a3a03340bf55efaf4baedaa96604a4c5a288b050a57771b40b870ab79
+PASS CAD branded favicon: 200, 163 bytes, image/svg+xml, SHA256 8ffbde9092b1fa4de97c9481b76f518b131268c82e7c555041925225b1dab6e0
+PASS CAD HEAD route: 200, 0 bytes, text/html; charset=utf-8, SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASS CAD HEAD hashed asset: 200, 0 bytes, text/javascript, SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASS CAD missing/base-boundary /app/assets/nonexistent-security-smoke.js: 404, 9 bytes, text/plain; charset=utf-8, SHA256 e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31
+PASS CAD missing/base-boundary /app/assets/nonexistent-security-smoke.wasm: 404, 9 bytes, text/plain; charset=utf-8, SHA256 e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31
+PASS CAD missing/base-boundary /app/demos/nonexistent-security-smoke.json: 404, 9 bytes, text/plain; charset=utf-8, SHA256 e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31
+PASS CAD missing/base-boundary /application/assets/index-C9rIVqTg.js: 404, 9 bytes, text/plain; charset=utf-8, SHA256 e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31
+PASS CAD HEAD missing asset: 404, 0 bytes, text/plain; charset=utf-8, SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASS CAD malformed request target //[: 400, 11 bytes, text/plain; charset=utf-8, SHA256 917ef22f94f460141928531e1945453e29d89dcd58e3383c2b3ba0e2e19eb0d7
+PASS CAD malformed request target http://[: 400, 11 bytes, text/plain; charset=utf-8, SHA256 917ef22f94f460141928531e1945453e29d89dcd58e3383c2b3ba0e2e19eb0d7
+PASS CAD still serves after malformed targets: 200, 3214 bytes, text/html; charset=utf-8, SHA256 7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851
+PASS Landing route /: 200, 3547 bytes, text/html, SHA256 b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404
+PASS Landing route /story: 200, 3547 bytes, text/html, SHA256 b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404
+PASS Landing route /terms: 200, 3547 bytes, text/html, SHA256 b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404
+PASS Landing route /privacy: 200, 3547 bytes, text/html, SHA256 b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404
+PASS Landing exact root-base bundle: 200, 228620 bytes, text/javascript, SHA256 dff9e8056be59870e09557a2eedfacb39b0e6a8eddf55cbb8503991d51a6bfd2
+PASS Landing HEAD root: 200, 0 bytes, text/html, SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASS Landing preview rejects unrelated Host: 403, 183 bytes, text/plain, SHA256 21d4e1fbb143aaeb31f260aa8901a2737d6400f93fb97dd4935e102b58124d46
+PASS Landing still serves after rejected Host: 200, 3547 bytes, text/html, SHA256 b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404
+PASS API production health JSON: 200, 15 bytes, application/json; charset=utf-8, SHA256 a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288
+PASS API HEAD health: 200, 0 bytes, application/json; charset=utf-8, SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASS API missing route: 404, 169 bytes, text/html; charset=utf-8, SHA256 dae61ce8ef1dff0ade75ee03a72d104c84a4325605a836320d6cd75f83b66bbf
+PASS API malformed JSON receives safe 400: 400, 138 bytes, text/html; charset=utf-8, SHA256 dc0a4948011b3bf48695d6b088a8ad2a65b902eee0dfa2bff5ec3b7d77e9941c
+PASS API default JSON size limit rejects oversize input: 413, 144 bytes, text/html; charset=utf-8, SHA256 7eb787a8587d0addfc48496dadffb17245486c9e1d5c90d32e30a88bf6595d93
+PASS API still serves after errors: 200, 15 bytes, application/json; charset=utf-8, SHA256 a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288
+
+OBSERVATION Missing asset behavior of local Vite landing preview: status200; Observed only; actual Replit landing production uses its static hosting and rewrite configuration, not this Vite preview server.
+
+LIMIT HTTP/status/header/byte checks only. No browser rendering, actual Replit proxy/domain or deployment acceptance is claimed.
+LIMIT These are smoke checks, not additional automated suite test cases or a penetration test.
+LIMIT No external endpoint was requested. CDN-delivered OCCT WASM and browser worker startup remain separate browser checks.
+LIMIT Malformed targets specifically exercise WHATWG URL parse failures; no broad parser/fuzzing claim.
+LIMIT Local Vite preview is used only to inspect the final landing build; its host/fallback behavior is not an assertion about Replit static hosting.
+
+Full request/response headers, expected source-byte hashes, source/build fingerprints and portable reproduction script: http-smoke.json

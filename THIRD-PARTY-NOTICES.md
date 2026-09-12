@@ -26,6 +26,10 @@ server, development and test tools. It is not a measurement of the final bundles
   run `node licenses/collect-notices.mjs --check` from the repository root. It
   checks the installed inventory and every recorded supplemental file hash;
   it does not download or revalidate upstream sources.
+- [Security-update notice review](licenses/security-update-review.json): the
+  refreshed lockfile inventory and a separate online comparison of all 11 pinned
+  supplemental notice texts. Lodash's installed notice now corresponds to 4.18.0;
+  the previous version's notice is retained as historical material.
 
 Selected components follow; the full table also includes React, Radix UI, D3
 notices vendored by Victory, and the remaining UI dependencies.
@@ -57,8 +61,8 @@ This notice inventory does not include that binary or an independently rebuilt
 kernel. When distributing a production build or mirroring the WASM, retain the
 library notices and verify the corresponding-source and replacement/relinking
 arrangements for that exact distribution. A link to KinetiCAD's MIT licence alone
-does not meet the library's separate terms. No library dependency was upgraded or
-modified during this publication cleanup.
+does not meet the library's separate terms. The later targeted dependency security
+updates did not change the OpenCascade.js or OCCT kernel versions listed here.
 
 ## Font Awesome social icons
 
@@ -91,7 +95,8 @@ a self-hosted distribution later.
 Eighteen installed package versions omit a notice file from their npm archive.
 Seventeen are supplemented from the source revision recorded by that npm
 release. For **react-remove-scroll-bar 2.3.8**, the npm-declared source revision
-was unavailable from its declared GitHub repository during this audit. Its
+was unavailable from its declared GitHub repository during this audit and the
+security-update recheck. Neither the `2.3.8` nor `v2.3.8` tag resolved. Its
 package metadata declares MIT; a pinned current project licence is included as
 a reference, explicitly **not** as proof of the exact 2.3.8 source tree. The
 [supplemental manifest](licenses/supplemental-manifest.json) records this gap.

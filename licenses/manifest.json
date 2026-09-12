@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "Conservative browser-source imports (including CSS) and declared application dependencies, plus their installed non-peer dependency closure. Includes potentially unused/tree-shaken UI packages. Excludes project-local workspace code and unrelated server/build/test tools. Externally hosted fonts and the OCCT kernel are described separately in THIRD-PARTY-NOTICES.md.",
-  "lockfileSha256": "5dedadc56807354a051947da7475ac3e0014583e49678006f3f2a0687b29901b",
+  "lockfileSha256": "38a81877333dcbfd051174b0efe7491aa320f7bf93cdd9d53a03f4d5663dbdce",
   "seeds": [
     {
       "workspace": "artifacts/kineticad",
@@ -2320,14 +2320,14 @@
     },
     {
       "name": "lodash",
-      "version": "4.17.23",
+      "version": "4.18.0",
       "license": "MIT",
       "repository": "lodash/lodash",
       "homepage": "https://lodash.com/",
       "notices": [
         {
           "sourcePath": "LICENSE",
-          "path": "licenses/packages/lodash/4.17.23/LICENSE",
+          "path": "licenses/packages/lodash/4.18.0/LICENSE",
           "sha256": "f71e8ed126b46346494aad5486874cd8f0aafe95092ed67d2e3cb6110f939abc"
         }
       ],

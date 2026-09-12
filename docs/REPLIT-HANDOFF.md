@@ -1,6 +1,6 @@
 # Replit handoff
 
-Release preparation: **382/382 automated tests across 54 files**, full workspace typecheck/build and scoped Chrome history/selection checks passed. See [verification](HISTORY-AND-SELECTION.md) and [dependency security review](DEPENDENCY-SECURITY-REVIEW.md). The pinned dependencies have **58 advisory records**; a security-update decision, distribution-notice checks and Replit/public-route acceptance remain open. Local functionality passing is not a security clearance.
+Security maintenance: **402/402 tests across 57 files passed in 80.936 seconds on Node 24.19.0 ARM64**, with unchanged test inputs and historical reports restored. Workspace typecheck/build, the root-route landing build, a clean-copy frozen install/typecheck and **35/35 HTTP checks** passed. The patched dependency audit reports **zero advisories, none muted**. Scoped production Chrome checks passed for imported-project editing, Undo/Redo, native file reopening, recovery and public-page/support navigation. Earlier feature records retain their separate scope. Pull verified GitHub `main` into the existing Replit project; Replit checkpoint publication and public-route acceptance remain separate steps. See [maintenance evidence](SECURITY-MAINTENANCE-2026-09-12.md).
 
 Use the existing KinetiCAD Replit project so its domain, secrets and publishing
 settings stay attached to the same app.
@@ -22,11 +22,11 @@ across 51 files** and a full workspace typecheck/build. Its
 [catalog](FOUR-BAR-TEST-CATALOG.md) and [record](four-bar-validation.json) retain
 that historical scope, distinct from the preserved 298-test baseline.
 
-The latest local release evidence is in the [current test catalog](HISTORY-SELECTION-TEST-CATALOG.md),
+The earlier feature-stage evidence is in the [history/selection test catalog](HISTORY-SELECTION-TEST-CATALOG.md),
 [history/selection verification](HISTORY-AND-SELECTION.md) and
 [public-release checklist](PUBLIC-RELEASE-CHECKLIST.md). Undo's checkpoint passed
 369/369 tests before selection work. Earlier 298/348/351-test records preserve
-their own results; use the final combined source fingerprints for this handoff.
+their own results. Use the newer [security-maintenance summary](evidence/security-maintenance/release/summary.json) and actual source fingerprints for this handoff.
 
 The [baseline test catalog](TEST-CATALOG.md) details that automated run;
 [maths and physics](MATHEMATICS-AND-PHYSICS.md) connects equations, units,
@@ -40,7 +40,7 @@ native Save/Load/refresh, saved-target restoration, Pause/Resume/Reset and
 reference invalidation after a manual material edit. Valid custom paths were
 entered through the keyboard editor. Closed freehand pointer drawing has seven
 component-handler tests; a successful curved mouse gesture was not replayed in
-Chrome. The subsequent Undo/selection/documentation sequence is authorised;
+Chrome. The subsequent Undo/selection/documentation sequence is implemented;
 publication remains a separate final step. See the [four-bar guide](FOUR-BAR-PATH-VERIFICATION.md).
 Do not treat an earlier 166/195/237/298/348-test milestone as the current rerun.
 
@@ -52,18 +52,12 @@ passed Load and full refresh, then Save produced an assembly exactly equal to
 the original corrected download, including transforms and pivots. Existing
 incorrectly saved joints must be picked again; there is no automatic migration.
 
-1. Save outstanding Replit edits, then fetch the GitHub repository and check
-   out `codex/built-in-demo-gallery` in Replit's Git interface. Review differences
-   before replacing local changes. Confirm the intended final revision exists
-   on the remote; a local working-tree change is not fetched by Git.
+1. Preserve outstanding Replit edits. Pull verified GitHub `main` into the existing Replit project. Confirm the released source in [remote main history](https://github.com/AndrewBlumson/KinetiCAD/commits/main/), compare source before replacing local work and record the pulled GitHub revision.
 2. Run `pnpm install --frozen-lockfile`, then the verification commands in
    [Physics verification](PHYSICS-VERIFICATION.md). Node 24 is specified in
    `.replit`. Run heavyweight OCCT tests sequentially. The aggregate entry is
    `pnpm --filter @workspace/kineticad test:all`.
-   The fresh local inventory used Node 25.4.0/pnpm 10.28.2, so record this Replit
-   runtime's own result rather than calling that local capture a Node 24 pass.
-   Keep the committed package/kernel versions; this stage needs no dependency
-   upgrade or paid service credentials.
+   Current local maintenance passed on Node 24.19.0 ARM64; the older 382-test capture used Node 25.4.0. Record Replit's own Linux result. Keep the reviewed patched lockfile and unchanged Three.js/OCCT/Rapier versions. The current ARM64 native install cannot be reused with the local default Node 25 x64 runtime.
 3. Build with the existing deployment configuration. CAD Vite requires `PORT`
    and `BASE_PATH`; its route is `/app/`. For a local production check:
 
@@ -121,9 +115,9 @@ incorrectly saved joints must be picked again; there is no automatic migration.
    its derived geometry must not gain an independent transform.
 11. Check the current landing feature groups, creator/social links, Replit UK
    Ambassador wording and labelled file controls. Preserve the Replit build credit.
-12. Record the final source/bundle identifiers and browser acceptance matrix.
-    Republish from Replit, then repeat the unchanged Windmill gate and relevant
-    user flows at the public URL. Local passes do not establish deployment acceptance.
+12. Record source/bundle identifiers and the browser acceptance matrix. Create Replit's own checkpoint/commit after importing and verifying GitHub main. Its SHA may differ; compare the source and record both identities. Publish that checkpoint through Replit, then repeat the unchanged Windmill gate and relevant flows at the public URL. A GitHub source push is not a deployment.
+
+**Support KinetiCAD** is an optional external [Buy Me a Coffee link](https://buymeacoffee.com/andrewblumson), with Adevious Ltd as the recipient. It is a normal external link, with no embedded payment widget, payment code or feature gate. The application remains free and its MIT licence is unchanged.
 
 Stewart uses inverse kinematics to command six actuator lengths within ±5 mm
 per translation axis and ±2° per rotation axis. The physics solver determines
@@ -165,8 +159,7 @@ do not implement them as an incidental part of importing or republishing.
 Historical numerical JSON files retain their measured source/date. New runs
 should retain new provenance rather than overwrite old evidence as if it were
 fresh. This applies equally to tests run by Replit Agent, Codex or a human.
-This document is a handoff recipe, not authorization to publish; no deployment
-or dependency changes are included in the current stage.
+This is the release recipe for the reviewed patched source. [Scoped production Chrome checks](evidence/security-maintenance/browser.json) passed imported-project material Undo/Redo, saved-status recovery through refresh, exact native downloaded-file reopening, public-page navigation and an external support tab preserving the current model. Earlier feature records retain their own scope. GitHub source transfer and Replit checkpoint publication are separate actions; public-route acceptance remains to be recorded. Repository visibility and the MIT licence are unchanged.
 
 ## Source-publication preparation
 
@@ -180,5 +173,5 @@ For a portable fresh evidence run, use
 `node scripts/src/capture-test-suite.mjs --output-dir <new-directory>`. It preserves
 the two historical reports overwritten by tests and records every test name,
 source, duration and result. Use the pinned configured Node 24 runtime in Replit;
-local Node 25 results are not a Node 24 pass. Final publication must still verify
+the current local Node 24 ARM64 record is separate from Replit's Linux environment. Final publication must still verify
 the existing Replit project's actual branch/build/domain settings.

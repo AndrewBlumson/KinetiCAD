@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-09-12T22:14:26.453Z",
+  "bundleUrls": {
+    "cad": [
+      "http://127.0.0.1:5192/app/assets/index-C9rIVqTg.js"
+    ],
+    "landing": [
+      "http://127.0.0.1:5193/assets/index-ByrLL69G.js"
+    ]
+  },
+  "cadLogs": [],
+  "landingLogs": []
+}

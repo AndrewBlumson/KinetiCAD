@@ -36,27 +36,38 @@ const SECTIONS: LegalSection[] = [
     num: 5,
     heading: "Analytics and cookies",
     paras: [
-      "At present, KinetiCAD uses no analytics and sets no tracking cookies. We do not use advertising cookies or any third-party tracking.",
+      "On the KinetiCAD site itself, we use no analytics and set no tracking or advertising cookies. The optional support link is an ordinary link, not an embedded payment widget. Buy Me a Coffee and its payment providers may use their own cookies and similar technologies after you visit their services, under their own notices and choices.",
       "If we introduce analytics in the future, we will update this policy to describe exactly what is used and what it collects, before or at the time it is introduced. If any future analytics requires cookie consent, we will add a cookie notice at that point.",
     ],
   },
   {
     num: 6,
-    heading: "Your rights",
+    heading: "Optional support payments",
     paras: [
-      "Under UK data protection law you have rights over any personal data we hold about you, including the right to access it, to ask us to correct or erase it, and to object to or restrict how it is used. Because KinetiCAD has no accounts and stores no personal data beyond the standard server logs described above, in practice we hold very little that relates to you. If you wish to exercise any of your rights, or have any question about your data, contact us using the details below.",
-      "You also have the right to lodge a complaint with the Information Commissioner's Office (ICO), the UK's data protection regulator, at ico.org.uk.",
+      "Supporting KinetiCAD is entirely optional. The Support KinetiCAD link opens Andrew Blumson's Buy Me a Coffee page in a new tab; support payments are received by Adevious Ltd. You can use the CAD app without visiting that page or making a payment.",
+      "Checkout takes place on Buy Me a Coffee, whose published privacy policy identifies Stripe as its payment processor. The KinetiCAD app does not collect or store full card numbers or card security codes, and it does not send your CAD models or saved projects to either provider. Information you enter at checkout is handled by those services under their own terms and privacy notices.",
+      "Buy Me a Coffee may make supporter information available to Adevious Ltd, including a name, email address, optional message and payment details such as the amount, date and status. The information available depends on what you provide and the platform's settings. A payment described as private on the platform does not necessarily hide all transaction information from the recipient or payment providers.",
+      "Adevious Ltd is responsible for its use of the supporter information it receives. We use it to administer support payments, respond to related enquiries and handle payment or refund issues, relying on our legitimate interests in managing that support. We also retain records where required by accounting or other legal obligations. We keep information only as long as needed for those purposes and applicable record-keeping requirements. Making a support payment does not by itself subscribe you to a marketing mailing list.",
+      <>For the providers' processing, retention and international-transfer information, read the <a href="https://buymeacoffee.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Buy Me a Coffee Privacy Policy (opens in a new tab)</a> and <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Stripe Privacy Policy (opens in a new tab)</a>. They may process information outside the UK. Questions about information held by Adevious Ltd can be sent to support@adevious.co.uk; questions about a provider's own processing should also be directed to that provider.</>,
     ],
   },
   {
     num: 7,
+    heading: "Your rights",
+    paras: [
+      "Under UK data protection law you have rights over personal data we hold about you, including rights to access, correction, erasure, restriction, objection and, where applicable, portability. Which rights apply depends on the circumstances and the lawful basis for the processing. This can include information connected with an optional support payment as well as the other information described above. To exercise your rights or ask about information held by Adevious Ltd, contact us using the details below.",
+      "You also have the right to lodge a complaint with the Information Commissioner's Office (ICO), the UK's data protection regulator, at ico.org.uk.",
+    ],
+  },
+  {
+    num: 8,
     heading: "Changes to this policy",
     paras: [
       "We may update this policy from time to time. The current version will always be available on this page, with the date it was last updated shown at the top.",
     ],
   },
   {
-    num: 8,
+    num: 9,
     heading: "Contact",
     paras: [
       "KinetiCAD is operated by Adevious Ltd. For any question about this policy or your data, contact us at support@adevious.co.uk.",

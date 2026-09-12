@@ -136,7 +136,7 @@ licence compliance or fetch/revalidate upstream files.
 | input-otp | 1.4.2 | MIT | [Upstream project notice](upstream/input-otp/81ccdb48c010d800b24942aa231909f0c971b1ca/LICENSE) — from the npm release source revision |
 | internmap | 2.0.3 | ISC | [LICENSE](packages/internmap/2.0.3/LICENSE) |
 | js-tokens | 4.0.0 | MIT | [LICENSE](packages/js-tokens/4.0.0/LICENSE) |
-| lodash | 4.17.23 | MIT | [LICENSE](packages/lodash/4.17.23/LICENSE) |
+| lodash | 4.18.0 | MIT | [LICENSE](packages/lodash/4.18.0/LICENSE) |
 | loose-envify | 1.4.0 | MIT | [LICENSE](packages/loose-envify/1.4.0/LICENSE) |
 | lucide-react | 0.545.0 | ISC | [LICENSE](packages/lucide-react/0.545.0/LICENSE) |
 | mitt | 3.0.1 | MIT | [LICENSE](packages/mitt/3.0.1/LICENSE) |

@@ -1,0 +1,1262 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-12T21:49:40.682Z",
+  "completedAt": "2026-09-12T21:49:40.754Z",
+  "passed": true,
+  "counts": {
+    "checks": 35,
+    "passed": 35,
+    "failed": 0
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "architecture": "arm64",
+    "platform": "darwin",
+    "executable": "/Users/amb/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+  },
+  "gitHead": "731c7d3f440b123e87036d10c1db1e2f17e006ea",
+  "provenance": {
+    "sourceAndBuildSha256": {
+      "pnpm-lock.yaml": "38a81877333dcbfd051174b0efe7491aa320f7bf93cdd9d53a03f4d5663dbdce",
+      "pnpm-workspace.yaml": "99ba083168accb8394ffb2fd9b63d914df345db1c2a62bd7f44a52f0cf7598fd",
+      ".replit": "c5c015b211a38b8e064679d9f8e613acdd9cf6e03c8c940cea6a1eb15462570f",
+      "artifacts/kineticad/serve.mjs": "1cd614d22da6fd296d4c7f425423808d0cb1468d2c746162600f5b578d7e5f05",
+      "artifacts/kineticad/vite.config.ts": "7eda8e51e7020dd34656cde9d2eaba726bf9f15a93c04eb34debc8196205d2d8",
+      "artifacts/landing/vite.config.ts": "49a26ad75f8362ee97c04b7533915a8e3daf5e9767ed5dece27d01997ed74000",
+      "artifacts/api-server/src/app.ts": "72f19250d5ea5e836225d357338a0ff9459e813eb48f1a2ac7e60fa5335ca878",
+      "artifacts/kineticad/.replit-artifact/artifact.toml": "a09ff32eb8cbadf3426c4dfc8e729d8e3cd7042b0518c7bcf3ba12826b2ef144",
+      "artifacts/landing/.replit-artifact/artifact.toml": "99d0441bb67705ece8de39f3a06aca72579670f96be67a948b5cb96d52a382af",
+      "artifacts/api-server/.replit-artifact/artifact.toml": "e461708bfe50f6eb964fa755cf0c6ba813c19392be055d5ef96c729aa0173539",
+      "artifacts/kineticad/dist/public/index.html": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+      "artifacts/landing/dist/public/index.html": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+      "artifacts/api-server/dist/index.mjs": "1ae6e61f67b40bacbb97569709c8099ba324dbeeed5e694463451ac509f884a1",
+      "docs/evidence/security-maintenance/final-workspace-build.txt": "e7843cf4ebe17096240a3f9e5764a0fa8152ad6e04e53e9de20f24f1bd27acd7",
+      "docs/evidence/security-maintenance/final-landing-root-build.txt": "678facf2e01ae2478cfd278f75755b369c36aa649a14a8437dad95514b1adfe6"
+    },
+    "requestTransport": "Actual Node HTTP client requests to listening services at127.0.0.1 only"
+  },
+  "servers": [
+    {
+      "name": "CAD",
+      "url": "http://localhost:5192/app/",
+      "sessionId": 66110,
+      "launch": "PORT=5192 BASE_PATH=/app NODE_ENV=production node artifacts/kineticad/serve.mjs",
+      "productionEntrypoint": true
+    },
+    {
+      "name": "Landing",
+      "url": "http://localhost:5193/",
+      "sessionId": 33305,
+      "launch": "PORT=5193 BASE_PATH=/ NODE_ENV=production pnpm --filter @workspace/landing serve",
+      "productionEntrypoint": false,
+      "note": "Vite preview of final built bytes; Replit serves these files statically."
+    },
+    {
+      "name": "API",
+      "url": "http://localhost:5194/api/healthz",
+      "sessionId": 66202,
+      "launch": "PORT=5194 NODE_ENV=production node --enable-source-maps artifacts/api-server/dist/index.mjs",
+      "productionEntrypoint": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "CAD SPA /app",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/index.html",
+        "fileSha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 3214,
+        "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+        "durationMs": 6.420291999999996
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD SPA /app/",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/index.html",
+        "fileSha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 3214,
+        "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+        "durationMs": 0.8027500000000032
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD SPA /app/simulator",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/simulator",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/index.html",
+        "fileSha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 3214,
+        "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+        "durationMs": 0.4674580000000006
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD SPA /app/simulator?from=smoke",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/simulator?from=smoke",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/index.html",
+        "fileSha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 3214,
+        "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+        "durationMs": 0.4558749999999989
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD exact built asset /app/assets/index-C9rIVqTg.js",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/index-C9rIVqTg.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "cache": "public, max-age=31536000, immutable",
+        "bytesFromFile": "artifacts/kineticad/dist/public/assets/index-C9rIVqTg.js",
+        "fileSha256": "308d7dd3359cafebd1bb33510c099c800f8d41adb50e027c44b073e3c7bc6e54"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/javascript",
+          "cache-control": "public, max-age=31536000, immutable",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 190093,
+        "sha256": "308d7dd3359cafebd1bb33510c099c800f8d41adb50e027c44b073e3c7bc6e54",
+        "durationMs": 0.8716659999999976
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD exact built asset /app/assets/index-C3_6QeTF.css",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/index-C3_6QeTF.css",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/css",
+        "cache": "public, max-age=31536000, immutable",
+        "bytesFromFile": "artifacts/kineticad/dist/public/assets/index-C3_6QeTF.css",
+        "fileSha256": "52397ca9f96b3f9784e440c94eef1e7a8ff013e46a9bc394298d0e0350b9936f"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/css",
+          "cache-control": "public, max-age=31536000, immutable",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 115972,
+        "sha256": "52397ca9f96b3f9784e440c94eef1e7a8ff013e46a9bc394298d0e0350b9936f",
+        "durationMs": 0.6309579999999997
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD exact built asset /app/assets/cadWorker-DsJUQGTL.js",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/cadWorker-DsJUQGTL.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "cache": "public, max-age=31536000, immutable",
+        "bytesFromFile": "artifacts/kineticad/dist/public/assets/cadWorker-DsJUQGTL.js",
+        "fileSha256": "426b2bb8f2a3fbd02d5dcbe367db54168546dcf3e14bd5e805bd8c9fb1e1f2ef"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/javascript",
+          "cache-control": "public, max-age=31536000, immutable",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 280125,
+        "sha256": "426b2bb8f2a3fbd02d5dcbe367db54168546dcf3e14bd5e805bd8c9fb1e1f2ef",
+        "durationMs": 0.7852079999999972
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD exact built asset /app/assets/physicsWorker-1PSc4FIA.js",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/physicsWorker-1PSc4FIA.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "cache": "public, max-age=31536000, immutable",
+        "bytesFromFile": "artifacts/kineticad/dist/public/assets/physicsWorker-1PSc4FIA.js",
+        "fileSha256": "b302c2f6e6473b64e5a82048c8db29e7675201fcaad5b358c6fbda2f758c53bf"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/javascript",
+          "cache-control": "public, max-age=31536000, immutable",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 2075767,
+        "sha256": "b302c2f6e6473b64e5a82048c8db29e7675201fcaad5b358c6fbda2f758c53bf",
+        "durationMs": 2.6811250000000015
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD existing demo JSON",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/demos/windmill.json",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^application/json",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/demos/windmill.json",
+        "fileSha256": "4ad41d8a123f53655778421d1fd3a4288e9295298b36cf2b429520754f14d7d9"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 6493,
+        "sha256": "4ad41d8a123f53655778421d1fd3a4288e9295298b36cf2b429520754f14d7d9",
+        "durationMs": 0.5614169999999987
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD legacy seed script",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/seeds/windmill.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/seeds/windmill.js",
+        "fileSha256": "13ce6f6a3a03340bf55efaf4baedaa96604a4c5a288b050a57771b40b870ab79"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/javascript",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 6413,
+        "sha256": "13ce6f6a3a03340bf55efaf4baedaa96604a4c5a288b050a57771b40b870ab79",
+        "durationMs": 0.7092500000000044
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD branded favicon",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/favicon.svg",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^image/svg",
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/favicon.svg",
+        "fileSha256": "8ffbde9092b1fa4de97c9481b76f518b131268c82e7c555041925225b1dab6e0"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "image/svg+xml",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 163,
+        "sha256": "8ffbde9092b1fa4de97c9481b76f518b131268c82e7c555041925225b1dab6e0",
+        "durationMs": 0.38845899999999745
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD HEAD route",
+      "request": {
+        "method": "HEAD",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/simulator",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "cache": "no-cache, no-store, must-revalidate",
+        "empty": true
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "durationMs": 0.4157909999999987
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD HEAD hashed asset",
+      "request": {
+        "method": "HEAD",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/index-C9rIVqTg.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "cache": "public, max-age=31536000, immutable",
+        "empty": true
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/javascript",
+          "cache-control": "public, max-age=31536000, immutable",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "durationMs": 0.9333749999999981
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD missing/base-boundary /app/assets/nonexistent-security-smoke.js",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/nonexistent-security-smoke.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Not found"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 9,
+        "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31",
+        "durationMs": 0.5115830000000017
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD missing/base-boundary /app/assets/nonexistent-security-smoke.wasm",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/nonexistent-security-smoke.wasm",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Not found"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 9,
+        "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31",
+        "durationMs": 0.20237500000000352
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD missing/base-boundary /app/demos/nonexistent-security-smoke.json",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/demos/nonexistent-security-smoke.json",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Not found"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 9,
+        "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31",
+        "durationMs": 0.20691599999999966
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD missing/base-boundary /application/assets/index-C9rIVqTg.js",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/application/assets/index-C9rIVqTg.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Not found"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 9,
+        "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31",
+        "durationMs": 0.8267079999999964
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD HEAD missing asset",
+      "request": {
+        "method": "HEAD",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/assets/nonexistent-security-smoke.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "cache": "no-cache, no-store, must-revalidate",
+        "empty": true
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "durationMs": 0.15645799999999355
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD malformed request target //[",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "//[",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 400,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Bad request"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 11,
+        "sha256": "917ef22f94f460141928531e1945453e29d89dcd58e3383c2b3ba0e2e19eb0d7",
+        "durationMs": 0.5536250000000038
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD malformed request target http://[",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "http://[",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 400,
+        "mime": "^text/plain",
+        "cache": "no-cache, no-store, must-revalidate",
+        "body": "Bad request"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 11,
+        "sha256": "917ef22f94f460141928531e1945453e29d89dcd58e3383c2b3ba0e2e19eb0d7",
+        "durationMs": 0.10649999999999693
+      },
+      "passed": true
+    },
+    {
+      "name": "CAD still serves after malformed targets",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5192,
+        "path": "/app/",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "cache": "no-cache, no-store, must-revalidate",
+        "bytesFromFile": "artifacts/kineticad/dist/public/index.html",
+        "fileSha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "expires": "0",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 3214,
+        "sha256": "7292136d3b6d8f59d7d15b9f7a2d87326759be9f1ed5acb9f84d486716e93851",
+        "durationMs": 0.30804200000000037
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing route /",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "bytesFromFile": "artifacts/landing/dist/public/index.html",
+        "fileSha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 3.3690420000000003
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing route /story",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/story",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "bytesFromFile": "artifacts/landing/dist/public/index.html",
+        "fileSha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 0.5067909999999998
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing route /terms",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/terms",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "bytesFromFile": "artifacts/landing/dist/public/index.html",
+        "fileSha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 0.3705409999999958
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing route /privacy",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/privacy",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "bytesFromFile": "artifacts/landing/dist/public/index.html",
+        "fileSha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 0.3442500000000024
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing exact root-base bundle",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/assets/index-DLtGYj3N.js",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "javascript",
+        "bytesFromFile": "artifacts/landing/dist/public/assets/index-DLtGYj3N.js",
+        "fileSha256": "dff9e8056be59870e09557a2eedfacb39b0e6a8eddf55cbb8503991d51a6bfd2"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-length": "228620",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 12 Sep 2026 21:45:03 GMT",
+          "etag": "W/\"228620-1789249503169\"",
+          "cache-control": "no-cache",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 228620,
+        "sha256": "dff9e8056be59870e09557a2eedfacb39b0e6a8eddf55cbb8503991d51a6bfd2",
+        "durationMs": 1.386375000000001
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing HEAD root",
+      "request": {
+        "method": "HEAD",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^text/html",
+        "empty": true
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "durationMs": 0.34591700000000003
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing preview rejects unrelated Host",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/",
+        "headers": {
+          "Host": "unrelated-security-smoke.invalid"
+        },
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 403
+      },
+      "response": {
+        "status": 403,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/plain",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "bytes": 183,
+        "sha256": "21d4e1fbb143aaeb31f260aa8901a2737d6400f93fb97dd4935e102b58124d46",
+        "durationMs": 3.3365829999999974
+      },
+      "passed": true
+    },
+    {
+      "name": "Landing still serves after rejected Host",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5193,
+        "path": "/",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "bytesFromFile": "artifacts/landing/dist/public/index.html",
+        "fileSha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 0.3410829999999976
+      },
+      "passed": true
+    },
+    {
+      "name": "API production health JSON",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/healthz",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^application/json",
+        "json": {
+          "status": "ok"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "15",
+          "etag": "W/\"f-VaSQ4oDUiZblZNAEkkN+sX+q3Sg\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 15,
+        "sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+        "durationMs": 6.157375000000002
+      },
+      "passed": true
+    },
+    {
+      "name": "API HEAD health",
+      "request": {
+        "method": "HEAD",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/healthz",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^application/json",
+        "empty": true
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "15",
+          "etag": "W/\"f-VaSQ4oDUiZblZNAEkkN+sX+q3Sg\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "durationMs": 0.8872089999999986
+      },
+      "passed": true
+    },
+    {
+      "name": "API missing route",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/nonexistent-security-smoke",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 404,
+        "noSourceDisclosure": true
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "169",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 169,
+        "sha256": "dae61ce8ef1dff0ade75ee03a72d104c84a4325605a836320d6cd75f83b66bbf",
+        "durationMs": 0.9534580000000119
+      },
+      "passed": true
+    },
+    {
+      "name": "API malformed JSON receives safe 400",
+      "request": {
+        "method": "POST",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/healthz",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyBytes": 14
+      },
+      "expected": {
+        "status": 400,
+        "noSourceDisclosure": true
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "138",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 138,
+        "sha256": "dc0a4948011b3bf48695d6b088a8ad2a65b902eee0dfa2bff5ec3b7d77e9941c",
+        "durationMs": 22.408333999999996
+      },
+      "passed": true
+    },
+    {
+      "name": "API default JSON size limit rejects oversize input",
+      "request": {
+        "method": "POST",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/healthz",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyBytes": 122892
+      },
+      "expected": {
+        "status": 413,
+        "noSourceDisclosure": true
+      },
+      "response": {
+        "status": 413,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "144",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 144,
+        "sha256": "7eb787a8587d0addfc48496dadffb17245486c9e1d5c90d32e30a88bf6595d93",
+        "durationMs": 1.256332999999998
+      },
+      "passed": true
+    },
+    {
+      "name": "API still serves after errors",
+      "request": {
+        "method": "GET",
+        "address": "127.0.0.1",
+        "port": 5194,
+        "path": "/api/healthz",
+        "headers": {},
+        "bodyBytes": 0
+      },
+      "expected": {
+        "status": 200,
+        "mime": "^application/json",
+        "json": {
+          "status": "ok"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-powered-by": "Express",
+          "access-control-allow-origin": "*",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "15",
+          "etag": "W/\"f-VaSQ4oDUiZblZNAEkkN+sX+q3Sg\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "bytes": 15,
+        "sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+        "durationMs": 0.5150000000000006
+      },
+      "passed": true
+    }
+  ],
+  "observations": [
+    {
+      "name": "Missing asset behavior of local Vite landing preview",
+      "request": "/assets/nonexistent-security-smoke.js",
+      "response": {
+        "status": 200,
+        "headers": {
+          "vary": "Origin",
+          "content-type": "text/html",
+          "cache-control": "no-cache",
+          "etag": "W/\"ddb-2pZ00zB3kU/i/T9B3+3hd5Wro4A\"",
+          "date": "Sat, 12 Sep 2026 21:49:40 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "content-length": "3547"
+        },
+        "bytes": 3547,
+        "sha256": "b9b7b69d1dc56a5cb48945b6cc8d7d3d087ff2e0e3f8bc0724454a35e2702404",
+        "durationMs": 0.37274999999999636
+      },
+      "note": "Observed only; actual Replit landing production uses its static hosting and rewrite configuration, not this Vite preview server."
+    }
+  ],
+  "limitations": [
+    "HTTP/status/header/byte checks only. No browser rendering, actual Replit proxy/domain or deployment acceptance is claimed.",
+    "These are smoke checks, not additional automated suite test cases or a penetration test.",
+    "No external endpoint was requested. CDN-delivered OCCT WASM and browser worker startup remain separate browser checks.",
+    "Malformed targets specifically exercise WHATWG URL parse failures; no broad parser/fuzzing claim.",
+    "Local Vite preview is used only to inspect the final landing build; its host/fallback behavior is not an assertion about Replit static hosting."
+  ],
+  "reproduction": {
+    "runtime": "Prepend the recorded Node24ARM64 executable directory to PATH, start the three services with the listed commands, save this script outside the repository and run node script.mjs <repository-root>.",
+    "script": "import { request } from 'node:http';\nimport { readFile, readdir, writeFile } from 'node:fs/promises';\nimport { createHash } from 'node:crypto';\nimport { execFileSync } from 'node:child_process';\nimport { join, resolve } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nimport { performance } from 'node:perf_hooks';\nimport assert from 'node:assert/strict';\n\nconst root = resolve(process.argv[2] ?? process.cwd());\nconst output = join(root, 'docs/evidence/security-maintenance');\nconst cadDist = join(root, 'artifacts/kineticad/dist/public');\nconst landingDist = join(root, 'artifacts/landing/dist/public');\nconst sha = (bytes) => createHash('sha256').update(bytes).digest('hex');\nconst noStore = 'no-cache, no-store, must-revalidate';\nconst results = [];\nconst observations = [];\nconst startedAt = new Date().toISOString();\n\nasync function http(port, path, options = {}) {\n  const start = performance.now();\n  return new Promise((resolveResponse, reject) => {\n    const body = options.body === undefined ? undefined : Buffer.from(options.body);\n    const req = request({ hostname: '127.0.0.1', port, path, method: options.method ?? 'GET',\n      headers: { ...(body ? { 'Content-Length': body.length } : {}), ...options.headers } }, (res) => {\n      const chunks = [];\n      res.on('data', (chunk) => chunks.push(chunk));\n      res.on('error', reject);\n      res.on('end', () => resolveResponse({ status: res.statusCode, headers: res.headers,\n        body: Buffer.concat(chunks), durationMs: performance.now() - start }));\n    });\n    req.on('error', reject);\n    req.setTimeout(10000, () => req.destroy(new Error('HTTP request timed out')));\n    req.end(body);\n  });\n}\n\nfunction responseRecord(response) {\n  return { status: response.status, headers: response.headers, bytes: response.body.length,\n    sha256: sha(response.body), durationMs: response.durationMs };\n}\n\nasync function check(name, port, path, expected, options = {}) {\n  const row = { name, request: { method: options.method ?? 'GET',\n    address: '127.0.0.1', port, path, headers: options.headers ?? {},\n    bodyBytes: options.body === undefined ? 0 : Buffer.byteLength(options.body) },\n    expected: { ...expected, bytesFromFile: expected.file ? expected.file.replace(root + '/', '') : undefined } };\n  delete row.expected.file;\n  try {\n    const response = await http(port, path, options);\n    row.response = responseRecord(response);\n    assert.equal(response.status, expected.status);\n    if (expected.mime) assert.match(response.headers['content-type'] ?? '', new RegExp(expected.mime));\n    if (expected.cache) assert.equal(response.headers['cache-control'], expected.cache);\n    if (expected.file) {\n      const bytes = await readFile(expected.file);\n      row.expected.fileSha256 = sha(bytes);\n      assert.deepEqual(response.body, bytes);\n    }\n    if (expected.body !== undefined) assert.equal(response.body.toString(), expected.body);\n    if (expected.json) assert.deepEqual(JSON.parse(response.body.toString()), expected.json);\n    if (expected.empty) assert.equal(response.body.length, 0);\n    if (expected.noSourceDisclosure) {\n      assert.doesNotMatch(response.body.toString(), /node_modules|SyntaxError|PayloadTooLargeError|\\/Users\\/|at (?:JSON|parse|read|Layer)\\b/);\n    }\n    row.passed = true;\n  } catch (error) {\n    row.passed = false;\n    row.error = String(error.message ?? error);\n  }\n  results.push(row);\n}\n\nconst cadHtml = await readFile(join(cadDist, 'index.html'), 'utf8');\nconst landingHtml = await readFile(join(landingDist, 'index.html'), 'utf8');\nconst cadEntry = cadHtml.match(/src=\"([^\"]+\\.js)\"/)?.[1];\nconst landingEntry = landingHtml.match(/src=\"([^\"]+\\.js)\"/)?.[1];\nassert.ok(cadEntry?.startsWith('/app/assets/'), 'CAD build uses /app base');\nassert.ok(landingEntry?.startsWith('/assets/'), 'landing build uses / base');\nconst cadAssets = await readdir(join(cadDist, 'assets'));\nconst css = cadAssets.find((file) => file.endsWith('.css'));\nconst cadWorker = cadAssets.find((file) => file.startsWith('cadWorker-') && file.endsWith('.js'));\nconst physicsWorker = cadAssets.find((file) => file.startsWith('physicsWorker-') && file.endsWith('.js'));\nassert.ok(css && cadWorker && physicsWorker, 'all actual built asset classes are present');\n\nfor (const path of ['/app', '/app/', '/app/simulator', '/app/simulator?from=smoke']) {\n  await check(`CAD SPA ${path}`, 5192, path, { status: 200, mime: '^text/html', cache: noStore, file: join(cadDist, 'index.html') });\n}\nfor (const path of [cadEntry, `/app/assets/${css}`, `/app/assets/${cadWorker}`, `/app/assets/${physicsWorker}`]) {\n  await check(`CAD exact built asset ${path}`, 5192, path, { status: 200,\n    mime: path.endsWith('.css') ? '^text/css' : 'javascript',\n    cache: 'public, max-age=31536000, immutable', file: join(cadDist, path.replace('/app/', '')) });\n}\nawait check('CAD existing demo JSON', 5192, '/app/demos/windmill.json', {\n  status: 200, mime: '^application/json', cache: noStore, file: join(cadDist, 'demos/windmill.json'),\n});\nawait check('CAD legacy seed script', 5192, '/app/seeds/windmill.js', {\n  status: 200, mime: 'javascript', cache: noStore, file: join(cadDist, 'seeds/windmill.js'),\n});\nawait check('CAD branded favicon', 5192, '/app/favicon.svg', {\n  status: 200, mime: '^image/svg', cache: noStore, file: join(cadDist, 'favicon.svg'),\n});\nawait check('CAD HEAD route', 5192, '/app/simulator', { status: 200, mime: '^text/html', cache: noStore, empty: true }, { method: 'HEAD' });\nawait check('CAD HEAD hashed asset', 5192, cadEntry, { status: 200, mime: 'javascript', cache: 'public, max-age=31536000, immutable', empty: true }, { method: 'HEAD' });\nfor (const path of ['/app/assets/nonexistent-security-smoke.js', '/app/assets/nonexistent-security-smoke.wasm', '/app/demos/nonexistent-security-smoke.json', `/application${cadEntry.slice(4)}`]) {\n  await check(`CAD missing/base-boundary ${path}`, 5192, path, { status: 404, mime: '^text/plain', cache: noStore, body: 'Not found' });\n}\nawait check('CAD HEAD missing asset', 5192, '/app/assets/nonexistent-security-smoke.js', { status: 404, cache: noStore, empty: true }, { method: 'HEAD' });\nfor (const path of ['//[', 'http://[']) {\n  await check(`CAD malformed request target ${path}`, 5192, path, { status: 400, mime: '^text/plain', cache: noStore, body: 'Bad request' });\n}\nawait check('CAD still serves after malformed targets', 5192, '/app/', { status: 200, file: join(cadDist, 'index.html'), cache: noStore });\n\nfor (const path of ['/', '/story', '/terms', '/privacy']) {\n  await check(`Landing route ${path}`, 5193, path, { status: 200, mime: '^text/html', file: join(landingDist, 'index.html') });\n}\nawait check('Landing exact root-base bundle', 5193, landingEntry, {\n  status: 200, mime: 'javascript', file: join(landingDist, landingEntry),\n});\nawait check('Landing HEAD root', 5193, '/', { status: 200, mime: '^text/html', empty: true }, { method: 'HEAD' });\nawait check('Landing preview rejects unrelated Host', 5193, '/', { status: 403 }, { headers: { Host: 'unrelated-security-smoke.invalid' } });\nawait check('Landing still serves after rejected Host', 5193, '/', { status: 200, file: join(landingDist, 'index.html') });\nconst landingMissing = await http(5193, '/assets/nonexistent-security-smoke.js');\nobservations.push({ name: 'Missing asset behavior of local Vite landing preview', request: '/assets/nonexistent-security-smoke.js',\n  response: responseRecord(landingMissing), note: 'Observed only; actual Replit landing production uses its static hosting and rewrite configuration, not this Vite preview server.' });\n\nawait check('API production health JSON', 5194, '/api/healthz', { status: 200, mime: '^application/json', json: { status: 'ok' } });\nawait check('API HEAD health', 5194, '/api/healthz', { status: 200, mime: '^application/json', empty: true }, { method: 'HEAD' });\nawait check('API missing route', 5194, '/api/nonexistent-security-smoke', { status: 404, noSourceDisclosure: true });\nawait check('API malformed JSON receives safe 400', 5194, '/api/healthz', { status: 400, noSourceDisclosure: true }, {\n  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{\"unfinished\":',\n});\nawait check('API default JSON size limit rejects oversize input', 5194, '/api/healthz', { status: 413, noSourceDisclosure: true }, {\n  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: 'x'.repeat(120 * 1024) }),\n});\nawait check('API still serves after errors', 5194, '/api/healthz', { status: 200, mime: '^application/json', json: { status: 'ok' } });\n\nconst paths = ['pnpm-lock.yaml', 'pnpm-workspace.yaml', '.replit',\n  'artifacts/kineticad/serve.mjs', 'artifacts/kineticad/vite.config.ts',\n  'artifacts/landing/vite.config.ts', 'artifacts/api-server/src/app.ts',\n  'artifacts/kineticad/.replit-artifact/artifact.toml', 'artifacts/landing/.replit-artifact/artifact.toml',\n  'artifacts/api-server/.replit-artifact/artifact.toml',\n  'artifacts/kineticad/dist/public/index.html', 'artifacts/landing/dist/public/index.html', 'artifacts/api-server/dist/index.mjs',\n  'docs/evidence/security-maintenance/final-workspace-build.txt', 'docs/evidence/security-maintenance/final-landing-root-build.txt'];\nconst hashes = Object.fromEntries(await Promise.all(paths.map(async (path) => [path, sha(await readFile(join(root, path)))])));\nconst report = {\n  schemaVersion: 1, startedAt, completedAt: new Date().toISOString(),\n  passed: results.every((row) => row.passed), counts: { checks: results.length, passed: results.filter((row) => row.passed).length, failed: results.filter((row) => !row.passed).length },\n  runtime: { node: process.version, architecture: process.arch, platform: process.platform, executable: process.execPath },\n  gitHead: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),\n  provenance: { sourceAndBuildSha256: hashes, requestTransport: 'Actual Node HTTP client requests to listening services at127.0.0.1 only' },\n  servers: [\n    { name: 'CAD', url: 'http://localhost:5192/app/', sessionId: 66110, launch: 'PORT=5192 BASE_PATH=/app NODE_ENV=production node artifacts/kineticad/serve.mjs', productionEntrypoint: true },\n    { name: 'Landing', url: 'http://localhost:5193/', sessionId: 33305, launch: 'PORT=5193 BASE_PATH=/ NODE_ENV=production pnpm --filter @workspace/landing serve', productionEntrypoint: false, note: 'Vite preview of final built bytes; Replit serves these files statically.' },\n    { name: 'API', url: 'http://localhost:5194/api/healthz', sessionId: 66202, launch: 'PORT=5194 NODE_ENV=production node --enable-source-maps artifacts/api-server/dist/index.mjs', productionEntrypoint: true },\n  ],\n  checks: results, observations,\n  limitations: [\n    'HTTP/status/header/byte checks only. No browser rendering, actual Replit proxy/domain or deployment acceptance is claimed.',\n    'These are smoke checks, not additional automated suite test cases or a penetration test.',\n    'No external endpoint was requested. CDN-delivered OCCT WASM and browser worker startup remain separate browser checks.',\n    'Malformed targets specifically exercise WHATWG URL parse failures; no broad parser/fuzzing claim.',\n    'Local Vite preview is used only to inspect the final landing build; its host/fallback behavior is not an assertion about Replit static hosting.',\n  ],\n  reproduction: { runtime: 'Prepend the recorded Node24ARM64 executable directory to PATH, start the three services with the listed commands, save this script outside the repository and run node script.mjs <repository-root>.', script: await readFile(fileURLToPath(import.meta.url), 'utf8') },\n};\nawait writeFile(join(output, 'http-smoke.json'), JSON.stringify(report, null, 2) + '\\n');\nconst lines = [\n  'KinetiCAD final security-maintenance HTTP smoke',\n  `Started: ${report.startedAt}`, `Completed: ${report.completedAt}`,\n  `Node: ${report.runtime.node} ${report.runtime.platform}/${report.runtime.architecture}`,\n  `Result: ${report.counts.passed}/${report.counts.checks} checks passed; ${report.counts.failed} failed`,\n  'Actual HTTP on127.0.0.1:5192(CAD),5193(landing preview),5194(API). Services left available for Chrome.',\n  '', ...results.map((row) => `${row.passed ? 'PASS' : 'FAIL'} ${row.name}: ${row.response?.status ?? 'request error'}, ${row.response?.bytes ?? '?'} bytes, ${row.response?.headers?.['content-type'] ?? 'no MIME'}, SHA256 ${row.response?.sha256 ?? '-'}${row.error ? `; ${row.error}` : ''}`),\n  '', ...observations.map((row) => `OBSERVATION ${row.name}: status${row.response.status}; ${row.note}`),\n  '', ...report.limitations.map((line) => `LIMIT ${line}`),\n  '', 'Full request/response headers, expected source-byte hashes, source/build fingerprints and portable reproduction script: http-smoke.json',\n];\nawait writeFile(join(output, 'http-smoke.txt'), lines.join('\\n') + '\\n');\nconsole.log(JSON.stringify({ passed: report.passed, counts: report.counts,\n  failures: results.filter((row) => !row.passed).map((row) => ({ name: row.name, error: row.error })),\n  landingMissingAssetStatus: landingMissing.status }, null, 2));\nprocess.exitCode = report.passed ? 0 : 1;\n"
+  }
+}

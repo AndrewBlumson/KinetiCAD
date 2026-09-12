@@ -1,5 +1,12 @@
 # Dependency security review — decision pending
 
+> **Historical baseline:** This document records the initial 58-finding audit
+> before the user authorised dependency updates. Its references to unchanged
+> packages and unresolved findings describe that earlier snapshot. The later
+> [12 September security maintenance](SECURITY-MAINTENANCE-2026-09-12.md) records
+> the patched zero-advisory audit and the separate verification/release gates.
+> The original evidence and triage below are retained unchanged.
+
 The 12 September 2026 online `pnpm audit --json` request succeeded and returned
 **58 advisory records: 11 critical, 28 high, 16 moderate and 3 low**. Its exit
 code was 1 because findings remain. **This repository is not being described as

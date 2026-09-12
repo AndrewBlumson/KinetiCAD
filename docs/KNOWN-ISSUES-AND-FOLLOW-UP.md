@@ -12,8 +12,7 @@ Future features require their own agreed scope and evidence. KinetiCAD
 remains the Replit-built project created by Andrew Blumson, co-built with Kevin
 Blumson; the existing Replit project remains its intended publishing destination.
 
-Later on 12 September, the native Boolean file-reopening gate passed and the
-user authorised stage 4, the local four-bar path designer. That bounded implementation is now locally verified in the [four-bar record](FOUR-BAR-PATH-VERIFICATION.md); the original audit's 298-test snapshot remains historical. Entries still marked open below remain deferred.
+The native Boolean file-reopening gate passed on 12 September. Stage 4, the local four-bar path designer, is implemented and locally verified in the [four-bar record](FOUR-BAR-PATH-VERIFICATION.md); the original audit's 298-test snapshot remains historical. Entries still marked open below remain deferred.
 
 A subsequent bounded computer-use check reproduced the translated circular-edge/
 partial-arc hinge error described below. Its true-centre coordinate fix, three
@@ -24,14 +23,13 @@ documentation-only audit.
 
 Document Undo/Redo and general native/Boolean canvas selection have since been
 implemented. Their [feature record](HISTORY-AND-SELECTION.md) and
-[combined test catalog](HISTORY-SELECTION-TEST-CATALOG.md) are the current
-evidence entry points. The final capture passed **382/382 tests across 54 files**,
+[combined test catalog](HISTORY-SELECTION-TEST-CATALOG.md) are the feature-stage
+evidence entry points. That earlier capture passed **382/382 tests across 54 files**,
 with zero failures, cancellations or skips; source inputs remained unchanged and
 historical-report restoration was verified in the
 [capture summary](evidence/history-selection/final/summary.json). Workspace
 typecheck, full production build and scoped production Chrome acceptance passed.
-Public release remains pending the [dependency security review](DEPENDENCY-SECURITY-REVIEW.md)
-and Replit/public-route acceptance.
+Subsequent [security maintenance](SECURITY-MAINTENANCE-2026-09-12.md) passed 402/402 tests on Node 24 ARM64 and 35/35 HTTP checks, builds and clean-copy install/typecheck; the audit now reports zero advisories, none muted. Scoped production Chrome checks also passed; [the record](evidence/security-maintenance/browser.json) covers imported-project editing, Undo/Redo, recovery, native reopening and public-page/support navigation. Replit checkpoint publication and public-route acceptance remain separate.
 
 ## How to read the dispositions
 
@@ -118,7 +116,7 @@ is now covered by its own [implementation and evidence](HISTORY-AND-SELECTION.md
 
 | Original issue or source | Current disposition and evidence | Concrete future acceptance check |
 | --- | --- | --- |
-| Dependency advisory findings from the September publication review | **still-open.** The online audit returned 58 records (56 unique GHSA IDs): 11 critical, 28 high, 16 moderate and 3 low. The [security review](DEPENDENCY-SECURITY-REVIEW.md) distinguishes generation/build tooling, scaffold runtime and browser reachability; these are not 58 demonstrated exploits. Packages and lockfile remain unchanged, and passing functional tests does not establish a security-clean release. | Resolve the documented exposure/remediation decisions before public release. Any authorised dependency change needs fresh affected regressions, the full suite/build and a new audit; preserve the current numerical and source evidence rather than relabelling it. |
+| Dependency advisory findings from the September publication review | **resolved-with-limits.** Targeted updates reduce the preserved 58-record baseline to zero registry advisories, none muted. Current Node 24 ARM64 tests 402/402, HTTP checks 35/35, builds, clean-copy install/typecheck and scoped production Chrome checks pass; see [maintenance](SECURITY-MAINTENANCE-2026-09-12.md). | Complete Replit runtime, checkpoint publication and public-route checks; preserve the bounded [maintenance Chrome record](evidence/security-maintenance/browser.json). Preserve the historical audit and numerical reports. A zero-result audit does not prove absence of application defects or fulfil distribution obligations. |
 | Cross-browser coverage beyond the original Chrome/Safari observations. [README 119][original-coverage] | **not-freshly-verified.** September interaction reports describe Chrome. Historical Safari observations are not a fresh pass for the new recovery, dimension or Boolean workflows. | Record current browser/OS/GPU versions and run startup, native file exchange/recovery, sketch picking, simulation and worker error handling in each supported browser. State unsupported combinations; do not infer support from a successful TypeScript build. |
 | Performance beyond a few parts. [README 120][original-coverage] | **not-freshly-verified.** Larger demo mechanisms and numerical studies exist, but no current systematic assembly-size, frame-time, memory or cold/warm latency envelope is published. [Demo results](demo-physics-results.json) and [Stewart workspace evidence](STEWART-WORKSPACE-AUDIT.md) validate their stated cases, not a scale limit. | Choose representative native/imported/Boolean fixtures at increasing sizes. Measure load/regeneration/Play latency, frame times, memory and long-running rebuild stability on named hardware, while retaining geometry and physics acceptance. |
 | WebGL2 fallback. [README 121/134][original-coverage], [HANDOVER 93][original-roadmap-handover] | **still-open, deferred.** CAD still requires desktop WebGPU. No WebGL2 renderer fallback exists. See [current status](CURRENT-STATUS.md). This old roadmap entry does not authorise changing the current renderer/support policy. | First obtain a support-scope decision. If a fallback is selected later, verify topology overlays, materials, picking and full model/physics lifecycle in both renderers, plus a clear failure path when neither is available. |
@@ -135,14 +133,10 @@ is now covered by its own [implementation and evidence](HISTORY-AND-SELECTION.md
 
 ## Publication preparation and later work
 
-1. **Use the completed local evidence package:** the history/selection guide and
-   final combined catalog record 382 passing cases and scoped Chrome checks.
-   Resolve the dependency security review's remaining decisions before public
-   release. Earlier hinge and Boolean Load checkpoints remain historical;
+1. **Use the current maintenance evidence:** 402 automated tests and 35 HTTP checks pass on the patched graph, with zero audit advisories. Scoped production Chrome acceptance also passed, as recorded in the [maintenance browser evidence](evidence/security-maintenance/browser.json). The earlier history/selection record retains its 382-case scope. Earlier hinge and Boolean Load checkpoints remain historical;
    previously incorrect saved joints still require repicking or recreation.
 2. **Prepare the existing Replit project for publication:** confirm the selected
-   source, configured Node runtime, owner decisions on visibility/support links,
-   and build/test results. After an authorised republish, check the actual public
+   GitHub main source and configured Node runtime. Create a Replit checkpoint after pulling and checking the source; its SHA may differ. Publish that checkpoint and check the actual public
    routes and file/worker flows. Local acceptance does not establish deployment.
 3. **Choose a future modelling feature:** multi-loop sketches or face sketches
    each need a defined document/reference model and independent verification.
@@ -155,7 +149,7 @@ is now covered by its own [implementation and evidence](HISTORY-AND-SELECTION.md
 
 The local four-bar designer, hinge correction, Undo/Redo and object selection
 are implemented and locally accepted for their recorded scopes; current work
-prepares the Replit handoff while dependency security decisions remain open.
+prepares the Replit handoff after targeted security updates. Pull verified GitHub main into the existing Replit project and follow its checkpoint/publication checks; the MIT licence and private repository visibility are unchanged.
 Broader assembly physics and general deformation remain later work in the
 [tracked queue](NEXT-IMPLEMENTATION-TODO.md). The historical issue audit itself
 made no application fixes, and this documentation refresh does not publish the app.

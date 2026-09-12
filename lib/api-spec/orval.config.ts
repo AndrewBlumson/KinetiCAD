@@ -23,13 +23,15 @@ export default defineConfig({
     },
     output: {
       workspace: apiClientReactSrc,
+      packageJson: path.resolve(apiClientReactSrc, "..", "package.json"),
       target: "generated",
       client: "react-query",
       mode: "split",
       baseUrl: "/api",
       clean: true,
-      prettier: true,
+      formatter: "prettier",
       override: {
+        query: { version: 5 },
         fetch: {
           includeHttpResponseReturnType: false,
         },
@@ -54,7 +56,7 @@ export default defineConfig({
       schemas: { path: "generated/types", type: "typescript" },
       mode: "split",
       clean: true,
-      prettier: true,
+      formatter: "prettier",
       override: {
         zod: {
           coerce: {

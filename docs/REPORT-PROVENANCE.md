@@ -7,7 +7,7 @@ it is not a new OCCT or physics measurement.
 
 ## Current capture and reproducible rerun
 
-The [current catalog](HISTORY-SELECTION-TEST-CATALOG.md) points to every test result and its source declaration. The [Undo/Redo and selection guide](HISTORY-AND-SELECTION.md) separately records the intermediate Undo checkpoint, final build and actual Chrome interactions. Counts belong to their captured source; do not add intermediate and final counts together.
+The [current security-maintenance catalog](SECURITY-MAINTENANCE-TEST-CATALOG.md) points to every test result and its source declaration. The [Undo/Redo and selection guide](HISTORY-AND-SELECTION.md) and its [382-test catalog](HISTORY-SELECTION-TEST-CATALOG.md) retain the preceding feature checkpoint and actual Chrome interactions. Counts belong to their captured source; do not add intermediate and final counts together.
 
 From the repository root, with the pinned dependencies already installed:
 
@@ -16,6 +16,14 @@ node scripts/src/capture-test-suite.mjs --output-dir docs/evidence/my-new-run
 ```
 
 The output must be new or empty. The runner resolves paths relative to itself, runs all current test files serially and records Node/pnpm versions, source hashes before/after, raw events and per-test results. Source drift, test failure, interrupted execution or failed evidence restoration makes the command fail. It preserves the two historical reports overwritten by the existing export/Boolean tests, retaining fresh outputs under `generated-reports/` and restoring originals byte-for-byte.
+
+The maintenance runner expands the source inventory to all application, shared,
+library and script inputs plus root dependency/build configuration. `--list-inputs`
+prints the inventory without running tests. Documentation, evidence, installed
+dependencies, build outputs and private environment values are excluded; the
+lockfile and runtime versions identify dependencies separately. Failed and
+interrupted attempts under `evidence/security-maintenance/` remain labelled as
+such. A later successful run does not turn those attempts into passes.
 
 Run only one suite at a time and do not edit source during capture. SIGINT/SIGTERM cleanup is handled; SIGKILL or power loss requires manual recovery from `original-reports/` and `run-start.json` before removing a stale `.kineticad-test-capture.lock`. Capturing tests does not run a production build or operate Chrome. Historical `capture-suite.py` files describe old runs and may contain absolute checkout or temporary reporter paths; use the portable runner for new evidence.
 

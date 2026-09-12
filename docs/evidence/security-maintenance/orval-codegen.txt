@@ -1,0 +1,13 @@
+
+> @workspace/api-spec@0.0.0 codegen /Users/amb/Documents/New project/KinetiCAD-review-20260911/lib/api-spec
+> orval --config ./orval.config.ts && pnpm -w run typecheck:libs
+
+🍻 orval v8.32.0 - A swagger client generator for typescript
+api-client-react - Cleaning output folder
+api-client-react - 🎉 Api - Your OpenAPI spec has been converted into ready to use orval!
+zod - Cleaning output folder
+zod - 🎉 Api - Your OpenAPI spec has been converted into ready to use orval!
+
+> workspace@0.0.0 typecheck:libs /Users/amb/Documents/New project/KinetiCAD-review-20260911
+> tsc --build
+

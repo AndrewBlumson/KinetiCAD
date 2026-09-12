@@ -4,6 +4,7 @@ import { useKinetiCADStore } from '@/state/store';
 import { DemoWorkspaceProvider } from '@/components/demos/DemoWorkspace';
 import { Toaster } from '@/components/ui/sonner';
 import { ProjectRecoveryGate } from '@/project/ProjectRecoveryGate';
+import { KINETICAD_SUPPORT_URL } from '../../shared/support';
 
 const Modeller = lazy(() => import('@/views/Modeller'));
 const Simulator = lazy(() => import('@/views/Simulator'));
@@ -62,6 +63,16 @@ function ModeToggle() {
       >
         Simulator
       </Link>
+      <a
+        href={KINETICAD_SUPPORT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Support KinetiCAD on Buy Me a Coffee. Donations are optional; the app remains free. Opens in a new tab."
+        className="ml-1 border-l border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FF6B1A]"
+      >
+        Support KinetiCAD <span aria-hidden="true">↗</span>
+        <span className="sr-only"> — optional donation, opens in a new tab</span>
+      </a>
     </div>
   );
 }

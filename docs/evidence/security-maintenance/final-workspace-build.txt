@@ -1,0 +1,92 @@
+
+> workspace@0.0.0 build /Users/amb/Documents/New project/KinetiCAD-review-20260911
+> pnpm run typecheck && pnpm -r --if-present run build
+
+
+> workspace@0.0.0 typecheck /Users/amb/Documents/New project/KinetiCAD-review-20260911
+> pnpm run typecheck:libs && pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+
+
+> workspace@0.0.0 typecheck:libs /Users/amb/Documents/New project/KinetiCAD-review-20260911
+> tsc --build
+
+Scope: 5 of 10 workspace projects
+artifacts/api-server typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/kineticad typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/landing typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/mockup-sandbox typecheck$ tsc -p tsconfig.json --noEmit
+artifacts/api-server typecheck: Done
+scripts typecheck$ tsc -p tsconfig.json --noEmit
+scripts typecheck: Done
+artifacts/mockup-sandbox typecheck: Done
+artifacts/landing typecheck: Done
+artifacts/kineticad typecheck: Done
+Scope: 9 of 10 workspace projects
+artifacts/mockup-sandbox build$ vite build
+artifacts/mockup-sandbox build: vite v7.3.6 building client environment for production...
+artifacts/mockup-sandbox build: transforming...
+artifacts/mockup-sandbox build: ✓ 30 modules transformed.
+artifacts/mockup-sandbox build: rendering chunks...
+artifacts/mockup-sandbox build: computing gzip size...
+artifacts/mockup-sandbox build: dist/index.html                   4.43 kB │ gzip:  1.24 kB
+artifacts/mockup-sandbox build: dist/assets/index-BhVw-XfD.css   89.70 kB │ gzip: 14.88 kB
+artifacts/mockup-sandbox build: dist/assets/index-erVC02Ve.js   187.72 kB │ gzip: 59.51 kB
+artifacts/mockup-sandbox build: ✓ built in 373ms
+artifacts/mockup-sandbox build: Done
+artifacts/api-server build$ node ./build.mjs
+artifacts/landing build$ vite build --config vite.config.ts
+artifacts/kineticad build$ vite build --config vite.config.ts
+artifacts/api-server build:   dist/index.mjs                       1.4mb ⚠️
+artifacts/api-server build:   dist/pino-worker.mjs               153.5kb
+artifacts/api-server build:   dist/pino-file.mjs                 142.1kb
+artifacts/api-server build:   dist/pino-pretty.mjs               114.6kb
+artifacts/api-server build:   dist/thread-stream-worker.mjs        7.4kb
+artifacts/api-server build:   dist/index.mjs.map                   2.2mb
+artifacts/api-server build:   dist/pino-worker.mjs.map           256.9kb
+artifacts/api-server build:   dist/pino-file.mjs.map             229.1kb
+artifacts/api-server build:   dist/pino-pretty.mjs.map           203.9kb
+artifacts/api-server build:   dist/thread-stream-worker.mjs.map   12.0kb
+artifacts/api-server build: ⚡ Done in 86ms
+artifacts/api-server build: Done
+artifacts/kineticad build: vite v7.3.6 building client environment for production...
+artifacts/landing build: vite v7.3.6 building client environment for production...
+artifacts/landing build: transforming...
+artifacts/kineticad build: transforming...
+artifacts/kineticad build: src/components/ui/sonner.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+artifacts/kineticad build: src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+artifacts/kineticad build: src/components/ui/dropdown-menu.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+artifacts/landing build: ✓ 1702 modules transformed.
+artifacts/landing build: rendering chunks...
+artifacts/landing build: computing gzip size...
+artifacts/landing build: dist/public/index.html                   3.56 kB │ gzip:  1.19 kB
+artifacts/landing build: dist/public/assets/index-BRxMUYcr.css   66.53 kB │ gzip: 12.17 kB
+artifacts/landing build: dist/public/assets/index-BCW5hCZD.js   228.64 kB │ gzip: 72.79 kB
+artifacts/landing build: ✓ built in 1.08s
+artifacts/landing build: Done
+artifacts/kineticad build: ✓ 1909 modules transformed.
+artifacts/kineticad build: rendering chunks...
+artifacts/kineticad build: [plugin vite:reporter] 
+artifacts/kineticad build: (!) /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/project/projectAssets.ts is dynamically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/state/documentHistory.ts but also statically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/project/projectPersistence.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/views/Modeller.tsx, dynamic import will not move module into another chunk.
+artifacts/kineticad build: [plugin vite:reporter] 
+artifacts/kineticad build: (!) /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadClient.ts is dynamically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/project/projectPersistence.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/state/documentHistory.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/three/Scene.tsx but also statically imported by /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/components/demos/DemoWorkspace.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/components/inspectors/SketchDimensionsEditor.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/three/Scene.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/views/Modeller.tsx, /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/views/Simulator.tsx, dynamic import will not move module into another chunk.
+artifacts/kineticad build: computing gzip size...
+artifacts/kineticad build: dist/public/index.html                                     3.21 kB │ gzip:   1.40 kB
+artifacts/kineticad build: dist/public/assets/fourBarSearchWorker-Bjg0GgIa.js        12.84 kB
+artifacts/kineticad build: dist/public/assets/cadWorker-DsJUQGTL.js                 280.13 kB
+artifacts/kineticad build: dist/public/assets/engineeringBenchWorker-BXJ-vM4z.js  2,061.22 kB
+artifacts/kineticad build: dist/public/assets/physicsWorker-1PSc4FIA.js           2,075.77 kB
+artifacts/kineticad build: dist/public/assets/index-C3_6QeTF.css                    115.97 kB │ gzip:  19.38 kB
+artifacts/kineticad build: dist/public/assets/booleanResultLayerRef-CcoSAQ8J.js       0.74 kB │ gzip:   0.41 kB
+artifacts/kineticad build: dist/public/assets/forceMeasurements-DGHAcBwh.js           3.99 kB │ gzip:   1.83 kB
+artifacts/kineticad build: dist/public/assets/BeamAnalysisPanel-CNaetzM4.js           9.66 kB │ gzip:   3.92 kB
+artifacts/kineticad build: dist/public/assets/Simulator-Cg4e-QE5.js                  56.93 kB │ gzip:  17.52 kB
+artifacts/kineticad build: dist/public/assets/Modeller-2GCszpqS.js                  169.47 kB │ gzip:  45.93 kB
+artifacts/kineticad build: dist/public/assets/index-C9rIVqTg.js                     190.09 kB │ gzip:  60.54 kB
+artifacts/kineticad build: dist/public/assets/App-B4CaNlzj.js                       504.34 kB │ gzip: 146.35 kB
+artifacts/kineticad build: dist/public/assets/Scene-BxuyV7K4.js                     674.21 kB │ gzip: 191.87 kB
+artifacts/kineticad build: ✓ built in 2.90s
+artifacts/kineticad build: (!) Some chunks are larger than 500 kB after minification. Consider:
+artifacts/kineticad build: - Using dynamic import() to code-split the application
+artifacts/kineticad build: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+artifacts/kineticad build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+artifacts/kineticad build: Done
