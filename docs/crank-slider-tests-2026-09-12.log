@@ -1,0 +1,421 @@
+
+> @workspace/kineticad@0.0.0 test:all /Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad
+> node --import ../../scripts/node_modules/tsx/dist/loader.mjs --test --test-concurrency=1 tests/*.test.mjs
+
+✔ capped axial force produces F/m acceleration with correct SI/mm conversion (131.565292ms)
+✔ a rated motor holds gravity and an overloaded motor saturates and falls at Fmax/m − g (70.995958ms)
+✔ free-base reaction conserves momentum and mass-weighted centre of mass (8.450334ms)
+✔ lift reaches its target without ever exceeding the actuator force rating (12.616125ms)
+✔ fixed-step partitioning is invariant and halving dt reduces overload position error (13.138584ms)
+✔ travel cutoff stops before geometry crosses the base and is distinguished from modeled impact (0.998709ms)
+✔ invalid configuration and step requests reject explicitly (0.956625ms)
+✔ union STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (8730.273334ms)
+✔ subtract STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (289.898416ms)
+✔ intersect STEP and STL export final transformed Boolean plus visible independent part, omitting hidden sources (228.32225ms)
+✔ Hide inputs off exports visible originals as well as result, preserving deliberate overlapping solids (325.520209ms)
+✔ disconnected Boolean compound exports every solid without restoring hidden originals (177.45425ms)
+✔ multiple visible Boolean results share immutable source geometry safely (361.373ms)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: Boolean "Visible union" needs missing or empty part deleted.
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:32:54
+    at Array.map (<anonymous>)
+    at planAssemblyExport (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:22:36)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:491:16)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: no visible committed solids to export.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:518:36)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStep failed: Error: assembly-export-failed: Boolean "Visible intersect": empty-result: boolean produced no geometry.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:515:15)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: Boolean "Visible union" needs missing or empty part deleted.
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:32:54
+    at Array.map (<anonymous>)
+    at planAssemblyExport (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/assemblyExport.ts:22:36)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:491:16)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: no visible committed solids to export.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:518:36)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+[CAD WORKER] exportAssemblyStl failed: Error: assembly-export-failed: Boolean "Visible intersect": empty-result: boolean produced no geometry.
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:515:15)
+    at Object.exportAssemblyStl (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:949:18)
+✔ invalid/empty output aborts; subsequent raw asset export and native feature chain remain intact (167.921083ms)
+✔ independent hand-calculated steel-like reference uses N/mm/GPa consistently (2.091625ms)
+✔ curve satisfies clamped/free-end solution and intermediate hand reference (0.4705ms)
+✔ load reversal reverses displacement/reactions and retains stress magnitude (2.505834ms)
+✔ depth cubed, width, length cubed and modulus govern bending stiffness (0.637875ms)
+✔ elastic, slenderness and small-deflection failures are explicit (0.609291ms)
+✔ missing/nonfinite/nonpositive material or geometry and overflow reject (1.242084ms)
+✔ eligible native dimensions respect sketch planes and exclude modified/imported/boolean shapes (1.179792ms)
+✔ a paused background tab earns no simulation time when resumed before its next animation frame (1.816792ms)
+✔ delayed first play and ordinary paused frames cannot consume a short test window (0.32225ms)
+✔ running cadence partitions retain elapsed time while repeated play calls do not reset the clock (0.4615ms)
+✔ XY extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (8135.781666ms)
+✔ XZ extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (108.621667ms)
+✔ YZ extrude forward/backward/symmetric preserves exact dimensions, centre and detached mesh (82.68125ms)
+✔ quarter-turn revolve keeps analytical annular-sector volume and centroid (93.928875ms)
+✔ single-edge fillet removes square-minus-quarter-circle volume and leaves its input unchanged (261.173792ms)
+✔ single-edge chamfer removes an exact triangular prism and leaves its input unchanged (48.023917ms)
+✔ all six face pick bases drill inward for blind holes and span the correct dimension for through holes (1195.793875ms)
+✔ Boolean union matches overlapping-box volume and preserves both input solids (114.538125ms)
+✔ Boolean subtract matches overlapping-box volume and preserves both input solids (70.1275ms)
+✔ Boolean intersect matches overlapping-box volume and preserves both input solids (64.619833ms)
+✔ invalid dimensions, missing picks, non-solid inputs and empty booleans fail without consuming originals (31.413708ms)
+✔ step zero reads the actual initial body without advancing, and disposal prevents further use (72.309542ms)
+✔ resting cuboid has measured contact support equal to weight, without horizontal force (58.402875ms)
+✔ frictionless contact preserves horizontal velocity and kinetic energy while supporting weight (34.886875ms)
+✔ Coulomb sliding stops within the fixed-step integration bound and contact impulses match momentum (26.599583ms)
+✔ halving the timestep converges in stopping distance and penetration at 60, 120 and 240 Hz (38.250791ms)
+✔ material mass changes support force but not Coulomb deceleration; increasing friction shortens travel (8.705333ms)
+✔ accumulated frame partitions produce the same body state as a single elapsed-time request (4.315333ms)
+✔ airborne and impact phases disable the continuous-support reference (4.698708ms)
+✔ invalid physical inputs and elapsed time are rejected (1.858458ms)
+{"params":{"radiusMm":25,"rodLengthMm":100,"rpm":15},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":108694.38916125083},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":4332.2040220889485},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":6623.689054450177},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+{"params":{"radiusMm":15,"rodLengthMm":75,"rpm":30},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":66054.3891612508},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":3612.2040220889453},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":5123.689054450187},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+{"params":{"radiusMm":25,"rodLengthMm":75,"rpm":30},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":96694.3891612508},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":4332.2040220889485},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":5123.689054450187},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+{"params":{"radiusMm":40,"rodLengthMm":120,"rpm":30},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":181354.38916125076},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":5412.204022088948},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":7823.6890544501675},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+{"params":{"radiusMm":40,"rodLengthMm":180,"rpm":30},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":220954.38916125082},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":5412.204022088948},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":11423.689054450138},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+{"params":{"radiusMm":15,"rodLengthMm":180,"rpm":30},"solids":[{"id":"crank-slider-ground","valid":true,"solids":1,"volumeMm3":103854.38916125076},{"id":"crank-slider-crank","valid":true,"solids":1,"volumeMm3":3612.2040220889453},{"id":"crank-slider-rod","valid":true,"solids":1,"volumeMm3":11423.689054450138},{"id":"crank-slider-slider","valid":true,"solids":1,"volumeMm3":10131.017672705391}],"poses":24,"pairChecks":144,"maxIntersectionMm3":0}
+✔ all domain vertices and the default produce four exact valid CAD solids with no sampled interference (27487.625833ms)
+✔ continuous rigid-geometry clearances hold across the admitted parameter domain (0.446292ms)
+✔ native crank-slider factory is deterministic, closed and has exactly one drive (11.711458ms)
+✔ reference matches independent circle/link closure and numerical time derivatives throughout the admitted domain (3.565ms)
+✔ zero/reverse RPM and nonconstant angular-speed chain rule have explicit reference semantics (0.494916ms)
+✔ invalid dimensions, near-toggle rod ratios and nonfinite controls are rejected (2.771083ms)
+{"name":"cad-0","params":{"radiusMm":25,"rodLengthMm":100,"rpm":15},"metrics":{"nominalPositionMm":0.01053416077506597,"nominalVelocityMmPerSec":0.055400755438931526,"nominalIntervalAccelerationMmPerSec2":2.8513052197585966,"nominalAcceleration33msMmPerSec2":0.5642247448307085,"positionAtMeasuredAngleMm":0.00006493025472309455,"velocityAtMeasuredAngleMmPerSec":0.050200658822536326,"revoluteClosureMm":0.00005018157040208695,"guideLateralMm":7.253192187486879e-13,"motorSpeedRadPerSec":0.00046913226577260936,"outOfPlaneTiltRad":1.5312581474293882e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"cad-1","params":{"radiusMm":15,"rodLengthMm":75,"rpm":30},"metrics":{"nominalPositionMm":0.009514968089717968,"nominalVelocityMmPerSec":0.11254641219506745,"nominalIntervalAccelerationMmPerSec2":1.4996941712564702,"nominalAcceleration33msMmPerSec2":0.7548479275829806,"positionAtMeasuredAngleMm":0.00016501821374959036,"velocityAtMeasuredAngleMmPerSec":0.1047086129525372,"revoluteClosureMm":0.00012064029410263783,"guideLateralMm":8.172202064365974e-13,"motorSpeedRadPerSec":0.001093475026540336,"outOfPlaneTiltRad":3.6908197691927886e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"cad-2","params":{"radiusMm":25,"rodLengthMm":75,"rpm":30},"metrics":{"nominalPositionMm":0.02258847757609317,"nominalVelocityMmPerSec":0.22153001156198115,"nominalIntervalAccelerationMmPerSec2":2.4092175760968306,"nominalAcceleration33msMmPerSec2":1.6087081985239196,"positionAtMeasuredAngleMm":0.0002851266312688949,"velocityAtMeasuredAngleMmPerSec":0.18855312174318684,"revoluteClosureMm":0.0002059093654110285,"guideLateralMm":3.0834299957066547e-12,"motorSpeedRadPerSec":0.0017643849081321328,"outOfPlaneTiltRad":6.449086414209092e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"cad-3","params":{"radiusMm":40,"rodLengthMm":120,"rpm":30},"metrics":{"nominalPositionMm":0.03790700601626895,"nominalVelocityMmPerSec":0.36816077046206885,"nominalIntervalAccelerationMmPerSec2":4.05320503498979,"nominalAcceleration33msMmPerSec2":2.659609148139737,"positionAtMeasuredAngleMm":0.00036959904932132304,"velocityAtMeasuredAngleMmPerSec":0.3131579557658224,"revoluteClosureMm":0.0002456059502709702,"guideLateralMm":6.3178576953371035e-12,"motorSpeedRadPerSec":0.0018550475412086875,"outOfPlaneTiltRad":3.071196332436028e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"cad-4","params":{"radiusMm":40,"rodLengthMm":180,"rpm":30},"metrics":{"nominalPositionMm":0.037569378396995035,"nominalVelocityMmPerSec":0.3431648036537496,"nominalIntervalAccelerationMmPerSec2":4.300695786726059,"nominalAcceleration33msMmPerSec2":2.3612753082339335,"positionAtMeasuredAngleMm":0.0003218793661972086,"velocityAtMeasuredAngleMmPerSec":0.2897964973512295,"revoluteClosureMm":0.00020337041455144967,"guideLateralMm":3.079491522894884e-12,"motorSpeedRadPerSec":0.001702157658986625,"outOfPlaneTiltRad":1.6834981151376905e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"cad-5","params":{"radiusMm":15,"rodLengthMm":180,"rpm":30},"metrics":{"nominalPositionMm":0.00982527913581066,"nominalVelocityMmPerSec":0.11196090630873368,"nominalIntervalAccelerationMmPerSec2":3.0760978193847666,"nominalAcceleration33msMmPerSec2":0.8813676059346451,"positionAtMeasuredAngleMm":0.0001269144907212194,"velocityAtMeasuredAngleMmPerSec":0.1055871031743374,"revoluteClosureMm":0.0000840128730293708,"guideLateralMm":7.601022675857161e-13,"motorSpeedRadPerSec":0.0011581500344948203,"outOfPlaneTiltRad":1.4940161233735003e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse","params":{"radiusMm":25,"rodLengthMm":100,"rpm":-15},"metrics":{"nominalPositionMm":0.010492450553016397,"nominalVelocityMmPerSec":0.05757271987023316,"nominalIntervalAccelerationMmPerSec2":2.3498676261278004,"nominalAcceleration33msMmPerSec2":0.6282554992943844,"positionAtMeasuredAngleMm":0.00006467409082233644,"velocityAtMeasuredAngleMmPerSec":0.05017577034172455,"revoluteClosureMm":0.000047603778296581986,"guideLateralMm":4.0087594702087337e-13,"motorSpeedRadPerSec":0.000565214953150539,"outOfPlaneTiltRad":1.8597048210488107e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse-cad-1","params":{"radiusMm":15,"rodLengthMm":75,"rpm":-30},"metrics":{"nominalPositionMm":0.009514968089717968,"nominalVelocityMmPerSec":0.11148600268111508,"nominalIntervalAccelerationMmPerSec2":1.6023382371336425,"nominalAcceleration33msMmPerSec2":0.8524368239734089,"positionAtMeasuredAngleMm":0.00016524021094710406,"velocityAtMeasuredAngleMmPerSec":0.10202382420789102,"revoluteClosureMm":0.0001234066139770419,"guideLateralMm":8.184276823960945e-13,"motorSpeedRadPerSec":0.0010692199044899375,"outOfPlaneTiltRad":3.611952370448752e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse-cad-2","params":{"radiusMm":25,"rodLengthMm":75,"rpm":-30},"metrics":{"nominalPositionMm":0.02257321878703067,"nominalVelocityMmPerSec":0.2212877273467413,"nominalIntervalAccelerationMmPerSec2":2.388999742939811,"nominalAcceleration33msMmPerSec2":1.6655768727156388,"positionAtMeasuredAngleMm":0.0002852532655452933,"velocityAtMeasuredAngleMmPerSec":0.19226941015234544,"revoluteClosureMm":0.0002039053015379847,"guideLateralMm":3.0937995221247405e-12,"motorSpeedRadPerSec":0.0017662922567649453,"outOfPlaneTiltRad":6.374990609733496e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse-cad-3","params":{"radiusMm":40,"rodLengthMm":120,"rpm":-30},"metrics":{"nominalPositionMm":0.03778493570378316,"nominalVelocityMmPerSec":0.3666522832511987,"nominalIntervalAccelerationMmPerSec2":3.9660763195174678,"nominalAcceleration33msMmPerSec2":2.7102644038072214,"positionAtMeasuredAngleMm":0.00036718045612360584,"velocityAtMeasuredAngleMmPerSec":0.31713976479597505,"revoluteClosureMm":0.00024881497949180806,"guideLateralMm":5.948933186339378e-12,"motorSpeedRadPerSec":0.0018338282876686485,"outOfPlaneTiltRad":2.9935404967673783e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse-cad-4","params":{"radiusMm":40,"rodLengthMm":180,"rpm":-30},"metrics":{"nominalPositionMm":0.037630413553245035,"nominalVelocityMmPerSec":0.3411734491113805,"nominalIntervalAccelerationMmPerSec2":5.077892383716037,"nominalAcceleration33msMmPerSec2":2.401100747688361,"positionAtMeasuredAngleMm":0.00032125274665872894,"velocityAtMeasuredAngleMmPerSec":0.29163393758039646,"revoluteClosureMm":0.0002051857516564306,"guideLateralMm":3.078649748328166e-12,"motorSpeedRadPerSec":0.0017150322622581093,"outOfPlaneTiltRad":1.8262645146066247e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"reverse-cad-5","params":{"radiusMm":15,"rodLengthMm":180,"rpm":-30},"metrics":{"nominalPositionMm":0.009782264809473418,"nominalVelocityMmPerSec":0.11525680474629052,"nominalIntervalAccelerationMmPerSec2":2.830194864726471,"nominalAcceleration33msMmPerSec2":0.9376725375750322,"positionAtMeasuredAngleMm":0.0001229440196084397,"velocityAtMeasuredAngleMmPerSec":0.10892078630703761,"revoluteClosureMm":0.00008564186896830179,"guideLateralMm":7.740996428931557e-13,"motorSpeedRadPerSec":0.0011579116159157188,"outOfPlaneTiltRad":1.586170855388002e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"interior-reverse","params":{"radiusMm":40,"rodLengthMm":150,"rpm":-30},"metrics":{"nominalPositionMm":0.03712902019054809,"nominalVelocityMmPerSec":0.3514494081632762,"nominalIntervalAccelerationMmPerSec2":4.412662419541123,"nominalAcceleration33msMmPerSec2":2.624956268264507,"positionAtMeasuredAngleMm":0.00033717162710900084,"velocityAtMeasuredAngleMmPerSec":0.3050931298303583,"revoluteClosureMm":0.00021927389321222483,"guideLateralMm":3.2012285617472047e-12,"motorSpeedRadPerSec":0.0017629543966575234,"outOfPlaneTiltRad":1.8925101570922162e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"zero","params":{"radiusMm":25,"rodLengthMm":100,"rpm":0},"metrics":{"nominalPositionMm":0,"nominalVelocityMmPerSec":0,"nominalIntervalAccelerationMmPerSec2":0,"nominalAcceleration33msMmPerSec2":0,"positionAtMeasuredAngleMm":0,"velocityAtMeasuredAngleMmPerSec":0,"revoluteClosureMm":0,"guideLateralMm":0,"motorSpeedRadPerSec":0,"outOfPlaneTiltRad":0,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"default-240Hz","params":{"radiusMm":25,"rodLengthMm":100,"rpm":15},"metrics":{"nominalPositionMm":0.007863564065957007,"nominalVelocityMmPerSec":0.04342209207265535,"nominalIntervalAccelerationMmPerSec2":8.234163082138357,"nominalAcceleration33msMmPerSec2":0.9089087892649316,"positionAtMeasuredAngleMm":0.000025310947890488933,"velocityAtMeasuredAngleMmPerSec":0.040963472172218074,"revoluteClosureMm":0.0000203236134785963,"guideLateralMm":1.9755552716719388e-13,"motorSpeedRadPerSec":0.0005758563664295391,"outOfPlaneTiltRad":1.741963099811837e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+{"name":"render-partitions","params":{"radiusMm":25,"rodLengthMm":100,"rpm":15},"metrics":{"nominalPositionMm":0.010526222757363257,"nominalVelocityMmPerSec":0.054345233192833575,"nominalIntervalAccelerationMmPerSec2":2.8513052197585966,"nominalAcceleration33msMmPerSec2":0.4021506740330075,"positionAtMeasuredAngleMm":0.00006470204743891372,"velocityAtMeasuredAngleMmPerSec":0.050200658822536326,"revoluteClosureMm":0.00004697779388464167,"guideLateralMm":7.253192187486879e-13,"motorSpeedRadPerSec":0.0004499395701549336,"outOfPlaneTiltRad":1.5312581474293882e-7,"sliderRotationRad":0,"groundDriftMm":0}}
+✔ actual CAD crank-slider follows independent closed-loop kinematics with forward, reverse, zero and extreme settings (2426.203375ms)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+[PHYSICS] buildWorld failed: Error: Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:786:17)
+✔ per-world solver settings reject invalid worlds, govern live motors and reset to legacy defaults (357.645334ms)
+✔ actual positions, velocities, angle and RPM remain independent from the nominal reference (2.737334ms)
+✔ mean acceleration uses independent measured speed samples and their actual interval (0.257167ms)
+✔ reference interval acceleration is the mean velocity change, not point acceleration (0.434083ms)
+✔ missing actual poses or body velocity readbacks never fabricate a sample (1.310167ms)
+✔ nonfinite measurements, invalid clocks and degenerate quaternions are unavailable (0.197334ms)
+✔ duplicate, backward and invalid previous clocks cannot create interval acceleration (0.345166ms)
+✔ quaternion scale and sign do not change measured angle or mutate worker readbacks (1.398792ms)
+✔ zero/reverse nominal RPM affects only the reference, never clamps measured motion (0.240167ms)
+✔ a reset remains detectable even if React observes only the next nonempty run snapshot (1.009208ms)
+✔ pose publication preserves actual readbacks and leaves zero-step or missing-body data unmeasured (1.393292ms)
+✔ interval selection includes the exact 1/30 s boundary and only its declared roundoff tolerance (0.31725ms)
+✔ the final frame selects the latest sufficiently old actual sample, independent of array order (0.564ms)
+✔ empty or restarted histories and invalid/backward clocks yield no acceleration endpoint (0.094291ms)
+✔ nonfinite sample values are skipped without substituting a theoretical or corrupt endpoint (1.009458ms)
+✔ generated workspace is fresh, stopped and contains only its validated experiment (6.961083ms)
+✔ demo parser and actual Save/project parser retain adjustable parameters and native history (23.918ms)
+✔ physical assembly guard tolerates cosmetic names, computed fields and object-key order (2.389917ms)
+✔ manual geometry, frame, material, visibility and joint edits disable parameter replacement (7.750375ms)
+✔ reference guard rejects changed gravity, timing and stale experiment controllers (2.719042ms)
+✔ invalid adjustable metadata rejects before a document can replace the workspace (5.223959ms)
+✔ parameter changes and Save remain isolated, then restore original live imported references (10.670333ms)
+✔ all bundled examples load and reference existing parts (26.371084ms)
+✔ asset paths work at the Replit /app base and a local root (0.495417ms)
+✔ force experiment survives document parsing and rejects invalid target references (4.611709ms)
+✔ invalid and unsupported documents fail before entering a workspace (4.708584ms)
+✔ editing and playing multiple demos never overwrite the original project (5.616916ms)
+✔ a second visit captures the newly edited original and begins stopped (0.89375ms)
+✔ real Comlink worker serializes initial asynchronous build before zero-time and advancing calls (405.576208ms)
+✔ queued actuator step, contact rebuild and contact step remain FIFO and reset the physical world (38.901417ms)
+✔ invalid build rejects and clears the previous world without poisoning subsequent queued rebuilds (20.411541ms)
+✔ concurrent scene regenerations dispatch one operation per matching cold feature (3.846542ms)
+✔ pending operations on different kernel instances remain independent (0.952125ms)
+✔ changed feature parameters do not join an older in-flight operation (1.219958ms)
+✔ shared failures reach every caller and a later request retries the worker (2.788042ms)
+✔ clearing the cache separates pending work and rejects late cache repopulation (2.708792ms)
+✔ concurrent chains share each stage and preview uses the same full upstream hash (30.237833ms)
+✔ display regeneration sends one complete chain and caches its exact final-feature hash (2.336917ms)
+✔ display cache invalidates when an upstream feature or source sketch changes (0.693209ms)
+✔ full-chain rejection reaches all display callers and retries without a poisoned cache (0.319792ms)
+✔ unit-density mass data warms the cache and material/pose changes need no CAD rebuild (0.854916ms)
+✔ unmodified STEP uses its live mesh; modified STEP dispatches its intact full history (0.469834ms)
+✔ a late full-chain result cannot repopulate mesh or physical caches after clear (0.13975ms)
+✔ a final-feature preview cannot hide an invalid earlier history from display regeneration (0.199792ms)
+✔ display measures acceleration from solver readback even when it disagrees with F/m (1.3725ms)
+✔ measurement uses consecutive actual simulation timestamps and holds at completion (0.351875ms)
+✔ new runs clear prior readings and missing measurements cannot look successful (0.515167ms)
+✔ equal newton forces yield measured inverse-mass acceleration on unpowered prismatic sliders (471.423417ms)
+ℹ Maximum measured acceleration relative error 0.00009767859956366642; masses 0.009999999776482582, 0.019999999552965164, 0.07999999821186066 kg.
+✔ doubling force and mass preserves measured acceleration and motion (15.639792ms)
+✔ world-space COM force adds to gravity without creating torque on an offset, rotated body (13.9375ms)
+✔ duration cap and force motion are invariant to elapsed-time partitions, including capped catch-up (81.041583ms)
+✔ zero requests pause a forced run and rebuilding removes its cap and persistent forces (3.542334ms)
+[PHYSICS] buildWorld failed: Error: missing: force target must be an existing dynamic body.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:846:44)
+[PHYSICS] buildWorld failed: Error: ground: force target must be an existing dynamic body.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:846:44)
+[PHYSICS] buildWorld failed: Error: target: duplicate applied-force target.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:847:54)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:843:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:843:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:843:17)
+[PHYSICS] buildWorld failed: Error: target: force must contain three finite newton values representable by the solver.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:843:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+[PHYSICS] buildWorld failed: Error: Simulation duration must be finite, positive and permit at least one fixed step.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:798:17)
+✔ invalid force vectors, duplicate/fixed/missing targets and invalid caps reject the whole world (11.590583ms)
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'top', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+[mate-click] face pick {
+  hit: { partId: 'block', faceId: 'bottom', faceType: 'plane' },
+  filter: null,
+  mode: 'point-on-face'
+}
+✔ two real canvas clicks set Hole UV on the top face of an untransformed solid (8.682083ms)
+✔ two real canvas clicks set Hole UV on the bottom face of an untransformed solid (2.74375ms)
+✔ two real canvas clicks set Hole UV on the top face of an translated with mixed XYZ rotation solid (3.524584ms)
+✔ two real canvas clicks set Hole UV on the bottom face of an translated with mixed XYZ rotation solid (1.222208ms)
+✔ Clear face and a changed face both restart the Hole picker without stale UV (3.8825ms)
+[mass-tests] Initialising the installed OCCT kernel.
+[mass-tests] OCCT ready; initialising Rapier.
+✔ OCCT cuboid volume, mass, centroid and all three anisotropic moments match analytic values (7846.471209ms)
+✔ translated and generally rotated cuboid retains centroidal tensor, including off-diagonal terms (13.6525ms)
+✔ solid cylinder moments match axial and transverse analytic inertia (34.222459ms)
+✔ bored ring retains removed-volume effects in its axial and transverse inertia (592.721125ms)
+✔ warm cache and a material change preserve the full tensor and principal frame (15.427583ms)
+✔ Rapier torque impulse follows the full rotated inertia inverse, not part-local diagonal axes (32.505875ms)
+✔ eigensolver handles tiny and large units and rejects non-physical tensors (0.952792ms)
+✔ empty geometry and invalid density fail instead of creating fictitious physical bodies (2.294792ms)
+✔ finished sketches follow arbitrary part transforms, including changes without geometry edits (5.572542ms)
+✔ consumed sketches show only when selected, unused profiles show, and hidden parts stay hidden (3.772666ms)
+✔ gyroscope profiles retain the assembly elevation instead of being drawn at the ground origin (13.274792ms)
+✔ joint glyph anchors and axes track moving body poses rather than static design transforms (6.178083ms)
+✔ selection enlargement does not displace prismatic or planar anchors (1.974167ms)
+✔ a translated, generally rotated B-rep keeps its analytic volume and Three-world centroid (8842.170416ms)
+✔ the same world transform preserves boolean overlap between two independently transformed bodies (1301.364958ms)
+✔ arbitrary mixed XYZ rotations and translations match the actual Three quaternion convention (6.497084ms)
+✔ invalid transforms fail before constructing OCCT values (0.659375ms)
+✔ OCCT transform wrappers are released on constructor or shape-operation failures (0.377709ms)
+✔ windmill seed mate retains pi ±5e-7 rad/s after five seconds with an analytical rotor (1288.283625ms)
+ℹ Maximum settled windmill error: 8.742278012618954e-8 rad/s
+✔ free fall uses millimetres, seconds, kilograms and is independent of mass (64.58ms)
+ℹ One-second fall: 4905.64404296875 mm; continuum reference 4905 mm
+✔ zero and blank live revolute commands release the motor so a rotor coasts (158.067ms)
+✔ zero and blank live prismatic commands release the slider to gravity (81.542292ms)
+✔ unpowered pendulum follows the analytical physical-pendulum period (66.429792ms)
+ℹ Pendulum period 1.6411441888476992s; analytical finite-amplitude reference 1.6411470562544834s; max anchor error 0.000030550614547257853mm
+✔ revolute motor follows part A local axis when both bodies share a rotated frame (24.169875ms)
+✔ prismatic motor follows rotated local axis and preserves lateral position (32.591708ms)
+ℹ Slider travelled 99.97734832763672mm during its second second
+✔ fixed mate preserves an initially translated and rotated child (24.999167ms)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: different-frames requires separate local axes for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:517:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:539:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:824:33)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: different-frames requires separate local orientation frames for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:517:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:593:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:824:33)
+✔ unsupported mismatched joint frames stop the whole world instead of snapping parts (9.837458ms)
+[PHYSICS] buildWorld failed: Error: joint-frame-unsupported: twisted-axis requires separate local orientation frames for its two parts. The current physics engine binding cannot represent these frames; simulation was stopped.
+    at supportedJointAxis (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:517:11)
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:593:20)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:824:33)
+✔ revolute allows initial twist about its shared axis; prismatic rejects that twist (30.923ms)
+[PHYSICS] buildWorld failed: Error: plane: planar mates are not supported by the current physics engine binding; simulation was stopped.
+    at buildJoint (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:653:13)
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:824:33)
+✔ unsupported planar constraints stop simulation rather than being omitted (0.701417ms)
+[PHYSICS] buildWorld failed: Error: missing-link: cannot simulate a mate with missing part geometry (hidden-rotor). Show both mated parts and wait for their geometry to finish loading.
+    at Object.buildWorld (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/physicsWorker.ts:819:17)
+✔ a mate referencing a hidden or missing body rejects the whole incomplete assembly (0.750416ms)
+✔ new gimbal seed drives each relative joint speed, not each child world-speed magnitude (91.131917ms)
+ℹ Nested gimbal: max relative speed error 0.00022979047607252223rad/s; transverse 0.0004547721356077113rad/s; anchor 0mm
+✔ fixed solver stepping gives identical motion at 30 Hz, 144 Hz and irregular render rates (36.444917ms)
+ℹ 30 Hz, 144 Hz and irregular schedules produced bit-identical body transforms after 100 fixed solver steps.
+✔ fractional requests accumulate; zero pauses and undefined advances one configured step (9.021583ms)
+✔ bounded catch-up retains time instead of dropping it and zero never drains backlog (3.406167ms)
+✔ playback time scaling advances only the actual zero, one or two seconds requested (10.086167ms)
+✔ actual worker restores embedded STEP after worker restart, retaining native history, transforms, topology and exportable geometry (24813.539292ms)
+[CAD WORKER] exportAssemblyStep failed: Error: imported-step shape "no-longer-in-worker" is not in the worker registry. Re-import the STEP file to restore this part.
+    at executeUpstreamChain (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:453:15)
+    at partShape (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:498:18)
+    at Array.map (<anonymous>)
+    at buildAssemblyExportShapes (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:508:40)
+    at Object.exportAssemblyStep (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/artifacts/kineticad/src/cad/cadWorker.ts:1505:18)
+✔ a legacy live import is packaged in local coordinates and missing old worker geometry fails clearly (11748.426542ms)
+✔ native history, transforms, materials and mates survive with runtime stopped (10.039125ms)
+✔ Save accepts the live Zustand object without cloning actions or editor state (3.209291ms)
+✔ malformed references, dimensions, transforms and unknown features reject (12.027958ms)
+✔ six-axis configuration persists and invalid target rejects (6.560333ms)
+✔ corrupt embedded bytes reject before asset reconstruction or storage changes (22.186708ms)
+✔ invalid downloaded project does not replace the current or previous snapshots (12.53675ms)
+✔ autosave keeps two complete generations and quota failure retains both (6.114417ms)
+✔ corrupt newest recovery falls back to validated previous without overwriting either (2.298166ms)
+✔ newest state is captured before async work and load follows queued autosave (1.672292ms)
+✔ real Zustand demo isolation preserves durable project and last-good copy (4.027584ms)
+✔ version 8 migration runs before validation; old missing STEP files reject clearly (1.200333ms)
+[PHYSICS] simulation stopped: Error: Assembly Boolean results need their own rigid-body and joint definitions. Export the final assembly as STEP and import those solids to simulate them.
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:189:13)
+    at launchBuild (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:364:10)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:374:9)
+    at file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/node_modules/.pnpm/zustand@5.0.12_@types+react@19.2.14_react@19.1.0_use-sync-external-store@1.6.0_react@19.1.0_/node_modules/zustand/esm/vanilla.mjs:9:39
+    at Set.forEach (<anonymous>)
+    at setState (file:///Users/amb/Documents/New%20project/KinetiCAD-review-20260911/node_modules/.pnpm/zustand@5.0.12_@types+react@19.2.14_react@19.1.0_use-sync-external-store@1.6.0_react@19.1.0_/node_modules/zustand/esm/vanilla.mjs:9:17)
+    at Object.setSimulationRunning (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:65:40)
+    at TestContext.<anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:106:28)
+    at Test.runInAsyncScope (node:async_hooks:213:14)
+    at Test.run (node:internal/test_runner/test:1095:25)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ assembly Boolean geometry cannot silently simulate its original uncut inputs (212.701916ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ runner permits one in-flight step, retains elapsed time, and counts actual worker time (12.89625ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ finite experiments hold the final solver pose and clock instead of resetting the model (7.196708ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ late RPC response cannot move the paused pose or clock; resume preserves its actual time (5.570542ms)
+✔ stopped or replaced assembly ignores a late step response (4.02125ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+[PHYSICS] simulation stopped: Error: Invalid mass tensor
+    at Object.harness.mass (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:199:32)
+    at massPropertiesForMaterial (data:text/javascript,export%20const%20getVolumeData%3D()%3D%3E(%7B%7D)%3B%20export%20const%20setVolumeData%3D()%3D%3E%7B%7D%3B%20export%20const%20massPropertiesForMaterial%3D()%3D%3EglobalThis.__kineticadRunnerTest.mass()%3B%20export%20const%20volumeDataFromMassProperties%3D(p)%3D%3Ep%3B:1:149)
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:241:23)
+✔ old build reply and teardown cannot destroy the replacement scene world (4.757167ms)
+[PHYSICS] simulation stopped: Error: Worker build rejected
+    at Object.harness.physics.buildWorld (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:213:31)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:310:22)
+    at <anonymous> (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:68:51)
+✔ invalid cached mass stops the current run and restores modelling layers (5.781417ms)
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ rejected build RPC is caught and does not poison the next successful build (7.614ms)
+[PHYSICS] world ready — 2 bodies, 1 joints
+✔ motor edits during pending CAD work reach the world that is eventually built (5.758083ms)
+[PHYSICS] world ready — 2 bodies, 1 joints
+[PHYSICS] world ready — 1 bodies, 0 joints
+✔ motor edits during an in-flight build replay before the first solver step (4.78725ms)
+[PHYSICS] simulation stopped: Error: Edited solids are outside the verified workspace
+    at Object.harness.verifyStewart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/tests/simulation-runner.test.mjs:284:47)
+    at verifyBundledStewartGeometry (data:text/javascript,export%20const%20verifyBundledStewartGeometry%3D(assembly%2Cbase)%3D%3EglobalThis.__kineticadRunnerTest.verifyStewart(assembly%2Cbase)%3B:1:93)
+    at buildAndStart (/Users/amb/Documents/New project/KinetiCAD-review-20260911/artifacts/kineticad/src/physics/simulationRunner.ts:287:13)
+✔ six-axis build validates source solids and uses its own full movement duration (2.615625ms)
+✔ six-axis source rejection never creates a physics world (4.336792ms)
+✔ XY arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (6865.3535ms)
+✔ XY semicircle revolves to an exact sphere about the sketch V axis (46.315625ms)
+✔ XZ arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (22.424959ms)
+✔ XZ semicircle revolves to an exact sphere about the sketch V axis (10.603042ms)
+✔ YZ arc endpoints and intermediate samples agree with sketch UV; sector extrudes with analytic volume and centroid (20.013041ms)
+✔ YZ semicircle revolves to an exact sphere about the sketch V axis (9.184041ms)
+✔ both Stewart turning profiles retain exact circular ends and rebuild as single valid solids (45.116292ms)
+✔ six-axis IK agrees with independently transformed anchors for both directions of every axis (68.980625ms)
+✔ all 64 simultaneous translation/rotation workspace corners satisfy stroke, speed and singularity guards (117.169458ms)
+✔ quintic trajectory starts and ends at rest and holds its final requested pose (1.174334ms)
+✔ invalid values, speed requests, altered frames and altered anchors reject explicitly (3.099125ms)
+✔ dimensionless Jacobian guard detects a collapsed singular geometry (4.633583ms)
+✔ orientation error measures tiny and sign-equivalent quaternions without acos cancellation (0.192666ms)
+✔ the editable v9 fixture forms one connected 14-body, 18-joint mechanism (11.066334ms)
+✔ every encoded joint closes in world space and each actuator uses compatible oblique frames (5.705ms)
+✔ the six-axis length Jacobian stays nonsingular and equal actuator rates produce pure heave (4.53175ms)
+✔ sampled lift retains rod overlap, radial bore clearance and conservative separation between legs (11.248875ms)
+✔ the builder rejects an unsafe programme or insufficient rod overlap (4.693ms)
+✔ saved six-axis command survives demo parsing and invalid commands fail closed (16.620292ms)
+✔ source guard permits labels and material changes but rejects altered solids, topology and visibility (20.3015ms)
+✔ measurement state uses actual worker results, holds on zero step, and clears on reset or another experiment (0.358083ms)
+✔ the entire ±5 mm / ±2° pose box is enclosed with no unresolved cells (173.432042ms)
+✔ insufficient subdivision and an enlarged unsafe range fail explicitly (4.470708ms)
+✔ independent Rodrigues progress matches exact quaternion axis-angle interpolation at intermediate poses (2.948958ms)
+✔ all 64 extreme home-to-target paths are enclosed between progress samples (238.933208ms)
+✔ exact target solid placements close spherical endpoints and encode independent rod extension (3.620666ms)
+ℹ tests 195
+ℹ suites 0
+ℹ pass 195
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 134174.750791

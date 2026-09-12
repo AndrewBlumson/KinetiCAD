@@ -33,6 +33,8 @@ import type { PartDescriptor, StepResult, BuildWorldResult, UpdateJointMotorResu
 import { beginForceMeasurements, clearForceMeasurements, publishForceMeasurements } from './forceMeasurements';
 import { clearPoseMeasurements, publishPoseMeasurements } from './poseMeasurements';
 import { verifyBundledStewartGeometry } from './stewartFixture';
+import { matchesCrankSliderConfiguration } from '../mechanisms/crankSliderWorkspace';
+import { CRANK_SLIDER_SOLVER_SETTINGS } from '../mechanisms/crankSliderSolver';
 
 /**
  * Walk a part's feature chain and return the tip hash — the same key that
@@ -310,6 +312,11 @@ export function startSimulationRunner(): RunnerHandle {
         mates: latest.assembly.mates,
         gravity: latest.simulation.gravity,
         timeStepMs: latest.simulation.timeStepMs,
+        ...(matchesCrankSliderConfiguration(latest.assembly, latest.simulation)
+          ? {
+            measurementPartIds: ['crank-slider-crank', 'crank-slider-slider'],
+            solverSettings: CRANK_SLIDER_SOLVER_SETTINGS,
+          } : {}),
         ...(latest.simulation.stewartMotion ? {
           stewartMotion: latest.simulation.stewartMotion,
           durationMs: latest.simulation.stewartMotion.moveDurationMs + latest.simulation.stewartMotion.settleDurationMs,

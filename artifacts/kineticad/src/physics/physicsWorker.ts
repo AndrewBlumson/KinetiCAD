@@ -64,6 +64,7 @@ let accumulatedTimeMs = 0;
 let durationMs: number | null = null;
 let maximumSolverSteps = Infinity;
 const forcedPartIds = new Set<string>();
+const measuredPartIds = new Set<string>();
 let stewartController: ReturnType<typeof createStewartController> | null = null;
 // Bound a single worker task while retaining excess time for subsequent calls.
 const MAX_SUBSTEPS_PER_CALL = 120;
@@ -129,6 +130,7 @@ function rpmToRadPerSec(rpm: number): number {
  * are different but the per-axis stiffness needed is comparable.
  */
 const MOTOR_VELOCITY_GAIN = 10000;
+let motorVelocityGain = MOTOR_VELOCITY_GAIN;
 
 /**
  * Phase 9.5 Follow-up #6 — switching back to `AccelerationBased`.
@@ -163,12 +165,12 @@ function applyRevoluteMotor(
   console.log("[motor-apply]", {
     rpm,
     radPerSec,
-    gain: MOTOR_VELOCITY_GAIN,
+    gain: motorVelocityGain,
     model: "AccelerationBased",
   });
   const revolute = joint as unknown as RAPIER.RevoluteImpulseJoint;
   revolute.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
-  revolute.configureMotorVelocity(radPerSec, MOTOR_VELOCITY_GAIN);
+  revolute.configureMotorVelocity(radPerSec, motorVelocityGain);
 }
 
 function applyPrismaticMotor(
@@ -178,7 +180,7 @@ function applyPrismaticMotor(
   const v = motorVelocityMmPerSec ?? 0;
   const prismatic = joint as unknown as RAPIER.PrismaticImpulseJoint;
   prismatic.configureMotorModel(RAPIER.MotorModel.AccelerationBased);
-  prismatic.configureMotorVelocity(v, MOTOR_VELOCITY_GAIN);
+  prismatic.configureMotorVelocity(v, motorVelocityGain);
 }
 
 /**
@@ -689,7 +691,9 @@ function destroyWorld(): void {
   durationMs = null;
   maximumSolverSteps = Infinity;
   forcedPartIds.clear();
+  measuredPartIds.clear();
   stewartController = null;
+  motorVelocityGain = MOTOR_VELOCITY_GAIN;
 }
 
 /** Preserve the existing DevTools diagnostic, sampled by solver steps. */
@@ -734,6 +738,8 @@ function logStepDiagnostics(): void {
       simulatedTimeMs: stepCount * timeStepMs,
       solverTimeStepMs: timeStepMs,
       solverIterations: world!.integrationParameters.numSolverIterations,
+      internalPgsIterations: world!.integrationParameters.numInternalPgsIterations,
+      motorVelocityGain,
       mateId,
       mateType: mate.type,
       bodyBangvel: angvel,
@@ -771,6 +777,18 @@ const api: PhysicsApi = {
       // Coupled CAD mechanisms need more convergence than Rapier's default
       // four iterations: validated against every demo's exact OCCT inertia.
       world.integrationParameters.numSolverIterations = 32;
+      if (args.solverSettings !== undefined) {
+        const settings = args.solverSettings;
+        if (!settings || typeof settings !== 'object'
+          || !Number.isInteger(settings.numSolverIterations) || settings.numSolverIterations < 1 || settings.numSolverIterations > 128
+          || !Number.isInteger(settings.numInternalPgsIterations) || settings.numInternalPgsIterations < 1 || settings.numInternalPgsIterations > 32
+          || !Number.isFinite(settings.motorVelocityGain) || settings.motorVelocityGain < 1000 || settings.motorVelocityGain > 1000000) {
+          throw new Error('Solver settings require 1–128 outer iterations, 1–32 inner PGS iterations (integers), and finite motor gain 1000–1000000.');
+        }
+        world.integrationParameters.numSolverIterations = settings.numSolverIterations;
+        world.integrationParameters.numInternalPgsIterations = settings.numInternalPgsIterations;
+        motorVelocityGain = settings.motorVelocityGain;
+      }
       timeStepMs = Number.isFinite(args.timeStepMs) && args.timeStepMs > 0 ? args.timeStepMs : 1000 / 60;
       world.timestep = timeStepMs / 1000; // Rapier uses seconds.
       if (args.durationMs !== undefined) {
@@ -809,9 +827,14 @@ const api: PhysicsApi = {
       }
 
       if (args.stewartMotion) {
-        stewartController = createStewartController(args, partIdToBody, mateIdToJoint, MOTOR_VELOCITY_GAIN);
+        stewartController = createStewartController(args, partIdToBody, mateIdToJoint, motorVelocityGain);
         durationMs = stewartController.durationMs;
         maximumSolverSteps = Math.round(durationMs / timeStepMs);
+      }
+
+      for (const partId of args.measurementPartIds ?? []) {
+        if (!partIdToBody.has(partId) || measuredPartIds.has(partId)) throw new Error('Measurement targets must be unique existing parts.');
+        measuredPartIds.add(partId);
       }
 
       for (const applied of args.appliedForces ?? []) {
@@ -878,14 +901,18 @@ const api: PhysicsApi = {
         positionMm: [t.x, t.y, t.z],
         rotationQuat: [r.x, r.y, r.z, r.w],
       });
-      if (forcedPartIds.has(partId)) {
+      if (forcedPartIds.has(partId) || measuredPartIds.has(partId)) {
         const velocity = body.linvel();
-        bodyMeasurements.push({ partId, massKg: body.mass(), positionMm: [t.x, t.y, t.z], linearVelocityMmPerSec: [velocity.x, velocity.y, velocity.z] });
+        const angular = body.angvel();
+        bodyMeasurements.push({ partId, massKg: body.mass(), positionMm: [t.x, t.y, t.z], linearVelocityMmPerSec: [velocity.x, velocity.y, velocity.z],
+          ...(measuredPartIds.has(partId) ? { angularVelocityRadPerSec: [angular.x, angular.y, angular.z] as [number, number, number] } : {}) });
       }
     });
 
     return {
       transforms, dtMs: steps * timeStepMs,
+      solverSettings: { numSolverIterations: world.integrationParameters.numSolverIterations,
+        numInternalPgsIterations: world.integrationParameters.numInternalPgsIterations, motorVelocityGain },
       simulatedTimeMs: Math.min(stepCount * timeStepMs, durationMs ?? Infinity),
       completed, bodyMeasurements,
       ...(stewartController ? { stewartMeasurement: stewartController.measurement(stepCount * timeStepMs) } : {}),

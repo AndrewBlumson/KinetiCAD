@@ -267,6 +267,8 @@ export type SimulationState = {
   durationMs?: number;
   /** Bounded six-axis pose command for the bundled Stewart mechanism. */
   stewartMotion?: import('../physics/stewartKinematics').StewartMotionConfig;
+  /** Parameters of the adjustable native crank-slider; runtime readouts are transient. */
+  crankSlider?: import('../mechanisms/crankSlider').CrankSliderParams;
 };
 
 export type AppMode = 'modeller' | 'simulator';

@@ -37,6 +37,15 @@ export type PartDescriptor = {
   isGround: boolean;
 };
 
+/** Explicit numerical settings for a measured mechanism. These change solver
+ * convergence, not physical motor force/torque ratings. Omission keeps the
+ * ordinary assembly defaults. */
+export type PhysicsSolverSettings = {
+  numSolverIterations: number;
+  numInternalPgsIterations: number;
+  motorVelocityGain: number;
+};
+
 /**
  * A single mate descriptor sent to the physics worker. The full Mate
  * schema is forwarded as-is; the worker does its own type-discrimination
@@ -63,6 +72,8 @@ export type BodyMeasurement = {
   /** Body origin in world coordinates; velocity below is at its centre of mass. */
   positionMm: [number, number, number];
   linearVelocityMmPerSec: [number, number, number];
+  /** Actual world angular velocity, supplied for explicitly requested readouts. */
+  angularVelocityRadPerSec?: [number, number, number];
 };
 
 export type StewartMeasurement = {
@@ -90,6 +101,8 @@ export type StewartMeasurement = {
 };
 
 export type StepResult = {
+  /** Actual current world convergence settings, when a world exists. */
+  solverSettings?: PhysicsSolverSettings;
   transforms: StepTransform[];
   /** Physics-time advanced by this step, in milliseconds. */
   dtMs: number;
@@ -103,6 +116,7 @@ export type StepResult = {
 };
 
 export type BuildWorldArgs = {
+  solverSettings?: PhysicsSolverSettings;
   parts: PartDescriptor[];
   mates: MateDescriptor[];
   /** mm/s², Z-up by default. */
@@ -118,6 +132,8 @@ export type BuildWorldArgs = {
   /** Optional bounded six-axis trajectory for the bundled Stewart assembly.
    * Owns its move+settle duration. Omit to retain ordinary joint motors. */
   stewartMotion?: StewartMotionConfig;
+  /** Read actual velocities without adding forces or prescribing motion. */
+  measurementPartIds?: string[];
 };
 
 export type BuildWorldResult =

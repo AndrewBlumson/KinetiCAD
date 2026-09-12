@@ -1,11 +1,13 @@
 import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowUpRight, Boxes, Loader2, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Boxes, Loader2, RotateCcw, Settings2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useKinetiCADStore } from '@/state/store';
 import { DEMOS } from '@/demos/catalog';
 import { demoAssetUrl, parseDemoDocument } from '@/demos/demoDocument';
 import { createDemoSession } from '@/demos/demoSession';
 import { DemoGallery } from './DemoGallery';
+import { DEFAULT_CRANK_SLIDER_PARAMS, type CrankSliderParams } from '@/mechanisms/crankSlider';
+import { createCrankSliderDocument, matchesCrankSliderAssembly } from '@/mechanisms/crankSliderWorkspace';
 
 type Demo = (typeof DEMOS)[number];
 type WorkspaceContext = {
@@ -17,7 +19,12 @@ type WorkspaceContext = {
   editing: boolean;
   leaveDemo: () => void;
   resetDemo: () => void;
+  openCrankSlider: () => void;
+  applyCrankSlider: (params: CrankSliderParams) => void;
 };
+const crankSliderDemo: Demo = { id: 'crank-slider', title: 'Adjustable crank-slider', subtitle: 'Turning motion becomes straight motion',
+  description: 'A powered crank drives a passive connecting rod and guided slider.', category: 'Mechanism', partCount: 4, jointCount: 4,
+  highlights: ['Editable dimensions', 'Measured motion'], learningTip: 'Change the radius, rod length or speed, then compare the solver with the equations.', accent: '#ecab76' };
 const DemoContext = createContext<WorkspaceContext | null>(null);
 export function useDemoWorkspace() {
   const value = useContext(DemoContext);
@@ -98,11 +105,43 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
     navigate(originalRoute.current);
   }
 
+  function openCrankSlider() {
+    if (editing) return;
+    ++requestId.current;
+    setLoadingId(null);
+    if (!activeRef.current) originalRoute.current = location;
+    session.current.enter(createCrankSliderDocument(DEFAULT_CRANK_SLIDER_PARAMS));
+    activeRef.current = crankSliderDemo;
+    setActiveDemo(crankSliderDemo);
+    setRevision(n => n + 1);
+    setOpen(false);
+    navigate('/simulator');
+  }
+
+  function applyCrankSlider(params: CrankSliderParams) {
+    const current = useKinetiCADStore.getState();
+    if (pendingFilesRef.current > 0 || current.sketchSession.active || current.featureEditor.open || current.booleanEditor.open || current.mateEditor.open) {
+      throw new Error('Finish your current edit or file operation first.');
+    }
+    if (current.simulation.running) throw new Error('Reset the simulation before changing the mechanism.');
+    if (!current.simulation.crankSlider || !matchesCrankSliderAssembly(current.assembly, current.simulation.crankSlider)) {
+      throw new Error('This mechanism has manual edits. Open a fresh crank-slider to change its generated dimensions.');
+    }
+    const document = createCrankSliderDocument(params);
+    ++requestId.current;
+    setLoadingId(null);
+    useKinetiCADStore.getState().resetSimulation();
+    if (activeRef.current?.id === 'crank-slider') session.current.enter(document);
+    else useKinetiCADStore.setState(document.state);
+    setRevision(n => n + 1);
+  }
+
   return (
     <DemoContext.Provider value={{
       activeDemo, revision, loadingId, editing, setFileBusy,
       openGallery: () => { if (!editing) { setError(null); setOpen(true); } },
-      leaveDemo, resetDemo: () => { if (activeDemo) void openDemo(activeDemo.id); },
+      leaveDemo, openCrankSlider, applyCrankSlider,
+      resetDemo: () => { if (activeDemo?.id === 'crank-slider') openCrankSlider(); else if (activeDemo) void openDemo(activeDemo.id); },
     }}>
       {children}
       <DemoGallery open={open} onOpenChange={(next) => {
@@ -111,6 +150,15 @@ export function DemoWorkspaceProvider({ children }: { children: ReactNode }) {
       }} onSelect={(id) => void openDemo(id)} loadingId={loadingId} error={error} />
     </DemoContext.Provider>
   );
+}
+
+export function CrankSliderButton() {
+  const { openCrankSlider, editing, loadingId, activeDemo } = useDemoWorkspace();
+  return <button type="button" onClick={openCrankSlider} disabled={editing || !!loadingId || activeDemo?.id === 'crank-slider'}
+    title="Open an adjustable crank-slider; your current model is kept safe"
+    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border px-2 text-xs hover:bg-secondary disabled:opacity-40">
+    <Settings2 size={14} />Crank-slider
+  </button>;
 }
 
 export function DemoButton() {

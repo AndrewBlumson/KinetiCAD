@@ -3,9 +3,14 @@
 Use the existing KinetiCAD Replit project so its domain, secrets and publishing
 settings stay attached to the same app.
 
-The current source includes six editable demos, complete native/imported STEP
+The current branch also includes the subsequent adjustable **Crank-slider**
+workbench. Its [separate verification record](CRANK-SLIDER-VERIFICATION.md) and
+[Chrome checks](CRANK-SLIDER-CHROME-2026-09-12.md) describe the new stage.
+Stop for the user's testing before starting another roadmap item or publishing.
+
+The preceding release baseline includes six editable demos, complete native/imported STEP
 project recovery, bounded six-axis Stewart control and three **Engineering tests**
-tabs: **Motor & load**, **Friction & contact** and **Elastic beam**. The latest
+tabs: **Motor & load**, **Friction & contact** and **Elastic beam**. Its recorded
 serialized aggregate passed 166/166 cases with zero failures in 101.047 seconds,
 including committed assembly STEP/STL exports and pause-clock regressions.
 The full workspace build and final production bundle passed. The

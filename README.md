@@ -97,6 +97,24 @@ and elastic-limit failures. It does not deform the CAD mesh or provide general
 finite-element analysis. [Elastic beam scope and verification](docs/ELASTIC-BEAM.md)
 documents the equations, units, omitted effects and seven passing tests.
 
+## Adjustable crank-slider — next stage
+
+The new **Crank-slider** workspace adds one editable four-part mechanism: a
+powered crank, passive connecting rod and guided slider on a grounded bed.
+Adjust the crank radius, rod length and RPM, then compare actual solver motion
+with the exact rigid-link position, speed and mean-acceleration reference.
+The mechanism uses native CAD features and preserves its settings in Save project.
+Its ideal drive has no finite-torque or contact-load rating.
+
+This stage's complete serialized suite passed **195/195 tests**, separately from
+the historical 166-test baseline below. The actual-CAD study covers 16 physics
+scenarios and 864 sampled geometric intersections. The interface reports mean
+acceleration; finer single-step derivative errors remain explicitly documented.
+The [local Chrome checks](docs/CRANK-SLIDER-CHROME-2026-09-12.md) cover motion,
+parameter changes, pause/reset and the actual Save/Load/refresh path.
+**User testing is pending before further feature work**. See
+[Crank-slider equations, limits and verification](docs/CRANK-SLIDER-VERIFICATION.md).
+
 ## What works
 
 Modeller:
@@ -280,9 +298,8 @@ Pull requests are welcome. The most useful contributions:
 - Mobile responsive layout
 - 3D click-to-select on boolean result meshes
 
-The proposed mechanism-workbench direction remains future work: an adjustable
-crank-slider with dimensioned motion studies, persistent sketch constraints,
-and eventually a local four-bar linkage optimiser that fits a user-drawn path
+The remaining mechanism-workbench direction is future work: persistent sketch
+constraints and a local four-bar linkage optimiser that fits a user-drawn path
 and produces editable CAD. Complete project recovery is now implemented.
 Finite-force Stewart, general CAD contact/friction and general finite-element
 analysis remain future work. No AI API or path-to-mechanism optimiser is included.

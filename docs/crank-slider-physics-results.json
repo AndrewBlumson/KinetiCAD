@@ -1,0 +1,1929 @@
+{
+  "sourceSha256": "6a99008c3970ffaf2874ec69b463c2b9dd276ac81dd7a2311831050d714906e2",
+  "generatedAt": "2026-09-12T14:10:22.441Z",
+  "thresholds": {
+    "nominalPositionMm": 0.1,
+    "nominalVelocityMmPerSec": 0.5,
+    "nominalIntervalAccelerationMmPerSec2": 5,
+    "nominalAcceleration33msMmPerSec2": 5,
+    "positionAtMeasuredAngleMm": 0.05,
+    "velocityAtMeasuredAngleMmPerSec": 0.5,
+    "revoluteClosureMm": 0.05,
+    "guideLateralMm": 0.01,
+    "motorSpeedRadPerSec": 0.005,
+    "outOfPlaneTiltRad": 0.00001,
+    "sliderRotationRad": 0.00001,
+    "groundDriftMm": 1e-7
+  },
+  "solverSettings": {
+    "numSolverIterations": 8,
+    "numInternalPgsIterations": 16,
+    "motorVelocityGain": 100000
+  },
+  "physicsWorkerSha256": "7143f9f0464f51e0f729d77c3849eb7a8ee4c9a07997545fad0ecb5442d6d342",
+  "solverProfileSha256": "86cf2cb18ec969508322c44be88d091e79ba4108a4d533098785779be982daf2",
+  "measurement": "Every fixed solver step except declared render-packet case; nominal velocity/interval-acceleration and motor speed after 0.25 s startup. Position, geometry and closure include startup. Acceleration is actual velocity difference over the stated actual time interval.",
+  "acceptanceScope": "The product uses 120 Hz and reports actual velocity-change means over at least 1/30 s. The unchanged 5 mm/s² acceleration gate applies to that reported quantity; position, velocity, closure and motor gates are also unchanged. Raw 1/120 s and 1/240 s velocity derivatives are retained against the original 5 mm/s² comparison as nongating diagnostics, including every exceedance. No single-step derivative accuracy guarantee is claimed.",
+  "nongatingMetricNames": [
+    "nominalIntervalAccelerationMmPerSec2"
+  ],
+  "cases": [
+    {
+      "name": "cad-0",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": 15
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.01053416077506597,
+        "nominalVelocityMmPerSec": 0.055400755438931526,
+        "nominalIntervalAccelerationMmPerSec2": 2.8513052197585966,
+        "nominalAcceleration33msMmPerSec2": 0.5642247448307085,
+        "positionAtMeasuredAngleMm": 0.00006493025472309455,
+        "velocityAtMeasuredAngleMmPerSec": 0.050200658822536326,
+        "revoluteClosureMm": 0.00005018157040208695,
+        "guideLateralMm": 7.253192187486879e-13,
+        "motorSpeedRadPerSec": 0.00046913226577260936,
+        "outOfPlaneTiltRad": 1.5312581474293882e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00001367807180940872,
+            -1.5055974245115067e-8,
+            30
+          ],
+          "rotationQuat": [
+            2.988496339284552e-9,
+            -1.7244113692527208e-8,
+            -0.000027851841878145933,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.00005340576172,
+            -0.001392606645822525,
+            38.99999237060547
+          ],
+          "rotationQuat": [
+            5.7865752189911746e-9,
+            -3.356323219350088e-8,
+            0.000006963178748264909,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            125.00005340576172,
+            -7.963812240414404e-16,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cad-1",
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 75,
+        "rpm": 30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 66054.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.009514968089717968,
+        "nominalVelocityMmPerSec": 0.11254641219506745,
+        "nominalIntervalAccelerationMmPerSec2": 1.4996941712564702,
+        "nominalAcceleration33msMmPerSec2": 0.7548479275829806,
+        "positionAtMeasuredAngleMm": 0.00016501821374959036,
+        "velocityAtMeasuredAngleMmPerSec": 0.1047086129525372,
+        "revoluteClosureMm": 0.00012064029410263783,
+        "guideLateralMm": 8.172202064365974e-13,
+        "motorSpeedRadPerSec": 0.001093475026540336,
+        "outOfPlaneTiltRad": 3.6908197691927886e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00003080728492932394,
+            -7.275605184986489e-8,
+            30
+          ],
+          "rotationQuat": [
+            2.9048317529145606e-8,
+            6.794315332570022e-9,
+            -0.00003335205838084221,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            15.000143051147461,
+            -0.001001555472612381,
+            38.999977111816406
+          ],
+          "rotationQuat": [
+            -1.9386233063301006e-8,
+            -1.6992565576856578e-7,
+            0.000006676389602944255,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            90.00016021728516,
+            -1.4652446024890613e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cad-2",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 75,
+        "rpm": 30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 96694.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.02258847757609317,
+        "nominalVelocityMmPerSec": 0.22153001156198115,
+        "nominalIntervalAccelerationMmPerSec2": 2.4092175760968306,
+        "nominalAcceleration33msMmPerSec2": 1.6087081985239196,
+        "positionAtMeasuredAngleMm": 0.0002851266312688949,
+        "velocityAtMeasuredAngleMmPerSec": 0.18855312174318684,
+        "revoluteClosureMm": 0.0002059093654110285,
+        "guideLateralMm": 3.0834299957066547e-12,
+        "motorSpeedRadPerSec": 0.0017643849081321328,
+        "outOfPlaneTiltRad": 6.449086414209092e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.000055115062423283234,
+            -1.242551093127986e-7,
+            30
+          ],
+          "rotationQuat": [
+            -5.043363296430847e-12,
+            -8.462797573827174e-9,
+            -0.000045667169615626335,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.00025177001953,
+            -0.0022833943367004395,
+            38.99995422363281
+          ],
+          "rotationQuat": [
+            8.7176186269744e-9,
+            -2.816150868056866e-7,
+            0.000015223515219986439,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            100.00027465820312,
+            -1.4382538129215083e-14,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cad-3",
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 120,
+        "rpm": 30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 181354.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7823.6890544501675
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.03790700601626895,
+        "nominalVelocityMmPerSec": 0.36816077046206885,
+        "nominalIntervalAccelerationMmPerSec2": 4.05320503498979,
+        "nominalAcceleration33msMmPerSec2": 2.659609148139737,
+        "positionAtMeasuredAngleMm": 0.00036959904932132304,
+        "velocityAtMeasuredAngleMmPerSec": 0.3131579557658224,
+        "revoluteClosureMm": 0.0002456059502709702,
+        "guideLateralMm": 6.3178576953371035e-12,
+        "motorSpeedRadPerSec": 0.0018550475412086875,
+        "outOfPlaneTiltRad": 3.071196332436028e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00009094610140891746,
+            -2.0471512129915936e-7,
+            30
+          ],
+          "rotationQuat": [
+            2.252271436020692e-8,
+            1.8704216842024834e-8,
+            -0.00007053697481751442,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            40.00032043457031,
+            -0.005643934011459351,
+            38.99997329711914
+          ],
+          "rotationQuat": [
+            -6.7089191979619045e-9,
+            -1.0454235876977691e-7,
+            0.00002351653529331088,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            160.00035095214844,
+            4.700750287070163e-14,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cad-4",
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 180,
+        "rpm": 30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 220954.38916125082
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.037569378396995035,
+        "nominalVelocityMmPerSec": 0.3431648036537496,
+        "nominalIntervalAccelerationMmPerSec2": 4.300695786726059,
+        "nominalAcceleration33msMmPerSec2": 2.3612753082339335,
+        "positionAtMeasuredAngleMm": 0.0003218793661972086,
+        "velocityAtMeasuredAngleMmPerSec": 0.2897964973512295,
+        "revoluteClosureMm": 0.00020337041455144967,
+        "guideLateralMm": 3.079491522894884e-12,
+        "motorSpeedRadPerSec": 0.001702157658986625,
+        "outOfPlaneTiltRad": 1.6834981151376905e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.0000925588610698469,
+            -2.1832198626725585e-7,
+            30
+          ],
+          "rotationQuat": [
+            -1.3795375508607322e-8,
+            -1.4049222230028136e-8,
+            -0.00009223073720932007,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            40.000282287597656,
+            -0.007378682494163513,
+            38.99999237060547
+          ],
+          "rotationQuat": [
+            -2.0228613450967714e-8,
+            -3.187122388226271e-8,
+            0.000020496139768511057,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            220.00030517578125,
+            -2.7283337806875696e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cad-5",
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 180,
+        "rpm": 30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 103854.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.00982527913581066,
+        "nominalVelocityMmPerSec": 0.11196090630873368,
+        "nominalIntervalAccelerationMmPerSec2": 3.0760978193847666,
+        "nominalAcceleration33msMmPerSec2": 0.8813676059346451,
+        "positionAtMeasuredAngleMm": 0.0001269144907212194,
+        "velocityAtMeasuredAngleMmPerSec": 0.1055871031743374,
+        "revoluteClosureMm": 0.0000840128730293708,
+        "guideLateralMm": 7.601022675857161e-13,
+        "motorSpeedRadPerSec": 0.0011581500344948203,
+        "outOfPlaneTiltRad": 1.4940161233735003e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00003097383523709141,
+            -7.362661591514552e-8,
+            30
+          ],
+          "rotationQuat": [
+            -2.0375459541810415e-8,
+            2.3220955824854173e-8,
+            -0.0000584734370931983,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            15.000099182128906,
+            -0.001754019409418106,
+            38.999996185302734
+          ],
+          "rotationQuat": [
+            -2.2399211374590777e-8,
+            -1.3889340344519496e-8,
+            0.0000048719230107963085,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            195.0001220703125,
+            -2.8000014501129928e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": -15
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.010492450553016397,
+        "nominalVelocityMmPerSec": 0.05757271987023316,
+        "nominalIntervalAccelerationMmPerSec2": 2.3498676261278004,
+        "nominalAcceleration33msMmPerSec2": 0.6282554992943844,
+        "positionAtMeasuredAngleMm": 0.00006467409082233644,
+        "velocityAtMeasuredAngleMmPerSec": 0.05017577034172455,
+        "revoluteClosureMm": 0.000047603778296581986,
+        "guideLateralMm": 4.0087594702087337e-13,
+        "motorSpeedRadPerSec": 0.000565214953150539,
+        "outOfPlaneTiltRad": 1.8597048210488107e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.000013464999938150868,
+            1.4122894853585422e-8,
+            30
+          ],
+          "rotationQuat": [
+            1.0224185054141799e-8,
+            7.581997252259498e-9,
+            0.00002801412483677268,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.00005340576172,
+            0.0014005005359649658,
+            38.999996185302734
+          ],
+          "rotationQuat": [
+            1.8390896583397875e-9,
+            -2.9711051396930088e-8,
+            -0.000007002468919381499,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            125.00006103515625,
+            -1.446493622377456e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse-cad-1",
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 75,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 66054.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.009514968089717968,
+        "nominalVelocityMmPerSec": 0.11148600268111508,
+        "nominalIntervalAccelerationMmPerSec2": 1.6023382371336425,
+        "nominalAcceleration33msMmPerSec2": 0.8524368239734089,
+        "positionAtMeasuredAngleMm": 0.00016524021094710406,
+        "velocityAtMeasuredAngleMmPerSec": 0.10202382420789102,
+        "revoluteClosureMm": 0.0001234066139770419,
+        "guideLateralMm": 8.184276823960945e-13,
+        "motorSpeedRadPerSec": 0.0010692199044899375,
+        "outOfPlaneTiltRad": 3.611952370448752e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.000030607872758992016,
+            6.91726356194522e-8,
+            30
+          ],
+          "rotationQuat": [
+            -2.4545183663349235e-8,
+            1.2924001424607923e-8,
+            0.000033770338632166386,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            15.000146865844727,
+            0.0010139942169189453,
+            38.999977111816406
+          ],
+          "rotationQuat": [
+            2.1582625464589e-8,
+            -1.6672805713824346e-7,
+            -0.0000067592773120850325,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            90.00016021728516,
+            3.124543182644662e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse-cad-2",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 75,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 96694.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.02257321878703067,
+        "nominalVelocityMmPerSec": 0.2212877273467413,
+        "nominalIntervalAccelerationMmPerSec2": 2.388999742939811,
+        "nominalAcceleration33msMmPerSec2": 1.6655768727156388,
+        "positionAtMeasuredAngleMm": 0.0002852532655452933,
+        "velocityAtMeasuredAngleMmPerSec": 0.19226941015234544,
+        "revoluteClosureMm": 0.0002039053015379847,
+        "guideLateralMm": 3.0937995221247405e-12,
+        "motorSpeedRadPerSec": 0.0017662922567649453,
+        "outOfPlaneTiltRad": 6.374990609733496e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.000054598687711404637,
+            1.2199151910863293e-7,
+            30
+          ],
+          "rotationQuat": [
+            -1.702919938395553e-8,
+            5.364306332467095e-9,
+            0.000043375883251428604,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.0002498626709,
+            0.002169191837310791,
+            38.99995803833008
+          ],
+          "rotationQuat": [
+            -2.4523204800175336e-8,
+            -2.986445508668112e-7,
+            -0.000014462624676525593,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            100.00028228759766,
+            1.6034967272168452e-14,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse-cad-3",
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 120,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 181354.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7823.6890544501675
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.03778493570378316,
+        "nominalVelocityMmPerSec": 0.3666522832511987,
+        "nominalIntervalAccelerationMmPerSec2": 3.9660763195174678,
+        "nominalAcceleration33msMmPerSec2": 2.7102644038072214,
+        "positionAtMeasuredAngleMm": 0.00036718045612360584,
+        "velocityAtMeasuredAngleMmPerSec": 0.31713976479597505,
+        "revoluteClosureMm": 0.00024881497949180806,
+        "guideLateralMm": 5.948933186339378e-12,
+        "motorSpeedRadPerSec": 0.0018338282876686485,
+        "outOfPlaneTiltRad": 2.9935404967673783e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00009252834570361301,
+            2.129399092609674e-7,
+            30
+          ],
+          "rotationQuat": [
+            1.1021221268947556e-8,
+            -3.921885038948858e-8,
+            0.00007089239079505205,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            40.00031661987305,
+            0.00567135214805603,
+            38.99997329711914
+          ],
+          "rotationQuat": [
+            -1.9921582605775257e-8,
+            -1.0456925991775279e-7,
+            -0.000023631553631275892,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            160.00035095214844,
+            -3.114192863545688e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse-cad-4",
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 180,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 220954.38916125082
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.037630413553245035,
+        "nominalVelocityMmPerSec": 0.3411734491113805,
+        "nominalIntervalAccelerationMmPerSec2": 5.077892383716037,
+        "nominalAcceleration33msMmPerSec2": 2.401100747688361,
+        "positionAtMeasuredAngleMm": 0.00032125274665872894,
+        "velocityAtMeasuredAngleMmPerSec": 0.29163393758039646,
+        "revoluteClosureMm": 0.0002051857516564306,
+        "guideLateralMm": 3.078649748328166e-12,
+        "motorSpeedRadPerSec": 0.0017150322622581093,
+        "outOfPlaneTiltRad": 1.8262645146066247e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00009207372204400599,
+            2.1258063043205766e-7,
+            30
+          ],
+          "rotationQuat": [
+            4.583630364152214e-9,
+            1.737860344519504e-8,
+            0.00009196170140057802,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            40.00025939941406,
+            0.0073573291301727295,
+            38.99999237060547
+          ],
+          "rotationQuat": [
+            -3.445643770305651e-9,
+            -2.1464670041382305e-8,
+            -0.00002043720451183617,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            220.00030517578125,
+            2.3104788752798672e-14,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reverse-cad-5",
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 180,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 103854.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.009782264809473418,
+        "nominalVelocityMmPerSec": 0.11525680474629052,
+        "nominalIntervalAccelerationMmPerSec2": 2.830194864726471,
+        "nominalAcceleration33msMmPerSec2": 0.9376725375750322,
+        "positionAtMeasuredAngleMm": 0.0001229440196084397,
+        "velocityAtMeasuredAngleMmPerSec": 0.10892078630703761,
+        "revoluteClosureMm": 0.00008564186896830179,
+        "guideLateralMm": 7.740996428931557e-13,
+        "motorSpeedRadPerSec": 0.0011579116159157188,
+        "outOfPlaneTiltRad": 1.586170855388002e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00003072628169320524,
+            7.519424372048888e-8,
+            30
+          ],
+          "rotationQuat": [
+            -9.326429406542047e-9,
+            -3.6518436274946e-8,
+            0.00005612673703581095,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            15.000103950500488,
+            0.0016840249300003052,
+            38.999996185302734
+          ],
+          "rotationQuat": [
+            -2.69589968127093e-8,
+            -1.2227568291223179e-8,
+            -0.0000046783097786828876,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            195.00010681152344,
+            -2.2145443471903187e-15,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interior-reverse",
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 150,
+        "rpm": -30
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 201154.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 9623.689054450151
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.03712902019054809,
+        "nominalVelocityMmPerSec": 0.3514494081632762,
+        "nominalIntervalAccelerationMmPerSec2": 4.412662419541123,
+        "nominalAcceleration33msMmPerSec2": 2.624956268264507,
+        "positionAtMeasuredAngleMm": 0.00033717162710900084,
+        "velocityAtMeasuredAngleMmPerSec": 0.3050931298303583,
+        "revoluteClosureMm": 0.00021927389321222483,
+        "guideLateralMm": 3.2012285617472047e-12,
+        "motorSpeedRadPerSec": 0.0017629543966575234,
+        "outOfPlaneTiltRad": 1.8925101570922162e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00009098186274059117,
+            2.2153105305733334e-7,
+            30
+          ],
+          "rotationQuat": [
+            2.5537696402011534e-8,
+            -2.599099069300337e-8,
+            0.00008109142072498798,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            40.00028610229492,
+            0.006487131118774414,
+            38.99998474121094
+          ],
+          "rotationQuat": [
+            -2.5159174743549784e-9,
+            -4.6420620236631294e-8,
+            -0.000021623942302539945,
+            0.9999999403953552
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            190.0003204345703,
+            -2.1200736614402152e-14,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "zero",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": 0
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "every fixed solver step",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0,
+        "nominalVelocityMmPerSec": 0,
+        "nominalIntervalAccelerationMmPerSec2": 0,
+        "nominalAcceleration33msMmPerSec2": 0,
+        "positionAtMeasuredAngleMm": 0,
+        "velocityAtMeasuredAngleMmPerSec": 0,
+        "revoluteClosureMm": 0,
+        "guideLateralMm": 0,
+        "motorSpeedRadPerSec": 0,
+        "outOfPlaneTiltRad": 0,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0,
+            0,
+            30
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25,
+            0,
+            39
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            125,
+            0,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default-240Hz",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": 15
+      },
+      "timeStepMs": 4.166666666666667,
+      "solverSteps": 1920,
+      "measurementCadence": "every fixed solver step",
+      "scope": "240Hz convergence diagnostic; not an exposed product setting",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.007863564065957007,
+        "nominalVelocityMmPerSec": 0.04342209207265535,
+        "nominalIntervalAccelerationMmPerSec2": 8.234163082138357,
+        "nominalAcceleration33msMmPerSec2": 0.9089087892649316,
+        "positionAtMeasuredAngleMm": 0.000025310947890488933,
+        "velocityAtMeasuredAngleMmPerSec": 0.040963472172218074,
+        "revoluteClosureMm": 0.0000203236134785963,
+        "guideLateralMm": 1.9755552716719388e-13,
+        "motorSpeedRadPerSec": 0.0005758563664295391,
+        "outOfPlaneTiltRad": 1.741963099811837e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.000003838958946289495,
+            -2.5477500109616358e-9,
+            30
+          ],
+          "rotationQuat": [
+            -2.431882251130446e-8,
+            -1.3870277371097472e-8,
+            -0.000023662985768169165,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.000015258789062,
+            -0.001182572916150093,
+            39
+          ],
+          "rotationQuat": [
+            -7.339500118774822e-10,
+            -1.706500185605364e-8,
+            0.0000059128651628270745,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            125.00001525878906,
+            -1.594534493948096e-16,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "render-partitions",
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": 15
+      },
+      "timeStepMs": 8.333333333333334,
+      "solverSteps": 960,
+      "measurementCadence": "returned batch endpoints",
+      "scope": "120Hz product acceptance",
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "metrics": {
+        "nominalPositionMm": 0.010526222757363257,
+        "nominalVelocityMmPerSec": 0.054345233192833575,
+        "nominalIntervalAccelerationMmPerSec2": 2.8513052197585966,
+        "nominalAcceleration33msMmPerSec2": 0.4021506740330075,
+        "positionAtMeasuredAngleMm": 0.00006470204743891372,
+        "velocityAtMeasuredAngleMmPerSec": 0.050200658822536326,
+        "revoluteClosureMm": 0.00004697779388464167,
+        "guideLateralMm": 7.253192187486879e-13,
+        "motorSpeedRadPerSec": 0.0004499395701549336,
+        "outOfPlaneTiltRad": 1.5312581474293882e-7,
+        "sliderRotationRad": 0,
+        "groundDriftMm": 0
+      },
+      "finalTransforms": [
+        {
+          "partId": "crank-slider-ground",
+          "positionMm": [
+            0,
+            0,
+            0
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-crank",
+          "positionMm": [
+            0.00001367807180940872,
+            -1.5055974245115067e-8,
+            30
+          ],
+          "rotationQuat": [
+            2.988496339284552e-9,
+            -1.7244113692527208e-8,
+            -0.000027851841878145933,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-rod",
+          "positionMm": [
+            25.00005340576172,
+            -0.001392606645822525,
+            38.99999237060547
+          ],
+          "rotationQuat": [
+            5.7865752189911746e-9,
+            -3.356323219350088e-8,
+            0.000006963178748264909,
+            1
+          ]
+        },
+        {
+          "partId": "crank-slider-slider",
+          "positionMm": [
+            125.00005340576172,
+            -7.963812240414404e-16,
+            20
+          ],
+          "rotationQuat": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "nongatingDiagnostics": [
+    {
+      "case": "cad-0",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.8513052197585966,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "cad-1",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 1.4996941712564702,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "cad-2",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.4092175760968306,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "cad-3",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 4.05320503498979,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "cad-4",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 4.300695786726059,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "cad-5",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 3.0760978193847666,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.3498676261278004,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse-cad-1",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 1.6023382371336425,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse-cad-2",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.388999742939811,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse-cad-3",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 3.9660763195174678,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse-cad-4",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 5.077892383716037,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": true,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "reverse-cad-5",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.830194864726471,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "interior-reverse",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 4.412662419541123,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "zero",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 0,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "default-240Hz",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 8.234163082138357,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": true,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    },
+    {
+      "case": "render-partitions",
+      "metric": "nominalIntervalAccelerationMmPerSec2",
+      "measured": 2.8513052197585966,
+      "comparisonLimit": 5,
+      "exceedsComparisonLimit": false,
+      "reason": "Small-step differences of float32 solver velocities include numerical integration/constraint jitter. The product displays measured interval means over at least 1/30 s; no single-step acceleration accuracy guarantee is claimed."
+    }
+  ],
+  "passed": true,
+  "solverConfigurationChecks": {
+    "invalidWorldsRejected": 9,
+    "liveMotorUsesWorldGain": true,
+    "legacyDefaultsRestored": true
+  }
+}

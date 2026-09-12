@@ -1,10 +1,11 @@
 import { lazy, Suspense, useState } from 'react';
 import { useKinetiCADStore } from '@/state/store';
-import { DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
+import { CrankSliderButton, DemoButton, DemoWorkspaceBar, useDemoWorkspace } from '@/components/demos/DemoWorkspace';
 import { ForceExperimentControls, ForceExperimentMeasurements } from '@/components/demos/ForceExperimentPanel';
 import { useForceMeasurements } from '@/physics/forceMeasurements';
 import { StewartMeasurements, StewartControls } from '@/components/demos/StewartMeasurements';
 import { EngineeringTestsButton } from '@/components/engineering/EngineeringTests';
+import { CrankSliderControls, CrankSliderMeasurements } from '@/components/demos/CrankSliderPanel';
 
 // Phase 8 — same Scene component as the Modeller. The simulation
 // subsystem is wired into Scene at mount; the Simulator view just
@@ -32,6 +33,7 @@ export default function Simulator() {
   const forceCompleted = useForceMeasurements((s) => s.completed);
   const forceExperiment = simulation.forceExperiment;
   const isStewart = activeDemo?.id === 'stewart-platform' || !!simulation.stewartMotion;
+  const isCrankSlider = !!simulation.crankSlider;
   const duration = forceExperiment?.durationMs ?? (simulation.stewartMotion
     ? simulation.stewartMotion.moveDurationMs + simulation.stewartMotion.settleDurationMs : simulation.durationMs);
   const completed = forceCompleted || !!(duration && simulation.running && simulation.paused
@@ -75,13 +77,13 @@ export default function Simulator() {
 
         <div className="flex items-center gap-1">
           <PlaybackBtn
-            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isStewart ? 'Run motion' : 'Play'}
+            label={completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : isStewart || isCrankSlider ? 'Run motion' : 'Play'}
             active={isRunning && !isPaused}
             disabled={!canPlay}
             onClick={onPlayPause}
           >
             {isRunning && !isPaused ? '⏸' : '▶'}
-            {(forceExperiment || isStewart) && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Run motion'}</span>}
+            {(forceExperiment || isStewart || isCrankSlider) && <span className="text-xs ml-1.5">{completed ? 'Run again' : isRunning ? (isPaused ? 'Resume' : 'Pause') : forceExperiment ? 'Run experiment' : 'Run motion'}</span>}
           </PlaybackBtn>
           <PlaybackBtn label="Reset" onClick={onReset}>
             ⏹
@@ -98,6 +100,7 @@ export default function Simulator() {
         <div className="flex-1" />
 
         <EngineeringTestsButton />
+        <CrankSliderButton />
         <DemoButton />
         {preparingGeometry && !hasAssemblyBooleans && <span role="status" className="text-xs text-orange-300">Preparing geometry…</span>}
         <SimStatus running={isRunning} paused={isPaused} completed={completed} />
@@ -108,8 +111,8 @@ export default function Simulator() {
       </p>}
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
-          {forceExperiment ? <ForceExperimentMeasurements /> : isStewart ? <>
+        <aside className={`${forceExperiment ? 'w-72 overflow-hidden' : isStewart || isCrankSlider ? 'w-64 overflow-y-auto' : 'w-56 overflow-y-auto'} shrink-0 border-r border-border bg-sidebar flex flex-col`}>
+          {isCrankSlider ? <CrankSliderControls /> : forceExperiment ? <ForceExperimentMeasurements /> : isStewart ? <>
             <StewartControls completed={completed} />
             <details className="px-3 py-3 text-xs text-muted-foreground"><summary className="cursor-pointer">Assembly · {parts.length} parts · {mates.length} joints</summary>
               <ul className="mt-2 space-y-1">{parts.map(p => <li key={p.id}>{p.name}</li>)}</ul>
@@ -142,7 +145,7 @@ export default function Simulator() {
 
         <main className="flex-1 relative overflow-hidden" style={{ background: '#0A0E1A' }}>
           <Suspense fallback={<div className="absolute inset-0 grid place-items-center font-technical text-xs text-muted-foreground">Loading scene…</div>}>
-            <Scene key={revision} frameOnLoad={!!activeDemo} showSketches={false} onAssemblyReady={(ready) => setReadyRevision(ready ? revision : -1)} />
+            <Scene key={revision} frameOnLoad={!!activeDemo || isCrankSlider} showSketches={false} onAssemblyReady={(ready) => setReadyRevision(ready ? revision : -1)} />
           </Suspense>
           <SimDashboard
             simulationTimeMs={simulation.simulationTimeMs}
@@ -151,7 +154,8 @@ export default function Simulator() {
           />
         </main>
 
-        <aside className={`${isStewart ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
+        <aside className={`${isStewart || isCrankSlider ? 'w-72' : 'w-60'} shrink-0 border-l border-border bg-sidebar flex flex-col overflow-y-auto`}>
+          {isCrankSlider && <CrankSliderMeasurements />}
           {forceExperiment ? <ForceExperimentControls /> : <>
           {isStewart && <StewartMeasurements />}
           <SidebarSection title="Gravity (mm/s²)">

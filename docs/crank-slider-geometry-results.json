@@ -1,0 +1,224 @@
+{
+  "sourceSha256": "6a99008c3970ffaf2874ec69b463c2b9dd276ac81dd7a2311831050d714906e2",
+  "generatedAt": "2026-09-12T14:09:53.683Z",
+  "cases": [
+    {
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 100,
+        "rpm": 15
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 108694.38916125083
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 6623.689054450177
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    },
+    {
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 75,
+        "rpm": 30
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 66054.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    },
+    {
+      "params": {
+        "radiusMm": 25,
+        "rodLengthMm": 75,
+        "rpm": 30
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 96694.3891612508
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 4332.2040220889485
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5123.689054450187
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    },
+    {
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 120,
+        "rpm": 30
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 181354.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 7823.6890544501675
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    },
+    {
+      "params": {
+        "radiusMm": 40,
+        "rodLengthMm": 180,
+        "rpm": 30
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 220954.38916125082
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 5412.204022088948
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    },
+    {
+      "params": {
+        "radiusMm": 15,
+        "rodLengthMm": 180,
+        "rpm": 30
+      },
+      "solids": [
+        {
+          "id": "crank-slider-ground",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 103854.38916125076
+        },
+        {
+          "id": "crank-slider-crank",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 3612.2040220889453
+        },
+        {
+          "id": "crank-slider-rod",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 11423.689054450138
+        },
+        {
+          "id": "crank-slider-slider",
+          "valid": true,
+          "solids": 1,
+          "volumeMm3": 10131.017672705391
+        }
+      ],
+      "poses": 24,
+      "pairChecks": 144,
+      "maxIntersectionMm3": 0
+    }
+  ],
+  "overlapToleranceMm3": 0.00001,
+  "passed": true
+}
