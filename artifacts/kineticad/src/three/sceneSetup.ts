@@ -74,7 +74,7 @@ export function createLights(scene: THREE.Scene) {
 }
 
 /**
- * 200mm x 200mm grid floor with 10mm cells. Lying on the world XY plane
+ * 600mm x 600mm reference grid with 10mm cells. Lying on the world XY plane
  * (Z=0), matching the Z-up convention used by mechanical CAD packages.
  *
  * THREE.GridHelper is built in the XZ plane by default; we rotate it +90°
@@ -82,8 +82,8 @@ export function createLights(scene: THREE.Scene) {
  * flat on the floor.
  */
 export function createGrid(): THREE.GridHelper {
-  // 20 divisions across 200mm = 10mm cells.
-  const grid = new THREE.GridHelper(200, 20, COLOURS.grid, COLOURS.grid);
+  // 60 divisions across 600mm = 10mm cells; includes the full crank-slider bed.
+  const grid = new THREE.GridHelper(600, 60, COLOURS.grid, COLOURS.grid);
   const mat = grid.material as THREE.Material;
   mat.transparent = true;
   mat.opacity = 0.65;

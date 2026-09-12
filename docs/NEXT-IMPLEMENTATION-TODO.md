@@ -29,6 +29,13 @@ Authorised by the user on 12 September 2026. The dev server is running on port 5
 
 See [sketch dimensions verification](SKETCH-DIMENSIONS-VERIFICATION.md) for measured results, tolerances, browser checks and limitations.
 
+Visual follow-up, 12 September 2026: enlarged the shared world-reference grid from
+200 × 200 mm to 600 × 600 mm while keeping 10 mm squares. The grid stays at its
+existing origin and height; model geometry, camera fitting and physics are unchanged.
+CAD typecheck and production build passed. Actual Chrome preview on port 5185
+showed the complete crank-slider bed within the grid, with no captured runtime errors.
+This visual-only change does not advance the next CAD stage or add physics claims.
+
 ## Following stages — not started
 
 - Direct simulation of finished assembly Boolean shapes.
