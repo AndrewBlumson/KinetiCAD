@@ -1,0 +1,10 @@
+.git
+node_modules
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+docs/evidence
+docs/replit-evidence
+attached_assets
+.env*
+!.env.example

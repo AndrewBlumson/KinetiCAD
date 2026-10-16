@@ -28,7 +28,7 @@ const SECTIONS: LegalSection[] = [
     num: 4,
     heading: "Server logs",
     paras: [
-      "Like almost all websites, our hosting provider keeps standard server logs when a page is requested. These logs may include your IP address, the date and time of the request, the page requested, and basic browser information. These logs are used only to operate the Service securely and to diagnose technical problems. They are not used to identify or track individual users.",
+      "The hosted website uses Vercel to deliver its pages and application files. Standard request logs may include your IP address, the date and time of the request, the page requested, and basic browser information. These logs are used to operate the Service securely and diagnose technical problems. Your CAD models and saved projects are not uploaded to Vercel. Its global delivery network may process requests outside the UK; see Vercel's Privacy Notice at vercel.com/legal/privacy-policy for its processing and safeguards.",
       "The pages request fonts from Google Fonts, and the CAD application downloads its OpenCascade WebAssembly component from jsDelivr. These requests contact those providers and expose normal connection information, such as your IP address and browser/request information, under their own policies. They request application assets, not your model or project contents. KinetiCAD does not use an AI service to process your designs or search for mechanisms.",
     ],
   },
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="KinetiCAD — Privacy Policy"
-      lastUpdated="12/09/2026"
+      lastUpdated="16/10/2026"
       sections={SECTIONS}
     />
   );

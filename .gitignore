@@ -10,6 +10,7 @@ out-tsc
 
 # dependencies
 node_modules
+.vercel
 .kineticad-test-capture.lock
 
 # Local credentials (keep only reviewed, value-free templates)
