@@ -6,6 +6,9 @@
   "outputDirectory": "dist",
   "regions": ["lhr1"],
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.kineticad.co.uk" }], "destination": "https://kineticad.co.uk/:path*", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",
