@@ -17,6 +17,9 @@ await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await cp('artifacts/landing/dist/public', 'dist', { recursive: true });
 await cp('artifacts/kineticad/dist/public', 'dist/app', { recursive: true });
+// Materialise the known SPA entry route so clean URLs also work on refresh.
+// Keep unknown routes and missing resources as real 404 responses.
+await cp('dist/app/index.html', 'dist/app/simulator.html');
 const { render } = await import(pathToFileURL(resolve('artifacts/landing/dist/ssr/prerender.js')));
 const shell = await readFile('dist/index.html', 'utf8');
 const pages = [
